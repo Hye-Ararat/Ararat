@@ -1,0 +1,399 @@
+$change-up-icon: $ni-arrow-long-up !default;
+$change-down-icon: $ni-arrow-long-down !default;
+
+/// Misc
+///////////////////////////
+.filter-wg {
+    label.overline-title {
+        margin-bottom: .5rem;
+    }
+}
+
+//// CHANGE
+.change {
+    line-height: 1;
+    .sign {
+        font-family: $nk-dashlite-font;
+        &:before {
+            content: "";
+        }
+    }
+    &.up {
+        color: $success !important;
+        .sign:before {
+            content: $change-up-icon;
+        }
+    }
+    &.down {
+        color: $danger !important;
+        .sign:before {
+            content: $change-down-icon;
+        }
+    }
+}
+
+
+// KNOB
+.nk-knob{
+    > div{
+        position: relative;
+        display: inline-block !important;
+    }
+}
+.knob{
+    height: 100% !important;
+    margin-top: 0 !important;
+    font-size: 1.5rem !important;
+}
+.knob-half{
+    height: 50% !important;
+    font-size: 1.25rem !important;
+}
+[class*="knob"]{
+    text-align: center;
+    pointer-events: none;
+    width: 100% !important;
+    font-weight: $fw-normal !important;
+    font-family: $base-font-family !important;
+    color: $base-color !important;
+    @if($rtl==false){
+        margin-left: 0 !important;
+        left: 0;
+    }
+    @if($rtl==true){
+        margin-right: 0 !important;
+        right: 0;
+    }
+    border: none;
+    &:focus{
+        outline: none;
+    }
+}
+
+
+// Stats
+.stats{
+    padding: 0 0 1rem;
+}
+@include media-breakpoint-only(xxl){
+    .nk-content-sidebar{
+        .stats{
+            padding: 1.25rem 1.5rem 1rem;
+        }
+    }
+}
+
+// collapse
+.collapse{
+    &-shown{
+        display: inline-block !important;
+        .collapsed &{
+            display: none !important;
+        }
+    }
+    &-hidden{
+        display: none !important;
+        .collapsed &{
+            display: inline-block !important;
+        }
+    }
+}
+
+
+// clipboard
+.clipboard{
+    &-init{
+        cursor: pointer;
+        .clipboard-success &{
+            color: darken($success,5%);
+        }
+    }
+    &-text{
+        font-size: $fx-sz-12;
+    }
+    &-success{
+        .form-control:focus{
+            border-color: $input-border-color;
+            box-shadow: $input-box-shadow;
+        }
+    }
+}
+
+// News
+.nk-news{
+    &-item{
+        display: flex;
+        align-items: center;
+    }
+    &-icon{
+        width: 2rem;
+        display: inline-flex;
+        flex-shrink: 0;
+        .icon{
+            font-size: 24px;
+            color: $accent-color;
+            @if($dark_theme_option==true) {
+                .is-theme &{
+                    color: lighten($accent-color, 5%);
+                }
+            }
+        }
+        img{
+            width: 24px;
+        }
+    }
+    &-text{
+        display: flex;
+        align-items: center;
+        max-width: calc(100% - 1.5rem);
+        p{
+            font-size: $fx-sz-13;
+            margin-bottom: 0;
+            color: $base-text;
+            font-weight: $fw-medium;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            width: calc(100% - 2rem);
+            span{
+                color:$base-light;
+                font-weight: $fw-normal;
+            }
+            @if($dark_option==true) {
+                .is-dark & {
+                    color: lighten($base-light, 5%);
+                    span{
+                        color: rgba($base-light, .9);
+                    }
+                }
+            }
+            @if($dark_theme_option==true) {
+                .is-theme &{
+                    color: lighten($accent-light, 5%);
+                    span{
+                        color: rgba($accent-light, .8);
+                    }
+                }
+            }
+        }
+        .icon{
+            color: $base-light;
+            @if($rtl==false){
+                margin-left: .25rem;
+            }
+            @if($rtl==true){
+                margin-right: .25rem;
+            }
+            @if($dark_option==true) {
+                .is-dark &{
+                    color: $base-light;
+                }
+            }
+            @if($dark_theme_option==true) {
+                .is-theme &{
+                    color: $accent-light;
+                }
+            }
+        }
+    }
+    &-item:hover &{
+        &-text .icon{
+            color:$accent-color;
+        }
+    }
+}
+
+
+//language-list
+.language{
+    &-list{
+        li:not(:last-child){
+            .language-item{
+                border-bottom: 1px solid $base-100;
+            }
+        }
+    }
+    &-item{
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        color: $gray-700;
+        transition: all .4s;
+        &:hover{
+            color: $light-600;
+            background: $gray-100;
+        }
+    }
+    &-name{
+        font-size: 12px;
+    }
+    &-flag{
+        width: 24px;
+        @if($rtl==false){
+            margin-right: 12px;
+        }
+        @if($rtl==true){
+            margin-left: 12px;
+        }
+    }
+}
+
+.entry {
+    img,.video,.image-group{
+        border-radius: $border-radius;
+        + p, + h2, + h3, + h4, + h5, + h6, + ul, + ol{
+            margin-top: ($para-margin * 2);
+        }
+    }
+    p {
+        + img{
+            margin-top: $para-margin ;
+        }
+    }
+    p {
+        + h2, + h3, + h4,+ h5, + h6, + .video, + .image-group{
+            padding-top: ($para-margin * .75);
+        }
+    }
+}
+
+p > span > .icon.ni {
+    vertical-align: middle;
+}
+
+// DD fix with Button Trigger
+/////////////////////////////////
+.btn-trigger + .dropdown-menu-right, .btn-trigger + .dropdown-menu-left {
+    margin: -.75rem 0;
+}
+
+.btn-trigger + .dropdown-menu-right {
+    @if($rtl==false){
+        margin-right: 16px;
+    }
+    @if($rtl==true){
+        margin-left: 16px;
+    }
+}
+.btn-trigger + .dropdown-menu-left {
+    @if($rtl==false){
+        margin-left: 16px;
+    }
+    @if($rtl==true){
+        margin-right: 16px;
+    }
+}
+
+@media (max-width:420px){
+    .btn-trigger + .dropdown-menu-xl, .btn-trigger + .dropdown-menu-lg, .btn-trigger + .dropdown-menu-md {
+        @if($rtl==false){
+            margin-left: 16px;
+        }
+        @if($rtl==true){
+            margin-right: 16px;
+        }
+        margin-top: .25rem;
+    }
+}
+
+
+// Blockquote Notes
+/////////////////////////////
+.bq-note{
+    &-item {
+        &:not(:first-child) {
+            margin-top: 1.75rem;
+        }
+    }
+    &-text{
+        padding: 1rem 1.25rem;
+        background: $lighter;
+        border-radius: $border-radius;
+    }
+    &-meta{
+        font-size: $fx-sz-12;
+        color: $base-light;
+        margin-top: .75rem;
+        span > span {
+            color: $base-text;
+        }
+        .link {
+            @if($rtl==false){
+                margin-left: .75rem;
+            }
+            @if($rtl==true){
+                margin-right: .75rem;
+            }
+        }
+    }
+    &-sep {
+        height: .25rem;
+        display: block;
+        visibility: hidden;
+        padding: 0 0.25rem;
+    }
+    &-by {
+        display: inline-block;
+    }
+}
+
+@include media-breakpoint-up(sm){
+    .bq-note{
+        &-text{
+            padding: 1.25rem 1.5rem;
+        }
+        &-sep {
+            height: auto;
+            display: inline-block;
+            visibility: visible;
+        }
+    }
+}
+
+@media (min-width:1200px) and (max-width:1359px){
+    .form-settings{
+        .col-lg-5,.col-lg-7{
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+}
+
+.embed-responsive{
+    border-radius: $border-radius;
+}
+
+.video{
+    position: relative;
+    overflow: hidden;
+    border-radius: $border-radius;
+    &:before{
+        position: absolute;
+        content: '';
+        bottom: 0;
+        right: 0;
+        left: 0;
+        height: 120px;
+        background: linear-gradient(to top, rgba($black,.4), rgba($black,0));
+    }
+    &-play{
+        display: flex;
+        align-items: center;
+        position: absolute;
+        @if($rtl==false){
+            left: 2rem;
+        }
+        @if($rtl==true){
+            right: 2rem;
+        }
+        bottom: 2rem;
+        color: $white;
+        font-size: 1.25rem;
+        &:hover{
+            color: $white;
+        }
+        .icon{
+            font-size: 2rem;
+        }
+    }
+}

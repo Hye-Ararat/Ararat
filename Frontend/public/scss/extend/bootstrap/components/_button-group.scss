@@ -1,0 +1,43 @@
+.btn{
+    &-toolbar{
+        &-sep{
+            @if($rtl==false){
+                border-right: 1px solid $border-light;
+            }
+            @if($rtl==true){
+                border-left: 1px solid $border-light;
+            }
+            margin-left: .75rem;
+            margin-right: .75rem;
+            .card-tools & {
+                padding: 0 !important;
+                margin-left: .5rem;
+                margin-right: .5rem;
+            }
+        }
+    }
+    &-group {
+        &.is-tags {
+            .btn-xs {
+                &:first-child {
+                    padding-left: 0.25rem;
+                    padding-right: 0.25rem;
+                }
+                &:last-child {
+                    @if($rtl==false){
+                        margin-left: 0;
+                    }
+                    @if($rtl==true){
+                        margin-right: 0;
+                    }
+                }
+                .icon {
+                    width: 1rem;
+                }
+            }
+            .btn-dim:not(:disabled):not(.disabled):hover {
+                border-color: transparent;
+            }
+        }
+    }
+}

@@ -1,0 +1,357 @@
+// BUTTONS
+/////////////////////////
+.btn{
+    position: relative;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    &-xl {
+        @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-line-height-lg, $btn-border-radius-lg);
+    }
+    &-xs{
+        @include button-size($btn-padding-y-xs, $btn-padding-x-xs, $btn-font-size-xs, $btn-line-height-xs, $btn-border-radius-xs);
+    }
+    // With Icon
+    .icon{
+        font-size: 1.4em;
+        line-height: inherit;
+    }
+    > span{
+        display: inline-block;
+        white-space: nowrap;
+        &:only-child{
+            width: 100%;
+        }
+    }
+    .icon + span,span + .icon{
+        @if($rtl==false){
+            padding-left: 8px;
+        }
+        @if($rtl==true){
+            padding-right: 8px;
+        }
+    }
+    .dd-indc{
+        @if($rtl==false){
+            transform: translateX(-8px);
+        }
+        @if($rtl==true){
+            transform: translateX(8px);
+        }
+    }
+    span + .dd-indc{
+        @if($rtl==false){
+            transform: translateX(8px);
+        }
+        @if($rtl==true){
+            transform: translateX(-8px);
+        }
+    }
+    &-lg{
+        .icon + span,span + .icon{
+            @if($rtl==false){
+                padding-left: 12px;
+            }
+            @if($rtl==true){
+                padding-right: 12px;
+            }
+        }
+    }
+    &-round{
+        border-radius: add($btn-line-height, + $btn-padding-y*2, + $btn-border-width*2);
+    }
+    &-block{
+        justify-content: center;
+    }
+    &-ucap,&.ucap{
+        text-transform: uppercase;
+        font-size: $fx-sz-12;
+        letter-spacing: 0.05em;
+    }
+    // Only Icon Button
+    &-icon{
+        &:not([class*="btn-icon-break"]){
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .icon{
+            width: $btn-line-height + $btn-padding-y*2;
+        }
+        &.btn-xl{
+            .icon{
+                width: $btn-line-height-lg + $btn-padding-y-lg*2;
+            }
+        }
+        &.btn-lg{
+            .icon{
+                width: $btn-line-height-lg + $btn-padding-y-lg*2;
+            }
+        }
+        &.btn-sm{
+            .icon{
+                width: $btn-line-height-sm + $btn-padding-y-sm*2;
+            }
+        }
+        &.btn-xs{
+            .icon{
+                width: $btn-line-height-xs + $btn-padding-y-xs*2;
+                font-size: 1.1em;
+            }
+        }
+        .dot{
+            top: .35rem;
+            position: absolute;
+            @if($rtl==false){
+                right: .35rem;
+                transform: translate(50%, -50%);
+            }
+            @if($rtl==true){
+                left: .35rem;
+                transform: translate(-50%, -50%);
+            }
+        }
+        .badge{
+            top: .25rem;
+            position: absolute;
+            @if($rtl==false){
+                right: .25rem;
+                transform: translate(50%, -50%);
+            }
+            @if($rtl==true){
+                left: .25rem;
+                transform: translate(-50%, -50%);
+            }
+            &-circle{
+                border-radius: 50%;
+                height: 1.125rem;
+                width: 1.125rem;
+                padding:0;
+                font-weight: $fw-bold;
+                font-size: $fx-sz-11;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+    }
+    &-mw{
+        min-width: 120px;
+        justify-content: center;
+    }
+    &-wrap{
+        flex-direction: column;
+        align-items: center;
+        flex-grow: 0;
+    }
+    &-extext{
+        font-size: 12px;
+        font-weight: $fw-medium;
+        text-align: center;
+        margin-top: 0.25rem;
+        color: $base-light;
+    }
+    &-wider{
+        display: flex;
+        .icon + span,span + .icon{
+            @if($rtl==false){
+                margin-left: auto;
+            }
+            @if($rtl==true){
+                margin-right: auto;
+            }
+        }
+    }
+    &-auto{
+        min-width: auto;
+    }
+    &-pd-auto {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+    .spinner-border,.spinner-grow{
+        margin: .125rem;
+        + span{
+            @if($rtl==false){
+                margin-left: 0.25rem;
+            }
+            @if($rtl==true){
+                margin-right: 0.25rem;
+            }
+        }
+    }
+    &-indc{
+        width: 100%;
+        .icon{
+            font-size: 1.43em;
+        }
+        .indc{
+            opacity: .6;
+            @if($rtl==false){
+                margin-left: -8px;
+                margin-right: auto;
+            }
+            @if($rtl==true){
+                margin-right: -8px;
+                margin-left: auto;
+            }
+        }
+        span + .indc{
+            @if($rtl==false){
+                margin-left: auto;
+                margin-right: -8px;
+            }
+            @if($rtl==true){
+                margin-right: auto;
+                margin-left: -8px;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-up(md){
+    .btn-xl {
+        @include button-size($btn-padding-y-xl, $btn-padding-x-xl, $btn-font-size-xl, $btn-line-height-xl, $btn-border-radius-lg);
+        &.btn-round{
+            border-radius: add($btn-line-height-xl, + $btn-padding-y-xl*2, + $btn-border-width*2);
+        }
+    }
+    .btn-icon{
+        &.btn-xl{
+            .icon{
+                width: $btn-line-height-xl + $btn-padding-y-xl*2;
+            }
+        }
+    }
+}
+//btn trigger
+@mixin btn-trigger-active {
+    opacity: 1;
+    height: 120%;
+    width: 120%;
+}
+.btn-trigger{
+    position: relative;
+    z-index: 1;
+    color: $base-text;
+    &:focus{
+        box-shadow: none;
+    }
+    &:before{
+        position: absolute;
+        z-index: -1;
+        height: 20px;
+        width: 20px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transform-origin: 50% 50%;
+        content: '';
+        background-color: $light-200;
+        border-radius: 50%;
+        opacity: 0;
+        transition: all .3s;
+        .is-dark &{
+            background-color: darken($accent-dark,10%);
+        }
+        .show > &{
+            @include btn-trigger-active();
+        }
+    }
+    &:hover:before, &:focus:before, &.active:not(.revarse):before{
+        @include btn-trigger-active();
+    }
+    &.active:hover:before{
+        background-color: $light-300;
+    }
+    a:hover &{
+        &:before{
+            @include btn-trigger-active();
+        }
+    }
+}
+
+
+/// Pale/Dim Button
+$dim-mix:           #fff;
+
+$dim-outline-btns:
+    "primary"     $primary          mix($primary, $dim-mix, 11%)            mix($primary, $dim-mix, 40%),
+    "success"     $success          mix($success, $dim-mix, 11%)            mix($success, $dim-mix, 40%),
+    "warning"     $warning          mix($warning, $dim-mix, 11%)            mix($warning, $dim-mix, 40%),
+    "info"        $info             mix($info, $dim-mix, 11%)               mix($info, $dim-mix, 40%),
+    "danger"      $danger           mix($danger, $dim-mix, 11%)             mix($danger, $dim-mix, 40%),
+    "secondary"   $secondary        mix($secondary, $dim-mix, 11%)          mix($secondary, $dim-mix, 35%),
+    "gray"        $light-600        mix($light-500, $dim-mix, 11%)          mix($light-500, $dim-mix, 35%),
+    "dark"        $dark             mix($dark, $dim-mix, 11%)               mix($dark, $dim-mix, 35%),
+    "light"       $secondary-light  $lighter                                $light-300;
+
+@each $name, $color, $background, $border in $dim-outline-btns {
+    .btn-dim.btn-outline-#{$name} {
+        color: $color;
+        background-color: $background;
+        border-color: $border;
+        &:not(:disabled):not(.disabled):hover {
+            color: color-yiq($color);
+            background-color: $color;
+            border-color: $color;
+        }
+    }
+    .btn-white.btn-outline-#{$name}, .btn-trans.btn-outline-#{$name} {
+        &:not(.btn-dim):not(:disabled):not(.disabled):hover {
+            color: $color;
+            background: $background;
+        }
+    }
+}
+
+
+$dim-btns:
+    "primary"     $primary                  mix($primary, $dim-mix, 11%),
+    "secondary"   $secondary                mix($secondary, $dim-mix, 11%),
+    "success"     $success                  mix($success, $dim-mix, 11%),
+    "warning"     $warning                  mix($warning, $dim-mix, 11%),
+    "info"        $info                     mix($info, $dim-mix, 11%),
+    "danger"      $danger                   mix($danger, $dim-mix, 11%),
+    "gray"        $gray-600                 mix($gray-600, $dim-mix, 11%),
+    "dark"        $dark                     mix($dark, $dim-mix, 11%),
+    "light"       $light-500                mix($light-500, $dim-mix, 11%),
+    "lighter"     $light-400                mix($light-400, $dim-mix, 11%);
+
+@each $name, $color, $background in $dim-btns {
+    .btn-dim.btn-#{$name} {
+        color: $color;
+        background-color: $background;
+        border-color: transparent;
+        &:not(:disabled):not(.disabled):hover {
+            color: color-yiq($color);
+            background-color: $color;
+            border-color: $color;
+        }
+    }
+}
+
+// OVERRIDE DEFAUTL COLOR
+.btn {
+    &-trans.btn {
+        background-color: transparent;
+        border-color: transparent;
+    }
+    &-outline-light {
+        border-color: $light-300;
+    }
+    &-outline-lighter {
+        border-color: $light-200;
+    }
+    &-outline-light, &-outline-lighter {
+        color: $secondary-light;
+    }
+    &-white, &-white.btn-dim {
+        background: $white;
+    }
+    &-white.btn-outline-light {
+        &:not(.btn-dim):not(:disabled):not(.disabled):hover {
+            color: $white;
+            background: $base-text;
+            border-color: $base-text;
+        }
+    }
+}

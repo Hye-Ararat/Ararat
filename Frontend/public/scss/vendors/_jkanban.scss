@@ -1,0 +1,284 @@
+.nk-kanban{
+  overflow: auto;
+  padding-bottom: 1rem;
+}
+.kanban-container {
+    position: relative;
+    box-sizing: border-box;
+    width: auto;
+    display: flex;
+    margin-left: -$grid-gutter-width/2;
+    margin-right: -$grid-gutter-width/2;
+    overflow: auto;
+  }
+  
+  .kanban-container * {
+    box-sizing: border-box;
+  }
+
+
+  .kanban-board {
+    padding: $grid-gutter-width/2;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    flex-shrink: 0;
+  }
+  .kanban-board.disabled-board {
+    opacity: 0.3;
+  }
+  
+  .kanban-board.is-moving.gu-mirror {
+    transform: rotate(3deg);
+  }
+  
+  .kanban-board.is-moving.gu-mirror .kanban-drag {
+    overflow: hidden;
+    @if($rtl==false){
+      padding-right: 50px;
+    }
+    @if($rtl==true){
+      padding-left: 50px;
+    }
+  }
+  
+  .kanban-board-header {
+    background: $white;
+    border:0px solid $border-light;
+    box-shadow: 0px 1px 3px 0px rgba($base-color, 0.05);
+    border-top: 3px solid $gray-300;
+    border-radius: $border-radius;
+    padding: .5rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .kanban-primary{
+    border-top-color: $accent-color;
+  }
+  .kanban-success{
+    border-top-color: $success;
+  }
+  .kanban-info{
+    border-top-color: $info;
+  }
+  .kanban-warning{
+    border-top-color: $warning;
+  }
+  .kanban-danger{
+    border-top-color: $danger;
+  }
+.kanban-title-content {
+    display: flex;
+    align-items: center;
+    .title{
+        font-size: 0.9375rem;
+        margin-bottom: 0;
+        @if($rtl==false){
+          margin-right: 0.75rem;
+        }
+        @if($rtl==true){
+          margin-left: 0.75rem;
+        }
+        color: $base-text;
+    }
+}
+.kanban-title-board {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+  
+  .kanban-board header .kanban-title-button {
+    @if($rtl==false){
+      float: right;
+    }
+    @if($rtl==true){
+      float: left;
+    }
+  }
+  
+  .kanban-board .kanban-drag {
+    min-height: 100px;
+    margin-bottom: 1rem;
+    &:empty{
+      border-radius: $border-radius;
+      border:1px dashed $border-light;
+    }
+  }
+  
+  .kanban-board:after {
+    clear: both;
+    display: block;
+    content: "";
+  }
+  
+  .kanban-item {
+    border-radius: $border-radius;
+    border:0 solid $border-light;
+    box-shadow: 0px 1px 3px 0px rgba($base-color, 0.05);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    background: $white;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    &-title{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      + .kanban-item-text{
+        margin-top: .5rem;
+      }
+      .title{
+        font-size: 0.9375rem;
+        margin-bottom: 0;
+        @if($rtl==false){
+          margin-right: 0.75rem;
+        }
+        @if($rtl==true){
+          margin-left: 0.75rem;
+        }
+      }
+    }
+    &-tags{
+      display: flex;
+      padding-top: 0.5rem;
+      margin: -.125rem;
+      li{
+        padding: .125rem;
+      }
+    }
+    &-meta{
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding-top: 0.5rem;
+      &-list{
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        margin:0 -.25rem;
+        &:last-child{
+          flex-wrap: nowrap;
+        }
+        &:first-child{
+          padding-right: 1rem;
+        }
+        li{
+          font-size: 0.8125rem;
+          padding:0 .25rem;
+          color: $base-light;
+          span{
+            white-space: nowrap;
+          }
+          .icon + span{
+            @if($rtl==false){
+              margin-left: 0.25rem;
+            }
+            @if($rtl==true){
+              margin-right: 0.25rem;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  .kanban-item:hover {
+    cursor: move;
+  }
+  
+  .kanban-item:last-child {
+    margin: 0;
+  }
+  
+  .kanban-item.is-moving.gu-mirror {
+    transform: rotate(3deg);
+    height: auto !important;
+  }
+  
+  /* Dragula CSS  */
+  .gu-mirror {
+    position: fixed !important;
+    margin: 0 !important;
+    z-index: 9999 !important;
+  }
+  
+  .gu-hide {
+    display: none !important;
+  }
+  
+  .gu-unselectable {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+  }
+  
+  .gu-transit {
+    opacity: 0.2 !important;
+    transform: rotate(0deg) !important;
+  }
+  
+  .drag_handler {
+      background: $white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      position: relative;
+      top: -3px;
+      @if($rtl==false){
+        float: left;
+        margin-right: 4px;
+      }
+      @if($rtl==true){
+        float: right;
+        margin-left: 4px;
+      }
+  }
+  
+  .drag_handler:hover {
+    cursor: move;
+  }
+  
+  .drag_handler_icon {
+      position: relative;
+      display: block;
+      background: #000;
+      width: 24px;
+      height: 2px;
+      top: 12px;
+      transition: .5s ease-in-out;
+  }
+  
+  .drag_handler_icon:before,
+  .drag_handler_icon:after {
+      background: #000;
+      content: '';
+      display: block;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transition: .5s ease-in-out;
+  }
+  
+   .drag_handler_icon:before {
+      top: 6px;
+  }
+  
+  .drag_handler_icon:after {
+      bottom: 6px;
+  }
+
+  .kanban-add-task{
+    color: $accent-color;
+    background: $white;
+    border: 1px dashed $border-light;
+    padding-top: 0.675rem;
+    padding-bottom: 0.675rem;
+    &:hover{
+      color: $white;
+      background: $accent-color;
+      border:1px solid $accent-color;
+    }
+    &:focus{
+      outline:none;
+      box-shadow: none;
+    }
+  }

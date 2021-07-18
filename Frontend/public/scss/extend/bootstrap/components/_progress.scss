@@ -1,0 +1,84 @@
+.progress{
+    &-bar{
+        height: 100%;
+        line-height: 1;
+    }
+    &-sm{
+        height:.25rem;
+    }
+    &-md{
+        height:.375rem;
+    }
+    &-lg{
+        height:1rem;
+    }
+    &-pill{
+        border-radius: 100px;
+        .progress-bar{
+            @extend .progress-pill;
+        }
+    }
+    &-text{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: $base-light;
+        margin-bottom: 0.25rem;
+    }
+    &-label{
+        font-size: 0.875rem;
+    }
+    &-amount{
+        font-size: $fx-sz-12;
+        @if($rtl==false){
+            padding-left: .5rem;
+        }
+        @if($rtl==true){
+            padding-right: .5rem;
+        }
+    }
+    &-alt{
+        display: flex;
+        align-items: center;
+        overflow: visible;
+        .progress-bar{
+            border-radius: $progress-border-radius;
+        }
+    }
+    &-reverse{
+        flex-direction: row-reverse;
+    }
+    &-bordered{
+        .progress-bar{
+            margin-top: -2px;
+            border:2px solid $white;
+            box-sizing: content-box;
+            &:not(:first-child){
+                @if($rtl==false){
+                    margin-left: -4px;
+                }
+                @if($rtl==true){
+                    margin-right: -4px;
+                }
+            }
+        }
+        &.progress-reverse {
+            .progress-bar{
+                @if($rtl==false){
+                    margin-left: 0;
+                }
+                @if($rtl==true){
+                    margin-right: 0;
+                }
+                &:not(:last-child){
+                    @if($rtl==false){
+                        margin-left: -5px;
+                    }
+                    @if($rtl==true){
+                        margin-right: -5px;
+                    }
+                }
+            }
+        }
+    }
+}

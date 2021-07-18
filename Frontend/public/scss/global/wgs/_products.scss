@@ -1,0 +1,191 @@
+.nk-add-product{
+    top: $header-height;
+    background-color: $white;
+    width: 400px;
+    height: calc(100vh - #{$header-height});
+    padding: 1.5rem;
+    + .toggle-overlay{
+        z-index: 700;
+    }
+}
+
+.rating{
+    display: flex;
+    align-items: center;
+    margin: 0 -.125rem;
+    color: $warning;
+    > * {
+        padding: 0 .125rem;
+    }
+    .icon{
+        font-size: 1rem;
+    }
+}
+
+.product{
+    &-card{
+        overflow: hidden;
+        height: 100%;
+    }
+    &-thumb{
+        position: relative;
+    }
+    &-badges{
+        position: absolute;
+        top: 1rem;
+        @if($rtl==false){
+            left: 1rem;
+        }
+        @if($rtl==true){
+            right: 1rem;
+        }
+        display: flex;
+        flex-wrap: wrap;
+        margin: -0.25rem;
+        > li{
+            padding: 0.25rem;
+        }
+    }
+    &-tags{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        > li{
+            padding: 0.25rem;
+        }
+        a{
+            color: $base-light;
+            &:hover{
+                color: $primary;
+            }
+        }
+        + .product-title{
+            margin-top: 0.5rem;
+        }
+    }
+    &-title{
+        a{
+            color: $base-color;
+        }
+        + .product-price{
+            margin-top: 1rem;
+        }
+    }
+    &-actions{
+        position: absolute;
+        bottom: .25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: $border-radius $border-radius 0 0;
+        overflow: hidden;
+        transition: .2s linear;
+        display: flex;
+        opacity: 0;
+        .product-card:hover &{
+            opacity: 1;
+        }
+        li{
+            padding: 0 .125rem;
+            a{
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                color: $base-text;
+                font-size: $btn-font-size*1.2;
+                height: $btn-line-height + $btn-padding-y*2;
+                width: $btn-line-height + $btn-padding-y*2;
+                transition: .3s ease;
+                &:hover{
+                    color:$primary;
+                }
+            }
+        }
+    }
+    &-gallery{
+        position: relative;
+        height: auto;
+        margin: 0 0 30px 0;
+        border-radius: $border-radius;
+        border:1px solid $border-light;
+        .slick-list{
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        .slider-nav{
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 282px;
+            .slider-item{
+                padding:0 8px;
+                .thumb{
+                    width: 78px;
+                    padding: 1px;
+                    border:2px solid $border-light;
+                    box-shadow:inset 1px 1px 0 $white,inset -1px -1px 0 $white,inset 1px -1px 0 $white,inset -1px 1px 0 $white;
+                    border-radius: $border-radius;
+                    transition: all .3s ease;
+                    cursor: pointer;
+                }
+                &.slick-current{
+                    .thumb{
+                        border-color:$accent-color;
+                        cursor: default;
+                    }
+                }
+            }
+        }
+    }
+    &-rating{
+        display: flex;
+        align-items: center;
+        .amount{
+            @if($rtl==false){
+                margin-left: 0.5rem;
+            }
+            @if($rtl==true){
+                margin-right: 0.5rem;
+            }
+            color: $base-light;
+        }
+    }
+    &-excrept{
+        margin-top: 1.5rem;
+    }
+    &-meta{
+        margin-top: 2rem;
+        + .product-meta{
+            margin-top: 1.25rem;
+        }
+    }
+}
+
+@media (max-width:420px) {
+    .product{
+        &-gallery{
+            .slider-nav{
+                width: 188px;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .product{
+        &-gallery{
+            .slider-nav{
+                width: 384px;
+            }
+        }
+    }
+}
+@include media-breakpoint-up(xxl) {
+	.product{
+        &-gallery{
+            .slider-nav{
+                width: 470px;
+            }
+        }
+    }
+}

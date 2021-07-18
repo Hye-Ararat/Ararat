@@ -1,0 +1,40 @@
+/// Dropdowns
+///////////////////////////
+.nk-notification{
+    .dropdown-menu &{
+        max-height: 239px;
+        overflow: auto;
+    }
+    &-item{
+        display: flex;
+        align-items: center;
+        padding: 1.25rem 1.75rem;
+    }
+    &-icon{
+        flex-shrink: 0;
+        @if($rtl==false){
+            margin-right: .75rem;
+        }
+        @if($rtl==true){
+            margin-left: .75rem;
+        }
+    }
+    &-text{
+        font-size: $fx-sz-13;
+        color: $base-text;
+        span{
+            color: $base-color
+        }
+    }
+    &-time{
+        font-size: $fx-sz-11;
+        color: $base-light;
+    }
+}
+
+.nk-chat-list, .chat-list {
+    .dropdown-menu &{
+        max-height: 274px;
+        overflow: auto;
+    }
+}

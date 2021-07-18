@@ -1,0 +1,104 @@
+.project{
+    &-head{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+        align-items: start;
+    }
+    &-title{
+        display: flex;
+        align-items: center;
+        @if($rtl==false){
+            margin-right: 0.75rem;
+        }
+        @if($rtl==true){
+            margin-left: 0.75rem;
+        }
+        .user-avatar{
+            @if($rtl==false){
+                margin-right: 1rem;
+            }
+            @if($rtl==true){
+                margin-left: 1rem;
+            }
+        }
+        .title{
+            font-size: 0.975rem;
+            &:not(:last-child){
+                margin-bottom: 0.125rem;
+            }
+        }
+    }
+    &-details{
+        margin-bottom: 1rem;
+    }
+    &-progress{
+        margin-bottom: 1rem;
+        &-details{
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        &-task{
+            display: flex;
+            align-items: center;
+            color: $base-light;
+            .icon{
+                font-size: 1rem;
+                line-height: 1.5rem;
+                @if($rtl==false){
+                    margin-right: 0.25rem;
+                }
+                @if($rtl==true){
+                    margin-left: 0.25rem;
+                }
+            }
+        }
+        &-percent{
+            color: $base-text;
+            font-weight: $fw-medium;
+        }
+    }
+    &-meta{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    &-users{
+        display: flex;
+        align-items: center;
+    }
+    &-list{
+        &-progress{
+            display: flex;
+            align-items: center;
+            .progress{
+                width: 100px;
+                @if($rtl==false){
+                    margin-right: 0.5rem;
+                }
+                @if($rtl==true){
+                    margin-left: 0.5rem;
+                }
+            }
+        }
+    }
+}
+
+@include media-breakpoint-up(xxl){
+    .project{
+        &-list{
+            &-progress{
+                .progress{
+                    width: 140px;
+                    @if($rtl==false){
+                        margin-right: 1rem;
+                    }
+                    @if($rtl==true){
+                        margin-left: 1rem;
+                    }
+                }
+            }
+        }
+    }
+}

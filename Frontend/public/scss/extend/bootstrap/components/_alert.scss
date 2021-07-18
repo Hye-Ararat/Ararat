@@ -1,0 +1,176 @@
+.alert{
+    &:last-child{
+        margin-bottom: 0;
+    }
+    &-link {
+        box-shadow: 0 1px 0 currentColor;
+        &:hover {
+            box-shadow: none;
+        }
+    }
+    h5, h6, .title {
+        font-size: ($h6-font-size * 1.05);
+    }
+    &.alert-icon{
+        @if($rtl==false){
+            padding-left: $alert-padding-x + $alert-icon-width;
+        }
+        @if($rtl==true){
+            padding-right: $alert-padding-x + $alert-icon-width;
+        }
+        > .icon{
+            position: absolute;
+            font-size: 1.25rem;
+            line-height: 1;
+            width: $alert-icon-width;
+            top: $alert-padding-y;
+            @if($rtl==false){
+                left: $alert-padding-x;
+                margin-left:-1px;
+            }
+            @if($rtl==true){
+                right: $alert-padding-x;
+                margin-right:-1px;
+            }
+        }
+    }
+    &-dismissible{
+        .close{
+            top: 50%;
+            transform: translateY(-50%);
+            transition: .3s ease;
+            margin-top: -1px;
+            &:focus{
+                outline: none;
+            }
+            &:hover{
+                color: currentColor;
+            }
+            &:after{
+                font-family: $nk-dashlite-font;
+                content: $ni-cross;
+                font-size: 1.1rem;
+            }
+        }
+    }
+    &-light, &-lighter, &-gray {
+        border-color: $border-light;
+        color: $base-text;
+        .alert-link {
+            color: $base-text;
+        }
+    }
+    &-alt{
+        position: relative;
+        padding: .875rem;
+        border-radius: $border-radius-xxl;
+        &.alert-icon{
+            @if($rtl==false){
+                padding-left: 4rem;
+            }
+            @if($rtl==true){
+                padding-right: 4rem;
+            }
+            > .icon{
+                position: absolute;
+                font-size: 2rem;
+                line-height: 1;
+                width: 4rem;
+                top: 50%;
+                @if($rtl==false){
+                    left: 0;
+                }
+                @if($rtl==true){
+                    right: 0;
+                }
+                transform: translateY(-50%);
+                text-align: center;
+                opacity: 0.5;
+            }
+        }
+    }
+}
+a.alert:hover{
+    color: currentColor;
+}
+
+$alert-fill: map-merge(
+    $theme-colors,
+    (
+        "light": $light-200,
+        "lighter": $light-100,
+    )
+);
+@each $state, $bg in $alert-fill {
+    .alert-fill.alert-#{$state}{
+        color: color-yiq($bg);
+        background: $bg;
+        
+    }
+}
+.alert-fill {
+    border-width: 0;
+    .alert-link, .icon, h4, h5, h6 {
+        color: currentColor;
+    }
+    &.alert-light{
+        color: $secondary;
+    }
+    &.alert-lighter{
+        color: $secondary-light;
+    }
+}
+
+$alert-pro: map-merge(
+    $theme-colors,
+    (
+        "light":       $light-400,
+        "lighter":     $light-400
+    )
+);
+
+.alert-pro{
+    box-shadow: 0 4px 15px 0 rgba($dark,.1);
+    border: none;
+    @if($rtl==false){
+        border-left: 4px solid transparent;
+    }
+    @if($rtl==true){
+        border-right: 4px solid transparent;
+    }
+    color: $base-text;
+    line-height: 1.5;
+    background: $white;
+    &.no-shadow {
+        box-shadow: none;
+    }
+    &.no-border {
+        @if($rtl==false){
+            border-left: 0;
+        }
+        @if($rtl==true){
+            border-right: 0;
+        }
+    }
+    &.alert-icon {
+        @if($rtl==false){
+            padding-left: $alert-padding-x + $alert-pro-icon-width;
+        }
+        @if($rtl==true){
+            padding-right: $alert-padding-x + $alert-pro-icon-width;
+        }
+        > .icon {
+            font-size: 1.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+}
+@each $state, $color in $alert-pro {
+    .alert-pro.alert-#{$state}{
+        border-color: $color;
+        > .icon {
+            color: $color;
+        }
+    }
+}

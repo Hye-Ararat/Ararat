@@ -1,0 +1,15 @@
+.media{
+    &-center{
+        align-items: center;
+    }
+    &-object{
+        display: inline-flex;
+    }
+    > *:first-child{
+        flex-shrink: 0;
+    }
+    > *:last-child{
+        flex-grow: 1;
+        max-width: 100%;
+    }
+}

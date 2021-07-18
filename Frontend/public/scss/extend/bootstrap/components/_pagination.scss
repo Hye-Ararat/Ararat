@@ -1,0 +1,84 @@
+.pagination{
+    &-goto{
+        display: inline-flex;
+        align-items: center;
+        font-size: .8125rem;
+        text-transform: uppercase;
+    }
+}
+
+.page{
+    &-link{
+        // @include border-radius($border-radius);
+        font-size: $pagination-font-size;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: calc(#{$pagination-line-height} + #{$pagination-padding-y*2} + #{$pagination-border-width*2});
+        .pagination-sm &{
+            line-height: $pagination-line-height-sm;
+            min-width: calc(#{$pagination-line-height-sm} + #{$pagination-padding-y-sm*2} + #{$pagination-border-width*2});
+        }
+        .pagination-lg &{
+            line-height: $pagination-line-height-lg;
+            min-width: calc(#{$pagination-line-height-lg} + #{$pagination-padding-y-lg*2} + #{$pagination-border-width*2});
+        }
+        .pagination-xl &{
+            padding: $pagination-padding-y-xl $pagination-padding-x-xl;
+            font-size: $pagination-font-size*1.7;
+            line-height: $pagination-line-height-xl;
+            min-width: calc(#{$pagination-line-height-xl} + #{$pagination-padding-y-xl*2} + #{$pagination-border-width*2});
+        }
+        .icon{
+            font-size: .8125rem;
+            line-height: inherit;
+        }
+        &:not([href]){
+            background-color: transparent;
+            color: inherit;
+            // height: 100%;
+            .icon{
+                &:before{
+                    position: relative;
+                    top: 1px;
+                }
+            }
+        }
+        &-prev,&-next{
+            span{
+                display: none;
+            }
+        }
+    }
+}
+@include media-breakpoint-up(sm){
+    .page{
+        &-link{
+            &-prev,&-next{
+                span{
+                    display: block;
+                }
+            }
+            &-prev{
+                .icon{
+                    @if($rtl==false){
+                        padding-right: 0.25rem;
+                    }
+                    @if($rtl==true){
+                        padding-left: 0.25rem;
+                    }
+                }
+            }
+            &-next{
+                .icon{
+                    @if($rtl==false){
+                        padding-left: 0.25rem;
+                    }
+                    @if($rtl==true){
+                        padding-right: 0.25rem;
+                    }
+                }
+            }
+        }
+    }
+}

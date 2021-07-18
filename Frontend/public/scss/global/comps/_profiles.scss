@@ -1,0 +1,121 @@
+/// PROFILE USER DATA
+//////////////////////////
+.profile-ud {
+    &-label{
+        display: block;
+        color: $base-light;
+        .plain & {
+            font-size: $fx-sz-12;
+            font-weight: $fw-medium;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .wider & {
+            display: inline-flex;
+            letter-spacing: -0.01em;
+            width: 120px;
+            flex-shrink: 0;
+        }
+    }
+    &-value {
+        color: $base-text;
+        .wider & {
+            text-align: right;
+            font-weight: $fw-medium;
+            width: 100%;
+        }
+    }
+    &.wider {
+        display: flex;
+        padding: .5rem 0;
+    }
+    &.plain {
+        .profile-ud-item:nth-child(n+2) & {
+            margin-top: 1.25rem;
+        }
+    }
+}
+@include media-breakpoint-up(md){
+    .profile-ud {
+        &.wider {
+            padding: .75rem 0;
+        }
+        &-list {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -0.25rem -3.25rem;
+            max-width: 960px;
+        }
+        &-item {
+            width: 50%;
+            padding:0 3.25rem;
+            &:nth-child(2) {
+                .profile-ud.plain {
+                    margin-top: 0;
+                }
+            }
+        }
+    }
+}
+
+/// PROFILE STATS
+//////////////////////////
+.profile-stats{
+    .amount{
+        font-size: 1.125rem;
+        font-weight: $fw-bold;
+    }
+}
+
+
+/// PROFILE BALANCE
+//////////////////////////
+.profile-balance{
+    &-group{
+        display: flex;
+        align-items: flex-end;
+    }
+    &-ck{
+        position: relative;
+        height: 70px;
+        margin-top: .5rem;
+    }
+    &-sub{
+        font-size: .875rem;
+        color: $base-light;
+        &title{
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        .icon{
+            font-size: .75rem;
+        }
+    }
+    &-plus{
+        position: absolute;
+        .icon{
+            font-size: 1rem;
+            line-height: 1.5rem;
+        }
+        ~ *{
+            @if($rtl==false){
+                padding-left: 24px;
+            }
+            @if($rtl==true){
+                padding-right: 24px;
+            }
+        }
+    }
+    &-amount{
+        .number{
+            font-size: 1.25rem;
+            font-weight: $fw-bold;
+            color: $base-color;
+            line-height: 1.5rem;
+            white-space: nowrap;
+            small{
+                font-weight: $fw-normal;
+            }
+        }
+    }
+}

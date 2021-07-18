@@ -1,0 +1,419 @@
+.form{
+    &-icon{
+        position: absolute;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        top: 0;
+        width: add($field-padding-x, + 24px);
+        height: $input-height;
+        &.sm{
+            height: $input-height-sm;
+        }
+        &.lg{
+            height: $input-height-lg;
+        }
+        &.xl{
+            height: $input-height-xl;
+        }
+        .icon{
+            font-size: 16px;
+            color: $base-light;
+        }
+        + .form-control{
+            @if($rtl==false){
+                padding-left: add($field-padding-x, + 24px);
+            }
+            @if($rtl==true){
+                padding-right: add($field-padding-x, + 24px);
+            }
+        }
+        &-right{
+            @if($rtl==false){
+                left: auto;
+                right: - $field-border-width;
+            }
+            @if($rtl==true){
+                right: auto;
+                left: - $field-border-width;
+            }
+            + .form-control{
+                @if($rtl==false){
+                    padding-left: $input-padding-x;
+                    padding-right:  add($field-padding-x, + 24px);
+                }
+                @if($rtl==true){
+                    padding-right: $input-padding-x;
+                    padding-left:  add($field-padding-x, + 24px);
+                }
+            }
+        }
+    }
+    &-info{
+        position: absolute;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        top: 50%;
+        @if($rtl==false){
+            right: 0;
+            border-left: 1px solid $border-color;
+        }
+        @if($rtl==true){
+            left: 0;
+            border-right: 1px solid $border-color;
+        }
+        padding: .125rem 1.25rem;
+        transform: translateY(-50%);
+        color: $base-light;
+        + .form-control{
+            @if($rtl==false){
+                padding-right: add($field-padding-x, + 24px);
+            }
+            @if($rtl==true){
+                padding-left: add($field-padding-x, + 24px);
+            }
+        }
+    }
+    &-label{
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: $light-700;
+        margin-bottom: .5rem;
+        &-group{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .5rem;
+            .form-label {
+                margin-bottom: 0;
+            }
+        }
+        + .form-note{
+            margin-top: -0.35rem;
+        }
+        &-outlined{
+            position: absolute;
+            top: $input-padding-y;
+            @if($rtl==false){
+                left: $input-padding-x/1.5;
+                transform-origin: left;
+            }
+            @if($rtl==true){
+                transform-origin: right;
+                right: $input-padding-x/1.5;
+            }
+            padding: 0 $input-padding-x/2.5;
+            font-weight: $input-font-weight;
+            line-height: $input-line-height;
+            color: $input-color;
+            background-color: $white;
+            z-index: 1;
+            transition: all .3s ease;
+            margin-bottom: 0;
+            @include font-size($input-font-size);
+            .form-control-lg ~ &{
+                top: $input-padding-y-lg;
+                padding: 0 $input-padding-x/2.65;
+                @include font-size($input-font-size-lg);
+            }
+            .form-control-sm ~ &{
+                @include font-size($input-font-size-sm);
+                top: $input-padding-y-sm;
+                @if($rtl==false){
+                    left: $input-padding-x/2.5;
+                }
+                @if($rtl==true){
+                    left: $input-padding-x/2.5;
+                }
+            }
+            .focused .form-control-sm ~ &,
+            .form-select.form-control-sm ~ &{
+                font-size: 11px;
+            }
+            .focused &,.form-select ~ &{
+                top: add(-($input-padding-y), -2px);
+                font-size: 11px;
+            }
+            .form-control-xl ~ &{
+                @include font-size($input-font-size-xl);
+                line-height: $input-line-height-xl;
+                top: $input-padding-y-xl;
+                padding: 0 $input-padding-x-xl/2.5;
+                @if($rtl==false){
+                    left: $input-padding-x-xl/1.5;
+                }
+                @if($rtl==true){
+                    left: $input-padding-x-xl/1.5;
+                }
+            }
+            .focused .form-control-xl ~ &,
+            .form-select.form-control-xl ~ &{
+                top: add(-($input-padding-y-xl), -5px);
+            }
+            .focused .form-control-lg ~ &,.focused .form-control-xl ~ &,
+            .form-select.form-control-lg ~ &,.form-select.form-control-xl ~ &{
+                font-size: 12px;
+            }
+        }
+    }
+    &-note{
+        font-size: $fx-sz-12;
+        color: $base-light;
+        font-style: italic;
+        display: block;
+        &-alt{
+            font-size: $fx-sz-12;
+            color: $base-light;
+        }
+        &-group{
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            margin-bottom: -0.25rem;
+        }
+    }
+    &-control{
+        &-xl {
+            height: $input-height-xl;
+            padding: $input-padding-y-xl $input-padding-x-xl;
+            @include font-size($input-font-size-xl);
+            line-height: $input-line-height-xl;
+            @include border-radius($input-border-radius-xl);
+        }
+        &-outlined{
+            cursor: pointer;
+            .focused &{
+                cursor: auto;
+            }
+        }
+        &-wrap,&-group{
+            position: relative;
+            + .form-note{
+                margin-top: 0.5rem;
+            }
+        }
+        &-noborder{
+            border-color: transparent;
+            &:focus{
+                border-color: $input-border-color;
+                box-shadow: none;
+            }
+        }
+        &-solid{
+            border-color: $input-bg;
+            &:focus{
+                box-shadow: none;
+                border-color: $input-border-color;
+            }
+        }
+        &-number{
+            font-size: 20px;
+            padding: 20px;
+            height: 74px;
+        }
+        &-password{
+            &-big{
+                font-size: 44px;
+                height: calc(#{$field-padding-x}*2 + #{$field-line-height} + #{$field-border-width});
+                padding: $field-padding-x 1rem;
+            }
+        }
+        &.error{
+            // color: $input-error-color;
+            border-color: $input-error-border-color;
+            &:focus{
+                box-shadow: $input-error-focus-box-shadow;
+            }
+        }
+        &.focus{
+            border-color: $input-focus-border-color;
+            box-shadow: $input-focus-box-shadow;
+        }
+        &-simple{
+            border: none;
+            padding: 0;
+            &:focus{
+                box-shadow: none;
+            }
+        }
+    }
+    &-group{
+        position: relative;
+        margin-bottom: 1.25rem;
+        &:last-child{
+            margin-bottom: 0;
+        }
+    }
+    &-select{
+        height: $input-height;
+        &:not(.form-control){
+            opacity: 0;
+        }
+        &-sm,&[data-ui*="sm"]{
+            height: $input-height-sm;
+        }
+        &-lg,&[data-ui*="lg"]{
+            height: $input-height-lg;
+        }
+        &-xl,&[data-ui*="xl"]{
+            height: $input-height-xl;
+        }
+    }
+    &-focus{
+        &-none{
+            &:focus{
+                border-color: transparent;
+                box-shadow: none;
+            }
+        }
+    }
+    &-action {
+        .btn + .btn {
+            @if($rtl==false){
+                margin-left: 1.25rem;
+            }
+            @if($rtl==true){
+                margin-right: 1.25rem;
+            }
+        }
+    }
+    &-round{
+        border-radius: 100px;
+    }
+}
+.custom-select{
+    appearance: none;
+    -webkit-appearance: none;
+    option{
+        border-radius: $border-radius-sm;
+        padding: 5px .5rem;
+        margin: 2px -.5rem;
+        cursor: pointer;
+        color: $base-text;
+        &:last-child{
+            margin-bottom: -0.5rem;
+        }
+    }
+}
+.form-control-select{
+    position: relative;
+    .form-control{
+        appearance: none;
+        -webkit-appearance: none;
+    }
+    &-multiple{
+        .custom-select{
+            padding-top: 0.375rem;
+            padding-bottom: 0.875rem;
+            option{
+                border-radius: $border-radius-sm;
+                padding: 5px .5rem;
+                margin: 2px -.5rem;
+                cursor: pointer;
+                color: $base-text;
+                &:last-child{
+                    margin-bottom: -0.5rem;
+                }
+            }
+        }
+    }
+    &:after{
+        font-family: $nk-dashlite-font;
+        content:$ni-chevron-down;
+        pointer-events: none;
+        position: absolute;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        @if($rtl==false){
+            right: 0;
+        }
+        @if($rtl==true){
+            left: 0;
+        }
+        top: 50%;
+        transform: translateY(-50%);
+        width: add($field-padding-x, + 12px);
+        height: add($field-padding-x, + 12px);
+    }
+}
+
+textarea{
+    &.no-resize{
+        resize: none;
+    }
+    &.form-control{
+        min-height: $textarea-min-height;
+        padding-top: $input-padding-y*1.5;
+    }
+    &.textarea-sm{
+        min-height: $textarea-min-height-sm;
+    }
+    &.textarea-lg{
+        min-height: $textarea-min-height-lg;
+    }
+    &.textarea-auto{
+        min-height: 0;
+    }
+}
+
+// validation
+
+.custom-file-input,.form-control,.input-group{
+    ~ .error, ~ .invalid{
+        color: $field-error-color;
+        font-size: $fx-sz-11;
+        font-style: italic;
+    }
+}
+
+.custom-btn{
+    &-check{
+        position: relative;
+        input{
+            position: absolute;
+            opacity: 0;
+            height: 1px;
+            width: 1px;
+            &:checked ~{
+                label{
+                    color: $white;
+                    border-color: $accent-color;
+                    background-color: $accent-color;
+                }
+            }
+        }
+        label{
+            display: inline-block;
+            border:2px solid $light;
+            background-color: $light;
+            font-weight: $fw-medium;
+            color: $base-text;
+            text-align: center;
+            padding: 0.4375rem 1.125rem;
+            font-size: 0.8125rem;
+            line-height: 1.25rem;
+            border-radius: $border-radius;
+            transition: all .3s;
+            margin-bottom: 0 !important;
+        }
+    }
+    &-sm{
+        label{
+            padding: 0.25rem 1rem;
+            font-size: 0.75rem;
+            line-height: 1.25rem;
+        }
+    }
+    &-round{
+        label{
+            border-radius: 60px;
+        }
+    }
+    &-outline{
+        label{
+            background-color: transparent;
+        }
+    }
+}

@@ -1,0 +1,40 @@
+html{
+    font-size: $fs-base-mob;
+}
+@if($fs-base-mob < $fs-base-tab) {
+    @include media-breakpoint-up(lg){
+        html{
+            font-size: $fs-base-tab;
+        }
+    }    
+}
+@if($fs-base-tab < $fs-base-dsk) {
+    @include media-breakpoint-up(lg){
+        html{
+            font-size: $fs-base-dsk;
+        }
+    }
+}
+ol, ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+a{
+    transition: color .4s, background-color .4s, border .4s, box-shadow .4s;
+    &:focus{
+        outline: none;
+    }
+}
+img{
+    max-width: 100%;
+}
+strong{
+    font-weight: 500;
+}
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, p{
+    &:last-child{
+        margin-bottom: 0;
+    }
+}

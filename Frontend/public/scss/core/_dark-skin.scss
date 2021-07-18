@@ -1,0 +1,1115 @@
+// DARK STYLE 
+$dark-body-bg: $darker; 
+$dark-body-bg-dark: darken($darker, 6%); 
+$dark-body-bg-light: darken($darker, 2%);
+$dark-card-bg: darken($dark, 6%);
+$dark-border-color: lighten($darker, 8%);
+$dark-border-light: $light-800;
+
+// Dark Mode
+body.dark-mode {
+    background: $dark-body-bg !important;
+    color: $base-300;
+    &.ui-shady,&.ui-clean,&.bg-lighter, &.bg-light {
+        background: $dark-body-bg-light !important;
+    }
+}
+.dark-mode {
+    .logo{
+        &-dark{
+            opacity: 0;
+        }
+        &-light{
+            opacity: 1;
+        }
+    }
+
+    h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, 
+    .lead-text, .dropdown-title, pre {
+        color: $white;
+    }
+    .text-base, .text-body, .link-text {
+        color: $base-300 !important;
+    }
+    .text-secondary, .icon[class*="bg-secondary-dim"], .user-avatar[class*="-light"], .icon[class*="bg-light"] {
+        color: $base-400 !important;
+    }
+    .text-dark {
+        color: $white !important;
+    }
+    .text-muted {
+        color: $base-400 !important;
+    }
+    // .text-white {
+    //     color: $light-900 !important;
+    // }
+    .text-light, .user-avatar[class*="-dark"] {
+        color: $light-500 !important;
+    }
+    .text-lighter {
+        color: $light-600 !important;
+    }
+    .text-indigo {
+        color: lighten($indigo, 25%) !important;
+    }
+    .bg-light {
+        background-color: $dark-body-bg-light !important;
+    }
+    .bg-lighter {
+        background-color: lighten($dark-body-bg-light, 2%) !important;
+    }
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: $darker !important;
+    }
+    .bg-white{
+        background-color: $dark-card-bg !important;
+    }
+    .bg-transparent.bg-transparent{
+        background-color: transparent !important;
+    }
+
+    $bg-mix: $dark-card-bg;
+    $bg-colors: 
+    "dark"              $light-100,
+    "blue-dim"          mix($blue, $bg-mix, 15%),
+    "azure-dim"         mix($azure, $bg-mix, 15%),
+    "indigo-dim"        mix($indigo, $bg-mix, 15%),
+    "purple-dim"        mix($purple, $bg-mix, 15%),
+    "pink-dim"          mix($pink, $bg-mix, 15%),
+    "orange-dim"        mix($orange, $bg-mix, 15%),
+    "teal-dim"          mix($teal, $bg-mix, 15%),
+    // for bootstrap
+    "primary-dim"       mix($accent-color, $bg-mix, 15%),
+    "success-dim"       mix($success, $bg-mix, 15%),
+    "info-dim"          mix($info, $bg-mix, 15%),
+    "warning-dim"       mix($warning, $bg-mix, 15%),
+    "danger-dim"        mix($danger, $bg-mix, 15%),
+    "secondary-dim"     mix($secondary, $bg-mix, 20%),
+    "dark-dim"          mix($dark, $bg-mix, 15%),
+    "gray-dim"          mix($gray-500, $bg-mix, 15%),
+    "btc-dim"          mix($brand-color-bitcoin, $bg-mix, 15%),
+    "eth-dim"          mix($brand-color-ethereum, $bg-mix, 15%);
+
+    @each $name, $background in $bg-colors {
+        .bg-#{$name} {
+            background-color: $background !important;
+        }
+    }
+
+    $alert-mix: $dark-card-bg;
+    $alerts-dark:
+    "primary"     $primary                  mix($primary, $alert-mix, 15%),
+    "secondary"   lighten($secondary, 35%)  mix($secondary, $alert-mix, 20%),
+    "success"     $success                  mix($success, $alert-mix, 15%),
+    "warning"     $warning                  mix($warning, $alert-mix, 15%),
+    "info"        $info                     mix($info, $alert-mix, 15%),
+    "danger"      $danger                   mix($danger, $alert-mix, 15%),
+    "gray"        $gray-400                 mix($gray-500, $alert-mix, 15%),
+    "dark"        $dark                     mix($dark, $alert-mix, 15%),
+    "light"       $light-100                mix($light-500, $alert-mix, 15%);
+
+    @each $name, $color, $background in $alerts-dark {
+        .alert-#{$name} {
+            color: $color;
+            background-color: $background;
+            border-color: $background;
+
+            hr {
+                border-top-color: $background;
+            }
+
+            .alert-link {
+                color: darken($color, 10%);
+            }
+        }
+        .alert-fill.alert-#{$name}{
+            color: color-yiq($color);
+            background: $color;
+            .alert-link {
+                color: color-yiq($color);
+            }
+        }
+        .alert-pro.alert-#{$name}{
+            border-color: $color;
+        }
+    }
+
+    $dim-mix: $dark-card-bg;
+    $dim-badge: map-merge(
+        $theme-colors,
+        (
+            "secondary":   lighten($secondary, 35%),
+            "dark":        $light,
+            "light":       $light-400,
+            "lighter":     $light-500
+        )
+    );
+
+    @each $name, $color in $dim-badge {
+        .badge-dim.badge-#{$name} {
+            color: $color;
+            background-color: mix($color, $dim-mix, 15%);
+            border-color: mix($color, $dim-mix, 15%);
+        }
+        .badge-dim.badge-outline-#{$name} {
+            color: $color;
+            background-color: mix($color, $dim-mix, 15%);
+            border-color: mix($color, $dim-mix, 40%);
+        }
+    }
+
+        .badge-outline-secondary, .badge-dot.badge-dark, .badge-dot.badge-secondary {
+        color: $light-400;
+    }
+
+    .badge-outline-dark {
+        color: $light;
+        border-color: $light;
+    }
+    .badge-outline-light {
+        color: $light-400;
+        border-color: $light-700;
+    }
+    .badge-dot.badge-dark, .badge-dot.badge-light {
+        background-color: transparent;
+    }
+    .badge-dot.badge-light {
+        color: $light-500;
+    }
+
+    .badge-light, .code-block .btn {
+        color: $light;
+        background: $light-700;
+        border-color: $light-700;
+    }
+    .badge-dark {
+        color: $dark;
+        background: $light-200;
+        border-color: $light-200;
+    }
+
+    // Buttons 
+    .btn-light {
+        color: $light;
+        background: $light-700;
+        border-color: $light-700;
+        &:not(:disabled):not(.disabled) {
+            &:hover, &:focus, &.focus, &:active, &.active {
+                background: lighten($light-700, 8%);
+                border-color: lighten($light-700, 8%);
+                color: $light;
+            }
+        }
+    }
+    .btn-dark {
+        color: $dark;
+        background: $light-200;
+        border-color: $light-200;
+        &:not(:disabled):not(.disabled) {
+            &:hover, &:focus, &.focus, &:active, &.active {
+                background: $white;
+                border-color: $white;
+                color: $dark;
+            }
+        }
+    }
+    .btn-outline-dark {
+        border-color: $light-200;
+        color: $light-200;
+        &:not(:disabled):not(.disabled):hover {
+            background: $light-200;
+            color: $dark;
+        }
+    }
+    .btn-outline-secondary {
+        border-color: lighten($secondary, 20%);
+        color: lighten($secondary, 20%);
+        &:not(:disabled):not(.disabled):hover {
+            background: lighten($secondary, 20%);
+            color: $white;
+        }
+    }
+    .btn-outline-light {
+        border-color: $light-600;
+        color: $light-400;
+        &:not(:disabled):not(.disabled):hover {
+            background: $light-600;
+            color: $white;
+        }
+    }
+
+    $dim-mix: $dark-card-bg;
+    $dim-btns:
+        "primary"     $primary                  mix($primary, $dim-mix, 18%),
+        "secondary"   lighten($secondary, 45%)  mix($secondary, $dim-mix, 25%),
+        "success"     $success                  mix($success, $dim-mix, 18%),
+        "warning"     $warning                  mix($warning, $dim-mix, 18%),
+        "info"        $info                     mix($info, $dim-mix, 18%),
+        "danger"      $danger                   mix($danger, $dim-mix, 18%),
+        "gray"        $gray-400                 mix($gray-500, $dim-mix, 18%),
+        "dark"        $light-200                mix($light-400, $dim-mix, 18%),
+        "light"       $light-100                mix($light-500, $dim-mix, 18%),
+        "lighter"     $light-400                mix($light-500, $dim-mix, 18%);
+
+    @each $name, $color, $background in $dim-btns {
+        .btn-dim.btn-#{$name} {
+            color: $color;
+            background-color: $background;
+            border-color: transparent;
+            &:not(:disabled):not(.disabled):hover {
+                color: lighten($color, 10%);
+                background-color: lighten($background, 7%);
+                border-color: lighten($background, 7%);
+            }
+        }
+    }
+
+    $dim-outline-btns:
+    "primary"     $primary                       mix($primary, $dim-mix, 18%)            mix($primary, $dim-mix, 35%),
+    "success"     $success                       mix($success, $dim-mix, 18%)            mix($success, $dim-mix, 35%),
+    "warning"     $warning                       mix($warning, $dim-mix, 18%)            mix($warning, $dim-mix, 35%),
+    "info"        $info                          mix($info, $dim-mix, 18%)               mix($info, $dim-mix, 35%),
+    "danger"      $danger                        mix($danger, $dim-mix, 18%)             mix($danger, $dim-mix, 35%),
+    "secondary"   lighten($secondary, 25%)       mix($secondary, $dim-mix, 25%)          mix($secondary, $dim-mix, 70%),
+    "gray"        $gray-400                      mix($gray-500, $dim-mix, 18%)           mix($light-500, $dim-mix, 35%),
+    "dark"        $light-200                     mix($light-400, $dim-mix, 18%)          mix($light-400, $dim-mix, 35%),
+    "light"       $light-500                     mix($light-600, $dim-mix, 18%)          mix($light-500, $dim-mix, 35%);
+
+    @each $name, $color, $background, $border in $dim-outline-btns {
+        .btn-dim.btn-outline-#{$name} {
+            color: $color;
+            background-color: $background;
+            border-color: $border;
+            &:not(:disabled):not(.disabled):hover {
+                color: color-yiq($color);
+                background-color: $color;
+                border-color: $color;
+            }
+        }
+        .btn-white.btn-outline-#{$name}, .btn-trans.btn-outline-#{$name} {
+            &:not(.btn-dim):not(:disabled):not(.disabled):hover {
+                color: $color;
+                background: $background;
+            }
+        }
+    }
+
+    .btn-dim.btn-outline-light:not(:disabled):not(.disabled):hover, 
+    .btn-white.btn-outline-light:not(:disabled):not(.disabled):hover, 
+    .btn-dim.btn-outline-light:not(:disabled):not(.disabled):active,
+    .btn-white.btn-outline-light:not(:disabled):not(.disabled):active,
+    .show > .btn-white.btn-outline-light.dropdown-toggle {
+        background: $light-600;
+        border-color: $light-600;
+        color: $white;
+    }
+
+    .btn-white, .btn-white.btn-dim, .btn-white.btn-outline-light {
+        background: $dark-card-bg;
+    }
+    .btn-outline-light:focus, .btn-outline-light.focus {
+        box-shadow: 0 0 0 $btn-focus-width rgba($white, .07) !important
+    }
+
+
+    .border,.border-bottom, .border-top, .border-left, .border-right,
+    .dropdown-inner + .dropdown-inner,.dropdown-head,.dropdown-foot,
+    .preview-hr,.select2-container--default .select2-selection--single,
+    .ql-picker-options,
+    .select2-container--default .select2-selection--multiple,.select2-dropdown,
+    .select2-container--default .select2-search--dropdown .select2-search__field,
+    .ui-timepicker-standard,.ql-toolbar,.ql-container,.note-editor,.note-toolbar,
+    .tox .tox-menubar,.tox-toolbar-overlord,.tox-tinymce,.tox .tox-toolbar__group:not(:last-of-type),
+    .tox .tox-statusbar,.tox .tox-menu,.tox-toolbar,.tox-editor-header,
+    .tox .tox-toolbar, .tox .tox-toolbar__primary, .tox .tox-toolbar__overflow,
+    .tox .tox-collection--list .tox-collection__group,
+    .note-btn-group .note-btn,.note-statusbar,.nk-code-preview-box,.swal2-footer,
+    .example-border-all > div, .btn-toolbar-sep, .page-link,
+    .table th, .table td, .table-bordered, .table-bordered th, .table-bordered td,.datatable-wrap,.nk-tb-head .nk-tb-col,
+    .list-group-item,.modal-header,.modal-footer,.popover,.popover-header,
+    .tagify__tag > div::before ,.tagify__tag:hover:not([readonly]) div::before,
+    .nk-tb-item:not(:last-child) .nk-tb-col, .nk-activity-item:not(:last-child), 
+    .nk-support-item:not(:last-child), .card-inner-group .card-inner:not(:last-child),
+    .card-aside,.nav-tabs,.divider,.data-item:not(:last-child),.nk-footer,
+    .nav-switch-s2 .nav-link,.accordion-item:last-child .accordion-inner, .user-avatar-multiple .user-avatar {
+        border-color: $dark-border-color !important;
+    }
+
+    .card, .code-block, .alert-pro,.modal-content,.toast,.toastr {
+        box-shadow: 0px 1px 3px 0px rgba($black, 0.4);
+    }
+    .toast-header {
+        color: $base-400;
+    }
+    .toast, .toast-header {
+        border-color: lighten($dark-border-color, 2%);
+        background: lighten($dark-card-bg, 2%);
+    }
+
+    .table-active, .table-active > th, .table-active > td, .table-hover tbody tr:hover, 
+    .code-block .prettyprint,.list-group-item,.example-spacing-pd > div > span,
+    .custom-file-label::after,.ql-picker-options,.data-more:before,
+    .ui-state-hover,.note-editor.note-frame .note-statusbar, 
+    .note-editor.note-airframe .note-statusbar,.swal2-popup, 
+    .select2-container--default .select2-results__option--highlighted[aria-selected],
+    .select2-container--default .select2-results__option[aria-selected=true],
+    .select2-container--default .select2-selection--multiple .select2-selection__choice,
+    .select2-container--default .select2-search--dropdown .select2-search__field,
+    .example-width > div, .example-height > div, .example-border > div, .example-spacing > div{
+        background: $dark-body-bg;
+    }
+    .tox .tox-tbtn:hover,
+    .tox .tox-collection--list .tox-collection__item--active,
+    .tox .tox-mbtn--active,.tox .tox-mbtn:focus:not(:disabled),
+    .tox .tox-mbtn:hover:not(:disabled):not(.tox-mbtn--active),
+    .tox .tox-collection--list .tox-collection__item--enabled {
+        background: darken($dark-body-bg, 4%);
+    }
+    .icon-overlap li {
+        border-color: $dark-card-bg;
+    }
+    .card,.kanban-add-task,.kanban-board-header,.kanban-item {
+        background: $dark-card-bg;
+    }
+    .accordion,.form-clip, .form-text-hint,.card-aside,
+    .code-block, .alert-pro,.modal-content,.toastr,.toggle-content,
+    .nav-switch-s2 .nav-link:hover, .nav-switch-s2 .nav-link:focus,.nav-switch-s2 .nav-link.active,
+    .select2-container--default .select2-selection--single,
+    .select2-container--default .select2-selection--multiple,.select2-dropdown,
+    .custom-file-label,.custom-select,.popover,.search-wrap,.form-control,.form-label-outlined,.input-mail,.page-link,
+    .ui-timepicker-standard,.note-editor,.note-toolbar,
+    .tox .tox-edit-area__iframe,.tox .tox-menubar,.tox-toolbar-overlord,
+    .tox .tox-toolbar, .tox .tox-toolbar__primary, .tox .tox-toolbar__overflow,
+    .tox .tox-statusbar,.tox .tox-menu,
+    .datepicker table tr td.today, .datepicker table tr td.today:hover, 
+    .datepicker table tr td.today.disabled, .datepicker table tr td.today.disabled:hover,
+    .datepicker table tr td.day:hover, .datepicker table tr td.day.focused,
+    .datepicker .datepicker-switch:hover, .datepicker .prev:hover, .datepicker .next:hover, .datepicker tfoot tr th:hover {
+        background: $dark-card-bg !important;
+    }
+
+    .clipboard-success-message {
+        background: rgba($dark-card-bg, .9);
+    }
+
+    .tagify__tag > div::before ,.tagify__tag:hover:not([readonly]) div::before{
+        box-shadow: 0 0 0 1.1em $dark-body-bg inset;
+    }
+    .popover-header{
+        background-color: lighten($dark-card-bg, 3%);
+    }
+    .popover{
+        box-shadow: 0 0 20px -5px rgba($black,.6);
+    }
+    .bs-popover-bottom .popover-header::before, .bs-popover-auto[x-placement^="bottom"] .popover-header::before{
+        border-color: $dark-border-color;
+    }
+
+    .bs-popover-top > .arrow::before, .bs-popover-auto[x-placement^="top"] > .arrow::before{
+        border-top-color: $dark-border-color;
+    }
+    .bs-popover-top > .arrow::after, .bs-popover-auto[x-placement^="top"] > .arrow::after{
+        border-top-color: $dark-card-bg;
+    }
+
+    .bs-popover-bottom > .arrow::before, .bs-popover-auto[x-placement^="bottom"] > .arrow::before{
+        border-bottom-color: $dark-border-color;
+    }
+    .bs-popover-bottom > .arrow::after, .bs-popover-auto[x-placement^="bottom"] > .arrow::after{
+        border-bottom-color: $dark-card-bg;
+    }
+
+    .bs-popover-right > .arrow::before, .bs-popover-auto[x-placement^="right"] > .arrow::before{
+        border-right-color: $dark-border-color;
+    }
+    .bs-popover-right > .arrow::after, .bs-popover-auto[x-placement^="right"] > .arrow::after{
+        border-right-color: $dark-card-bg;
+    }
+
+    .bs-popover-left > .arrow::before, .bs-popover-auto[x-placement^="left"] > .arrow::before{
+        border-left-color: $dark-border-color;
+    }
+    .bs-popover-left > .arrow::after, .bs-popover-auto[x-placement^="left"] > .arrow::after{
+        border-left-color: $dark-card-bg;
+    }
+    .team-info li span:last-child,.team-statistics li span:first-child,.project-progress-percent,
+    .kanban-title-content .title,
+    .card-tools-nav li a:hover, 
+    .card-tools-nav li a.active, 
+    .card-tools-nav li.active a, 
+    .card-amount .amount,
+    .accordion-head .title,.custom-file-label::after,
+    .input-mail,.form-control,.form-control:focus,.form-label,.form-label-outlined,.input-group-text,.table .thead-light th, .table-hover tbody tr:hover, 
+    .close,.close:hover,.user-name,.nk-news-text p,
+    .data-item:hover .icon,
+    .accordion-icon {
+        color: $white !important;
+    }
+    .close {
+        text-shadow: 0 1px 0 $dark-card-bg;
+        &:focus {
+            outline: none !important;
+        }
+    }
+
+    .nk-block-des, .card-title p, .nk-sale-data .sub-title, .link-check li span, .data-value, 
+    .custom-file-label,.custom-select,.form-control-select-multiple .custom-select option,
+    .select2-container--default .select2-selection--single .select2-selection__rendered,
+    .select2-container--default .select2-selection--multiple .select2-selection__rendered,
+    .ui-timepicker-standard a,.note-placeholder,[class*="knob"],.tox .tox-tbtn:hover,
+    .tox .tox-statusbar a, .tox .tox-statusbar__path-item, .tox .tox-statusbar__wordcount,
+    .tox-collection__item-label > *,.nk-quick-nav-icon,.dropzone .dz-message span,
+    .datepicker table tr td.today, .datepicker table tr td.today:hover, 
+    .datepicker table tr td.today.disabled, .datepicker table tr td.today.disabled:hover,
+    .datepicker table tr td.day:hover, .datepicker table tr td.day.focused,
+    .page-link, .alert-pro, .nk-news-text p span, .language-item,
+    .nk-tb-list .tb-lead-sub, .nk-tb-list .tb-amount-sub {
+        color: $base-400 !important;
+    }
+    .tox .tox-collection__item-accessory {
+        color: $base-500;
+    }
+    .nk-menu-link, .link-dark, .nk-menu-main .nk-menu-sub .nk-menu-link, .link-list a{
+        color: $base-400;
+        &:hover{
+            color: $accent-color;
+        }
+    }
+    .nk-menu-badge {
+        color: $light-300;
+        background: lighten($dark-card-bg, 12%);
+    }
+    @if($menu_dark_option==true) {
+        .is-dark .nk-menu-badge {
+            color: $accent-200;
+        }
+    }
+    @if($menu_dark_theme_option==true) {
+        .is-dark .nk-menu-badge {
+            color: $accent-400;
+        }
+    }
+    .ql-picker.ql-expanded .ql-picker-label,
+    .active > .nk-menu-link,.is-theme .nk-menu-link:hover .nk-menu-icon, 
+    .is-theme .nk-menu-item.active > .nk-menu-link .nk-menu-icon, 
+    .is-theme .nk-menu-item.current-menu > .nk-menu-link .nk-menu-icon,
+    .is-theme .nk-menu-sub .nk-menu-link:hover,
+    .is-theme .nk-menu-sub .active > .nk-menu-link,.page-link:hover{
+        color: $accent-color!important;
+    }
+    .nk-menu-hr,.nk-menu-main .nk-menu-sub,.nk-sidebar .nk-menu > li .nk-menu-sub .nk-menu-sub,
+    .user-avatar-group .user-avatar{
+        border-color: $dark-border-color;
+    }
+    .table .thead-light th,.page-item.disabled .page-link,.page-link:hover,.tb-odr-head,.tb-tnx-head,
+    .custom-control-input[disabled] ~ .custom-control-label::before, .custom-control-input:disabled ~ .custom-control-label::before {
+        background-color: lighten($dark-card-bg, 11%) !important;
+    }
+    .progress,.data-head,.custom-control-label::before,.input-group-text,
+    .nk-msg-profile-toggle {
+        background-color: lighten($dark-card-bg, 7%) !important;
+    }
+    .nk-msg-profile-toggle,
+    .custom-control-label::before,.form-control,.input-mail,.custom-file-label,.input-group-text,
+    .custom-select, .swal2-input, .swal2-file, .swal2-textarea,
+    .select2-container--default .select2-selection--single,
+    .select2-container--default .select2-selection--multiple,.select2-dropdown,
+    .note-popover .popover-content .dropdown-style > li[aria-label="pre"], 
+    .note-editor .note-toolbar .dropdown-style > li[aria-label="pre"],
+    .link-bdr-t, .link-check + .link-check, .link-tidy li + li, .link-list + .link-list, 
+    .link-list-opt li + li, .link-list-plain li, .link-list-plain li + li{
+        border-color: lighten($dark-card-bg, 20%) !important;
+    }
+    .custom-switch .custom-control-label::after {
+        background-color: lighten($dark-card-bg, 50%) !important;
+    }
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+        background-color: $white !important;
+    }
+    .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: $accent-color !important;
+        border-color: $accent-color !important;
+    }
+
+    .btn-trigger:before,.btn-trigger.active:hover:before,.nk-quick-nav-icon:before{
+        background-color: $dark-body-bg-dark;
+    }
+
+    .dropdown-menu {
+        background-color: lighten($dark-card-bg, 2%);
+        border-color: lighten($dark-card-bg, 10%);
+        box-shadow: 0 3px 20px 1px rgba($black, 0.4);
+        &-s1 {
+            border-top-color: $accent-color;
+        }
+    }
+
+    .link-list-plain a,.link-list-opt a,.link-check li a {
+        color: $base-300;
+        &:hover {
+            background: lighten($dark-card-bg, 12%);
+        }
+    }
+    
+    .border-transparent{
+        border-color: transparent !important;
+    }
+
+    .note-editor .btn, .ql-picker, .tox .tox-tbtn__select-label, .tox .tox-mbtn__select-label, .lead-text span,
+    .data-list-s2 .data-label, .btn-trigger, .dropdown .btn.btn-icon:not(.btn-light), .list-step li.list-step-done {
+        color: $base-400;
+    }
+    .ql-fill, .ql-stroke.ql-fill, .tox .tox-tbtn svg {
+        fill: $base-400;
+    }
+    .ql-stroke {
+        stroke: $base-400
+    }
+    .team-info li span:first-child,.team-statistics li span:last-child,.project-progress-task,
+    .table, .nk-tb-list, .nk-tb-list .tb-amount span, .nk-tb-list .tb-amount .currency,
+    .tb-tnx-item .tb-tnx-total, .tb-odr-item .tb-odr-total,.user-balance-sub span,
+    .dropdown-menu,.pln,.overline-title, .nk-block-des strong, 
+    .data-item:hover .data-value, .data-item:hover .data-label,
+    .nk-notification-text, .profile-ud-value, .bq-note-meta span > span,
+    .tagify__tag > div, .popover-body,.input-mail::placeholder, .list-apps-title {
+        color: $base-300;
+    }
+    .nk-notification-text span, .is-unread .chat-context .text {
+        color: $base-200;
+    }
+    .nav-tabs .nav-link {
+        color: $base-300;
+        &.active{
+            color: $accent-color;
+        }
+        &:hover{
+            color: $white;
+        }
+    }
+    .link-list-menu a, .list-plain a {
+        color: $base-400;
+        &:hover, &.active{
+            color: $accent-color;
+        }
+    }
+    .nav-switch .nav-link.active, .list-apps a:hover .list-apps-title{
+        color: $white;
+    }
+    .nk-tb-item:not(.nk-tb-head):hover, .nk-tb-item:not(.nk-tb-head).seleted {
+        box-shadow: 0 2px 15px -4px rgba($black, 0.7);
+    }
+    .nk-tb-item:hover .nk-tb-action-hidden, .bq-note-text,
+    .nk-tb-item:not(.nk-tb-head):hover, .nk-tb-item:not(.nk-tb-head).seleted{
+        background: darken($dark-card-bg, 2%);
+    }
+
+    .nk-apps-sidebar .dropdown-menu .lead-text, .list-step li.list-step-current,
+    .nk-tb-list .tb-lead, .nk-tb-list .tb-amount, .nk-support-content .title, .nk-sale-data .amount {
+        color: $white;
+    }
+
+    .nk-support-content .time,.page-item.disabled .page-link, .card-hint, .list-step li {
+        color: $base-500;
+    }
+
+    // global
+    .nk-order-ovwg-data .title .icon,.timeline-item:not(:last-child):before,
+    .timeline-status.is-outline:after{
+        background-color: lighten($dark-card-bg, 10%);
+    }
+
+    .nk-footer{
+        background-color: $darker;
+    }
+
+    .nk-order-ovwg-data .info strong, .user-activity .amount, .invest-data-history .amount,
+    .analytic-data .amount, .traffic-channel-data .amount, .analytics-map-data .amount,
+    .device-status-data .amount, .invest-ov .amount, .profile-balance-amount .number{
+        color: $white;
+    }
+
+    .invest-ov:not(:last-child){
+        border-color: lighten($dark-card-bg, 20%);
+    }
+
+    //Layouts
+    .nk-header .dropdown-menu .lead-text, .nk-sidebar-bar .dropdown-menu .lead-text{
+        color: $white;
+    }
+    .nk-header,.nk-header.is-light:not([class*=bg-]),
+    .nk-sidebar,.nk-sidebar.is-light,.nk-sidebar-head{
+        border-color: $sidebar-border-dark-color !important;
+    }
+    .nk-header,.nk-header.is-light:not([class*=bg-]),
+    .nk-sidebar,.nk-sidebar.is-light,.nk-header.is-theme:not([class*=bg-]){
+        background: $sidebar-bg-dark-color;
+    }
+
+
+    // Apps
+    .nk-chat-aside-user .title,.nk-file-name,.nk-file-name-text a.title,
+    .is-unread .nk-ibx-context-text .heading, .chat-profile-settings .custom-control-sm .custom-control-label,
+    .attach-info,.profile-stats .amount,.is-unread .chat-from .name{
+        color: $white;
+    }
+    .nk-fmg-menu-item .icon, .nk-ibx-menu-item .icon {
+        color: $base-400;
+    }
+
+    .nk-fmg-menu-text,.nk-ibx-label-text,.nk-ibx-menu-text,.attach-item a,.user-contacts li,
+    .nk-ibx-context-text .heading, .chat-option-link:hover .lead-text,.chat-from .name, .user-plan-title{
+        color: $base-300;
+    }
+
+    .nk-file-name-text a.title:hover,.active > .nk-fmg-menu-item .icon, .active .nk-ibx-menu-text, .active .nk-ibx-menu-item .icon{
+        color: $accent-color;
+    }
+
+    .nk-chat,.nk-chat-aside,.nk-chat-profile,.nk-chat-head,.chat-profile-group,
+    .nk-fmg,.nk-fmg-aside,.nk-fmg-body-head,.nk-fmg-switch,
+    .nk-files-view-grid .nk-file, .nk-files-view-group .nk-file,
+    .nk-ibx,.nk-ibx-aside,.nk-ibx-head,.nk-ibx-item,.nk-reply-form,
+    .nk-reply-form-header,.nk-reply-form-tools,.nk-reply-form-field:not(:last-child),
+    .nk-msg,.nk-msg-head,.nk-msg-profile,.attach-files,.attach-foot,
+    .nk-msg-item:not(:last-child),.nk-msg-aside,.nk-msg-nav,
+    .nk-msg-nav .search-wrap,
+    .nk-files-group > .title,.nk-file-share-header,
+    .nk-files-view-list .nk-file > div{
+        border-color: $dark-border-color !important;
+    }
+    .nk-block-subhead, .data-list-s2 .data-head, .nk-profile-toggle, .nk-profile-content, .user-account-links {
+        border-color: $dark-border-light;
+    }
+    .nk-upload-item, .dropzone {
+        border-color: lighten($dark-border-light, 5%) !important;
+    }
+    .data-list-s2 .data-head {
+        background: transparent !important;
+    }
+
+    .chat-sap-meta:before, .chat-sap-meta:after,
+    .active > .nk-fmg-menu-item,.nk-fmg-menu-item:hover,
+    .nk-ibx-status,.nk-ibx-reply-item:not(:last-child):after,
+    .nk-reply-meta-info:before, .nk-reply-meta-info:after{
+        background: $dark-border-color;
+    }
+
+    .nk-chat,.nk-chat-aside,.nk-chat-profile,.nk-chat-head,.chat-msg,.nk-chat-editor, .nk-chat-blank,
+    .nk-fmg,.nk-fmg-aside,.nk-fmg-body-head,
+    .nk-files-view-grid .nk-file, .nk-files-view-group .nk-file,
+    .nk-ibx,.nk-ibx-aside,.nk-ibx-item,.nk-ibx-view,
+    .nk-msg,.nk-msg-head,.nk-msg-profile, .nk-fmg-switch{
+        background: $dark-card-bg;
+    }
+
+    .nk-ibx-status .progress {
+        background: $dark-card-bg !important;
+    }
+    .nk-chat-panel, .chat-item:hover,.chat-item.current,.chat-item:hover .chat-actions, .chat-members .user-card:hover, .chat-members .user-actions, .nk-profile-content,
+    .nk-msg-item.active, .nk-msg-item.current, .channel-list a:hover, .channel-list a.active{
+        background: darken($dark-body-bg, 2%) !important;
+    }
+    .fav-list .user-avatar:after {
+        background: lighten($dark-card-bg, 25%);
+    }
+
+    .nk-ibx-item:not(.no-hover):hover, .nk-ibx-item.active,
+    .nk-ibx-item:hover .ibx-actions-hidden,.nk-ibx-item:hover .ibx-actions,
+    .nk-ibx-label > li:hover, .nk-ibx-contact > li:hover,
+    .nk-ibx-menu li.active,.nk-ibx-menu li:hover,.dot-label:after,.attach-foot,
+    .nk-reply-from,.nk-reply-entry.note,.nk-msg-aside,.nk-msg-nav,
+    .nk-files-view-grid .nk-file,.nk-files-view-group .nk-file,.nk-files-view-list .nk-file > div{
+        background: $dark-body-bg;
+    }
+    .is-unread .nk-ibx-context-text,
+    .nk-upload-info {
+        color: $base-200;
+    }
+    .nk-reply-msg-excerpt, .nk-ibx-context-text,.user-contacts li .icon, .nk-reply-tools .date {
+        color: $base-400;
+    }
+    .is-unread .nk-msg-sender .name {
+        color: $white;
+    }
+    .nk-reply-meta-info, .nk-reply-from {
+        color: darken($base-400, 2%);
+    }
+    .nk-reply-meta-info span, .nk-reply-meta-info strong, .nk-reply-meta-info .who, .channel-list a {
+        color: $base-300;
+    }
+    .nk-reply-meta-info .whom {
+        color: $accent-color;
+    }
+
+    // Full Calendar
+    .fc .fc-toolbar.fc-header-toolbar {
+        .fc-toolbar-chunk{
+          .btn{
+            color: $base-300;
+            border-color: $dark-border-color;
+            &:disabled{
+              color: $base-300;
+              border-color:$dark-border-color;
+            }
+            &:hover, &:focus {
+                color: $white;
+                background: $dark-body-bg;
+                border-color: $dark-border-color;
+            }
+            &:focus {
+                box-shadow: 0 0 0 0.2rem rgba($dark-border-color, 0.5);
+            }
+            &.active {
+                color: $accent-color;
+                border-color: $dark-border-color;
+                background: $dark-body-bg;
+                box-shadow: inset 0 0 4px -1px rgba($dark-border-color, .25);
+            }
+          }
+        }
+    }
+    .fc-day{
+        color: $base-300;
+    }
+    .fc-day-other{
+        color: $base-400;
+    }
+    .fc-list-day,.fc-col-header-cell{
+        color: $white;
+    }
+    .fc .fc-list-empty{
+        background: $dark-body-bg;
+    }
+    .fc-timegrid-event-harness-inset .fc-timegrid-event, .fc-timegrid-event.fc-event-mirror{
+        box-shadow: 0px 0px 0px 1px $darker;
+    }
+
+    $colors: (
+        "primary-dim"     mix($accent-color, $bg-mix, 15%),
+        "success-dim"     mix($success, $bg-mix, 15%),
+        "info-dim"        mix($info, $bg-mix, 15%),
+        "warning-dim"     mix($warning, $bg-mix, 15%),
+        "danger-dim"      mix($danger, $bg-mix, 15%),
+        "secondary-dim"   mix($secondary, $bg-mix, 20%),
+        "dark-dim"        mix($dark, $bg-mix, 15%),
+        "blue-dim"        mix($blue, $bg-mix, 15%),
+        "azure-dim"       mix($azure, $bg-mix, 15%),
+        "indigo-dim"      mix($indigo, $bg-mix, 25%),
+        "purple-dim"      mix($purple, $bg-mix, 15%),
+        "pink-dim"        mix($pink, $bg-mix, 15%),
+        "orange-dim"      mix($orange, $bg-mix, 15%),
+        "teal-dim"        mix($teal, $bg-mix, 15%)
+    );
+
+    @each $name, $color in $colors{
+    a.fc-event-#{$name} {
+        background-color: $color !important;
+        border-color: $color !important;
+    }
+    .modal-header.fc-event-#{$name}{
+        background-color: $color !important;
+        border-color: darken($color,5%) !important;
+    }
+    span.fc-event-#{$name} {
+        .dot{
+            background-color: $color !important;
+        }
+    }
+    .fc-event-#{$name}:not(a) {
+        .fc-list-event-dot{
+            background-color: $color !important;
+            }
+        }
+    }
+
+    // card common
+    .code-block, .card-preview,
+    .card .card-inner + .table .tb-tnx-head, 
+    .card-bordered,.kanban-add-task,.kanban-board-header,.kanban-item,.kanban-board .kanban-drag:empty, //.card, 
+    .accordion-item:not(:last-child) .accordion-head,
+    .accordion-item:not(:last-child) .accordion-inner,
+    .accordion-item:last-child .accordion-inner,
+    .nk-download {
+        border-color: $dark-border-color;
+    }
+    .accordion:not(.accordion-s2):not(.accordion-s3) {
+        border-color: $dark-border-color !important;
+    }
+
+    .card.bg-light .card-header, .card.bg-lighter .card-header {
+        background: rgba($black, .2);
+    }
+    .nk-tb-list.is-separate .nk-tb-item > .nk-tb-col{
+        border-top-color: $dark-border-color;
+        border-bottom-color: $dark-border-color;
+        &:first-child{
+            border-left-color: $dark-border-color;
+        }
+        &:last-child{
+            border-right-color: $dark-border-color;
+        }
+    }
+    .modal-footer.bg-light {
+        background-color: darken($dark-card-bg, 2%) !important;
+    }
+    .kanban-primary{
+        border-top-color: $accent-color;
+    }
+    .kanban-success{
+        border-top-color: $success;
+    }
+    .kanban-info{
+        border-top-color: $info;
+    }
+    .kanban-warning{
+        border-top-color: $warning;
+    }
+    .kanban-danger{
+        border-top-color: $danger;
+    }
+    // BORDERED STYLE on DARK
+    &.ui-bordered{
+        .card,
+        .code-block,
+        .accordion:not(.accordion-s2):not(.accordion-s3),
+        .accordion-item:last-child .accordion-inner,
+        .card .card-inner + .table .tb-tnx-head, 
+        .card-bordered,
+        .nk-download {
+            border-color: $dark-border-color;
+        }
+        .nk-tb-list.is-separate .nk-tb-item > .nk-tb-col{
+            border-top-color: $dark-border-color;
+            border-bottom-color: $dark-border-color;
+            &:first-child{
+                border-left-color: $dark-border-color;
+            }
+            &:last-child{
+                border-right-color: $dark-border-color;
+            }
+        }
+        .nk-files-view-grid .nk-file, .nk-files-view-group .nk-file {
+            border: none !important;
+        }
+    }
+    
+    .nk-order-ovwg-data {
+        &.buy {
+            border-color: mix($success, $dark-card-bg, 60%)
+        }
+        &.sell {
+            border-color: mix($accent-color, $dark-card-bg, 60%)
+        }
+    }
+    .nk-sidebar-overlay {
+        background: rgba($black, .6);
+    }
+    .toggle-overlay, .nk-chat-profile-overlay {
+        background: rgba($dark-body-bg-dark, .75);
+    }
+    .swal2-container.swal2-backdrop-show {
+        background: rgba($black, .85);
+    }
+    .modal-backdrop {
+        opacity: .9;
+        background: rgba($black, .9);
+    }
+
+    // eCommerce
+    .is-light .nk-menu-link:hover, .is-light .active > .nk-menu-link,
+    .nk-menu-link:hover, .active > .nk-menu-link,
+    .is-theme .nk-menu-link:hover, .is-theme .active > .nk-menu-link {
+        background: lighten($sidebar-bg-dark-color,5%);
+    }
+    
+    .nk-menu-sub .nk-menu-link:hover, .active > .nk-menu-sub .nk-menu-link,
+    .nk-header-search .form-control{
+        background-color: transparent !important;
+    }
+
+    .ui-bordered .nk-tb-list.is-separate .nk-tb-item > .nk-tb-col:first-child,
+    .ui-bordered .nk-tb-list.is-separate .nk-tb-item > .nk-tb-col{
+        border-color: $dark-border-color !important;
+    }
+    .is-compact:not(:hover) .nk-menu-heading:not(:first-child):before{
+        background-color: $dark-border-color;
+    }
+    .nk-add-product {
+        background: lighten($dark-card-bg, 4%);
+        box-shadow: -10px 15px 30px 5px rgba($black, .4);
+    }
+
+    .nk-tb-list.is-separate .nk-tb-item > .nk-tb-col,
+    .nk-tb-list.is-separate .nk-tb-item:hover .nk-tb-action-hidden,
+    .nk-download{
+        background-color: $dark-card-bg;
+    }
+    .nk-ecwg .amount, .nk-store-statistics .count, .nk-top-products .title, .nk-top-products .amount,
+    .nk-tb-list .tb-product .title {
+        color: $white;
+    }
+    .nk-ecwg8-legends .title, .nk-ecwg7-legends .title{
+        color: $base-100;
+    }
+
+    //List Box
+    .dual-listbox {
+        .dual-listbox__available,
+        .dual-listbox__selected {
+          border-color:lighten($dark-card-bg, 20%);
+        }
+        .dual-listbox__title {
+          border-left-color:lighten($dark-card-bg, 20%);
+          border-right-color:lighten($dark-card-bg, 20%);
+          border-top-color:lighten($dark-card-bg, 20%);
+        }
+      
+        .dual-listbox__item {
+          border-bottom-color:lighten($dark-card-bg, 20%);
+        }
+    }
+
+    // common
+    .input-group-addon{
+        background-color: lighten($dark-card-bg, 4%);
+        border-color: lighten($dark-card-bg, 20%);
+    }
+    .border-light{
+        border-color: $dark-border-color !important;
+    }
+    div.dt-button-info{
+        background-color: $dark-card-bg;
+    }
+    div.dt-button-info h2{
+        background-color: darken($dark-card-bg,3%);
+    }
+    div.dt-button-info h2{
+        border-color: $dark-border-color;
+    }
+    .dropzone{
+        background: $dark-body-bg;
+    }
+    .image-control{
+        .custom-control-input:checked ~ .custom-control-label{
+            &:before{
+                border-color: lighten($dark-card-bg, 20%);
+            }
+        }
+        .custom-control-label {
+            background-color: $dark;
+        }
+    }
+    .custom-control-pro{
+        .custom-control-label {
+            background-color: $dark-card-bg;
+            border-color: lighten($dark-card-bg, 20%);
+        }
+    }
+    .custom-control {
+        &.color-control{
+            .custom-control-label{
+                &::before{
+                    background: transparent !important;
+                }
+            }
+        }
+    }
+
+    .slick-dots{
+        li{
+            button{
+                background-color: $dark-body-bg;
+            }
+            &.slick-active{
+                button{
+                    background-color: $accent-color;
+                }
+            }
+        }
+    }
+    
+    .slick-next, .slick-prev{
+        color: $white;
+        background: $dark-card-bg;
+        border-color: $dark-border-color;
+        &:hover{
+            color: $white;
+            background: $accent-color;
+            border-color: $accent-color;
+        }
+    }
+    .slick-disabled{
+        .slick-next, .slick-prev{
+            color: $light-300;
+            &:hover{
+                color: $light-300;
+                background: $dark-card-bg;
+                border-color: $dark-border-color;
+            }
+        }
+    }
+
+    // Pricing
+    .pricing-head{
+        border-color: $dark-border-color;
+    }
+    .pricing-amount .amount{
+        color: $white;
+    }
+    
+    // Product
+    .product{
+        &-title a{
+            color: $white;
+        }
+        &-gallery{
+            border-color:$dark-border-color;
+            .slider-nav{
+                .slider-item{
+                    .thumb{
+                        border-color: $dark-border-color;
+                    }
+                    &.slick-current{
+                        .thumb{
+                            border-color:$accent-color;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .invoice-wrap {
+        background-color: $dark-card-bg;
+        border-color: $dark-border-color;
+    }
+    .invoice-bills .table tfoot {
+        border-color: $dark-border-color;
+    }
+    .nk-add-product {
+        background: $dark-body-bg;
+        box-shadow: -10px 15px 30px 5px rgba($black, .4);
+    }
+    .noUi-target { 
+        background: lighten($dark-card-bg, 15%); 
+    }
+    .noUi-handle:before, .noUi-handle:after {
+        background: lighten($dark-border-color, 35%);
+    }
+    .noUi-handle {
+        border-color: lighten($dark-border-color, 35%);
+        background: darken($dark-body-bg, 5%);
+    }
+    .noUi-active {
+        box-shadow: inset 0 0 1px $black, inset 0 1px 7px $black, 0 3px 6px -3px $black;
+    }
+}
+
+@media (max-width: 576px) {
+    .dark-mode {
+        .nk-block-tools-toggle{
+            .toggle-expand-content{
+                background-color: lighten($dark-card-bg, 7%);
+            }
+        }
+    }
+}

@@ -1,0 +1,249 @@
+/// Text
+///////////////////////////
+.overline-title{
+  font-size: $fx-sz-11;
+  line-height: 1.2;
+  letter-spacing: 0.2em;
+  color: $base-light;
+  text-transform: uppercase;
+  font-weight: $fw-bold;
+  font-family:$font-family-base; 
+  .text-light & {
+    color: $base-light;
+  }
+  @if($dark_option==true) {
+    .is-dark &{
+      color: $light-400;
+    }
+  }
+  @if($dark_theme_option==true) {
+    .is-theme &{
+      color: $accent-light;
+    }
+  }
+  &-alt{
+    font-family:$font-family-base;
+    font-weight: $fw-bold;
+    line-height: 1.2;
+    letter-spacing: 0.15em;
+    font-size: $fx-sz-11;
+    color: $base-light;
+    text-transform: uppercase;
+    @if($dark_option==true) {
+      .is-dark &{
+        color: $base-light;
+      }
+    }
+    @if($dark_theme_option==true) {
+      .is-theme &{
+        color: $accent-light;
+      }
+    }
+  }
+  &-sap{
+    position: relative;
+    display: inline-block;
+    margin-bottom: 0;
+    @if($rtl==false){
+      padding-left: .35rem;
+      padding-right: .25rem;
+    }
+    @if($rtl==true){
+      padding-left: .25rem;
+      padding-right: .35rem;
+    }
+    color: $base-300;
+    &:before,&:after{
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 1px;
+      content: '';
+      background: $base-300;
+    }
+    &:before{
+      right: 100%;
+    }
+    &:after{
+      left: 100%;
+    }
+  }
+}
+.caption-text{
+  font-size: $fx-sz-16;
+  font-weight: $fw-normal;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  + .sub-text, + .sub-text-sm{
+    margin-top: 0.5rem;
+    display: block;
+  }
+}
+
+.lead-text{
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: $base-color;
+  display: block;
+  + .sub-text{
+    font-size: $fx-sz-12;
+  }
+  span{
+    color: $base-text;
+    font-weight: 400;
+  }
+  &-lg{
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: $base-color;
+    display: block;
+    @if($dark_theme_option==true) {
+      .is-theme &{
+        color: $white;
+      }
+      .is-theme .is-light &{
+        color: $base-color;
+      }
+    }
+  }
+  @if($dark_option==true) {
+    .is-dark & {
+      color: $light-400;
+      span{
+        color: $light-500;
+      }
+    }
+  }
+  @if($dark_theme_option==true) {
+    .is-theme & {
+      color: $white;
+      span{
+        color: $accent-light;
+      }
+    }
+  }
+  @if($dark_option==true or $dark_theme_option==true) {
+    .is-theme .is-light &, .is-dark .is-light &{
+      color: $base-color;
+      span{
+        color: $base-text;
+      }
+    }
+  }
+}
+.sub-text{
+  display: block;
+  font-size: $fx-sz-13;
+  color: $base-light;
+  span + .dot,.dot + span{
+    @if($rtl==false){
+      margin-left: 0.25rem;
+    }
+    @if($rtl==true){
+      margin-right: 0.25rem;
+    }
+  }
+  &-sm,+ .sub-text{
+    font-size: $fx-sz-12;
+  }
+  &-sm{
+    color: $base-light;
+    .is-theme &{
+      color: $accent-light;
+    }
+    .is-theme .is-light &{
+      color: $base-light;
+    }
+  }
+  .text-ellipsis &{
+    display: inline;
+  }
+  strong{
+    color: $base-text;
+    font-weight: 700;
+    @if($dark_theme_option==true) {
+      .is-theme &{
+        color: $accent-light;
+      }
+      .is-theme .is-light &{
+        color: $base-text;
+      }
+    }
+  }
+  span{
+    white-space: nowrap;
+  }
+  @if($dark_theme_option==true) {
+    .is-theme &{
+      color: $accent-300;
+    }
+    .is-theme .is-light &{
+      color: $base-light;
+    }
+  }
+}
+
+.text-date{
+  span{
+    color: $base-text;
+  }
+}
+h6{
+  .badge{
+    @if($rtl==false){
+      margin-left: 0.5rem;
+    }
+    @if($rtl==true){
+      margin-right: 0.5rem;
+    }
+  }
+}
+.fs-9px{
+  font-size: $fx-sz-9;
+}
+.fs-10px{
+  font-size: $fx-sz-10;
+}
+.fs-11px{
+  font-size: $fx-sz-11;
+}
+.fs-12px{
+  font-size: $fx-sz-12;
+}
+.fs-13px{
+  font-size: $fx-sz-13;
+}
+.fs-14px{
+  font-size: $fx-sz-14;
+}
+.fs-15px{
+  font-size: $fx-sz-15;
+}
+.fs-16px{
+  font-size: $fx-sz-16;
+}
+.fs-17px{
+  font-size: 17px;
+}
+.fs-18px{
+  font-size: 18px;
+}
+.fs-19px{
+  font-size: 19px;
+}
+.fs-20px{
+  font-size: 20px;
+}
+.fs-21px{
+  font-size: 21px;
+}
+.fs-22px{
+  font-size: 22px;
+}
+
+.note-text{
+  font-size: $fx-sz-12;
+  font-style: italic;
+  color: $base-light;
+}

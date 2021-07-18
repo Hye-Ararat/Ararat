@@ -1,0 +1,177 @@
+$invoice-wrap-xy: 1.25rem !default;
+$invoice-wrap-xy-desk: 3rem !default;
+$invoice-margin-bottom: 1.5rem !default;
+
+/// Invoice
+/////////////////////// 
+.invoice {
+    position: relative;
+    &-wrap {
+        padding: $invoice-wrap-xy;
+        border: 1px solid $border-color;
+        border-radius: $border-radius;
+        background: $white
+    }
+    &-action {
+        position: absolute;
+		@if($rtl==false){
+			right: 1.25rem;
+		}
+		@if($rtl==true){
+			left: 1.25rem;
+		}
+        top: 1.25rem;
+    }
+    &-brand {
+        padding-bottom: $invoice-margin-bottom;
+        img {
+            max-height: 60px;
+        }
+    }
+    // Billing Table
+	&-bills {
+		font-size: $fx-sz-12;
+		.table {
+			min-width: 580px;
+			th {
+				color: $accent-color;
+				font-size: $fx-sz-12;
+				text-transform: uppercase;
+				border-top: 0;
+			}
+			th, td {
+				&:last-child {
+					@if($rtl==false){
+						text-align: right;
+					}
+					@if($rtl==true){
+						text-align: left;
+					}
+				}
+			}
+			tfoot {
+				border-top: 1px solid $border-color;
+				td {
+					border-top: 0;
+				    white-space: nowrap;
+				    padding-top: .25rem;
+				    padding-bottom: .25rem;
+				}
+				tr:last-child td:not(:first-child), tr:first-child td:not(:first-child) {
+					font-weight: $fw-medium;
+					padding-top: 1.25rem;
+				    padding-bottom: .25rem;
+				}
+				tr:last-child td:not(:first-child) {
+					border-top: 1px solid $border-color;
+					padding-top: .25rem;
+				    padding-bottom: .25rem;
+				}
+			}
+		}
+	}
+	
+	// Billing Info
+	&-head {
+        padding-bottom: $invoice-margin-bottom;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+    }
+    &-desc {
+    	width: 210px;
+    	padding-top: $invoice-margin-bottom;
+        .title {
+            text-transform: uppercase;
+            color: $accent-color;
+        }
+        ul {
+            li{
+                padding: .25rem 0;
+            }
+            span{
+            	font-size: $fx-sz-13;
+                font-weight: $fw-medium;
+                color: $base-text;
+                &:first-child{
+                    min-width: 90px;
+                    display: inline-block;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    color: $base-light;
+                }
+                &:last-child {
+					@if($rtl==false){
+						padding-left: 0.75rem;
+					}
+					@if($rtl==true){
+						padding-right: 0.75rem;
+					}
+                }
+            }
+        }
+    }
+    &-contact {
+    	.title {
+    		margin-bottom: 1rem;
+    	}
+    	ul {
+    		li {
+                padding:.5rem 0;
+                &:first-child {
+                    padding-top: 0;
+                }
+                &:last-child {
+                    padding-bottom: 0;
+                }
+                line-height: 1.3;
+    		}
+
+    		.icon {
+    			line-height: 1.3;
+    			font-size: 1.1em;
+			    display: inline-block;
+			    vertical-align: top;
+			    margin-top: -2px;
+			    color: $accent-color;
+				@if($rtl==false){
+					margin-right: .5rem;
+                }
+                @if($rtl==true){
+					margin-left: .5rem;
+                }
+			    + span {
+		    	    display: inline-block;
+					vertical-align: top;
+					color: $base-light;
+			    }
+    		}
+    	}
+    }
+
+    &-print {
+        max-width: 940px;
+        margin:2rem auto;   
+        .invoice-wrap {
+            padding: 0;
+            border: none !important;
+        }
+    }
+}
+
+@include media-breakpoint-up(md) {
+	.invoice {
+	    &-wrap {
+	        padding: $invoice-wrap-xy-desk;
+	    }
+	    &-head {
+	    	flex-direction: row;
+	    }
+	    &-desc {
+	    	padding-top: 0;
+	    }
+	    &-bills {
+	    	font-size: $fs-base;
+	    }
+	}
+}

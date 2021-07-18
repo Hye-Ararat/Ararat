@@ -1,0 +1,136 @@
+/// Tables
+///////////////////////////
+.tb-col-hide, .tb-col-xs, .tb-col-mb{
+    display: none !important;
+}
+@each $breakpoint in map-keys($container-max-widths) {
+    $infix: breakpoint-infix($breakpoint, $container-max-widths);
+    .tb-col#{$infix}{
+        @extend .tb-col-hide; 
+    }
+}
+
+@each $breakpoint in map-keys($container-max-widths) {
+    @include media-breakpoint-up($breakpoint) {
+        $infix: breakpoint-infix($breakpoint, $container-max-widths);
+        .tb-col#{$infix}{
+            display: table-cell !important;
+        }
+    }
+}
+@media (min-width: 359px) { 
+    .tb-col-xs{
+        display: table-cell !important;
+    }
+}
+@media (min-width: 414px) { 
+    .tb-col-mb{
+        display: table-cell !important;
+    }
+}
+
+.table-middle td, .tb-row-middle td{
+    vertical-align: middle;
+}
+.tb-col{
+    &-end, &-action{
+        @if($rtl==false){
+            text-align: right;
+        }
+        @if($rtl==true){
+            text-align: left;
+        }
+    }
+    &-middle {
+        vertical-align: middle;
+    }
+    &-action {
+        .link-cross, .link-done{
+            font-size: 1rem;
+            text-align: center;
+            line-height: 28px;
+            height: 24px;
+            width: 24px;
+            display: inline-block;
+            color: $base-light;
+            vertical-align: middle;
+            border-radius: 12px;
+            .icon {
+                @if($rtl==false){
+                    padding-left: 1px;
+                }
+                @if($rtl==true){
+                    padding-right: 1px;
+                }
+            }
+        }
+        .link-cross {
+            &:hover {
+                color: $danger;
+                background: mix($danger, $white, 14%);
+            }
+        }
+        .link-done{
+            &:hover {
+                color: $success;
+                background: mix($success, $white, 14%);
+            }
+        }
+    }
+}
+
+@include media-breakpoint-down(mb){
+    .table-ulogs{
+        th.tb-col-ip {
+            display: none;
+        }
+        tr {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            position: relative;
+            padding: 0.5rem 1.25rem;
+            &:not(:first-child) {
+                border-top: 1px solid $border-color;
+            }
+            td {
+                padding: 0;
+                border: 0;
+                &:first-child, &:last-child{
+                    padding: 0;
+                }
+            }
+            td, th{
+                flex-grow: 1;
+            }
+            td.tb-col-os {
+                width: 100%;
+            }
+            th.tb-col-os {
+                width: 40%;
+                min-width: 142px;
+                flex-grow: 0;
+            }
+            td.tb-col-ip {
+                width: 40%;
+                min-width: 130px;
+                flex-grow: 0;
+            }
+            .tb-col-action {
+                position: absolute;
+                @if($rtl==false){
+                    right: 10px;
+                }
+                @if($rtl==true){
+                    left: 10px;
+                }
+                top: 50%;
+                transform: translateY(-50%);
+                padding: 0;
+            }
+        }
+        thead tr {
+            padding: 0;
+        }
+    }
+}

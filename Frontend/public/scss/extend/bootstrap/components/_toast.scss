@@ -1,0 +1,13 @@
+.toast{
+    .close{
+        display: inline-flex;
+        @if($rtl==false){
+            margin-right: -0.5rem;
+            margin-left: 0.5rem;
+        }
+        @if($rtl==true){
+            margin-left: -0.5rem;
+            margin-right: 0.5rem;
+        }
+    }
+}

@@ -1,0 +1,61 @@
+/// Modals
+////////////////////////////
+.nk-modal{
+    &-title{
+        &:not(:first-child){
+            margin-top: 1.5rem;
+        }
+        &:not(:last-child){
+            margin-bottom: 1.5rem;
+        }
+        &.title {
+            font-size: 1.5rem;
+        }
+    }
+    &-text{
+        &:not(:last-child){
+            margin-bottom: 1.5rem;
+        }
+        .lead {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        .sub-text {
+            font-size: $fx-sz-14;
+        }
+    }
+    &-action {
+        margin-top: 1.5rem;
+        &-sm {
+            margin-top: 1rem;
+        }
+        &-md {
+            margin-top: 2rem;
+        }
+        &-lg {
+            margin-top: 2.25rem;
+        }
+    }
+}
+.modal-body-lg{
+    .tab-content{
+        margin-top: 2rem;
+    }
+}
+
+@include media-breakpoint-up(sm){
+    .nk-modal{
+        &-action {
+            &-md {
+                margin-top: 2.5rem;
+            }
+            &-lg {
+                margin-top: 3.25rem;
+            }
+        }
+    }
+}
+
+[data-toggle="modal"]{
+    cursor: pointer;
+}

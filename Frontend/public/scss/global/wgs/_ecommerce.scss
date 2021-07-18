@@ -1,0 +1,393 @@
+
+.nk-ecwg{
+    .amount{
+        font-size: 2rem;
+        font-weight: $fw-medium;
+        color: $base-color;
+        &-sm{
+            font-size: 1.5rem;
+        }
+        &-xs{
+            font-size: .875rem;
+        }
+        @if($dark_option==true) {
+            .is-dark &{
+                color:$white;
+            }
+        }
+    }
+    .info{
+        font-size: .875rem;
+        @if($dark_option==true) {
+            .is-dark &{
+                color:$accent-300;
+            }
+        }
+    }
+    .sub-title{
+        font-size: .875rem;
+        font-weight: $fw-medium;
+        @if($dark_option==true) {
+            .is-dark &{
+                color:$white;
+            }
+        }
+    }
+    .data{
+        margin-top: 0.5rem;
+        &:not(:last-child){
+            margin-bottom: 2rem;
+        }
+        &-group{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            .data{
+                margin: 0;
+                @if($rtl==false){
+                    padding-right: 20px;
+                }
+                @if($rtl==true){
+                    padding-left: 20px;
+                }
+            }
+        }
+    }
+    &1-ck{
+        height: 110px;
+    }
+    &2-ck{
+        height: 182px;
+    }
+    &3-ck{
+        height: 66px;
+    }
+    &4{
+        display: flex;
+        flex-direction: column;
+        &-ck{
+            height: 180px;
+            width: 180px;
+            @if($rtl==false){
+                margin-right: 1.5rem;
+            }
+            @if($rtl==true){
+                margin-left: 1.5rem;
+            }
+        }
+        &-legends{
+            flex-grow: 1;
+            padding: 1rem 0;
+            li{
+                display: flex;
+                justify-content: space-between;
+                padding: .25rem 0;
+            }
+            .title{
+                display: flex;
+                align-items: center;
+                .dot{
+                    @if($rtl==false){
+                        margin-right: 0.5rem;
+                    }
+                    @if($rtl==true){
+                        margin-left: 0.5rem;
+                    }
+                }
+            }
+        }
+    }
+    &5{
+        &-ck{
+            height: 140px;
+        }
+        .data-group{
+            margin-bottom: 30px;
+        }
+    }
+    &6{
+        &-ck{
+            width: 100px;
+            height: 40px;
+            @if($rtl==false){
+                margin-left: 20px;
+            }
+            @if($rtl==true){
+                margin-right: 20px;
+            }
+        }
+    }
+    &7{
+        &-ck{
+            height: 180px;
+            width: 180px;
+            margin: 0 auto 15px;
+        }
+        &-legends{
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            li{
+                padding: 0.25rem 1rem;
+            }
+            .title{
+                display: flex;
+                align-items: center;
+                color: $base-light;
+                .dot{
+                    @if($rtl==false){
+                        margin-right: 0.5rem;
+                    }
+                    @if($rtl==true){
+                        margin-left: 0.5rem;
+                    }
+                }
+            }
+        }
+    }
+    &8{
+        &-ck{
+            height: 200px;
+        }
+        &-legends{
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            li{
+                padding: 0.25rem 1rem;
+            }
+            .title{
+                display: flex;
+                align-items: center;
+                color: $base-light;
+                .dot{
+                    @if($rtl==false){
+                        margin-right: 0.5rem;
+                    }
+                    @if($rtl==true){
+                        margin-left: 0.5rem;
+                    }
+                }
+            }
+        }
+    }
+}
+@media (max-width:490px){
+    .nk-ecwg{
+        &4{
+            .data-group{
+                flex-wrap: wrap;
+            }
+        }
+        &8{
+            &-ck{
+                height: 140px;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-up(xxl){
+    .nk-ecwg{
+        &4{
+            &-ck{
+                height: 210px;
+                width: 210px;
+                @if($rtl==false){
+                    margin-right: 2.5rem;
+                }
+                @if($rtl==true){
+                    margin-left: 2.5rem;
+                }
+            }
+        }
+    }
+}
+
+.nk-top-products{
+    .item{
+        display: flex;
+        align-items: center;
+        padding: 0.625rem 0;
+        line-height: 1.2;
+    }
+    .thumb{
+        width: 44px;
+        @if($rtl==false){
+            margin-right: 1rem;
+        }
+        @if($rtl==true){
+            margin-left: 1rem;
+        }
+        img{
+            border-radius: 4px;
+        }
+    }
+    .total{
+        @if($rtl==false){
+            margin-left: auto;
+            text-align: right;
+        }
+        @if($rtl==true){
+            margin-right: auto;
+            text-align: left;
+        }
+    }
+    .title,.amount{
+        font-size: 0.9375rem;
+        color: $base-color;
+        margin-bottom: 0.25rem;
+    }
+    .price,.count{
+        font-size: 0.8125rem;
+        color: $base-light;
+        margin-bottom: 1px;
+    }
+}
+
+.nk-store-statistics{
+    .item{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+    }
+    .title{
+        font-size: 0.8125rem;
+        color: $base-light;
+    }
+    .count{
+        font-size: 1.25rem;
+        color: $base-color;
+        font-weight: $fw-bold;
+    }
+    .icon{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        height: 44px;
+        width: 44px;
+        border-radius: 6px;
+    }
+}
+
+.nk-download {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem;
+    border-radius: $border-radius;
+    background: $white;
+    .data {
+        display: flex;
+        flex-grow: 1;
+    }
+    .info{
+        margin-top: .35rem;
+    }
+    .title{
+        font-size: 1rem;
+        line-height: 1.2;
+    }
+    .thumb {
+        flex-shrink: 0;
+        width: 3rem;
+        @if($rtl==false){
+            margin-right: 1rem;
+        }
+        @if($rtl==true){
+            margin-left: 1rem;
+        }
+    }
+    .meta {
+        .version, .release {
+            display: block;
+            line-height: 1.2;
+            padding: 0.25rem 0;
+        }
+    }
+    .title{
+        .badge {
+            @if($rtl==false){
+                margin-left: 1rem;
+            }
+            @if($rtl==true){
+                margin-right: 1rem;
+            }
+        }
+    }
+}
+@include media-breakpoint-up(md) {
+    .nk-download {
+        padding: 1.5rem;
+        .thumb {
+            width: 2.5rem;
+            @if($rtl==false){
+                margin-right: 1.5rem;
+            }
+            @if($rtl==true){
+                margin-left: 1.5rem;
+            }
+        }
+        .data {
+            align-items: center;
+        }
+        .meta {
+            .version, .release {
+                display: inline-block;
+                @if($rtl==false){
+                    padding-right: 1.5rem;
+                }
+                @if($rtl==true){
+                    padding-left: 1.5rem;
+                }
+            }
+        }
+    }
+}
+@media (max-width: 575px){
+    .nk-download {
+        .data{
+            width: 100%;
+            @if($rtl==false){
+                padding-left: 4rem;
+            }
+            @if($rtl==true){
+                padding-right: 4rem;
+            }
+        }
+        .thumb{
+            position: absolute;
+            @if($rtl==false){
+                margin-left: -4rem;
+            }
+            @if($rtl==true){
+                margin-right: -4rem;
+            }
+        }
+        .actions{
+            margin: 0.75rem 0 0;
+            @if($rtl==false){
+                padding-left: 4rem;
+            }
+            @if($rtl==true){
+                padding-right: 4rem;
+            }
+        }
+    }
+}
+
+.nk-add-product{
+    top: $header-height;
+    background-color: $white;
+    width: 400px;
+    height: calc(100vh - #{$header-height});
+    padding: 1.5rem;
+    + .toggle-overlay{
+        z-index: 700;
+    }
+}

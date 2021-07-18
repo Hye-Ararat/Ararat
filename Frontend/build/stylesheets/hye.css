@@ -1,0 +1,69 @@
+/* Universal Elements */
+h1, h2, h3, h4, h5, h6, p {
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+}
+input{
+    background-color: rgb(50, 50, 50) !important;
+    color: #fff !important;
+    border-color: rgb(30, 30, 30) !important;
+}
+body {
+    background-color: rgb(24, 24, 24)
+}
+.btn-blue{
+    padding: 12px 90px;
+    font-size: 12px !important;
+    background-color:  rgba(36, 160, 237, .15) !important;
+    color: #24a0ed !important;
+}
+.btn-blue-lg{
+    padding: 20px 110px !important;
+    font-size: 12px !important;
+    background-color: rgba(36, 160, 237, .15) !important;
+    color: #24a0ed !important;
+}
+/* Scroll Bar */
+::-webkit-scrollbar {
+    width: 10px; 
+    background-color: rgba(0,0,0,0);
+    -webkit-border-radius: 100px;
+  }
+  ::-webkit-scrollbar:hover {
+    background-color: rgba(50, 50, 50, 50.09);
+  }
+   
+  ::-webkit-scrollbar-thumb:vertical {
+    background: rgba(90,90,90,90.5);
+    -webkit-border-radius: 100px;
+    background-clip: padding-box;
+    border: 2px solid rgba(0, 0, 0, 0);
+    min-height: 10px; 
+  }
+  ::-webkit-scrollbar-thumb:vertical:active {
+    background: rgba(90,90,90,90.61); 
+    -webkit-border-radius: 100px;
+  }
+
+::-webkit-scrollbar-thumb {
+    background: #FF0000;
+}
+.scroller::-webkit-scrollbar-thumb {
+    visibility:hidden;
+}
+.scroller:hover::-webkit-scrollbar-thumb {
+    visibility:visible;
+}
+
+
+/* Login Page */
+input.login{
+    width: 20rem;
+    margin: auto;
+    padding: 10px 15px;
+}
+
+/* Dashboard */
+.server-row{
+    border-radius: 10px;
+}

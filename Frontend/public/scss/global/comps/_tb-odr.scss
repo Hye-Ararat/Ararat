@@ -1,0 +1,174 @@
+///////////////////////////////////
+/// Special Table | .tb-odr
+///////////////////////////////////
+.tb-odr {
+    &-item {
+        font-size: $fx-sz-14;
+        td {
+            padding: 1rem .25rem;
+            vertical-align: middle;
+        }
+    }
+    &-id, &-total {
+        display: block;
+        .tb-odr-item & {
+            font-weight: $fw-medium;
+        }
+    }
+    &-id {
+        a {
+            display: block;
+        }
+        span {
+            font-weight: $fw-medium;
+        }
+    }
+    &-total {
+        .tb-odr-item & {
+            color: $base-color;
+            .tb-odr-head & {
+        		color: inherit;
+        	}
+        }
+    }
+    &-date {
+        .tb-odr-item & {
+            color: $base-light;
+            .tb-odr-head & {
+        		color: inherit;
+        	}
+        }
+    }
+    &-info {
+        .tb-odr-item & {
+            @extend .ellipsis;
+        }
+    }
+    &-action {
+    	> div, > .btn {
+    		vertical-align: middle;
+    	}
+        &:last-child {
+            @if($rtl==false){
+                padding-left: 1.25rem;
+                text-align: right;
+            }
+            @if($rtl==true){
+                padding-right: 1.25rem;
+                text-align: left;
+            }
+        }
+    }
+    &-btns {
+    	.btn + .btn {
+            @if($rtl==false){
+                margin-left: .5rem;
+            }
+            @if($rtl==true){
+                margin-right: .5rem;
+            }
+    	}
+    }
+    &-id {
+        min-width: 90px;
+    }
+    &-head {
+        background: $lighter;
+        th {
+        	font-size: $fx-sz-12;
+	        font-weight: $fw-bold;
+	        text-transform: uppercase;
+	        letter-spacing: 0.12em;
+            color: $base-light;
+            padding: 0.625rem .25rem;
+        }
+    }
+}
+
+@media (max-width: 767px){
+    .tb-odr {
+        &-item {
+            display: flex;
+            th, td {
+                flex-grow: 1;
+            }
+        }
+        &-amount {
+            @if($rtl==false){
+                text-align: right;
+            }
+            @if($rtl==true){
+                text-align: left;
+            }
+        }
+    } 
+}
+@media (max-width: 575px){
+    .tb-odr {
+        &-item {
+            font-size: $fx-sz-13;
+        }
+        &-amount {
+            width: 24%;
+        }
+        &-info {
+            width: 44%;
+        }
+        &-action {
+            width: 2rem;
+            min-width: auto;
+            .tb-odr-item & {
+                @if($rtl==false){
+                    padding-left: .5rem;
+                }
+                @if($rtl==true){
+                    padding-right: .5rem;
+                }
+            }
+        }
+    }
+}
+@media (min-width: 768px) {
+    .tb-odr {
+        &-info {
+            min-width: 55%;
+        }
+        &-amount {
+            width: 30%;
+        } 
+        &-total {
+            min-width: 100px;
+        }
+        &-id, &-total {
+            display: inline-block;
+            + span {
+                @if($rtl==false){
+                    padding-left: 1rem;
+                }
+                @if($rtl==true){
+                    padding-right: 1rem;
+                }
+            }
+        }
+        &-btns {
+	    	& + .dropdown, & + .btn {
+                @if($rtl==false){
+                    margin-left: .75rem;
+                }
+                @if($rtl==true){
+                    margin-right: .75rem;
+                }
+	    	}
+	    }
+    }
+}
+@media (min-width: 992px) {
+    .tb-odr {
+        &-id {
+            min-width: 120px;
+        }
+        &-total {
+            min-width: 50%;
+        }
+    }
+}

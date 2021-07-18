@@ -1,0 +1,228 @@
+/// Toggles
+///////////////////////////
+.toggle{
+    &-content{
+        opacity: 0;
+        visibility: hidden;
+        position: absolute;
+        top: calc(100% + 10px);
+        z-index: 9;
+        background: $white;
+        border-radius: $border-radius;
+        box-shadow: $box-shadow;
+        transform: translateY(10px);
+        &-right{
+            @if($rtl==false){
+                left: auto;
+                right: 0;
+            }
+            @if($rtl==true){
+                right: auto;
+                left: 0;
+            }
+        }
+        &-bottom{
+            top: auto;
+            bottom: 0;
+        }
+        &.content-active{
+            transition: all .2s ease;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    }
+    &-slide{
+        position: fixed;
+        top: 0;
+        z-index: 999;
+        min-width: 260px;
+        max-width: calc(100% - 40px);
+        transition: transform 650ms ease,;
+        &-left{
+            @if($rtl==false){
+                left: 0;
+                transform: translateX(-100%);
+            }
+            @if($rtl==true){
+                right: 0;
+                transform: translateX(100%);
+            }
+        }
+        &-right{
+            @if($rtl==false){
+                right: 0;
+                transform: translateX(100%);
+            }
+            @if($rtl==true){
+                left: 0;
+                transform: translateX(-100%);
+            }
+        }
+        &.content-active{
+            transform: translate(0) !important;
+        }
+    }
+    &-overlay{
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: rgba($dark,.2);
+        z-index: 900;
+        animation: overlay-fade-in .4s ease 1;
+    }
+}
+
+.toggle-expand{
+    &-content{
+        display: none;
+        &.expanded{
+            display: block;
+        } 
+    }
+}
+
+.inactive-text{
+    .toggle-expand &, .toggle-opt & {
+        display: block;
+    }
+    .toggle-expand.active > &, .toggle-opt.active > &{
+        display: none;
+    }
+}
+.active-text{
+    .toggle-expand &, .toggle-opt & {
+        display: none;
+    }
+    .toggle-expand.active > &, .toggle-opt.active > &{
+        display: block;
+    }
+}
+
+body.toggle-shown{
+    overflow: hidden;
+}
+
+
+
+// Toggle For Page Tools
+@include media-breakpoint-up(sm){
+    .nk-block-tools-toggle{
+        .toggle-expand{
+            display: none;
+            &-content{
+                display: block !important;
+            }
+        }
+    }
+}
+@include media-breakpoint-down(mb){
+    .nk-block-tools-toggle{
+        .toggle-expand-content{
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 100%;
+            z-index: 99;
+            width: 100vw;
+            padding: 0 $card-stretch-gap-x !important;
+            background: $white;
+            margin-left: - $card-stretch-gap-x;
+            margin-right: - $card-stretch-gap-x;
+            box-shadow: 0 20px 35px rgba(#000,.2);
+        }
+        .nk-block-tools{
+            padding-top: 20px;
+            padding-bottom: 20px;
+            &-opt{
+                @if($rtl==false){
+                    margin-left: auto;
+                }
+                @if($rtl==true){
+                    margin-right: auto;
+                }
+            }
+        }
+    }
+}
+
+// Toggle For Page card
+
+@include media-breakpoint-down(mb){
+    .card-tools-toggle{
+        .card-title-group{
+            position: static;
+        }
+        .toggle-wrap{
+            .toggle-content{
+                padding: 1.25rem 1rem;
+                transform: translate(0);
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+            }
+            .toggle-close{
+                @if($rtl==false){
+                    margin-right: auto;
+                }
+                @if($rtl==true){
+                    margin-left: auto;
+                }
+                .btn-trigger{
+                    &:before{
+                        opacity: 0;
+                    }
+                    &:hover{
+                        &:before{
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+@include media-breakpoint-up(sm){
+    .card-tools-toggle{
+        z-index: 9;
+        .toggle-wrap{
+            .toggle{
+                display: none;
+                &-content{
+                    z-index: 9;
+                    opacity: 1;
+                    visibility: visible;
+                    position: static;
+                    background: transparent;
+                    box-shadow: none;
+                    transform: translate(0);
+                }
+                &-close{
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
+@each $breakpoint in map-keys($container-max-widths) {
+    @include media-breakpoint-up($breakpoint) {
+        $infix: breakpoint-infix($breakpoint, $container-max-widths);
+        .toggle-break#{$infix}{
+            transition: none;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) !important;
+            position: static;
+            background:transparent;
+            box-shadow: none;
+            z-index: 1 !important;
+            &.collapse{
+                display: block;
+            }
+        }
+    }
+}

@@ -1,0 +1,107 @@
+// Container
+$select2-color:                 $base-text !default;
+$select2-placeholder-color:     $base-light !default;
+$select2-bg-color:              $white !default;
+
+$select2-dropdown-item-active:  $light !default;
+$select2-dropdown-item-disabled:rgba($base-light,.7) !default;
+
+$select2-border-width:          1px !default;
+$select2-border-color:          $input-border-color !default;
+$select2-focus-border-color:    $input-focus-border-color !default;
+$select2-open-border-color:     darken($input-border-color, 12%) !default;
+$select2-box-shadow:            none !default;
+$select2-focus-box-shadow:      $input-focus-box-shadow !default;
+$select2-transition:            all .3s !default;
+$select2-border-radius:         $border-radius !default;
+
+$select2-font-family:           $base-font-family !default;
+$select2-font-weight:           $input-font-weight !default;
+
+$select2-padding-x:             $input-padding-x !default;
+$select2-padding-y:             $input-padding-y !default;
+$select2-font-size:             $input-font-size !default;
+$select2-line-height:           $input-line-height !default;
+$select2-input-height:          $input-height !default;
+
+$select2-padding-x-sm:          $input-padding-x-sm !default;
+$select2-padding-y-sm:          $input-padding-y-sm !default;
+$select2-font-size-sm:          $input-font-size-sm !default;
+$select2-line-height-sm:        $input-line-height-sm !default;
+$select2-input-height-sm:       $input-height-sm !default;
+
+$select2-padding-x-lg:          $input-padding-x-lg !default;
+$select2-padding-y-lg:          $input-padding-y-lg !default;
+$select2-font-size-lg:          $input-font-size-lg !default;
+$select2-line-height-lg:        $input-line-height-lg !default;
+$select2-input-height-lg:       $input-height-lg !default;
+
+$select2-padding-x-xl:          $input-padding-x-xl !default;
+$select2-padding-y-xl:          $input-padding-y-xl !default;
+$select2-font-size-xl:          $input-font-size-xl !default;
+$select2-line-height-xl:        $input-line-height-xl !default;
+$select2-input-height-xl:       $input-height-xl !default;
+
+$select2-arrow-font-family:     $nk-dashlite-font !default;
+$select2-arrow-down:            $ni-chevron-down !default;
+$select2-arrow-up:              $ni-chevron-up !default;
+
+
+/** Select2 */
+.select2{
+  width: 100% !important;
+  display: inline-block;
+}
+.select2-container {
+  box-sizing: border-box;
+
+  margin: 0;
+  position: relative;
+  vertical-align: middle;
+  @import "single";
+  @import "multiple";
+}
+
+@import "dropdown";
+
+.select2-close-mask {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: block;
+  position: fixed;
+  @if($rtl==false){
+    left: 0;
+  }
+  @if($rtl==true){
+    right: 0;
+  }
+  top: 0;
+  min-height: 100%;
+  min-width: 100%;
+  height: auto;
+  width: auto;
+  opacity: 0;
+  z-index: 99;
+
+  // styles required for IE to work
+
+  background-color: #fff;
+  filter: alpha(opacity=0);
+}
+
+.select2-hidden-accessible {
+  border: 0 !important;
+  clip: rect(0 0 0 0) !important;
+  -webkit-clip-path: inset(50%) !important;
+  clip-path: inset(50%) !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  width: 1px !important;
+  white-space: nowrap !important;
+}
+
+@import "theme/default/layout";
+// @import "theme/classic/layout";

@@ -1,0 +1,155 @@
+.card{
+    .table{
+        margin-bottom: 0;
+        tr:first-child{
+            th,td{
+                border-top: none;
+            }
+        }
+        tr {
+            &:last-child {
+                td:first-child {
+                    border-bottom-left-radius: $border-radius;
+                }
+                td:last-child {
+                    border-bottom-right-radius: $border-radius;
+                }
+            }
+            &:first-child {
+                th:first-child {
+                    border-top-left-radius: $border-radius;
+                }
+                th:last-child {
+                    border-top-right-radius: $border-radius;
+                }
+            }
+        }
+    }
+    + .lead-text{
+        margin-top: 2rem;
+    }
+    .lead-text + &{
+        margin-top: 1rem;
+    }
+    &-custom-s1{
+        .card-inner-group{
+            .card-inner{
+                border-bottom: 1px solid $card-bordered-color;
+            }
+        }
+    }
+}
+@include media-breakpoint-down(md){
+    .card{
+        &-custom-s1{
+            .card-inner-lg{
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+    }
+}
+@include media-breakpoint-up(lg){
+    .card{
+        &-custom-s1{
+            .card-inner-group{
+                @if($rtl==false){
+                    border-right: 1px solid $card-bordered-color;
+                }
+                @if($rtl==true){
+                    border-left: 1px solid $card-bordered-color;
+                }
+                .card-inner{
+                    &:last-child{
+                        border-bottom: none;
+                    }
+                }
+            }
+        }
+    }
+}
+@include media-breakpoint-up(sm){
+    .card-search {
+        .card-body {
+            padding: 1.5rem;
+        }
+    }
+}
+
+
+// Card Aside
+.card-aside{
+    width: 300px;
+    background-color: $white;
+    min-height: 100vh;
+    flex-shrink: 0;
+    &-left{
+        order: -1;
+        @if($rtl==false){
+            border-right: 1px solid $border-light;
+        }
+        @if($rtl==true){
+            border-left: 1px solid $border-light;
+        }
+    }
+    &-right{
+        order:100;
+        @if($rtl==false){
+            border-left: 1px solid $border-light;
+        }
+        @if($rtl==true){
+            border-right: 1px solid $border-light;
+        }
+    }
+    &-wrap{
+        display: flex;
+        .card-inner,.card-content{
+            flex-grow:1;
+        }
+    }
+}
+
+@include media-breakpoint-down(sm){
+    .toggle-break-md.card-aside{
+        .card-inner-group{
+            max-height: 100vh;
+        }
+    }
+}
+
+@include media-breakpoint-down(md){
+    .toggle-break-lg.card-aside{
+        .card-inner-group{
+            max-height: 100vh;
+        }
+    }
+}
+
+@include media-breakpoint-down(lg){
+    .toggle-break-xl.card-aside{
+        .card-inner-group{
+            max-height: 100vh;
+        }
+    }
+}
+
+@include media-breakpoint-down(xl){
+    .toggle-break-xxl.card-aside{
+        .card-inner-group{
+            max-height: 100vh;
+        }
+    }
+}
+
+
+@include media-breakpoint-up(lg){
+    .card-aside{
+        position: static;
+        display: block;
+    }
+}
+@include media-breakpoint-up(xxl){
+    .card-aside{
+        width: 380px;
+    }
+}

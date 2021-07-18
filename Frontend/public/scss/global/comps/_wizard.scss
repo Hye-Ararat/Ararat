@@ -1,0 +1,103 @@
+.steps{
+    ul{
+        display: flex;
+        li{
+            flex-grow: 1;
+        }
+    }
+    .current-info{
+        display: none;
+    }
+}
+
+.actions{
+    ul{
+        display: flex;
+        margin: -10px;
+        padding-top: 20px;
+        li{
+            &:first-child{
+                order: 1;
+            }
+            padding:10px;
+            a{
+                display: inline-block;
+                position: relative;
+                color: #fff;
+                font-weight: 500;
+                transition: all .4s ease;
+                border-color: $accent-color;
+                background: $accent-color;
+                @include button-size($btn-padding-y, $btn-padding-x, $btn-font-size, $btn-line-height, $btn-border-radius);
+            }
+            &.disabled{
+                display: none;
+            }
+        }
+    }
+}
+
+.nk-wizard{
+    &-head{
+        display: none;
+    }
+    &-simple{
+        .steps{
+            margin-bottom: 20px;
+            ul{
+                li{
+                    position: relative;
+                    padding-bottom: 5px;
+                    h5{
+                        border: none;
+                        padding:0 0 6px 0;
+                        letter-spacing: 0.02em;
+                        font-size: 13px;
+                        text-transform: uppercase;
+                        font-weight: 500;
+                        color: $base-light;
+                    }
+                    .number{
+                        font-size: 13px;
+                        color: $base-light;
+                        font-weight: 700;
+                    }
+                    &:after{
+                        position: absolute;
+                        height: 2px;
+                        width: 0;
+                        @if($rtl==false){
+                            left: 0;
+                        }
+                        @if($rtl==true){
+                            right: 0;
+                        }
+                        bottom: 0;
+                        background: $accent-color;
+                        content: '';
+                        transition: all .4s;
+                    }
+                    &.done,&.current{
+                        &:after{
+                            width: 100%;
+                        }
+                        h5,.number{
+                            color: $accent-color;
+                        }
+                    }
+                    &.current ~ .done{
+                        &:after{
+                             width: 0;
+                        }
+                        h5,.number{
+                            color: $base-light;
+                        }
+                    }
+                }
+            }
+            .current-info{
+                display: none;
+            }
+        }
+    }
+}

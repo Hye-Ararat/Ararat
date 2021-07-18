@@ -1,0 +1,221 @@
+/// Icons
+///////////////////////////
+.icon{
+    &-light{
+        color: $white;
+    }
+    &-dark{
+        color: $base-color;
+    }
+    &-text{
+        display: flex;
+        align-items: center;
+        font-size: $fx-sz-13;
+        .icon{
+            font-size: 1.5em;
+            width: 1.75rem;
+        }
+    }
+    &-image{
+        width: 70px;
+        + h6{
+            margin-top: 1rem;
+        }
+    }
+    &-circle{
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        background: $primary;
+        color: $white;
+        font-size: 18px;
+        height: 36px;
+        width: 36px;
+        &-sm,&.sm{
+            height: 20px;
+            width: 20px;
+            font-size: 12px;
+        }
+        &-md,&.md{
+            height: 28px;
+            width: 28px;
+            font-size: 14px;
+        }
+        &-lg,&.lg{
+            height: 44px;
+            width: 44px;
+            font-size: 24px;
+        }
+        &-xxl,&.xxl{
+            height: 80px;
+            width: 80px;
+            font-size: 40px;
+        }
+    }
+    &-status{
+        position: relative;
+        display: inline-flex;
+        &:after{
+            position: absolute;
+            border-radius: 50%;
+            @if($rtl==false){
+                right: 0;
+            }
+            @if($rtl==true){
+                left: 0;
+            }
+            top: 1px;
+            height: 10px;
+            width: 10px;
+            border: 2px solid $white;
+            content: '';
+        }
+        &-info{
+            &:after{
+                background: $info;
+            }
+        }
+        &-danger{
+            &:after{
+                background: $danger;
+            }
+        }
+        &-success{
+            &:after{
+                background: $success;
+            }
+        }
+        &-warning{
+            &:after{
+                background: $warning;
+            }
+        }
+        &-on{
+            &:after{
+                background: $success;
+            }
+        }
+        &-off{
+            &:after{
+                background: $base-light;
+            }
+        }
+        &-na {
+            &:after {
+                display: none;
+            }
+        }
+    }
+    &-overlap{
+        display: inline-flex;
+        align-items: center;
+        flex-direction: row-reverse;
+        flex-shrink: 0;
+        li{
+            border-radius: 50%;
+            border: 2px solid #fff;
+            + li{
+                @if($rtl==false){
+                    margin-right: -14px;
+                }
+                @if($rtl==true){
+                    margin-left: -14px;
+                }
+            }
+        }
+        
+        &-alt{
+            display: inline-flex;
+            align-items: flex-end;
+            flex-shrink: 0;
+            li{
+                border-radius: 50%;
+                + li{
+                    @if($rtl==false){
+                        margin-left: -16px;
+                    }
+                    @if($rtl==true){
+                        margin-right: -16px;
+                    }
+                    margin-bottom: -10px;
+                }
+            }
+        }
+    }
+}
+
+$icon-adj-bg: (
+    "btc"           $brand-color-bitcoin,
+    "facebook"      $brand-color-facebook,
+    "google"        $brand-color-google,
+    "btc-dim"       mix($brand-color-bitcoin, #fff, 13%),
+    "eth-dim"       mix($brand-color-ethereum, #fff, 13%),
+    
+    "white"         $white
+);
+
+@each $name, $color in $icon-adj-bg{
+    .icon-circle[class*="#{$name}"] {
+        background: $color;
+    }
+}
+
+$icon-adj-colors: (
+    "blue-dim":        $blue,
+    "azure-dim":       $azure,
+    "indigo-dim":      $indigo,
+    "purple-dim":      $purple,
+    "pink-dim":        $pink,
+    "orange-dim":      $orange,
+    "teal-dim":        $teal,
+    "primary-dim":     $accent-color,
+    "secondary-dim":   $base-color,
+    "success-dim":     $success,
+    "info-dim":        $info,
+    "warning-dim":     $warning,
+    "danger-dim":      $danger,
+    'light':           $base-text,
+    'lighter':         $base-light,
+    "dark-dim":      #dde2ea,
+    "gray-dim":      #e9f0f9,
+    "facebook-dim":    $brand-color-facebook,
+    "google-dim":      $brand-color-google,
+    "btc-dim":         $brand-color-bitcoin,
+    "eth-dim":         $brand-color-ethereum,
+    
+    'white':           $base-text,
+);
+
+@each $name, $color in $icon-adj-colors{
+    .icon[class*="bg-#{$name}"] {
+        color: $color;
+    }
+}
+
+
+// /// Icon avatar
+// /////////////////////// 
+.icon-avatar {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: inline-block;
+    text-align: center;
+    line-height: 1.5rem;
+    border-radius: 50%;
+    background: $accent-200;
+    color: $accent-500;
+    @if($rtl==false){
+        margin-right: 0.5rem;
+    }
+    @if($rtl==true){
+        margin-left: 0.5rem;
+    }
+    font-size: $fx-sz-12;
+    &-md {
+        width: 2rem;
+        height: 2rem;
+        line-height: 2rem;
+        font-size: $fx-sz-14;
+    }
+}

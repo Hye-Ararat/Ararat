@@ -1,0 +1,308 @@
+/// TABLE
+/////////////////////////////////////
+.nk-tb{
+    &-list{
+        display: table;
+        width: 100%;
+        font-size: $fx-sz-13;
+        color: $base-light;
+        &.is-alt {
+            color: $base-text;
+        }
+        .list-status, .tb-status {
+            font-size: $fx-sz-12;
+            font-weight: $fw-medium;
+        }
+        .tb-lead, .tb-amount {
+            font-weight: $fw-medium;
+            color: $base-color;
+            display: block;
+            line-height: 1.4;
+            &-sub {
+                color: $base-text;
+                display: block;
+                line-height: 1.4;
+            }
+        }
+        .tb-sub, .tb-amount-sm {
+            font-size: .9em;
+        }
+        .tb-amount {
+            span, .currency {
+                color: $base-text;
+                font-weight: $fw-normal;
+            }
+        }
+        .user-info .tb-lead + span, .tb-lead + .tb-date {
+            font-size: $fx-sz-11;
+        }
+        .tb-country{
+            display: flex;
+            align-items: center;
+            .name{
+                color: $base-color;
+            }
+            .flag{
+                height: 16px;
+                border-radius: $border-radius-sm;
+                + .name{
+                    @if($rtl==false){
+                        margin-left: 0.6875rem;
+                    }
+                    @if($rtl==true){
+                        margin-right: 0.6875rem;
+                    }
+                }
+            }
+        }
+        .tb-product{
+            display: flex;
+            align-items: center;
+            .thumb{
+                width: 48px;
+                border-radius: $border-radius;
+                @if($rtl==false){
+                    margin-right: 1rem;
+                }
+                @if($rtl==true){
+                    margin-left: 1rem;
+                }
+            }
+            .title{
+                font-weight: $fw-bold;
+                font-size: .875rem;
+                color: $base-color;
+            }
+        }
+        .tb-asterisk{
+            font-size: 1.125rem;
+            line-height: 1;
+            vertical-align: middle;
+            a{
+                color:$accent-color;
+            }
+        }
+    }
+    &-item{
+        transition: background-color .3s, box-shadow .3s;
+        display: table-row;
+        &:not(.nk-tb-head):hover, &:not(.nk-tb-head).seleted {
+            background: lighten($lighter, 1%);
+            box-shadow: 0 2px 15px -4px rgba($accent-color, 0.4);
+        }
+    }
+    &-col{
+        position: relative;
+        display: table-cell;
+        vertical-align: middle;
+        padding: 1rem .5rem;
+        &:first-child{
+            @if($rtl==false){
+                padding-left: 1.25rem;
+            }
+            @if($rtl==true){
+                padding-right: 1.25rem;
+            }
+        }
+        &:last-child{
+            @if($rtl==false){
+                padding-right: 1.25rem;
+            }
+            @if($rtl==true){
+                padding-left: 1.25rem;
+            }
+        }
+        &-tools{
+            max-width: 1.25rem + .5rem + 2rem;
+        }
+        &-check{
+            width: 3rem;
+            .custom-control{
+                vertical-align: middle;
+            }
+        }
+        .nk-tb-item:not(:last-child) &{
+            border-bottom: 1px solid rgba($border-color, .9);
+        }
+        .nk-tb-head &{
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            color: $base-light;
+            font-size: .9em;
+            border-bottom: 1px solid rgba($border-color, .9);
+        }
+        &-action {
+            @if($rtl==false){
+                text-align: right;
+            }
+            @if($rtl==true){
+                text-align: left;
+            }
+            > .dropdown:last-child {
+                @if($rtl==false){
+                    right: -.5rem;
+                }
+                @if($rtl==true){
+                    left: -.5rem;
+                }
+            }
+        }
+        &-nosort{
+            &:before,&:after{
+                display: none !important;
+            }
+        }
+    }
+    &-actions{
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        position: relative;
+        .nk-tb-ulist &, .nk-tb-actions-adj &{
+            @if($rtl==false){
+                right: -0.5rem;
+            }
+            @if($rtl==true){
+                left: -0.5rem;
+            }
+        }
+        &.visible1{
+            width: 1rem;
+        }
+    }
+    &-action{
+        &-hidden{
+            opacity: 0;
+            transition: .3s ease;
+            .nk-tb-item:hover &{
+                opacity: 1;
+                background: lighten($lighter, 1%);
+            }
+        }
+    }
+    &-list{
+        .nk-tb-head {
+            .btn-trigger .icon{
+                font-size: 1.5em;
+            }
+        }
+        &.is-separate{
+            margin-top: -8px;
+            border-collapse:separate;
+            border-spacing: 0 8px;
+            .nk-tb-item{
+                > .nk-tb-col{
+                    background: $white;
+                    border: none;
+                    box-shadow: 0px 1px 3px 0px rgba($base-color, 0.05);
+                    &:first-child{
+                        @if($rtl==false){
+                            border-radius: 4px 0 0 4px;
+                        }
+                        @if($rtl==true){
+                            border-radius: 0 4px 4px 0;
+                        }
+                    }
+                    &:last-child{
+                        @if($rtl==false){
+                            border-radius: 0 4px 4px 0;
+                        }
+                        @if($rtl==true){
+                            border-radius: 4px 0 0 4px;
+                        }
+                    }
+                }
+                &:hover .nk-tb-action-hidden{
+                    background: $white;
+                }
+            }
+            .nk-tb-head .nk-tb-col{
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-up(sm){
+    .nk-tb{
+        &-col{
+            &-check{
+                width: 3.25rem;
+            }
+            .nk-tb-item &{
+                &:first-child{
+                    @if($rtl==false){
+                        padding-left: 1.5rem;
+                    }
+                    @if($rtl==true){
+                        padding-right: 1.5rem;
+                    }
+                }
+                &:last-child{
+                    @if($rtl==false){
+                        padding-right: 1.5rem;
+                    }
+                    @if($rtl==true){
+                        padding-left: 1.5rem;
+                    }
+                }
+            }
+        }
+    }
+}
+@include media-breakpoint-up(xxl){
+    .nk-tb{
+        &-list{
+            font-size: $fx-sz-14;
+            .list-status, .tb-status {
+                font-size: $fx-sz-13;
+            }
+            .user-info .tb-lead + span, .tb-lead + .tb-date {
+                font-size: $fx-sz-12;
+            }
+        }
+    }
+}
+
+///////////////////////////////////
+/// Table Loose - Loose
+///////////////////////////////////
+.is-loose{
+    .nk-tb-item:not(.nk-tb-head){
+        .nk-tb {
+            &-col {
+                padding-top: 1.125rem;
+                padding-bottom: 1.125rem;
+            }
+        }
+    }
+}
+
+///////////////////////////////////
+/// Table Loose - Medium
+///////////////////////////////////
+.is-medium{
+    .nk-tb-item:not(.nk-tb-head){
+        .nk-tb {
+            &-col {
+                padding-top: .75rem;
+                padding-bottom: .75rem;
+            }
+        }
+    }
+}
+
+///////////////////////////////////
+/// Table Compact - minimal
+///////////////////////////////////
+.is-compact{
+    .nk-tb-item:not(.nk-tb-head){
+        .nk-tb {
+            &-col {
+                padding-top: .5rem;
+                padding-bottom: .5rem;
+            }
+        }
+    }
+}

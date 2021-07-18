@@ -1,0 +1,75 @@
+///////////////////////////////////////////////////
+///        INCLUDED THIRD-PARTY VENDORS         ///
+///////////////////////////////////////////////////
+
+// Include NioIcon 
+@import "nioicon/nioicon";
+
+//FontAwesome Icons
+// $fa-font-path: "../fonts";
+// @import "fontawesome/fontawesome.scss";
+// @import "fontawesome/brands.scss";
+// @import "fontawesome/regular.scss";
+// @import "fontawesome/solid.scss";
+
+//Themify Icons
+// $ti-font-path : "../fonts";
+// @import "themify-icons/themify-icons";
+
+//Bootstrap Icons
+// $bi-font-path : "../fonts";
+// @import "bootstrap-icons/bootstrap-icons";
+
+// Include Prettify 
+@import "prettify";
+
+// Include Select2 
+@import "select2/core.scss";
+
+// Include Simplebar
+@import "simplebar";
+.simplebar-scroll-content {
+	@extend .simplebar-content-wrapper;
+}
+
+// Include Slick
+@import "slick/slick";
+
+// Include datepicker
+@import "datepicker/bootstrap-datepicker";
+
+// Include time
+@import "timepicker/jquery.timepicker";
+
+// Include dropzone
+@import "dropzone/dropzone";
+
+// Include nouislider
+@import "nouislider/nouislider";
+
+// Include toastr
+@import "toastr/toastr";
+
+// Include sweetalert2
+@import "sweetalert2/sweetalert2";
+
+// Include DataTable
+@import "datatable/datatable";
+
+// Include JQVmap
+@import "jqvmap";
+
+// Include tagify
+@import "tagify";
+
+// Include fullcalendar
+@import "fullcalendar";
+
+// Include jkanban
+@import "jkanban";
+
+// Include Dual ListBox
+@import "dual-listbox/dual-listbox";
+
+// Include Magnific Popup
+@import "magnific-popup/main";

@@ -1,0 +1,19 @@
+.alert{
+    &-cta{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    &-actions{
+        display: inline-flex;
+        align-items: center;
+        a+a{
+            @if($rtl==false){
+                margin-left: 1rem;
+            }
+            @if($rtl==true){
+                margin-left: 1rem;
+            }
+        }
+    }
+}

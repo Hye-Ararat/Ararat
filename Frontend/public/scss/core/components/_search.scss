@@ -1,0 +1,101 @@
+/// Search
+///////////////////////////
+.search{
+    &-wrap{
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        opacity: 0;
+        background: $white;
+        transition: opacity .4s;
+        border-radius: 6px;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        &.active{
+            opacity: 1;
+            z-index: 9;
+            pointer-events: auto;
+        }
+        &-extend{
+            margin-top: -1rem;
+            left: -2px;
+            right: -2px;
+        }
+    }
+    &-toggle{
+        transition: all .4s;
+        opacity: 1;
+        &.active {
+            opacity: 0;
+        }
+    }
+    &-content{
+        position: relative;
+        width: 100%;
+       .form-control{
+            padding-left: $input-height;
+            padding-right: $input-height;
+            &-sm{
+                padding-left: $input-height-sm;
+                padding-right: $input-height-sm;
+            }
+       }
+    }
+    &-back,&-submit{
+        position: absolute;
+        top: 50%;
+        &:focus{
+            box-shadow: none;
+        }
+    }
+    &-back{
+        @if($rtl==false){
+            left: 0;
+            transform: translate(-0.25rem, -50%);
+        }
+        @if($rtl==true){
+            right: 0;
+            transform: translate(0.25rem, -50%);
+        }
+    }
+    &-submit{
+        @if($rtl==false){
+            right: 0;
+            transform: translate(0.5rem, -50%);
+        }
+        @if($rtl==true){
+            left: 0;
+            transform: translate(-0.5rem, -50%);
+        }
+        &:hover{
+            color: $primary;
+        }
+    }
+}
+
+.nk-search-box {
+    margin-top: 1.5rem;
+    margin-bottom: 1.25rem;
+    .form{
+        &-icon{
+            height: 100%;
+            border: none;
+            background: transparent;
+            width: 3.5rem;
+        }
+        &-control {
+            border-radius: 1.5rem;
+            @if($rtl==false){
+                padding-left: 1.25rem;
+                padding-right: 1.5rem;
+            }
+            @if($rtl==true){
+                padding-right: 1.25rem;
+                padding-left: 1.5rem;
+            }
+        }
+    }
+}

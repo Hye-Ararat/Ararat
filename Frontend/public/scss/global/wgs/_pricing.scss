@@ -1,0 +1,57 @@
+// pricing tables
+.pricing{
+    position: relative;
+    height: 100%;
+    &-badge{
+        position: absolute;
+        @if($rtl==false){
+            right: .5rem;
+        }
+        @if($rtl==true){
+            left: .5rem;
+        }
+        top: .5rem;
+    }
+    &-head{
+        text-align: center;
+        padding: 1.75rem 1.5rem;
+        border-bottom: 1px solid $border-light;
+    }
+    &-title{
+        .title{
+            margin-bottom: 0.25rem;
+        }
+        &:not(:last-child){
+            padding-bottom: 1.25rem;
+        }
+    }
+    &-body{
+        padding: 1.75rem 1.75rem 2rem;
+    }
+    &-features{
+        li{
+            display: flex;
+            padding: .25rem 0;
+        }
+    }
+    &-action{
+        margin-top: 1.5rem;
+        text-align: center;
+    }
+    &-media {
+		padding: 0.25rem 0;
+		margin-bottom: 1.5rem;
+		img {
+			max-width: 90px;
+		}
+	}
+	&-amount {
+		font-size: 0.875rem;
+        color: $base-light;
+        .amount {
+        	font-size: 1.5rem;
+	        font-weight: $fw-bold;
+	        color: $body-color;
+        }
+	}
+}

@@ -1,0 +1,38 @@
+// STYLE
+.ui-bordered{
+    .card,
+    .code-block,
+    .accordion:not(.accordion-s2):not(.accordion-s3),
+    .card .card-inner + .table .tb-tnx-head, 
+    .nk-download {
+        border: 1px solid $border-light;
+    }
+    .nk-tb-list.is-separate .nk-tb-item > div{
+        border-top: 1px solid $border-light;
+        border-bottom: 1px solid $border-light;
+        &:first-child{
+            @if($rtl==false){
+                border-left: 1px solid $border-light;
+            }
+            @if($rtl==true){
+                border-right: 1px solid $border-light;
+            }
+        }
+        &:last-child{
+            @if($rtl==false){
+                border-right: 1px solid $border-light;
+            }
+            @if($rtl==true){
+                border-left: 1px solid $border-light;
+            }
+        }
+    }
+    .kanban-board-header {
+        border-left: 1px solid $border-light;
+        border-right: 1px solid $border-light;
+        border-bottom: 1px solid $border-light;
+    }
+    .kanban-item {
+        border: 1px solid $border-light;
+    }
+}

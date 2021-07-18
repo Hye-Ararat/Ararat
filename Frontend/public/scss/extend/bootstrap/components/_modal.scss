@@ -1,0 +1,226 @@
+.modal{
+    &-content{
+        position: relative;
+        min-height: 40px;
+        box-shadow: $modal-content-box-shadow-xs;
+        > .close{
+            position: absolute;
+            top: .75rem;
+            @if($rtl==false){
+                right: .75rem;
+            }
+            @if($rtl==true){
+                left: .75rem;
+            }
+            height: 2.25rem;
+            width: 2.25rem;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: $base-text;
+            z-index: 1;
+            transition: all .3s;
+        }
+    }
+    &-body{
+        .stretched{
+            border-radius: 0;
+            margin-left: - $modal-inner-padding;
+            margin-right: - $modal-inner-padding;
+            padding-left: $modal-inner-padding;
+            padding-right: $modal-inner-padding;
+            &.alert{
+                border: none;
+                &-icon{
+                    @if($rtl==false){
+                        padding-left: $modal-inner-padding + $alert-icon-width;
+                    }
+                    @if($rtl==true){
+                        padding-right: $modal-inner-padding + $alert-icon-width;
+                    }
+                }
+            }
+        }
+
+        &-md{
+            padding: ($modal-custom-padding-md - 0.5) $modal-body-custom-padding-x-sm;
+            .stretched{
+                margin-left: - $modal-body-custom-padding-x-sm;
+                margin-right: - $modal-body-custom-padding-x-sm;
+                padding-left: $modal-body-custom-padding-x-sm;
+                padding-right: $modal-body-custom-padding-x-sm;
+                &.alert-icon{
+                    @if($rtl==false){
+                        padding-left: $modal-body-custom-padding-x-md + $alert-icon-width;
+                    }
+                    @if($rtl==true){
+                        padding-right: $modal-body-custom-padding-x-md + $alert-icon-width;
+                    }
+                }
+            }
+        }
+
+        &-lg{
+            padding: $modal-custom-padding-md $modal-body-custom-padding-x-sm;
+            .stretched{
+                margin-left: - $modal-body-custom-padding-x-sm;
+                margin-right: - $modal-body-custom-padding-x-sm;
+                padding-left: $modal-body-custom-padding-x-sm;
+                padding-right: $modal-body-custom-padding-x-sm;
+                &.alert-icon{
+                    @if($rtl==false){
+                        padding-left: $modal-body-custom-padding-x-md + $alert-icon-width;
+                    }
+                    @if($rtl==true){
+                        padding-right: $modal-body-custom-padding-x-md + $alert-icon-width;
+                    }
+                }
+            }
+        }
+    }
+    &-footer{
+        &-stretch{
+            justify-content: stretch;
+        }
+        &-between{
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin: -.25rem 0;
+            > div{
+                padding: .25rem 0;
+            }
+        }
+    }
+    &-dialog{
+        display: flex;
+        align-items: center;
+        min-height: subtract(100%, $modal-dialog-margin * 2);
+        &::before {
+          height: subtract(100vh, $modal-dialog-margin * 2);
+        }
+        .modal.fade &{
+            transform: $modal-fade-transform-revarse;
+        }
+        .modal.zoom &{
+            transform: $modal-scale-transform;
+            transition: $modal-transition;
+        }
+        &-top{
+            align-items: flex-start;
+            .modal.fade &{
+                transform: $modal-fade-transform;
+            }
+        }
+        &-bottom{
+            align-items: flex-end;
+        }
+    }
+}
+
+@include media-breakpoint-up(sm){
+    .modal-dialog{
+        min-height: subtract(100%, $modal-dialog-margin-y-sm-up * 2);
+        &::before {
+          height: subtract(100vh, $modal-dialog-margin-y-sm-up * 2);
+        }
+    }
+    .modal{
+        &-body{
+            padding: $modal-custom-padding $modal-body-custom-padding-x;
+            .stretched{
+                margin-left: - $modal-body-custom-padding-x;
+                margin-right: - $modal-body-custom-padding-x;
+                padding-left: $modal-body-custom-padding-x;
+                padding-right: $modal-body-custom-padding-x;
+                &.alert-icon{
+                    @if($rtl==false){
+                        padding-left: $modal-body-custom-padding-x + $alert-icon-width;
+                    }
+                    @if($rtl==true){
+                        padding-right: $modal-body-custom-padding-x + $alert-icon-width;
+                    }
+                }
+            }
+            &-sm{
+                padding: $modal-custom-padding-sm $modal-body-custom-padding-x-sm;
+                .stretched{
+                    margin-left: - $modal-body-custom-padding-x-sm;
+                    margin-right: - $modal-body-custom-padding-x-sm;
+                    padding-left: $modal-body-custom-padding-x-sm;
+                    padding-right: $modal-body-custom-padding-x-sm;
+                    &.alert-icon{
+                        @if($rtl==false){
+                            padding-left: $modal-body-custom-padding-x-sm + $alert-icon-width;
+                        }
+                        @if($rtl==true){
+                            padding-right: $modal-body-custom-padding-x-sm + $alert-icon-width;
+                        }
+                    }
+                }
+            }
+            &-md{
+                padding: $modal-custom-padding-md $modal-body-custom-padding-x-md;
+                .stretched{
+                    margin-left: - $modal-body-custom-padding-x-md;
+                    margin-right: - $modal-body-custom-padding-x-md;
+                    padding-left: $modal-body-custom-padding-x-md;
+                    padding-right: $modal-body-custom-padding-x-md;
+                    &.alert-icon{
+                        @if($rtl==false){
+                            padding-left: $modal-body-custom-padding-x-md + $alert-icon-width;
+                        }
+                        @if($rtl==true){
+                            padding-right: $modal-body-custom-padding-x-md + $alert-icon-width;
+                        }
+                        > .icon{
+                            @if($rtl==false){
+                                left: $modal-body-custom-padding-x-md;
+                            }
+                            @if($rtl==true){
+                                right: $modal-body-custom-padding-x-md;
+                            }
+                        }
+                    }
+                }
+            }
+            &-lg{
+                padding: $modal-custom-padding-lg $modal-body-custom-padding-x-lg;
+                .stretched{
+                    margin-left: - $modal-body-custom-padding-x-lg;
+                    margin-right: - $modal-body-custom-padding-x-lg;
+                    padding-left: $modal-body-custom-padding-x-lg;
+                    padding-right: $modal-body-custom-padding-x-lg;
+                    &.alert-icon{
+                        @if($rtl==false){
+                            padding-left: $modal-body-custom-padding-x-lg + $alert-icon-width;
+                        }
+                        @if($rtl==true){
+                            padding-right: $modal-body-custom-padding-x-lg + $alert-icon-width;
+                        }
+                    }
+                }
+            }
+        }
+        &-header{
+            padding: $modal-header-custom-padding-xy;
+            &-sm {
+                padding: $modal-header-custom-padding-xy-sm;
+            }
+        }
+        &-footer{
+            padding: $modal-footer-custom-padding-xy;
+            &-sm {
+                padding: $modal-footer-custom-padding-xy-sm;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-up(md){
+    .modal-md{
+        max-width: 600px;
+    }
+}

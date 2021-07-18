@@ -1,0 +1,30 @@
+.select2-selection--single {
+  box-sizing: border-box;
+
+  cursor: pointer;
+  display: block;
+
+  height: 28px;
+
+  user-select: none;
+  -webkit-user-select: none;
+
+  .select2-selection__rendered {
+    display: block;
+    @if($rtl==false){
+      padding-left: 8px;
+      padding-right: 20px;
+    }
+    @if($rtl==true){
+      padding-right: 8px;
+      padding-left: 20px;
+    }
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .select2-selection__clear {
+    position: relative;
+  }
+}
