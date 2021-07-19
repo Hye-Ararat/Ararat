@@ -6,8 +6,12 @@ import Navigation from '../Navigation'
 import { Bar } from 'react-chartjs-2';
 import prettyBytes from "pretty-bytes"
 import Header from '../Header'
-
+import getServerType from '../../api/server/getServerType'
 import Cookies from 'js-cookie'
+import { Terminal } from 'xterm'
+import { FitAddon } from 'xterm-addon-fit'
+import { AttachAddon } from 'xterm-addon-attach'
+
 function ServerNewContainer() {
   const { uuid } = useParams()
   var [server_data, setServerData] = useState(() => {
@@ -19,11 +23,54 @@ function ServerNewContainer() {
   var [memory_usage, setMemoryUsage] = useState(() => {
     return (null)
   })
+  var [server_type, setServerType] = useState(() => {
+    return(null)
+  })
+  var [sock, setSock] = useState(() => {
+    return({})
+  })
+  var [input, setInput] = useState(() => {
+    return('')
+  })
   useEffect(() => {
     getServer(uuid, function (response) {
       document.title = `${response.attributes.name} | Console`
       console.log(response)
       setServerData(response)
+      getServerType(uuid, function(type){
+        setServerType(type)
+        if (type == "Minecraft"){
+          try{
+            const terminal = new Terminal({
+              disableStdin: true,
+              theme:{
+                background: '#1e1e1e'
+              }
+            })
+            const fitAddon = new FitAddon()
+            terminal.loadAddon(fitAddon)
+            const terminalContainer = document.getElementById('console')
+            terminal.open(terminalContainer)
+
+   
+            var consoleSocket = new WebSocket(`wss://ararat-backend.hyehosting.com/server/minecraft/console?server=${uuid}`)
+            setSock(consoleSocket)
+            //fitAddon.fit()
+            window.onresize = () => {
+              //fitAddon.fit()
+            }
+            consoleSocket.onmessage = (e) => {
+              if (e.data == "ERR_JWT_NOT_VALID"){
+                document.location.reload()
+              }
+              console.log(e.data)
+              terminal.writeln(e.data)
+            }
+          } catch (error){
+            console.log(error)
+          }
+        }
+      })
     })
   }, [])
   
@@ -261,9 +308,22 @@ function ServerNewContainer() {
       ecommerceLineS1()
     });
   }, [])
-
+  function handleInputChanged(event){
+    setInput(event.target.value)
+  }
+  function doWebsocket(event){
+    event.preventDefault()
+    var e = input
+    var term = sock
+    term.send(e)
+    console.log(e)
+    setInput('')
+  }
   return (
     <div>
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css"
+                    integrity="sha512-iLYuqv+v/P4u9erpk+KM83Ioe/l7SEmr7wB6g+Kg1qmEit8EShDKnKtLHlv2QXUp7GGJhmqDI+1PhJYLTsfb8w=="
+                    crossorigin="anonymous" referrerpolicy="no-referrer" />
       <base href="../" />
       <meta charSet="utf-8" />
       {/* Fav Icon  */}
@@ -359,6 +419,11 @@ function ServerNewContainer() {
                         </div>{/* .col */}
 
                       </div>{/* .row */}
+                      <div id="console"></div>
+                      {server_type == "Minecraft" ?                       <form onSubmit={doWebsocket.bind(this)}>
+                                                <input style={{ width: '100%' }} type="text" className="form-control" placeholder="Type a command..." value={input} onChange={handleInputChanged.bind(this)} />
+                                            </form> : "" }
+
                     </div>{/* .nk-block */}
                   </div>
                 </div>
