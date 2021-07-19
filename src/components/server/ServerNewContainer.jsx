@@ -12,7 +12,6 @@ import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import { AttachAddon } from 'xterm-addon-attach'
 import getServerResources from "../../api/server/resources/getServerResources"
-//d
 function ServerNewContainer() {
   const { uuid } = useParams()
   var [server_data, setServerData] = useState(() => {
