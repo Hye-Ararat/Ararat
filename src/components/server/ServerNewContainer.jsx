@@ -70,6 +70,26 @@ function ServerNewContainer() {
             console.log(error)
           }
         }
+        if (type == "N-VPS"){
+          try {
+            const terminal = new Terminal({})
+            const fitAddon = new FitAddon()
+            const attachAddon = new AttachAddon(new WebSocket('wss://ararat-backend.hyehosting.com/server/n-vps/console?server=' + response.attributes.uuid.replace(/[0-9]/g, '').replace(/[^a-zA-Z ]/g, "")))
+            terminal.loadAddon(fitAddon)
+            terminal.loadAddon(attachAddon)
+            const terminalContainer = document.getElementById('console')
+            terminal.open(terminalContainer)
+            fitAddon.fit()
+            window.onresize = () => {
+              var checkTerminalContainer = document.getElementById('console')
+              if (checkTerminalContainer){
+                fitAddon.fit()
+              }
+            }
+          } catch(error){
+            console.log(error)
+          }
+        }
       })
     })
   }, [])
@@ -263,7 +283,7 @@ function ServerNewContainer() {
           }
         });
         function getserverWS(myChartss, myChartRam) {
-          var ws = new window.WebSocket(`wss://ararat-backend.hyehosting.com/server/minecraft/resws?server=${uuid}&token=${Cookies.get('token')}`)
+          var ws = new window.WebSocket(`wss://ararat-backend.hyehosting.com/server/resws?server=${uuid}&token=${Cookies.get('token')}`)
           ws.onmessage = function (event) {
             if (!typeof event.data == 'object') return;
             if (!JSON.parse(event.data).args) return;
