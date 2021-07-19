@@ -11,6 +11,7 @@ import Cookies from 'js-cookie'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import { AttachAddon } from 'xterm-addon-attach'
+import getServerResources from "../../api/server/resources/getServerResources"
 
 function ServerNewContainer() {
   const { uuid } = useParams()
@@ -283,42 +284,67 @@ function ServerNewContainer() {
           }
         });
         function getserverWS(myChartss, myChartRam) {
-          var ws = new window.WebSocket(`wss://ararat-backend.hyehosting.com/server/resws?server=${uuid}&token=${Cookies.get('token')}`)
-          ws.onmessage = function (event) {
-            if (!typeof event.data == 'object') return;
-            if (!JSON.parse(event.data).args) return;
-            try {
-              getServer(uuid, function (response) {
+          getServerType(uuid, function(type){
+            console.log('type is '+type)
+            if (type == "Minecraft"){
+              var ws = new window.WebSocket(`wss://ararat-backend.hyehosting.com/server/resws?server=${uuid}&token=${Cookies.get('token')}`)
+              ws.onmessage = function (event) {
+                if (!typeof event.data == 'object') return;
+                if (!JSON.parse(event.data).args) return;
                 try {
-                  const d = JSON.parse(JSON.parse(event.data).args[0])
-                  const cpu_usage = document.getElementById('cpu-numbers')
-                  var current_cpu_1 = d.cpu_absolute * 100
-                  var real_cpu = current_cpu_1 / response.attributes.limits.cpu
-                  if (real_cpu > 100) {
-                    var real_cpu = 100
-                  }
-                  setCpuUsage(`${(real_cpu).toFixed(2)}%`)
-                  if (parseFloat(prettyBytes(d.memory_bytes, { binary: 'true' })) > parseFloat(parseFloat(prettyBytes(response.attributes.limits.memory * 1048576, { binrary: true })))) {
-                    setMemoryUsage(prettyBytes(response.attributes.limits.memory * 1048576, { binary: 'true' }) + " / " + prettyBytes(response.attributes.limits.memory * 1048576, { binary: 'true' }))
-                  } else {
-                    setMemoryUsage(prettyBytes(d.memory_bytes, { binary: 'true' }) + " / " + prettyBytes(response.attributes.limits.memory * 1048576, { binary: 'true' }))
-                  }
-                  myChartss.data.datasets[0].data.push((real_cpu.toFixed(2)))
+                  getServer(uuid, function (response) {
+                    try {
+                      const d = JSON.parse(JSON.parse(event.data).args[0])
+                      const cpu_usage = document.getElementById('cpu-numbers')
+                      var current_cpu_1 = d.cpu_absolute * 100
+                      var real_cpu = current_cpu_1 / response.attributes.limits.cpu
+                      if (real_cpu > 100) {
+                        var real_cpu = 100
+                      }
+                      setCpuUsage(`${(real_cpu).toFixed(2)}%`)
+                      if (parseFloat(prettyBytes(d.memory_bytes, { binary: 'true' })) > parseFloat(parseFloat(prettyBytes(response.attributes.limits.memory * 1048576, { binrary: true })))) {
+                        setMemoryUsage(prettyBytes(response.attributes.limits.memory * 1048576, { binary: 'true' }) + " / " + prettyBytes(response.attributes.limits.memory * 1048576, { binary: 'true' }))
+                      } else {
+                        setMemoryUsage(prettyBytes(d.memory_bytes, { binary: 'true' }) + " / " + prettyBytes(response.attributes.limits.memory * 1048576, { binary: 'true' }))
+                      }
+                      myChartss.data.datasets[0].data.push((real_cpu.toFixed(2)))
+                      myChartss.data.datasets[0].data.shift()
+                      myChartss.update()
+                      myChartRam.data.datasets[0].data.push(parseFloat(prettyBytes(d.memory_bytes, { binary: 'true' })))
+                      myChartRam.data.datasets[0].data.shift()
+                      myChartRam.update()
+                      console.log(d)
+                    } catch (error) {
+                      console.log(error)
+                    }
+                  })
+                } catch (e) {
+                  console.log(e)
+                }
+      
+              }
+            }
+            if (type== "N-VPS"){
+              //var ws = new window.WebSocket(`wss://ararat-backend.hyehosting.com/server/resws?server=${response.attributes.uuid}&token=${Cookies.get('token')}`)
+              setInterval(function(){
+                getServerResources(response.attributes.identifier, response.attributes.uuid).then(function(e){
+                  console.log('UPDATING')
+                  console.log(e)
+                  setCpuUsage(e.attributes.resources.cpu_absolute + '%')
+                  myChartss.data.datasets[0].data.push((e.attributes.resources.cpu_absolute))
                   myChartss.data.datasets[0].data.shift()
                   myChartss.update()
-                  myChartRam.data.datasets[0].data.push(parseFloat(prettyBytes(d.memory_bytes, { binary: 'true' })))
+                  setMemoryUsage(prettyBytes(e.attributes.resources.memory_bytes, {binary: 'true'}))
+                  myChartRam.data.datasets[0].data.push(parseFloat(prettyBytes(e.attributes.resources.memory_bytes, {binary: 'true'})))
                   myChartRam.data.datasets[0].data.shift()
                   myChartRam.update()
-                  console.log(d)
-                } catch (error) {
-                  console.log(error)
                 }
-              })
-            } catch (e) {
-              console.log(e)
+                )
+              }, 2000)
+
             }
-  
-          }
+          })
+
         }
         getserverWS(myChart, myChart2)
       })
