@@ -13,7 +13,6 @@ import FileEditorContainer from "../components/server/files/FileEditorConatiner"
 import NotFound from '../components/NotFound'
 import Cookies from 'js-cookie';
 import SideBar from '../components/Sidebar'
-import Testing from '../components/dashboard/Testing'
 import ServerNewContainer from "../components/server/ServerNewContainer";
 function AppRouter() {
 
@@ -43,7 +42,6 @@ function AppRouter() {
         </Route>
 
         <Route exact path="/login" exact component={() => <AuthContainer />} />
-        <Route exact path="/testing" exact component={() => <Testing />} />
         <Route exact path="/sidebar" exact component={() => <SideBar />} />
 
 
