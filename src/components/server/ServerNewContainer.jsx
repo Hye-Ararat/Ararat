@@ -408,9 +408,9 @@ function ServerNewContainer() {
                     </div>{/* .nk-block-head */}
                     <div className="nk-block">
                       <div className="row g-gs">
-                        <div className="col-xxl-6">
+                        <div className="col-xxl-12">
                           <div className="row g-gs">
-                            <div className="col-sm-6 col-lg-12 col-xxl-6">
+                            <div className="col-sm-3 col-lg-3 col-xxl-3 mx-auto">
                               <div className="card">
                                 <div className="nk-ecwg nk-ecwg3">
                                   <div className="card-inner pb-0">
@@ -435,7 +435,7 @@ function ServerNewContainer() {
                                 </div>{/* .nk-ecwg */}
                               </div>{/* .card */}
                             </div>{/* .col */}
-                            <div className="col-sm-6 col-lg-12 col-xxl-6">
+                            <div className="col-sm-3 col-lg-3 col-xxl-3 mx-auto">
                               <div className="card">
                                 <div className="nk-ecwg nk-ecwg3">
                                   <div className="card-inner pb-0">
@@ -460,14 +460,93 @@ function ServerNewContainer() {
                                 </div>{/* .nk-ecwg */}
                               </div>{/* .card */}
                             </div>{/* .col */}
+                            <div className="col-sm-3 col-lg-3 col-xxl-3 mx-auto">
+                              <div className="card">
+                                <div className="nk-ecwg nk-ecwg3">
+                                  <div className="card-inner pb-0">
+                                    <div className="card-title-group">
+                                      <div className="card-title">
+                                        <h6 className="title">Disk Usage</h6>
+                                      </div>
+                                    </div>
+                                    <div className="data">
+                                      <div className="data-group">
+                                        {memory_usage ?
+                                          <FadeIn>
+                                            <div className="amount" id="cpu-numbers">20 GiB / 50 GiB</div>
+                                          </FadeIn> : ""}
+
+                                      </div>
+                                    </div>
+                                  </div>{/* .card-inner */}
+                                  <div className="nk-ecwg3-ck">
+                                    <canvas className="ecommerce-line-chart-s1" id="ramUsage" />
+                                  </div>
+                                </div>{/* .nk-ecwg */}
+                              </div>{/* .card */}
+                            </div>{/* .col */}
+                            <div className="col-sm-3 col-lg-3 col-xxl-3 mx-auto">
+                              <div className="card">
+                                <div className="nk-ecwg nk-ecwg3">
+                                  <div className="card-inner pb-0">
+                                    <div className="card-title-group">
+                                      <div className="card-title">
+                                        <h6 className="title">Players Online</h6>
+                                      </div>
+                                    </div>
+                                    <div className="data">
+                                      <div className="data-group">
+                                          <FadeIn>
+                                            <div className="amount" id="cpu-numbers">24 / 50</div>
+                                          </FadeIn>
+
+                                      </div>
+                                    </div>
+                                  </div>{/* .card-inner */}
+                                  <div className="nk-ecwg3-ck">
+                                    <canvas className="ecommerce-line-chart-s1" id="ramUsage" />
+                                  </div>
+                                </div>{/* .nk-ecwg */}
+                              </div>{/* .card */}
+                            </div>{/* .col */}
+                            
                           </div>{/* .row */}
                         </div>{/* .col */}
 
                       </div>{/* .row */}
+                      <div className="row mt-5">
+                        <div className="col-md-2 col-sm-12">
+                          <div className="card">
+                            <div className="card-header">
+                              <p><em class="icon ni ni-server mr-1"></em>Server Information</p>
+                              </div>
+
+                              <div className="card-body">
+                              <p><em style={{color: '#1ee0ac'}}class="icon ni ni-chevron-up-circle mr-1"></em>Online</p>
+                              <p><em class="icon ni ni-network mr-1"></em>148.72.144.154:25567</p>              
+                              </div>
+                          </div>
+                          <div className="card">
+
+                              <div className="card-body">
+                                <div className="row">
+                              <btn className="btn btn-success btn-sm mx-auto mb-1 mt-1">Start</btn>
+                              <btn className="btn btn-warning btn-sm mx-auto mb-1 mt-1">Restart</btn>
+                              <btn className="btn btn-danger btn-sm mx-auto mb-1 mt-1">Stop</btn>
+
+                              </div>     
+                              </div>
+                          </div>
+                        </div>
+                      <div class="col-md-10">
                       <div id="console"></div>
                       {server_type == "Minecraft" ?                       <form onSubmit={doWebsocket.bind(this)}>
                                                 <input style={{ width: '100%' }} type="text" className="form-control" placeholder="Type a command..." value={input} onChange={handleInputChanged.bind(this)} />
                                             </form> : "" }
+                      </div>
+                      </div>
+
+
 
                     </div>{/* .nk-block */}
                   </div>
