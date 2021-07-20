@@ -12,6 +12,7 @@ import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import { AttachAddon } from 'xterm-addon-attach'
 import getServerResources from "../../api/server/resources/getServerResources"
+import getServerStatusData from "../../api/server/minecraft/players/getServerStatusData"
 function ServerNewContainer() {
   const { uuid } = useParams()
   var [server_data, setServerData] = useState(() => {
@@ -35,6 +36,7 @@ function ServerNewContainer() {
   var [players, setPlayers] = useState(() => {
     return(null)
   })
+
   useEffect(() => {
     getServer(uuid, function (response) {
       document.title = `${response.attributes.name} | Console`
@@ -367,6 +369,18 @@ function ServerNewContainer() {
     console.log(e)
     setInput('')
   }
+  useEffect(() => {
+    getServer(uuid, function(server_data){
+      setInterval(function(){
+        getServerStatusData(server_data.attributes.uuid, function(response){
+          setPlayers(`${response.onlinePlayers} / ${response.maxPlayers}`)
+          console.log(response)
+        })
+      }, 1000)
+
+    })
+
+  }, [])
   return (
     <div>
          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css"
@@ -499,9 +513,13 @@ function ServerNewContainer() {
                                     </div>
                                     <div className="data">
                                       <div className="data-group">
-                                          <FadeIn>
-                                            <div className="amount" id="cpu-numbers">24 / 50</div>
-                                          </FadeIn>
+                                        {players ? 
+                                         <FadeIn>
+                                         <div className="amount" id="cpu-numbers">{players}</div>
+                                       </FadeIn>
+                                       : ""
+                                      }
+                                         
 
                                       </div>
                                     </div>
