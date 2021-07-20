@@ -32,6 +32,9 @@ function ServerNewContainer() {
   var [input, setInput] = useState(() => {
     return('')
   })
+  var [players, setPlayers] = useState(() => {
+    return(null)
+  })
   useEffect(() => {
     getServer(uuid, function (response) {
       document.title = `${response.attributes.name} | Console`
