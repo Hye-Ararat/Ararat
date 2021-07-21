@@ -40,6 +40,24 @@ class Navigation extends React.Component {
                           <span className="nk-menu-text">Support</span>
                         </Link>
                       </li>{/* .nk-menu-item */}
+                      {this.props.group == "server" ?
+                      <>
+<li class="nk-menu-heading">
+                                    <h6 class="overline-title text-primary-alt">Server Management</h6>
+                                </li>
+                                <li className={this.props.page == "console" ? "nk-menu-item active current-page" : "nk-menu-item" }>
+                        <Link to="/" className="nk-menu-link">
+                          <span className="nk-menu-icon"><em class="icon ni ni-terminal" /></span>
+                          <span className="nk-menu-text">Console</span>
+                        </Link>
+                      </li>{/* .nk-menu-item */}                                <li className="nk-menu-item">
+                        <Link to="files" className="nk-menu-link">
+                          <span className="nk-menu-icon"><em class="icon ni ni-files-fill"></em></span>
+                          <span className="nk-menu-text">Files</span>
+                        </Link>
+                      </li>          
+                      </>          
+                    : ""}
                       <li class="nk-menu-heading">
                                     <h6 class="overline-title text-primary-alt">User Settings</h6>
                                 </li>

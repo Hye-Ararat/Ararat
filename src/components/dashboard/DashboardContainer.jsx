@@ -7,12 +7,15 @@ import getServerResources from "../../api/server/resources/getServerResources";
 import FadeIn from '../Fade'
 import Loading from 'react-loading-bar'
 import getAllocation from "../../api/allocations/getAllocation";
+import getGeoNode from "../../api/getGeoNode";
+import Footer from "../Footer";
 function DashboardContainer() {
     document.title = `Servers | Ararat`
     var [isLoading, setLoading] = useState(true)
     var [servers, setServers] = useState(() => {
         return(null)
     })
+
 
 
     useEffect(() => {
@@ -30,6 +33,7 @@ function DashboardContainer() {
             })
         }, 5000)
     }, [])
+
   
     return (
         <>
@@ -54,7 +58,7 @@ function DashboardContainer() {
                     {/* main @s */}
                     <div className="nk-main ">
                         {/* sidebar @s */}
-                        <Navigation  page="servers"/>
+                        <Navigation  page="servers" group="dashboard"/>
                         {/* sidebar @e */}
                         {/* wrap @s */}
                         <div className="nk-wrap ">
@@ -134,20 +138,7 @@ function DashboardContainer() {
                             </div>
                             {/* content @e */}
                             {/* footer @s */}
-                            <div className="nk-footer">
-                                <div className="container-fluid">
-                                    <div className="nk-footer-wrap">
-                                        <div className="nk-footer-copyright"> ©2021 Hye Hosting LLC. All Rights Reserved.
-                                        </div>
-                                        <div className="nk-footer-links">
-                                            <ul className="nav nav-sm">
-                                                <li className="nav-item"><a className="nav-link" href="https://hyehosting.com/tos">Terms of Service</a></li>
-                                                <li className="nav-item"><a className="nav-link" href="https://hyehosting.com/privacy">Privacy Policy</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <Footer />
                             {/* footer @e */}
                         </div>
                         {/* wrap @e */}

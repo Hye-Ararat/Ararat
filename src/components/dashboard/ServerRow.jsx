@@ -153,7 +153,7 @@ function ServerRow(props) {
                 </td>
                 <td>
                     <span>
-                        <Link className="btn btn-sm btn-primary" to={`/new/server/${props.identifier}`}>Manage</Link>
+                        <Link className="btn btn-sm btn-primary" to={`/server/${props.identifier}`}>Manage</Link>
                     </span>
                 </td>
 

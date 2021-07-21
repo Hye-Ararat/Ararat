@@ -13,7 +13,6 @@ import FileEditorContainer from "../components/server/files/FileEditorConatiner"
 import NotFound from '../components/NotFound'
 import Cookies from 'js-cookie';
 import SideBar from '../components/Sidebar'
-import ServerNewContainer from "../components/server/ServerNewContainer";
 function AppRouter() {
 
   function checkAuth() {
@@ -30,9 +29,6 @@ function AppRouter() {
         </Route>
         <Route exact path = "/server/:uuid">
           {checkAuth() ? <ServerContainer /> : <Redirect to="/login" />}
-        </Route>
-        <Route exact path = "/new/server/:uuid">
-          {checkAuth() ? <ServerNewContainer /> : <Redirect to="/login" />}
         </Route>
         <Route exact path = "/server/:uuid/files">
           {checkAuth() ? <FilesContainer /> : <Redirect to="/login" />}
