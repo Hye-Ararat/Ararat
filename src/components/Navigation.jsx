@@ -55,7 +55,14 @@ class Navigation extends React.Component {
                           <span className="nk-menu-icon"><em class="icon ni ni-files-fill"></em></span>
                           <span className="nk-menu-text">Files</span>
                         </Link>
-                      </li>          
+                      </li>
+                      {this.props.type == "Minecraft" ?                                <li className="nk-menu-item">
+                        <Link to="plugins" className="nk-menu-link">
+                          <span className="nk-menu-icon"><em class="icon ni ni-puzzle-fill"></em></span>
+                          <span className="nk-menu-text">Plugins</span>
+                        </Link>
+                      </li>:
+                       ""}       
                       </>          
                     : ""}
                       <li class="nk-menu-heading">
