@@ -37,6 +37,9 @@ function ServerContainer() {
   var [players, setPlayers] = useState(() => {
     return(null)
   })
+  var [console_load, setConsoleLoad] = useState(() => {
+    return(false)
+  })
 
   useEffect(() => {
     getServer(uuid, function (response) {
@@ -55,6 +58,7 @@ function ServerContainer() {
             })
             const fitAddon = new FitAddon()
             terminal.loadAddon(fitAddon)
+            setConsoleLoad(true)
             const terminalContainer = document.getElementById('console')
             terminal.open(terminalContainer)
 
@@ -91,6 +95,7 @@ function ServerContainer() {
             const attachAddon = new AttachAddon(new WebSocket('wss://ararat-backend.hyehosting.com/server/n-vps/console?server=' + response.attributes.uuid.replace(/[0-9]/g, '').replace(/[^a-zA-Z ]/g, "")))
             terminal.loadAddon(fitAddon)
             terminal.loadAddon(attachAddon)
+            setConsoleLoad(true)
             const terminalContainer = document.getElementById('console')
             terminal.open(terminalContainer)
             fitAddon.fit()
@@ -403,7 +408,7 @@ function ServerContainer() {
         {/* main @s */}
         <div className="nk-main ">
           {/* sidebar @s */}
-          <Navigation page="console" group="server"/>
+          <Navigation page="console" group="server" type={server_type}/>
           {/* sidebar @e */}
           {/* wrap @s */}
           <div className="nk-wrap ">
@@ -570,10 +575,14 @@ function ServerContainer() {
                           </div>
                         </div>
                       <div class="col-md-10">
+                      {console_load == true ?
+                      <>
+                      <FadeIn>
                       <div style={{minHeight: '55vh'}} id="console"></div>
                       {server_type == "Minecraft" ?                       <form onSubmit={doWebsocket.bind(this)}>
                                                 <input style={{ width: '100%' }} type="text" className="form-control" placeholder="Type a command..." value={input} onChange={handleInputChanged.bind(this)} />
                                             </form> : "" }
+                                            </FadeIn> </>: ""}
                       </div>
                       </div>
 
