@@ -17,11 +17,12 @@ import axios from 'axios'
 import {Redirect} from 'react-router-dom'
 import Cookies from 'js-cookie'
 import LoadingButton from '@material-ui/lab/LoadingButton';
+import Gun from 'gun';
+import SEA from 'gun/sea';
 
 
-
-function LoginContainer(props) {
-    var gun = props.gun
+function LoginContainer() {
+    const gun = Gun({peers: ["https://db.hye.gg"]});
     const user = gun.user();
     const [values, setValues] = React.useState({
         email: '',

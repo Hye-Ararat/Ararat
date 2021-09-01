@@ -19,7 +19,7 @@ import CreateNode from './components/nodes/CreateNode'
 import Gun from 'gun';
 import SEA from 'gun/sea';
 function AppRouter(){
-    const gun = Gun(location.origin + "/gun");
+    const gun = Gun();
     const user = gun.user()
     function isAuthenticated(){
         if (Cookies.get('token')){
@@ -52,7 +52,7 @@ return(
                 {() => logout()}
             </Route>
             <Route exact path = "/auth/login">
-                <LoginContainer gun={gun}/>
+                <LoginContainer />
             </Route>
             <Route exact path = "/admin" render={() => isAdmin() ? <AdminOverviewContainer /> : <Redirect to="/" />}>
             </Route>
