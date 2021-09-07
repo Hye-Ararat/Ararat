@@ -21,7 +21,8 @@ import {
     Grid,
     TextField,
     FormControlLabel,
-    Switch
+    Switch,
+    Chip
     } from '@material-ui/core'
   import {
       Storage as StorageIcon,
@@ -41,20 +42,23 @@ import {
     Link
   } from 'react-router-dom'
   import Dashboard from '../Dashboard'
-  import Gun from 'gun/gun';
-import SEA from 'gun/sea';
 import {LoadingButton} from '@material-ui/lab'
-const gun = Gun({peers: ["https://db.hye.gg:8443/gun"]});
-const user = gun.user().recall({sessionStorage: true})
+import Firebase from '../db'
+import {getAuth, updateProfile, updateEmail} from 'firebase/auth'
+const auth = getAuth(Firebase)
 
-const pair = user.pair()
   function AccountContainer() {
+
     const [user_data, setUserData] = React.useState({
     email: null,
-    name: {
-      first: null,
-      last: null
-    }})
+    name: null})
+    React.useEffect(() => {
+      const userInfo = auth.currentUser
+      setUserData({
+        email: userInfo.email,
+        name: userInfo.displayName
+      })
+    }, [])
     const [setting_data, setSettingData] = React.useState(false)
     const [successData, setSuccessData] = React.useState(false)
     const [field_data, setFieldData] = React.useState({
@@ -64,87 +68,18 @@ const pair = user.pair()
         new_password_confirm: null
       }
     })
-    React.useEffect(() => {
-      let mounted = true
-      user.get('email').on(async function(enc_email, key){
-        var msg = await SEA.verify(enc_email, pair.pub) //msg
-        var dec = await SEA.decrypt(msg, pair) //dec
-        var proof = await SEA.work(dec, pair) //proof
-        var check = await SEA.work(dec, pair) //check
-        if (check === proof){
-          let data = user_data
-          user_data.email = dec
-          if (mounted){
-            setUserData({
-              email: data.email,
-              name: {
-                first: data.name.first,
-                last: data.name.last
-              }
-            })
-          }
-        }
-      })
-      user.get('name').on(function(name, key){
-        async function firstName(name){
-          let data = user_data
-          var msg = await SEA.verify(name.first, pair.pub)
-          var dec = await SEA.decrypt(msg, pair)
-          var proof = await SEA.work(dec, pair)
-          var check = await SEA.work(dec, pair)
-          if (check === proof){
-            user_data.name.first = dec
-            if (mounted){
-            setUserData({
-              email: data.email,
-              name: {
-                first: data.name.first,
-                last: data.name.last
-              }
-            })
-          }
-          }
-        }
-        async function lastName(name){
-          var msg = await SEA.verify(name.last, pair.pub)
-          var dec = await SEA.decrypt(msg, pair)
-          var proof = await SEA.work(dec, pair)
-          var check = await SEA.work(dec, pair)
-          if (check === proof){
-            let data = user_data
-            user_data.name.last = dec
-            setUserData({
-              email: data.email,
-              name: {
-                first: data.name.first,
-                last: data.name.last
-              }
-            })
-          }
-        }
-        firstName(name)
-        lastName(name)
-        
-      })
-    }, [])
     function handleFieldChange(event){
       var user_info = user_data
-      if (event.target.id.includes('first_name')){
-        user_info.name.first = event.target.value
-      }
-      if (event.target.id.includes('last_name')){
-        user_info.name.last = event.target.value
+      if (event.target.id.includes('name')){
+        user_info.name = event.target.value
       }
       if (event.target.id.includes('email')){
         user_info.email = event.target.value
       }
-      if (event.target.id.includes('email') || event.target.id.includes('first_name') || event.target.id.includes('last_name')){
+      if (event.target.id.includes('email') || event.target.id.includes('name')){
         setUserData({
           email: user_info.email,
-          name: {
-            first: user_info.name.first,
-            last: user_info.name.last
-          }
+          name: user_info.name
         })
       }
       var auth_data = field_data
@@ -173,22 +108,37 @@ const pair = user.pair()
     }
     async function savePersonal(){
       setSettingData(true)
-      var email_enc = await SEA.encrypt(user_data.email, pair)
-      var email = await SEA.sign (email_enc, pair)
-      
-      var firstName_enc = await SEA.encrypt(user_data.name.first, pair)
-      var first_name = await SEA.sign(firstName_enc, pair)
+      var email = user_data.email
+      var name = user_data.name
+      updateProfile(auth.currentUser, {
+        displayName: `${name}`,
+        email: email
+      }).then(() => {
+        const userInfo = auth.currentUser
+        if (userInfo.email != email){
+          updateEmail(auth.currentUser, email).then(() => {
+            setSettingData(false)
+            setSuccessData(true)
+            setTimeout(function(){
+              setSuccessData(false)
+            }, 1000)
+          }).catch((error => {
+            console.log(error)
+            setSettingData(false)
+          }))
+        } else {
+          setSettingData(false)
+          setSuccessData(true)
+          setTimeout(function(){
+            setSuccessData(false)
+          }, 1000)
+        }
 
-      var lastName_enc = await SEA.encrypt(user_data.name.last, pair)
-      var last_name = await SEA.sign(lastName_enc, pair)
-      user.get('name').get('first').put(first_name)
-      user.get('name').get('last').put(last_name)
-      user.get('email').put(email)
-      setSettingData(false)
-      setSuccessData(true)
-      setTimeout(function(){
-        setSuccessData(false)
-      }, 1000)
+      }).catch((error) => {
+        setSettingData(false)
+        console.log(error)
+      })
+
     }
     return (
       <Dashboard page="account">
@@ -202,24 +152,14 @@ const pair = user.pair()
           <Grid container direction="row">
             
           
-            <Fade in={user_data.name.first != null}>
                     <Grid item sx={{ m: 2 }}>
-                        <Typography variant="subtitle1" component="p" fontWeight={500}>First Name</Typography>
-                        <TextField id="first_name" onChange={handleFieldChange} value={user_data.name.first ? user_data.name.first : ""}></TextField>
+                        <Typography variant="subtitle1" component="p" fontWeight={500}>Full Name</Typography>
+                        <TextField id="name" onChange={handleFieldChange} value={user_data.name ? user_data.name : ""}></TextField>
                     </Grid>
-                    </Fade>
-                    <Fade in={user_data.name.last != null}>
-                    <Grid item sx={{ m: 2 }}>
-                        <Typography variant="subtitle1" component="p" fontWeight={500}>Last Name</Typography>
-                        <TextField id="last_name" onChange={handleFieldChange} value={user_data.name.last ? user_data.name.last : ""}></TextField>
-                    </Grid>
-                    </Fade>
-                    <Fade in={user_data.email !=null}>
                     <Grid sx={{ m: 2 }}>
-                        <Typography variant="subtitle1" onChange={handleFieldChange} component="p" fontWeight={500}>Email</Typography>
+                        <Typography variant="subtitle1" onChange={handleFieldChange} component="p" fontWeight={500}>Email <Chip color="error" size="small" label={"Not Verified"} /></Typography>
                         <TextField sx={{width: '15rem'}} id="email" onChange={handleFieldChange} value={user_data.email ? user_data.email : ""}></TextField>
                     </Grid>
-                    </Fade> 
 
                 </Grid>
                 <Divider />

@@ -29,8 +29,10 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "PORT=3001 react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
+    "predeploy": "npm run build",
+    "deploy": "firebase build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

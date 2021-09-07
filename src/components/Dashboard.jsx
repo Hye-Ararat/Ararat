@@ -30,13 +30,9 @@ import {
   import React from 'react'
   import Cookies from 'js-cookie'
   import axios from 'axios'
-  import Gun from 'gun/gun';
-  import SEA from 'gun/sea';
   import {
     Link
   } from 'react-router-dom'
-  const gun = Gun({peers: ["https://db.hye.gg:8443/gun"]});
-  const user = gun.user().recall({sessionStorage: true});
   const drawerWidth = 240;
   function Dashboard(props) {
       const [isMobile, setIsMobile] = React.useState(false)
@@ -83,7 +79,7 @@ import {
         }
       setNavOpen(true);
     };
-    React.useEffect(() => {
+/*     React.useEffect(() => {
       user.get('email').on(function(email, key){
         user.get('admin').on(function(admin, key){
           setUserData({
@@ -92,7 +88,7 @@ import {
           })
         })
       })
-    }, [])
+    }, []) */
   const styles = {
       stickToBottom: {
           width: '100%',

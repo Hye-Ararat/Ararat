@@ -18,26 +18,34 @@ import AdminSettingsContainer from './components/admin/settings/AdminSettingsCon
 import AdminNodesContainer from './components/nodes/AdminNodesContainer'
 import CreateNode from './components/nodes/CreateNode'
 import Firebase from './components/db'
-import {getAuth} from 'firebase/auth'
-console.log(document.app)
-
+import {getAuth, signOut} from 'firebase/auth'
+import {Backdrop, CircularProgress} from '@material-ui/core'
+import AuthLoading from './components/auth/AuthLoading'
 function AppRouter(){
+    const [logged_in, setLoggedIn] = React.useState('loading')
     const auth = getAuth(Firebase)
-    function isAuthenticated(){
-        const user = auth().currentUser
-        console.log(user)
-        if (user != null){
-            console.log('hello' + user.displayName)
-            return(true)
-        } else {
+    auth.onAuthStateChanged(function(user){
+        if (user){
             console.log(user)
-            return(false)
+            console.log("logged in")
+            setLoggedIn(true)
+        } else {
+            console.log('logged out')
+            setLoggedIn(false)
         }
+    })
+    function isAuthenticated(){
+        return(logged_in)
     }
     function logout(){
-        return(
-            <Redirect to="/" />
-        )
+        auth.signOut(auth).then(() => {
+            console.log('logged out!')
+            setLoggedIn(false)
+            
+        }).catch((error) => {
+            console.log('error '+ error)
+        })
+
     }
     function isAdmin() {
         // if (Cookies.get('token')){
@@ -51,12 +59,12 @@ function AppRouter(){
 return(
     <Router>
         <Switch>
-            <Route exact path="/" render={() => isAuthenticated() ? <ServersContainer /> : <Redirect to="/auth/login" />}></Route>
-            <Route exact path="/account" render={() => isAuthenticated() ? <AccountContainer /> : <Redirect to="/auth/login" />} />
+            <Route exact path="/" >{logged_in == "loading" ? <AuthLoading />: logged_in == true ? <ServersContainer /> : <Redirect to="/auth/login" />}</Route>
+            <Route exact path="/account">{logged_in == "loading" ? <AuthLoading /> : logged_in == true ? <AccountContainer /> : <Redirect to="/auth/login" />}</Route>
             <Route exact path="/auth/logout" >
-                {() => logout()}
+                {logged_in == "loading" ? <AuthLoading /> : logged_in == true ? () => logout() : <Redirect to="/auth/login" />}
             </Route>
-            <Route exact path = "/auth/login" render={() => isAuthenticated() ? <Redirect to="/" /> : <LoginContainer />}>
+            <Route exact path = "/auth/login"> {logged_in == "loading" ? <AuthLoading /> : logged_in == true ? <Redirect to="/" /> : <LoginContainer />}
             </Route>
             <Route exact path = "/admin" render={() => isAdmin() ? <AdminOverviewContainer /> : <Redirect to="/" />}>
             </Route>
