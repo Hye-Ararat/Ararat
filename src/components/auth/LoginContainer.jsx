@@ -17,15 +17,17 @@ import axios from 'axios'
 import {Redirect, useHistory, withRouter} from 'react-router-dom'
 import Cookies from 'js-cookie'
 import LoadingButton from '@material-ui/lab/LoadingButton';
-import Gun from 'gun/gun';
-import SEA from 'gun/sea';
+/* import Gun from 'gun/gun';
+import SEA from 'gun/sea'; */
 import URL from 'url'
+import Firebase from '../db';
+import {getAuth, signInWithEmailAndPassword} from "firebase/auth"
 
-
+const auth = getAuth(Firebase)
 function LoginContainer() {
     console.log(window.location.hostname)
     const history = useHistory();
-    const gun = Gun({peers: ["https://db.hye.gg:8443/gun"]});
+/*     const gun = Gun({peers: ["https://db.hye.gg:8443/gun"]});
     const user = gun.user().recall({sessionStorage: true});
     gun.on('auth', async function(data){
         setLoggedIn(true)
@@ -33,7 +35,7 @@ function LoginContainer() {
             //history.push('/')
             window.location = "/"
 
-    })
+    }) */
     const [values, setValues] = React.useState({
         email: '',
         password: ''
@@ -47,7 +49,7 @@ function LoginContainer() {
     function login(e){
         e.preventDefault();
         setLoggingIn(true);
-        user.auth(`${values.email}`, `${values.password}`, function(data){
+/*         user.auth(`${values.email}`, `${values.password}`, function(data){
             if (data.err){
                 console.log("The login failed")
                 console.log(data.err)
@@ -68,6 +70,16 @@ function LoginContainer() {
                 setLoggedIn(true)
                 )
             }
+        }) */
+        signInWithEmailAndPassword(auth, values.email, values.password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            console.log(user)
+        }).catch((error) =>{
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(`code: ${errorCode}`)
+            console.log(`message: ${errorMessage}`)
         })
     }
 
@@ -75,7 +87,7 @@ function LoginContainer() {
         /*user.create('test', 'testing12345', function(key){
             console.log(key)
         //})*/
-        user.create('javmaldjian@gmail.com', 'helloworld', function(data){
+/*         user.create('javmaldjian@gmail.com', 'helloworld', function(data){
             if (data.err){
                 console.log("The login failed")
             } else {
@@ -84,13 +96,13 @@ function LoginContainer() {
                 setLoggedIn(true)
                 )
             }
-        })
+        }) */
     }
     React.useEffect(() => {
-        console.log(user.is)
+/*         console.log(user.is)
         if (user.is){
             setLoggedIn(true)
-        }
+        } */
     }, [])
     return (
         <Container>

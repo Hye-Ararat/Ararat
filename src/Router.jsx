@@ -17,20 +17,24 @@ import AdminCreateServerContainer from './components/admin/servers/AdminCreateSe
 import AdminSettingsContainer from './components/admin/settings/AdminSettingsContainer'
 import AdminNodesContainer from './components/nodes/AdminNodesContainer'
 import CreateNode from './components/nodes/CreateNode'
-import Gun from 'gun/gun';
-import SEA from 'gun/sea';
+import Firebase from './components/db'
+import {getAuth} from 'firebase/auth'
+console.log(document.app)
+
 function AppRouter(){
-    const gun = Gun({peers: ["https://db.hye.gg:8443/gun"]});
-    const user = gun.user().recall({sessionStorage: true});
+    const auth = getAuth(Firebase)
     function isAuthenticated(){
-        if (sessionStorage.getItem('pair')){
+        const user = auth().currentUser
+        console.log(user)
+        if (user != null){
+            console.log('hello' + user.displayName)
             return(true)
         } else {
+            console.log(user)
             return(false)
         }
     }
     function logout(){
-        user.leave()
         return(
             <Redirect to="/" />
         )
