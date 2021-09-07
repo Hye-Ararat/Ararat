@@ -30,12 +30,15 @@ import {
   import React from 'react'
   import Cookies from 'js-cookie'
   import axios from 'axios'
+  import Gun from 'gun/gun';
+  import SEA from 'gun/sea';
   import {
     Link
   } from 'react-router-dom'
+  const gun = Gun({peers: ["https://db.hye.gg:8443/gun"]});
+  const user = gun.user().recall({sessionStorage: true});
   const drawerWidth = 240;
   function Dashboard(props) {
-    console.log(props)
       const [isMobile, setIsMobile] = React.useState(false)
    
   //choose the screen size 
@@ -81,16 +84,14 @@ import {
       setNavOpen(true);
     };
     React.useEffect(() => {
-      if (Cookies.get('token')) {
-        var user_info = jsonwebtoken.decode(Cookies.get('token'))
+      user.get('email').on(function(email, key){
+        user.get('admin').on(function(admin, key){
           setUserData({
-            first_name: user_info.first_name,
-            last_name: user_info.last_name,
-            email: user_info.email,
-            admin: user_info.admin
+            email: email,
+            admin: admin
           })
-  
-      }
+        })
+      })
     }, [])
   const styles = {
       stickToBottom: {
@@ -145,7 +146,7 @@ import {
                   <ListItemText primary='Account' />
                 </ListItem>
                 </List>
-                {user_data.admin == true ?          <>                     <Divider />                <List>
+                {true == true ?          <>                     <Divider />                <List>
 
   <ListItem button component={Link} to="/admin" key='Admin'>
                   <ListItemIcon>

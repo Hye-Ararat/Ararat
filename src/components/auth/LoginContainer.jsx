@@ -14,16 +14,26 @@ import {
 import CheckIcon from '@material-ui/icons/Check';
 import React from 'react'
 import axios from 'axios'
-import {Redirect} from 'react-router-dom'
+import {Redirect, useHistory, withRouter} from 'react-router-dom'
 import Cookies from 'js-cookie'
 import LoadingButton from '@material-ui/lab/LoadingButton';
-import Gun from 'gun';
+import Gun from 'gun/gun';
 import SEA from 'gun/sea';
+import URL from 'url'
 
 
 function LoginContainer() {
-    const gun = Gun({peers: ["https://db.hye.gg"]});
-    const user = gun.user();
+    console.log(window.location.hostname)
+    const history = useHistory();
+    const gun = Gun({peers: ["https://db.hye.gg:8443/gun"]});
+    const user = gun.user().recall({sessionStorage: true});
+    gun.on('auth', async function(data){
+        setLoggedIn(true)
+        console.log("It works")
+            //history.push('/')
+            window.location = "/"
+
+    })
     const [values, setValues] = React.useState({
         email: '',
         password: ''
@@ -32,7 +42,7 @@ function LoginContainer() {
     const handleChange = (prop) => (event) => {
         setValues({ ...values, [prop]: event.target.value });
       };
-      const [loggedIn, setLoggedIn] = React.useState(null)
+      const [loggedIn, setLoggedIn] = React.useState()
       const [loggingIn, setLoggingIn] = React.useState(false)
     function login(e){
         e.preventDefault();
@@ -40,6 +50,17 @@ function LoginContainer() {
         user.auth(`${values.email}`, `${values.password}`, function(data){
             if (data.err){
                 console.log("The login failed")
+                console.log(data.err)
+                if (data.err == "Wrong user or password."){
+                    setLoggingIn(false)
+                    setError({
+                        "status": "error",
+                        "data": {
+                            "field": "none",
+                            "message": "Incorrect username or password."
+                        }
+                    })
+                }
             } else {
                 console.log("The login was successful")
                 //Cookies.set('token', 'test')
@@ -48,37 +69,13 @@ function LoginContainer() {
                 )
             }
         })
-/*         axios.post(`http://api.hye.gg:3000/api/v1/client/auth/login`, {
-            email: values.email,
-            password: values.password
-        }).then(function(response){
-            if (response.data.status == "error"){
-                setLoggingIn(false)
-                setError(response.data)
-            }
-            if (response.data.status == "success"){
-                Cookies.set('token', response.data.data.token)
-                return(
-                    setLoggedIn(true)
-                )
-            }
-        }).catch(function(error){
-            setLoggingIn(false)
-            setError({
-                "status": "error",
-                "data": {
-                    "field": "none",
-                    "message": "An error occured while trying to log you in. Please try again later."
-                }
-            })
-        }) */
     }
 
     function createUser(){
         /*user.create('test', 'testing12345', function(key){
             console.log(key)
         //})*/
-        user.create('testing@test.com', 'testing12345', function(data){
+        user.create('javmaldjian@gmail.com', 'helloworld', function(data){
             if (data.err){
                 console.log("The login failed")
             } else {
@@ -89,11 +86,14 @@ function LoginContainer() {
             }
         })
     }
+    React.useEffect(() => {
+        console.log(user.is)
+        if (user.is){
+            setLoggedIn(true)
+        }
+    }, [])
     return (
         <Container>
-            {loggedIn == true ? <Redirect to="/" /> : ""}
-            {loggedIn == true ? <p>Logged in!</p> : ""}
-            {loggedIn == true ? console.log('yes it works') : ""}
             <Grid
                 container
                 direction="column"
@@ -123,7 +123,7 @@ function LoginContainer() {
                         <TextField error={error && error.data.field == "email" && error.data.field !="none" || error && error.data.field == "all" && error.data.field !="none"} helperText={error && error.data.field != 'all' && error.data.field !="none" ? error.data.message : ""} value={values.email} onChange={handleChange('email')} margin="dense" id="Email" label="Email" variant="outlined" type="email" />
                             <TextField error={error && error.data.field == "password" && error.data.field !="none" || error && error.data.field == "all" && error.data.field !="none"} value={values.password} onChange={handleChange('password')} margin="dense" id="Password" label="Password" variant="outlined" type="password" />
                             <Box component="div" mb={1} />
-                            <LoadingButton loading={loggingIn} onClick={login} variant="contained" disabled={values.email == '' || !values.email.includes('@') || !values.email.includes('.') || values.password == ''}>Login</LoadingButton>
+                            <LoadingButton loading={loggingIn && !loggedIn} onClick={login} variant="contained" disabled={values.email == '' || !values.email.includes('@') || !values.email.includes('.') || values.password == ''}>{loggedIn ? <CheckIcon color="success"/> : "Login"}</LoadingButton>
                         </FormControl>
                     </Hidden>
                     <Hidden only={["md", "lg", "xl"]}>
@@ -131,7 +131,7 @@ function LoginContainer() {
                             <TextField error={error && error.data.field == "email" && error.data.field !="none" || error && error.data.field == "all" && error.data.field !="none"} helperText={error && error.data.field != 'all' && error.data.field !="none" ? error.data.message : ""} value={values.email} onChange={handleChange('email')} margin="dense" id="Email" label="Email" variant="outlined" type="email" />
                             <TextField error={error && error.data.field == "password" && error.data.field !="none "|| error && error.data.field == "all" && error.data.field !="none"} value={values.password} onChange={handleChange('password')} margin="dense" id="Password" label="Password" variant="outlined" type="password" />
                             <Box component="div" mb={1} />
-                            <LoadingButton loading={loggingIn} onClick={login} variant="contained" disabled={values.email == '' || !values.email.includes('@') || !values.email.includes('.') || values.password == ''}>Login</LoadingButton>
+                            <LoadingButton loading={loggingIn && !loggedIn} onClick={login} variant="contained" disabled={values.email == '' || !values.email.includes('@') || !values.email.includes('.') || values.password == ''}>{loggedIn ? <CheckIcon color="success"/> : "Login"}</LoadingButton>
                         </FormControl>
                     </Hidden>
                     <Button variant="text">Forgot Password?</Button>
@@ -141,4 +141,4 @@ function LoginContainer() {
         </Container>
     )
 }
-export default LoginContainer
+export default withRouter(LoginContainer)

@@ -5,6 +5,7 @@ import {
     Switch,
     useHistory
 } from 'react-router-dom'
+import React from 'react'
 import Cookies from 'js-cookie'
 import ServersContainer from './components/dashboard/ServersContainer'
 import LoginContainer from './components/auth/LoginContainer'
@@ -16,43 +17,42 @@ import AdminCreateServerContainer from './components/admin/servers/AdminCreateSe
 import AdminSettingsContainer from './components/admin/settings/AdminSettingsContainer'
 import AdminNodesContainer from './components/nodes/AdminNodesContainer'
 import CreateNode from './components/nodes/CreateNode'
-import Gun from 'gun';
+import Gun from 'gun/gun';
 import SEA from 'gun/sea';
 function AppRouter(){
-    const gun = Gun();
-    const user = gun.user()
+    const gun = Gun({peers: ["https://db.hye.gg:8443/gun"]});
+    const user = gun.user().recall({sessionStorage: true});
     function isAuthenticated(){
-        if (Cookies.get('token')){
+        if (sessionStorage.getItem('pair')){
             return(true)
         } else {
             return(false)
         }
     }
     function logout(){
-        Cookies.remove('token')
+        user.leave()
         return(
             <Redirect to="/" />
         )
     }
     function isAdmin() {
-        if (Cookies.get('token')){
-            var user_info = jsonwebtoken.decode(Cookies.get('token'))
-            return(user_info.admin)
-        } else {
-            return(false)
-        }
-        
+        // if (Cookies.get('token')){
+        //     var user_info = jsonwebtoken.decode(Cookies.get('token'))
+        //     return(user_info.admin)
+        // } else {
+        //     return(false)
+        // }
+        return true
     }
 return(
     <Router>
         <Switch>
-            <Route exact path="/" render={() => user.is ? <ServersContainer /> : <Redirect to="/auth/login" />} />
+            <Route exact path="/" render={() => isAuthenticated() ? <ServersContainer /> : <Redirect to="/auth/login" />}></Route>
             <Route exact path="/account" render={() => isAuthenticated() ? <AccountContainer /> : <Redirect to="/auth/login" />} />
             <Route exact path="/auth/logout" >
                 {() => logout()}
             </Route>
-            <Route exact path = "/auth/login">
-                <LoginContainer />
+            <Route exact path = "/auth/login" render={() => isAuthenticated() ? <Redirect to="/" /> : <LoginContainer />}>
             </Route>
             <Route exact path = "/admin" render={() => isAdmin() ? <AdminOverviewContainer /> : <Redirect to="/" />}>
             </Route>
