@@ -50,15 +50,8 @@ const auth = getAuth(Firebase)
   function AccountContainer() {
 
     const [user_data, setUserData] = React.useState({
-    email: null,
-    name: null})
-    React.useEffect(() => {
-      const userInfo = auth.currentUser
-      setUserData({
-        email: userInfo.email,
-        name: userInfo.displayName
-      })
-    }, [])
+    email: auth.currentUser.email,
+    name: auth.currentUser.displayName})
     const [setting_data, setSettingData] = React.useState(false)
     const [successData, setSuccessData] = React.useState(false)
     const [field_data, setFieldData] = React.useState({
