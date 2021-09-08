@@ -87,10 +87,10 @@ function LoginContainer() {
                     alignItems="center"
                 >
                     <Hidden only={["sm", "xs"]}>
-                        <Box component="img" mt={20} src="https://hyehosting.com/images/logo.png" style={{ width: "10rem" }} />
+                        <Box component="img" mt={20} src="/images/logo.png" style={{ width: "10rem" }} />
                     </Hidden>
                     <Hidden only={["md", "lg", "xl"]}>
-                        <img src="https://hyehosting.com/images/logo.png" width="150px" alt="logo" />
+                        <img src="/images/logo.png" width="150px" alt="logo" />
                     </Hidden>
                     {error && error.data.field == "none" || error && error.data.field == "none"? <Alert mt={2} severity="error">{error.data.message}</Alert> :                    <Typography align="center" mt={1} variant="subtitle1">
                         <Hidden only={["sm", "xs"]}>

@@ -5,11 +5,12 @@ import * as React from 'react';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { getPerformance } from "firebase/performance";
 
 
 // Import the functions you need from the SDKs you need
 import Firebase from './components/db'
-
+var per= getPerformance(Firebase)
 console.log(Firebase)
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries

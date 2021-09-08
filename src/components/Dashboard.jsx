@@ -30,10 +30,13 @@ import {
   import React from 'react'
   import Cookies from 'js-cookie'
   import axios from 'axios'
+  import Firebase from './db'
+  import {getAuth} from 'firebase/auth'
   import {
     Link
   } from 'react-router-dom'
   const drawerWidth = 240;
+  const auth = getAuth(Firebase)
   function Dashboard(props) {
       const [isMobile, setIsMobile] = React.useState(false)
    
@@ -69,6 +72,7 @@ import {
     })
     const [currentPage, setCurrentPage] = React.useState(null);
     const [navOpen, setNavOpen] = React.useState(true);
+    const [is_admin, setAdmin] = React.useState()
     const toggleDrawer = () => {
         console.log('nice')
         console.log(navOpen)
@@ -79,6 +83,19 @@ import {
         }
       setNavOpen(true);
     };
+    React.useEffect(() => {
+      auth.currentUser.getIdTokenResult().then((idTokenResult) => {
+        console.log(idTokenResult)
+        console.log(window.location.hostname)
+        if (!!idTokenResult.claims.admin){
+          setAdmin(true)
+        } else {
+          setAdmin(false)
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
+    }, [])
 /*     React.useEffect(() => {
       user.get('email').on(function(email, key){
         user.get('admin').on(function(admin, key){
@@ -142,7 +159,7 @@ import {
                   <ListItemText primary='Account' />
                 </ListItem>
                 </List>
-                {true == true ?          <>                     <Divider />                <List>
+                {is_admin == true ?          <>                     <Divider />                <List>
 
   <ListItem button component={Link} to="/admin" key='Admin'>
                   <ListItemIcon>
