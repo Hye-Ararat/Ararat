@@ -22,6 +22,7 @@ import {getAuth, signOut} from 'firebase/auth'
 import {Backdrop, CircularProgress} from '@material-ui/core'
 import AuthLoading from './components/auth/AuthLoading'
 import InstancesContainer from './components/instances/InstancesContainer'
+import AccountContainerInstances from './components/instances/AccountContainerInstances'
 function AppRouter(){
     const [logged_in, setLoggedIn] = React.useState('loading')
     const auth = getAuth(Firebase)
@@ -63,8 +64,9 @@ return(
         <Switch>
             <Route exact path="/" >{logged_in == "loading" ? <AuthLoading />: logged_in == true ? <InstancesContainer /> : <Redirect to="/auth/login" />}</Route>
 
-            <Route exact path="/account">{logged_in == "loading" ? <AuthLoading /> : logged_in == true ? <AccountContainer /> : <Redirect to="/auth/login" />}</Route>
+            <Route exact path="/account">{logged_in == "loading" ? <AuthLoading /> : logged_in == true ? <AccountContainerInstances /> : <Redirect to="/auth/login" />}</Route>
             <Route exact path="/:instance">{logged_in == "loading" ? <AuthLoading />: logged_in == true ? <ServersContainer /> : <Redirect to="/auth/login" />}</Route>
+            <Route exact path="/:instance/account">{logged_in == "loading" ? <AuthLoading /> : logged_in == true ? <AccountContainer /> : <Redirect to="/auth/login" />}</Route>
             <Route exact path="/auth/logout" >
                 {logged_in == "loading" ? <AuthLoading /> : logged_in == true ? () => logout() : <Redirect to="/auth/login" />}
             </Route>

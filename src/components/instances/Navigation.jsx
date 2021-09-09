@@ -18,13 +18,11 @@ import {
     Button
   } from '@material-ui/core'
   import {
-      Storage as StorageIcon,
+      Business as InstanceIcon,
       AccountCircle as AccountIcon,
       SupervisorAccount as AdminIcon,
       Menu as MenuIcon,
-      Logout as LogoutIcon,
-      Business as InstanceIcon,
-
+      Logout as LogoutIcon
   } from '@material-ui/icons'
   import InboxIcon from '@material-ui/icons/Inbox'
   import MailIcon from '@material-ui/icons/Mail'
@@ -32,13 +30,14 @@ import {
   import React from 'react'
   import Cookies from 'js-cookie'
   import axios from 'axios'
+  import Firebase from '../db'
+  import {getAuth} from 'firebase/auth'
   import {
-    Link,
-    useParams
+    Link
   } from 'react-router-dom'
   const drawerWidth = 240;
-  function Dashboard(props) {
-    console.log(props)
+  const auth = getAuth(Firebase)
+  function Navigation(props) {
       const [isMobile, setIsMobile] = React.useState(false)
    
   //choose the screen size 
@@ -57,14 +56,23 @@ import {
   React.useEffect(() => {
     window.addEventListener("resize", handleResize)
   })
+  React.useEffect(() =>{
+      if (props.page == "instances"){
+          setCurrentPage('instances')
+      }
+      if (props.page == "account"){
+          setCurrentPage('account')
+      }
+  }, [])
     const [user_data, setUserData] = React.useState({
       email: null,
       first_name: null,
       last_name: null,
       admin: null
     })
-    const [value, setValue] = React.useState(0);
+    const [currentPage, setCurrentPage] = React.useState(null);
     const [navOpen, setNavOpen] = React.useState(true);
+    const [is_admin, setAdmin] = React.useState()
     const toggleDrawer = () => {
         console.log('nice')
         console.log(navOpen)
@@ -76,17 +84,28 @@ import {
       setNavOpen(true);
     };
     React.useEffect(() => {
-      if (Cookies.get('token')) {
-        var user_info = jsonwebtoken.decode(Cookies.get('token'))
-          setUserData({
-            first_name: user_info.first_name,
-            last_name: user_info.last_name,
-            email: user_info.email,
-            admin: user_info.admin
-          })
-  
-      }
+      auth.currentUser.getIdTokenResult().then((idTokenResult) => {
+        console.log(idTokenResult)
+        console.log(window.location.hostname)
+        if (!!idTokenResult.claims.admin){
+          setAdmin(true)
+        } else {
+          setAdmin(false)
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
     }, [])
+/*     React.useEffect(() => {
+      user.get('email').on(function(email, key){
+        user.get('admin').on(function(admin, key){
+          setUserData({
+            email: email,
+            admin: admin
+          })
+        })
+      })
+    }, []) */
   const styles = {
       stickToBottom: {
           width: '100%',
@@ -127,11 +146,11 @@ import {
           <Box sx={{ overflow: "auto" }}>
             <Divider />
             <List>
-            <ListItem selected={props.page == "servers" ? true : false} button component={Link} to="/" key='Servers'>
+            <ListItem selected={props.page == "instances" ? true : false} button component={Link} to="/" key='Instances'>
                   <ListItemIcon>
-                     <StorageIcon />
+                     <InstanceIcon />
                   </ListItemIcon>
-                  <ListItemText primary='Servers' />
+                  <ListItemText primary='Instances' />
                 </ListItem>
             <ListItem selected={props.page == "account"  ? true : false} button component={Link} to="/account" key='Account'>
                   <ListItemIcon>
@@ -140,11 +159,11 @@ import {
                   <ListItemText primary='Account' />
                 </ListItem>
                 </List>
-                {user_data.admin == true ?          <>                     <Divider />                <List>
+                {is_admin == true ?          <>                     <Divider />                <List>
 
   <ListItem button component={Link} to="/admin" key='Admin'>
                   <ListItemIcon>
-                     <InstanceIcon />
+                     <AdminIcon />
                   </ListItemIcon>
                   <ListItemText
                    primary='Admin' />
@@ -157,8 +176,8 @@ import {
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Toolbar />
           {props.children}
-          
-        <Hidden only={["lg", "xl", "md"]}>
+      </Box>
+      <Hidden only={["lg", "xl", "md"]}>
         <Box style={     {   width: '100%',
           position: 'fixed',
           bottom: 0}}sx={{ width: 500}}>
@@ -169,15 +188,14 @@ import {
             setCurrentPage(newValue);
           }}
         >
-          <BottomNavigationAction value={'servers'} selected={props.page == "server" ? true : false} component={Link} to='/' label="Servers" icon={<StorageIcon />} />
+          <BottomNavigationAction value={'servers'} selected={props.page == "server" ? true : false} component={Link} to='/' label="Servers" icon={<InstanceIcon />} />
           <BottomNavigationAction value={'account'} selected={props.page == "account" ? true : false } component={Link} to="/account" label="Account" icon={<AccountIcon />} />
           <BottomNavigationAction component={Link} to="/admin" label="Admin" icon={<AdminIcon />} />
         </BottomNavigation>
       </Box>
         </Hidden>
       </Box>
-      </Box>
     )
   }
   
-  export default Dashboard
+  export default Navigation

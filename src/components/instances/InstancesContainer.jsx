@@ -1,13 +1,14 @@
 import { getAuth } from "@firebase/auth";
 import { doc, getDoc, getFirestore } from "@firebase/firestore";
-import { Fade } from "@material-ui/core";
+import { CircularProgress, Fade, Grid, Typography } from "@material-ui/core";
 import React from 'react'
 import { Redirect } from "react-router";
-import Dashboard from "../Dashboard";
+import { Link } from "react-router-dom";
+import Navigation from "./Navigation";
 import Firebase from "../db";
+import Instance from "./Instance";
 const auth = getAuth(Firebase)
 const database = getFirestore()
-
 
 function InstancesContainer(){
     const [user, setUser] = React.useState({
@@ -58,24 +59,31 @@ function InstancesContainer(){
         })
     } ,[])
     return(
-        <Dashboard>
-        <p>Nice</p>
-        {user.instances.length !=0 ? 
+        <Navigation page="instances">
+         <Typography fontWeight={500} variant="h4" component="h4">
+             Select an Ararat Instance
+        </Typography>
+        {user.instances.length == 0 || user.instances.length > 1 && instances.length == 0 ?
+        <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}>
+        <CircularProgress disableShrink/>
+        </div>
+        : ""}
+        {user.instances.length !=0 ?
         user.instances.length > 1 ?
-        instances.length !=0? 
-        instances.map((instance, index) => {
+        instances.length !=0?
+        <Grid mt={1} container spacing={2} justifyContent="space-evenly" direction="row">
+        {instances.map((instance, index) => {
             console.log(index)
             return(
-                <Fade in={true} key={index}>
-                <p>{instance.name}</p>
-                </Fade>
+                    <Instance key={index} name={instance.name} id={user.instances[index]} />
             )
-        })
+        })}
+        </Grid>
         : ""
         : <Redirect to={`/${user.instances[0]}`} />
         
         : ""}
-        </Dashboard>
+        </Navigation>
     )
 }
 

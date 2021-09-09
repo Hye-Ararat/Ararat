@@ -22,7 +22,8 @@ import {
       AccountCircle as AccountIcon,
       SupervisorAccount as AdminIcon,
       Menu as MenuIcon,
-      Logout as LogoutIcon
+      Logout as LogoutIcon,
+      Business as InstanceIcon
   } from '@material-ui/icons'
   import InboxIcon from '@material-ui/icons/Inbox'
   import MailIcon from '@material-ui/icons/Mail'
@@ -33,12 +34,14 @@ import {
   import Firebase from './db'
   import {getAuth} from 'firebase/auth'
   import {
-    Link
+    Link,
+    useParams
   } from 'react-router-dom'
   const drawerWidth = 240;
   const auth = getAuth(Firebase)
   function Dashboard(props) {
-      const [isMobile, setIsMobile] = React.useState(false)
+    let {instance} = useParams()
+    const [isMobile, setIsMobile] = React.useState(false)
    
   //choose the screen size 
   const handleResize = () => {
@@ -146,20 +149,29 @@ import {
           <Box sx={{ overflow: "auto" }}>
             <Divider />
             <List>
-            <ListItem selected={props.page == "servers" ? true : false} button component={Link} to="/" key='Servers'>
+            <ListItem selected={props.page == "servers" ? true : false} button component={Link} to={`/${instance}`} key='Servers'>
                   <ListItemIcon>
                      <StorageIcon />
                   </ListItemIcon>
                   <ListItemText primary='Servers' />
                 </ListItem>
-            <ListItem selected={props.page == "account"  ? true : false} button component={Link} to="/account" key='Account'>
+            <ListItem selected={props.page == "account"  ? true : false} button component={Link} to={`/${instance}/account`} key='Account'>
                   <ListItemIcon>
                      <AccountIcon />
                   </ListItemIcon>
                   <ListItemText primary='Account' />
                 </ListItem>
                 </List>
-                {is_admin == true ?          <>                     <Divider />                <List>
+                <Divider /> 
+                <List>
+                <ListItem button component={Link} to="/" key='Instances'>
+                  <ListItemIcon>
+                     <InstanceIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                   primary='Change Instance' />
+                </ListItem> 
+                {is_admin == true ?          <>                                 
 
   <ListItem button component={Link} to="/admin" key='Admin'>
                   <ListItemIcon>
@@ -167,8 +179,9 @@ import {
                   </ListItemIcon>
                   <ListItemText
                    primary='Admin' />
-                </ListItem>                </List>
+                </ListItem>                
  </>: ""}
+ </List>
 
           </Box>
         </Drawer>
