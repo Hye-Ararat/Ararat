@@ -25,19 +25,20 @@ import InstancesContainer from './components/instances/InstancesContainer'
 function AppRouter(){
     const [logged_in, setLoggedIn] = React.useState('loading')
     const auth = getAuth(Firebase)
-    auth.onAuthStateChanged(function(user){
-        if (user){
-            console.log(user)
-            console.log("logged in")
-            setLoggedIn(true)
-        } else {
-            console.log('logged out')
-            setLoggedIn(false)
-        }
-    })
-    function isAuthenticated(){
-        return(logged_in)
-    }
+    React.useEffect(() => {
+        auth.onAuthStateChanged(function(user){
+            if (user){
+                console.log(user)
+                console.log("logged in")
+                setLoggedIn(true)
+            } else {
+                console.log('logged out')
+                setLoggedIn(false)
+            }
+        })
+    }, [])
+
+
     function logout(){
         auth.signOut(auth).then(() => {
             console.log('logged out!')
@@ -61,6 +62,7 @@ return(
     <Router>
         <Switch>
             <Route exact path="/" >{logged_in == "loading" ? <AuthLoading />: logged_in == true ? <InstancesContainer /> : <Redirect to="/auth/login" />}</Route>
+
             <Route exact path="/account">{logged_in == "loading" ? <AuthLoading /> : logged_in == true ? <AccountContainer /> : <Redirect to="/auth/login" />}</Route>
             <Route exact path="/:instance">{logged_in == "loading" ? <AuthLoading />: logged_in == true ? <ServersContainer /> : <Redirect to="/auth/login" />}</Route>
             <Route exact path="/auth/logout" >
