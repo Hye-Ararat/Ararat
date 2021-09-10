@@ -36,7 +36,7 @@ function Instance(props){
     }, [])
     const classes = useStyles()
     return(
-        <Grid item xs={12} sm={6} md={4} lg={3}>
+        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                     <Fade in={true}>
 
         <Card>

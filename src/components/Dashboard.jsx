@@ -15,7 +15,8 @@ import {
     BottomNavigationAction,
     IconButton,
     Modal,
-    Button
+    Button,
+    Tooltip
   } from '@material-ui/core'
   import {
       Storage as StorageIcon,
@@ -127,7 +128,13 @@ import {
             <Typography sx={{ flexGrow: 1 }} variant="h6" noWrap component="div">
               Ararat
             </Typography>
+            <Tooltip title="Change Instance">
+            <IconButton sx={{mr: 2}} component={Link} to="/" edge="end">                   <InstanceIcon /></IconButton>
+            </Tooltip>
+            <Tooltip title="Logout">
             <IconButton component={Link} to="/auth/logout" edge="end">                   <LogoutIcon /></IconButton>
+            </Tooltip>
+
   
           </Toolbar>
         </AppBar>
