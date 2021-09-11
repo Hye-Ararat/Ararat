@@ -59,7 +59,7 @@ function InstancesContainer(){
         })
     } ,[])
     return(
-        <Navigation page="instances">
+        <>
          <Typography fontWeight={500} variant="h4" component="h4">
              Select an Ararat Instance
         </Typography>
@@ -83,7 +83,7 @@ function InstancesContainer(){
         : <Redirect to={`/${user.instances[0]}`} />
         
         : ""}
-        </Navigation>
+        </>
     )
 }
 

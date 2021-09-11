@@ -3,7 +3,9 @@ import {
     Route,
     Redirect,
     Switch,
-    useHistory
+    useHistory,
+    Link,
+    useLocation
 } from 'react-router-dom'
 import React from 'react'
 import Cookies from 'js-cookie'
@@ -18,17 +20,24 @@ import AdminSettingsContainer from './components/admin/settings/AdminSettingsCon
 import AdminNodesContainer from './components/nodes/AdminNodesContainer'
 import CreateNode from './components/nodes/CreateNode'
 import Firebase from './components/db'
-import {getAuth, signOut} from 'firebase/auth'
-import {Backdrop, CircularProgress} from '@material-ui/core'
+import { getAuth, signOut } from 'firebase/auth'
+import { Backdrop, CircularProgress } from '@material-ui/core'
 import AuthLoading from './components/auth/AuthLoading'
 import InstancesContainer from './components/instances/InstancesContainer'
 import AccountContainerInstances from './components/instances/AccountContainerInstances'
-function AppRouter(){
+import Dashboard from './components/Dashboard'
+import InstanceNavigation from './components/instances/Navigation'
+function AppRouter() {
+    const location = useLocation()
+    const [page_nav, setPageNav] = React.useState()
     const [logged_in, setLoggedIn] = React.useState('loading')
     const auth = getAuth(Firebase)
     React.useEffect(() => {
-        auth.onAuthStateChanged(function(user){
-            if (user){
+        console.log(location.pathname)
+    })
+    React.useEffect(() => {
+        auth.onAuthStateChanged(function (user) {
+            if (user) {
                 console.log(user)
                 console.log("logged in")
                 setLoggedIn(true)
@@ -40,13 +49,13 @@ function AppRouter(){
     }, [])
 
 
-    function logout(){
+    function logout() {
         auth.signOut(auth).then(() => {
             console.log('logged out!')
             setLoggedIn(false)
-            
+
         }).catch((error) => {
-            console.log('error '+ error)
+            console.log('error ' + error)
         })
 
     }
@@ -59,14 +68,30 @@ function AppRouter(){
         // }
         return true
     }
-return(
-    <Router>
-        <Switch>
-            <Route exact path="/" >{logged_in == "loading" ? <AuthLoading />: logged_in == true ? <InstancesContainer /> : <Redirect to="/auth/login" />}</Route>
+    return (
+        <Router>
+            <Switch>
+                <Route exact path="/404" render={() => <p>404 not found</p>}/>
+                <Route path="/admin">
+                    <Route path="/admin" render={() => <p>yes</p>} />
+                </Route>
+                <Route path="/auth">
+                        <Route exact path="/auth/login" component={logged_in == "loading" ? LoginContainer : logged_in == true ? () => <Redirect to="/" /> : LoginContainer} />
+                        <Route exact path="/account" component={logged_in == "loading" ? AuthLoading : logged_in == true ? AccountContainerInstances : () => <Redirect to="/auth/login" />}></Route>
+                </Route>
+                <Route path="/">
+                    <InstanceNavigation>
+                        <Route exact path="/" component={logged_in == "loading" ? AuthLoading : logged_in == true ? InstancesContainer : LoginContainer} />
+                        <Route exact path="/account" component={logged_in == "loading" ? AuthLoading : logged_in == true ? AccountContainerInstances : () => <Redirect to="/auth/login" />}></Route>
+                    </InstanceNavigation>
+                </Route>
+                </Switch>
 
-            <Route exact path="/account">{logged_in == "loading" ? <AuthLoading /> : logged_in == true ? <AccountContainerInstances /> : <Redirect to="/auth/login" />}</Route>
-            <Route exact path="/:instance">{logged_in == "loading" ? <AuthLoading />: logged_in == true ? <ServersContainer /> : <Redirect to="/auth/login" />}</Route>
-            <Route exact path="/:instance/account">{logged_in == "loading" ? <AuthLoading /> : logged_in == true ? <AccountContainer /> : <Redirect to="/auth/login" />}</Route>
+
+
+
+            {/*             <Route exact path="/:instance">{logged_in == "loading" ? <AuthLoading />: logged_in == true ? <ServersContainer /> : <Redirect to="/auth/login" />}</Route>
+ */}            {/* <Route exact path="/:instance/account">{logged_in == "loading" ? <AuthLoading /> : logged_in == true ? <AccountContainer /> : <Redirect to="/auth/login" />}</Route>
             <Route exact path="/auth/logout" >
                 {logged_in == "loading" ? <AuthLoading /> : logged_in == true ? () => logout() : <Redirect to="/auth/login" />}
             </Route>
@@ -79,11 +104,9 @@ return(
             <Route exact path = "/:instance/admin/settings" render={() => isAdmin() ? <AdminSettingsContainer /> : <Redirect to="/" />} />
             <Route exact path = "/:instance/admin/settings/mail" render={() => isAdmin() ? <AdminSettingsContainer /> : <Redirect to="/" />} />
             <Route exact path = "/:instance/admin/nodes" render={() => isAdmin() ? <AdminNodesContainer /> : <Redirect to="/" />} />
-            <Route exact path = "/:instance/admin/nodes/create" render={() => isAdmin() ? <CreateNode /> : <Redirect to="/" />} />
-
-        </Switch>
-    </Router>
-)
+            <Route exact path = "/:instance/admin/nodes/create" render={() => isAdmin() ? <CreateNode /> : <Redirect to="/" />} /> */}
+        </Router>
+    )
 }
 
 export default AppRouter;

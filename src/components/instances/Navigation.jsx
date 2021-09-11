@@ -33,7 +33,7 @@ import {
   import Firebase from '../db'
   import {getAuth} from 'firebase/auth'
   import {
-    Link
+    Link, NavLink
   } from 'react-router-dom'
   const drawerWidth = 240;
   const auth = getAuth(Firebase)
@@ -41,6 +41,7 @@ import {
       const [isMobile, setIsMobile] = React.useState(false)
    
   //choose the screen size 
+  console.log('Does this re-run?')
   const handleResize = () => {
     if (window.innerWidth < 900) {
         setIsMobile(true)
@@ -58,10 +59,10 @@ import {
   })
   React.useEffect(() =>{
       if (props.page == "instances"){
-          setCurrentPage('instances')
+          //setCurrentPage('instances')
       }
       if (props.page == "account"){
-          setCurrentPage('account')
+          //setCurrentPage('account')
       }
   }, [])
     const [user_data, setUserData] = React.useState({
@@ -77,25 +78,25 @@ import {
         console.log('nice')
         console.log(navOpen)
         if (navOpen == true) {
-            setNavOpen(false)
+            //setNavOpen(false)
         } else {
-            setNavOpen(true)
+            //setNavOpen(true)
         }
-      setNavOpen(true);
+      //setNavOpen(true);
     };
-    React.useEffect(() => {
+/*     React.useEffect(() => {
       auth.currentUser.getIdTokenResult().then((idTokenResult) => {
         console.log(idTokenResult)
         console.log(window.location.hostname)
         if (!!idTokenResult.claims.admin){
-          setAdmin(true)
+          //setAdmin(true)
         } else {
-          setAdmin(false)
+          //setAdmin(false)
         }
       }).catch((error) => {
         console.log(error)
       })
-    }, [])
+    }, []) */
 /*     React.useEffect(() => {
       user.get('email').on(function(email, key){
         user.get('admin').on(function(admin, key){
@@ -124,7 +125,7 @@ import {
             <Typography sx={{ flexGrow: 1 }} variant="h6" noWrap component="div">
               Ararat
             </Typography>
-            <IconButton component={Link} to="/auth/logout" edge="end">                   <LogoutIcon /></IconButton>
+            <IconButton component={NavLink} to="/auth/logout" edge="end">                   <LogoutIcon /></IconButton>
   
           </Toolbar>
         </AppBar>
@@ -146,13 +147,13 @@ import {
           <Box sx={{ overflow: "auto" }}>
             <Divider />
             <List>
-            <ListItem selected={props.page == "instances" ? true : false} button component={Link} to="/" key='Instances'>
+            <ListItem selected={props.page == "instances" ? true : false} button component={NavLink} to="/" key='Instances'>
                   <ListItemIcon>
                      <InstanceIcon />
                   </ListItemIcon>
                   <ListItemText primary='Instances' />
                 </ListItem>
-            <ListItem selected={props.page == "account"  ? true : false} button component={Link} to="/account" key='Account'>
+            <ListItem selected={props.page == "account"  ? true : false} button component={NavLink} to="/account" key='Account'>
                   <ListItemIcon>
                      <AccountIcon />
                   </ListItemIcon>
@@ -161,7 +162,7 @@ import {
                 </List>
                 {is_admin == true ?          <>                     <Divider />                <List>
 
-  <ListItem button component={Link} to="/admin" key='Admin'>
+  <ListItem button component={NavLink} to="/admin" key='Admin'>
                   <ListItemIcon>
                      <AdminIcon />
                   </ListItemIcon>
@@ -185,12 +186,12 @@ import {
           showLabels
           value={currentPage}
           onChange={(event, newValue) => {
-            setCurrentPage(newValue);
+            //setCurrentPage(newValue);
           }}
         >
-          <BottomNavigationAction value={'servers'} selected={props.page == "server" ? true : false} component={Link} to='/' label="Servers" icon={<InstanceIcon />} />
-          <BottomNavigationAction value={'account'} selected={props.page == "account" ? true : false } component={Link} to="/account" label="Account" icon={<AccountIcon />} />
-          <BottomNavigationAction component={Link} to="/admin" label="Admin" icon={<AdminIcon />} />
+          <BottomNavigationAction value={'servers'} selected={props.page == "server" ? true : false} component={NavLink} to='/' label="Servers" icon={<InstanceIcon />} />
+          <BottomNavigationAction value={'account'} selected={props.page == "account" ? true : false } component={NavLink} to="/account" label="Account" icon={<AccountIcon />} />
+          <BottomNavigationAction component={NavLink} to="/admin" label="Admin" icon={<AdminIcon />} />
         </BottomNavigation>
       </Box>
         </Hidden>
