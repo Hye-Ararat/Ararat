@@ -5,7 +5,8 @@ import {
     Switch,
     useHistory,
     Link,
-    useLocation
+    useLocation,
+    useRouteMatch
 } from 'react-router-dom'
 import React from 'react'
 import Cookies from 'js-cookie'
@@ -27,13 +28,13 @@ import InstancesContainer from './components/instances/InstancesContainer'
 import AccountContainerInstances from './components/instances/AccountContainerInstances'
 import Dashboard from './components/Dashboard'
 import InstanceNavigation from './components/instances/Navigation'
+import GetLocation from './routes/getLocation'
 function AppRouter() {
-    const location = useLocation()
     const [page_nav, setPageNav] = React.useState()
     const [logged_in, setLoggedIn] = React.useState('loading')
     const auth = getAuth(Firebase)
     React.useEffect(() => {
-        console.log(location.pathname)
+        //console.log(location.pathname)
     })
     React.useEffect(() => {
         auth.onAuthStateChanged(function (user) {
@@ -71,22 +72,34 @@ function AppRouter() {
     return (
         <Router>
             <Switch>
-                <Route exact path="/404" render={() => <p>404 not found</p>}/>
-                <Route path="/admin">
-                    <Route path="/admin" render={() => <p>yes</p>} />
-                </Route>
-                <Route path="/auth">
-                        <Route exact path="/auth/login" component={logged_in == "loading" ? LoginContainer : logged_in == true ? () => <Redirect to="/" /> : LoginContainer} />
-                        <Route exact path="/account" component={logged_in == "loading" ? AuthLoading : logged_in == true ? AccountContainerInstances : () => <Redirect to="/auth/login" />}></Route>
-                </Route>
-                <Route path="/">
-                    <InstanceNavigation>
-                        <Route exact path="/" component={logged_in == "loading" ? AuthLoading : logged_in == true ? InstancesContainer : LoginContainer} />
-                        <Route exact path="/account" component={logged_in == "loading" ? AuthLoading : logged_in == true ? AccountContainerInstances : () => <Redirect to="/auth/login" />}></Route>
-                    </InstanceNavigation>
-                </Route>
-                </Switch>
+                {/*Misc Routes */}
+                <Route exact path="/404" render={() => <p>404 not found</p>} />
 
+                {/*Admin Routes */}
+                <Route exact path="/admin" render={() => <p>yes</p>} />
+
+                {/*Authentication Routes */}
+                <Route path="/auth">
+                    <Route exact path="/auth/login" component={logged_in == "loading" ? LoginContainer : logged_in == true ? () => <Redirect to="/" /> : LoginContainer} />
+                    <Route exact path="/account" component={logged_in == "loading" ? AuthLoading : logged_in == true ? AccountContainerInstances : () => <Redirect to="/auth/login" />}></Route>
+                </Route>
+
+
+
+                <Route exact path="/instance/:instance" component={() => <p>Nice</p>}/>
+                {/* Instance Unselected Routes*/}
+                <React.Fragment>
+                    {logged_in == "loading" ? <AuthLoading /> : logged_in == true ?
+                        <InstanceNavigation>
+                            <Switch>
+                                <Route exact path="/" component={logged_in == "loading" ? AuthLoading : logged_in == true ? InstancesContainer : LoginContainer} />
+                                <Route exact path="/account" component={logged_in == "loading" ? AuthLoading : logged_in == true ? AccountContainerInstances : () => <Redirect to="/auth/login" />}></Route>
+                                <Route exact path="*" component={() => <Redirect to="/" />}></Route>
+                            </Switch>
+                        </InstanceNavigation>
+                        : <Redirect to="/auth/login" />}
+                </React.Fragment>
+                </Switch>
 
 
 

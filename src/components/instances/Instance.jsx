@@ -58,7 +58,7 @@ function Instance(props){
             </Typography>
           </CardContent>
           <CardActions>
-            <Button component={Link} to={`/${props.id}`} size="small">Select</Button>
+            <Button component={Link} to={`/instance/${props.id}`} size="small">Select</Button>
           </CardActions>
         </Card>
         </Fade>
