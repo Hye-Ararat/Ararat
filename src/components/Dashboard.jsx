@@ -189,14 +189,13 @@ function Dashboard(props) {
         const docRef = doc(database, "instances", instance, "users", auth.currentUser.uid)
         onSnapshot((docRef), (doc) => {
           if (doc.exists()){
-            if (doc.data.admin == true){
+            if (doc.data().admin == true){
               setAdmin(true)
             }
           } else {
             setAdmin(false)
           }
         })
-        setAdmin(true)
       } else {
         setAdmin(false)
       }
