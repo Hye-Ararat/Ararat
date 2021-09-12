@@ -1,4 +1,6 @@
 import {initializeApp} from 'firebase/app'
+import { CACHE_SIZE_UNLIMITED, enableMultiTabIndexedDbPersistence, Firestore, getFirestore, initializeFirestore } from '@firebase/firestore';
+
 const firebaseConfig = {
     apiKey: "AIzaSyCteyiuE6o6OU5VViEhvwr9lBsMnl5PGn4",
     authDomain: "hye-ararat.firebaseapp.com",
@@ -20,5 +22,7 @@ const firebaseConfig = {
     measurementId: "G-N1EZ3ZLERG"
   }; */
 var Firebase = initializeApp(firebaseConfig)
+
+const db = getFirestore(Firebase)
 
 export default Firebase

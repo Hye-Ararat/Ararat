@@ -39,10 +39,15 @@ import React from 'react'
 import Cookies from 'js-cookie'
 import axios from 'axios'
 import {
-  Link
+  Link,
+  useParams
 } from 'react-router-dom'
 const drawerWidth = 240;
+
+
 function AdminDashboard(props) {
+  const {instance} = useParams()
+  console.log('no')
   console.log(props)
     const [isMobile, setIsMobile] = React.useState(false)
  
@@ -63,6 +68,7 @@ React.useEffect(() => {
   window.addEventListener("resize", handleResize)
 })
 React.useEffect(() =>{
+  console.log('why')
     if (props.page == "servers"){
         setCurrentPage('servers')
     }
@@ -140,19 +146,19 @@ const styles = {
         <Box sx={{ overflow: "auto" }}>
           <ListSubheader>Administration</ListSubheader>
           <List>
-          <ListItem selected={props.page == "overview" ? true : false} button component={Link} to="/admin" key='Overview'>
+          <ListItem selected={props.page == "overview" ? true : false} button component={Link} to={`/admin/instance/${instance}`} key='Overview'>
                 <ListItemIcon>
                    <OverviewIcon />
                 </ListItemIcon>
                 <ListItemText primary='Overview' />
               </ListItem>
-          <ListItem selected={props.page == "settings"  ? true : false} button component={Link} to="/admin/settings" key='Settings'>
+          <ListItem selected={props.page == "settings"  ? true : false} button component={Link} to={`/admin/instance/${instance}/settings`} key='Settings'>
                 <ListItemIcon>
                    <SettingsIcon />
                 </ListItemIcon>
                 <ListItemText primary='Settings' />
               </ListItem>
-              <ListItem selected={props.page == "api"  ? true : false} button component={Link} to="/admin/api" key='API'>
+              <ListItem selected={props.page == "api"  ? true : false} button component={Link} to={`/admin/instance/${instance}/api`} key='API'>
                 <ListItemIcon>
                    <APIIcon />
                 </ListItemIcon>
@@ -161,13 +167,13 @@ const styles = {
               </List>
               <ListSubheader>Management</ListSubheader>
               <List>
-              <ListItem selected={props.page == "servers"  ? true : false} button component={Link} to="/admin/servers" key='Servers'>
+              <ListItem selected={props.page == "servers"  ? true : false} button component={Link} to={`/admin/instance/${instance}/servers`} key='Servers'>
                 <ListItemIcon>
                    <ServersIcon />
                 </ListItemIcon>
                 <ListItemText primary='Servers' />
               </ListItem>
-              <ListItem selected={props.page == "nodes"  ? true : false} button component={Link} to="/admin/nodes" key='Nodes'>
+              <ListItem selected={props.page == "nodes"  ? true : false} button component={Link} to={`/admin/instance/${instance}/nodes`} key='Nodes'>
                 <ListItemIcon>
                    <NodesIcon />
                 </ListItemIcon>
@@ -176,7 +182,7 @@ const styles = {
               </List>
                          <Divider />                <List>
 
-<ListItem button component={Link} to="/" key='Client'>
+<ListItem button component={Link} to={`/instance/${instance}`} key='Client'>
                 <ListItemIcon>
                    <ClientIcon />
                 </ListItemIcon>

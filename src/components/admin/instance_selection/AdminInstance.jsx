@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core'
 import {getStorage, ref, getDownloadURL} from "@firebase/storage"
 import { makeStyles } from '@material-ui/styles';
-import Firebase from '../db';
+import Firebase from '../../db';
 const storage = getStorage(Firebase)
 const useStyles = makeStyles({
     media: {
@@ -60,7 +60,7 @@ function Instance(props){
             </Typography>
           </CardContent>
           <CardActions>
-            <Button component={Link} to={`/instance/${props.id}`} size="small">Select</Button>
+            <Button component={Link} to={`/admin/instance/${props.id}`} size="small">Select</Button>
           </CardActions>
         </Card>
         </Fade>

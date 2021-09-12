@@ -84,19 +84,19 @@ import {
         }
       //setNavOpen(true);
     };
-/*     React.useEffect(() => {
+    React.useEffect(() => {
       auth.currentUser.getIdTokenResult().then((idTokenResult) => {
         console.log(idTokenResult)
         console.log(window.location.hostname)
         if (!!idTokenResult.claims.admin){
-          //setAdmin(true)
+          setAdmin(true)
         } else {
-          //setAdmin(false)
+          setAdmin(false)
         }
       }).catch((error) => {
         console.log(error)
       })
-    }, []) */
+    }, [])
 /*     React.useEffect(() => {
       user.get('email').on(function(email, key){
         user.get('admin').on(function(admin, key){

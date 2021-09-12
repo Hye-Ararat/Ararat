@@ -134,7 +134,7 @@ const auth = getAuth(Firebase)
 
     }
     return (
-      <Dashboard page="account">
+      <React.Fragment>
            <Typography fontWeight={500} variant="h4" component="h4">
             Your Account
           </Typography>
@@ -184,8 +184,7 @@ const auth = getAuth(Firebase)
                 <Divider />
                     <LoadingButton loading={setting_data} sx={{m: 2}} onClick={() => savePersonal()} variant="contained">{successData ? <CheckIcon/> : "Save"}</LoadingButton>
             </Box>
-
-      </Dashboard>
+            </React.Fragment>
     )
   }
   
