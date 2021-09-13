@@ -219,8 +219,8 @@ setCollectedData({...CollectedData, image: key})
     })
   }, [])
   return (
-    <AdminDashboard page="servers">
-      <Typography fontWeight={500} variant="h4" component="h4">
+<React.Fragment>
+<Typography fontWeight={500} variant="h4" component="h4">
         Create Server
       </Typography>
       <Container>
@@ -245,7 +245,7 @@ setCollectedData({...CollectedData, image: key})
          
         </Grid>
       </Container>
-    </AdminDashboard>
+    </React.Fragment>
   )
 }
 

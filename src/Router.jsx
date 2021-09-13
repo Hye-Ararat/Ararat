@@ -102,6 +102,8 @@ function AppRouter() {
                         <AdminDashboard>
                             <Switch>
                                 <Route exact path="/admin/instance/:instance" render={() => <p>yesInstance</p>} />
+                                <Route exact path="/admin/instance/:instance/servers" component={AdminServersContainer} />
+                                <Route exact path = "/admin/instance/:instance/servers/create" component={AdminCreateServerContainer} />
                             </Switch>
                         </AdminDashboard>
                         : <p>403 Unauthorized</p> : <Redirect to="/auth/login" />}

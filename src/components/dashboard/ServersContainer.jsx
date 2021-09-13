@@ -85,10 +85,9 @@ function ServersContainer() {
             <TableRow key={server.name}>
               <TableCell width={10} underline="none" component="th" to="nice" scope="row">
 
-                <img style={{fill: '#fff'}} src="https://cdn.discordapp.com/attachments/802779455831146496/886843737119023135/minecraft.svg" width={50} />
                 </TableCell>
                 <TableCell align="left">
-                <Link style={{textDecoration: 'none', color: '#90caf9', verticalAlign: 'middle'}} to="/nice">{server.name}</Link>
+                <Link style={{textDecoration: 'none', color: '#90caf9', verticalAlign: 'middle'}} to="/nice">Server Name</Link>
 
                 </TableCell>
               <TableCell>1.1.1.1</TableCell>
