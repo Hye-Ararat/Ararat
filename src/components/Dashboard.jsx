@@ -250,6 +250,9 @@ function Dashboard(props) {
               <MenuItem component={Link} to={`/instance/${instance_info.id}`} key={instance_info.id} value={instance_info.id}>{instance_info.name}</MenuItem>
               )
             })}
+            <Divider />
+          <MenuItem component={Link} to={`/`} value={'back'}>Back to Instance Selection</MenuItem>
+
             </Select>
             </React.Fragment>
  : ""}

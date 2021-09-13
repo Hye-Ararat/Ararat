@@ -132,7 +132,7 @@ function AppRouter() {
                     {logged_in === "loading" ? <AuthLoading /> : logged_in == true ?
                         <Dashboard>
                             <Switch>
-                                <Route exact path="/instance/:instance" component={() => <p>Nice</p>} />
+                                <Route exact path="/instance/:instance" component={ServersContainer} />
                                 <Route exact path="/instance/:instance/account" component={AccountContainer} />
                             </Switch>
                         </Dashboard>
