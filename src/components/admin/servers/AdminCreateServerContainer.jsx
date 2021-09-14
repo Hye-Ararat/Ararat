@@ -19,16 +19,22 @@ import {
 import FinalStep from './create/FinalStep'
 import { positions } from '@material-ui/system'
 import {
-  Link
+  Link,
+  useParams
 } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles';
 import React from "react"
+import {getFirestore, collection, query, where, onSnapshot} from '@firebase/firestore'
+import Firebase from "../../db"
+const database = getFirestore()
 const useStyles = makeStyles({
   media: {
     height: 140,
   },
 });
 function AdminCreateServerContainer() {
+  var {instance} = useParams()
+
   const classes = useStyles()
   
   const [step, setStep] = React.useState(0)
@@ -213,9 +219,25 @@ setCollectedData({...CollectedData, image: key})
      }
   }
   React.useEffect(() => {
-    axios.get('http://api.hye.gg:3000/api/v1/admin/magma_cubes').then(function (response) {
-      console.log(response.data) 
-      setData(response.data)
+    const cubesRef = collection(database, `/instances/${instance}/magma_cubes`)
+    const q = query(cubesRef, where("type", "==", "N-VPS"))
+    onSnapshot(q, (querySnapshot) => {
+      let cubes = []
+      function setCubeData(){
+        if (cubes.length == querySnapshot.docs.length){
+          console.log('yes')
+          setData(cubes)
+        } else {
+          console.log('no')
+        }
+        
+      }
+      querySnapshot.forEach((doc) => {
+        cubes.push(doc.data())
+        console.log(doc.data())
+        setCubeData()
+
+      })
     })
   }, [])
   return (

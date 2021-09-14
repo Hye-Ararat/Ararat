@@ -1,8 +1,12 @@
 import AdminDashboard from "../AdminDashboard"
 import {
     Typography,
-    Button
+    Button,
+    SvgIcon
 } from '@material-ui/core'
+import {
+    FindInPage as NoResultsIcon
+} from '@material-ui/icons'
 import {DataGrid, GridOverlay} from '@material-ui/data-grid'
 
 import {
@@ -11,11 +15,26 @@ import {
 } from 'react-router-dom'
 import {getFirestore, query, onSnapshot, collection} from '@firebase/firestore'
 import React from "react"
-function NoNodes(){
+import { Box } from "@material-ui/system"
+function NoServers(){
+    const {instance} = useParams()
     return(
         <GridOverlay>
-            <p>No nodes were found</p>
+            <Box textAlign="center">
+            <Typography>There are no servers on this instance.</Typography>
+            <Button sx={{mt: 1 }}variant="contained" component={Link} to={`/admin/instance/${instance}/servers/create`}>Create One</Button>
+            </Box>
         </GridOverlay>
+    )
+}
+
+function Toolbar(){
+    const {instance} = useParams()
+
+    return(
+        <Box m={1} display="flex"justifyContent="flex-end">
+        <Button variant="contained" size="small" component={Link} to={`/admin/instance/${instance}/servers/create`} align="right">Create</Button>
+        </Box>
     )
 }
 
@@ -23,17 +42,32 @@ const database = getFirestore()
 function AdminServersContainer(){
     const {instance} = useParams()
     const [servers, setServers] = React.useState([])
-    const [columns, setColumns] = React.useState([{field: 'name', headerName: 'Name', width: 130}, {field: "limits.memory", headerName: "Memory", width: 130}])
+    const [loading, setLoading] = React.useState(true)
+    const [columns, setColumns] = React.useState([{field: 'name', headerName: 'Name', width: 130}, {field: "memory", headerName: "Memory", width: 137, valueGetter: (params) => {
+        console.log(params.row)
+        let result = []
+        if (params.row.limits.memory){
+            result.push(params.row.limits.memory)
+        }
+        return result
+    }}])
     React.useEffect(() => {
         const q = query(collection(database, `/instances/${instance}/servers`))
         onSnapshot(q, (querySnapshot) => {
+            if (querySnapshot.docs.length == 0){
+                setServers([])
+                setLoading(false)
+            }
             let current_servers = []
             function setServerData(){
+                if (current_servers.length == querySnapshot.docs.length){
                 setServers(current_servers)
+                setLoading(false)
                 console.log(servers)
+                }
             }
             querySnapshot.forEach((doc) => {
-                var current_server = doc.data()
+                let current_server = doc.data()
                 console.log(doc.data())
                 current_server['id'] = doc.data().name
                 current_servers.push(current_server)
@@ -46,11 +80,13 @@ function AdminServersContainer(){
            <Typography fontWeight={500} variant="h4" component="h4">
             Servers
           </Typography>
-          <Button component={Link} to={`/admin/instance/${instance}/servers/create`}>Create Server</Button>
-          <DataGrid pageSize={10}         rowsPerPageOptions={[10]}
- loading={servers[0] ? false : true} rows={servers}  columns={columns} components={{
-          NoRowsOverlay: NoNodes,
+          <div style={{height: 400}}>
+          <DataGrid pageSize={10}       rowsPerPageOptions={[10]}
+ loading={loading} rows={servers}  columns={columns} components={{
+          NoRowsOverlay: NoServers,
+          Toolbar: Toolbar
         }} />
+        </div>
           </React.Fragment>
     )
 }

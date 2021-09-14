@@ -63,8 +63,13 @@ function ServersContainer() {
       console.log('fetched')
       let current_servers = []
       function setServerData(){
-        setServers(current_servers)
-        console.log(current_servers)
+        if (querySnapshot.docs.length == current_servers.length){
+          setServers(current_servers)
+          console.log(current_servers)
+        } else {
+          console.log('not enough yet')
+        }
+
       }
       querySnapshot.forEach((doc) => {
         current_servers.push(doc.data())
@@ -79,25 +84,37 @@ function ServersContainer() {
         </Typography>
         <TableContainer sx={{mt: 3}} component={Paper}>
         <Table>
+          <TableHead>
+          <TableCell align="left">Name</TableCell>
+          <TableCell align="left">Address</TableCell>
+          <TableCell align="right">Memory</TableCell>
+          <TableCell align="right">CPU Cores</TableCell>
+          <TableCell align="right">Disk</TableCell>
+          <TableCell align="right">Status</TableCell>
+          <TableCell align="right">Action</TableCell>
+
+
+          </TableHead>
         {servers.map((server) => {
+          console.log(server.name)
           return(
             <Fade in={true}>
-            <TableRow key={server.name}>
-              <TableCell width={10} underline="none" component="th" to="nice" scope="row">
+            <TableRow align="left" key={server.name}>
+{/*               <TableCell width={10} underline="none" component="th" to="nice" scope="row">
 
-                </TableCell>
+                </TableCell> */}
                 <TableCell align="left">
                 <Link style={{textDecoration: 'none', color: '#90caf9', verticalAlign: 'middle'}} to="/nice">Server Name</Link>
 
                 </TableCell>
-              <TableCell>1.1.1.1</TableCell>
+              <TableCell align="left">1.1.1.1</TableCell>
               <TableCell align="right">{server.limits.memory}</TableCell>
               <TableCell align="right">{server.limits.cpu}</TableCell>
               <TableCell align="right" >{server.limits.disk}</TableCell>
               <TableCell align="right" sx={{color: '#4caf50'}} ><Chip color="success" size="small" label="Online"></Chip></TableCell>
-              <TableCell align="right"><Button variant="contained">Manage</Button></TableCell>
+              <TableCell align="right"><Button size="small" variant="contained">Manage</Button></TableCell>
             </TableRow>
-            </Fade>
+              </Fade>
           )
         })}
         </Table>
