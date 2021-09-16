@@ -10,16 +10,22 @@ import {
     Switch,
     FormGroup,
     FormControlLabel,
-    Autocomplete
+    Autocomplete,
+    Checkbox,
+    Button,
+    Divider,
+    Fade
 } from '@material-ui/core'
 import {
     LoadingButton
 } from '@material-ui/lab'
 import axios from 'axios'
 import https from 'https'
+import User from './User'
 function FinalStep(Data){
     console.log(Data.Data)
     const magma_cube = Data.Data.magmacube
+    const [user_count, setUserCount] = React.useState(1)
     const [server, setServer] = React.useState({
         type: magma_cube.type,
         magma_cube: magma_cube._id,
@@ -116,6 +122,28 @@ function FinalStep(Data){
             setServer(server_data)
         }
     }
+    const [user_elements, setUserElements] = React.useState()
+    React.useEffect(() => {
+        let elements = []
+        function setUserElementFunction(){
+            if (user_count == elements.length){
+                console.log('yes')
+                setUserElements(elements)
+            } else {
+                console.log('not yet')
+            }
+        }
+
+        for (let number = 0; number < user_count; number++){
+            elements.push(
+            <React.Fragment>
+            <Divider />
+            <User handleCompleteChange={handleCompleteChange} users={users} />
+            </React.Fragment>
+            )
+            setUserElementFunction()
+        }
+    }, [user_count])
 return(
     <>
 <FormGroup>
@@ -127,16 +155,18 @@ return(
             <TextField id="name" onChange={handleFieldChange} ></TextField>
         </Box>
         <Box sx={{ m: 2 }}>
-            <Typography variant="subtitle1" component="p" fontWeight={500}>Server Owner</Typography>
-            <Autocomplete onChange={(handleCompleteChange)} id="owner" sx={{ width: 300 }} getOptionLabel={(option) => option.name + ` (${option.email})`}
-freeSolo options={users} renderInput={(params) => <TextField  {...params} />}></Autocomplete>
-        </Box>
-        <Box sx={{ m: 2 }}>
             <Typography variant="subtitle1" component="p" fontWeight={500}>Node</Typography>
             <Autocomplete onChange={(handleCompleteChange)} id="node" sx={{ width: 300 }}   groupBy={(option) => option.location}   getOptionLabel={(option) => option.name}
 freeSolo options={nodes} renderInput={(params) => <TextField {...params} />}></Autocomplete>
         </Box>
     </Grid>
+</Paper>
+<Typography mt={2} mb={1} variant="h6" component="h6">Users</Typography>
+<Paper variant="outlined">
+        {user_elements}
+        {user_count > 1 ?<Button onClick={() => setUserCount(user_count -1)} variant="contained" color="error" size="small" sx={{m: 1}}>Remove</Button> : ""}
+    <Divider />
+    <Button sx={{m: 1}} variant="contained" onClick={() => setUserCount(user_count + 1)}>Add User</Button>
 </Paper>
 <Typography mt={2} mb={1} variant="h6" component="h6">Networking</Typography>
 <Paper variant="outlined">

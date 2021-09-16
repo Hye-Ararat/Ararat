@@ -55,12 +55,12 @@ function Instance(props){
 
         </CardMedia>
           <CardContent>
-            <Typography noWrap variant="h5" component="div">
+            <Typography noWrap variant="h5">
               {props.name}
             </Typography>
           </CardContent>
           <CardActions>
-            <Button component={Link} to={`/instance/${props.id}`} size="small">Select</Button>
+            <Button sx={{m: 0.5}}variant="contained" component={Link} to={`/instance/${props.id}`} size="small">Select</Button>
           </CardActions>
         </Card>
         </Fade>

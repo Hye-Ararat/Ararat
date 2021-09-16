@@ -135,7 +135,7 @@ const auth = getAuth(Firebase)
     }
     return (
       <React.Fragment>
-           <Typography fontWeight={500} variant="h4" component="h4">
+           <Typography variant="h4">
             Your Account
           </Typography>
           {/* <>{user_data.email ? <Fade in={true}><Typography>{user_data.email}</Typography></Fade> : ""}</>

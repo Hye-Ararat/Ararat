@@ -79,7 +79,7 @@ function ServersContainer() {
   }, [instance])
   return (
     <React.Fragment>
-         <Typography fontWeight={500} variant="h4" component="h4">
+         <Typography variant="h4">
           Your Servers
         </Typography>
         <TableContainer sx={{mt: 3}} component={Paper}>

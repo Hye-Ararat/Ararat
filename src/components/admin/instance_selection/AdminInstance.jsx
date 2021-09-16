@@ -55,7 +55,7 @@ function Instance(props){
 
         </CardMedia>
           <CardContent>
-            <Typography noWrap variant="h5" component="div">
+            <Typography noWrap variant="h5">
               {props.name}
             </Typography>
           </CardContent>

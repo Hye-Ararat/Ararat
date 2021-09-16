@@ -2,45 +2,94 @@ import AdminDashboard from "../admin/AdminDashboard";
 import React from 'react'
 import {
     Typography,
-    Button
+    Button,
+    Box,
+    Paper,
+    CircularProgress
 } from '@material-ui/core'
 import {DataGrid, GridOverlay} from '@material-ui/data-grid'
 import {
     withRouter,
-    Link
+    Link,
+    useParams
 } from 'react-router-dom'
+import Firebase from "../db";
 import axios from 'axios'
-function NoNodes(){
+import {getFirestore, onSnapshot, query, collection} from '@firebase/firestore'
+function Loading(){
     return(
-        <GridOverlay>
-            <p>No nodes were found</p>
+        <GridOverlay style={{backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'}}>
+        <CircularProgress />
         </GridOverlay>
     )
 }
+function NoNodes(){
+    const {instance} = useParams()
+
+    return(
+        <GridOverlay>
+            <Box textAlign="center">
+            <Typography>There are no nodes on this instance.</Typography>
+            <Button sx={{mt: 1 }}variant="contained" component={Link} to={`/admin/instance/${instance}/nodes/create`}>Create One</Button>
+            </Box>
+        </GridOverlay>
+    )
+}
+const database = getFirestore()
+function Toolbar(){
+    const {instance} = useParams()
+
+    return(
+        <Box m={1} display="flex"justifyContent="flex-end">
+        <Button variant="contained" size="small" component={Link} to={`/admin/instance/${instance}/servers/create`} align="right">Create</Button>
+        </Box>
+    )
+}
 function AdminNodesContainer(){
+    const {instance} = useParams()
     const [nodes, setNodes] = React.useState([])
     const [columns, setColumns] = React.useState([{field: 'name', headerName: 'Name', width: 130}, {field: "group", headerName: 'Group', width: 125}, {field: "resources.memory", headerName: "Memory", width: 130}])
+    const [loading, setLoading] = React.useState(true)
     React.useEffect(() => {
-        axios.get('http://api.hye.gg:3000/api/v1/admin/nodes').then(function(response){
-            console.log(response.data)
-            let node_data = response.data
-            node_data['id'] = node_data['_id']
-            console.log(node_data)
-            setNodes(node_data)
-        }).catch(function(error){
-            console.log(error)
+        const q = query(collection(database, `/instances/${instance}/nodes`))
+        onSnapshot(q, (querySnapshot) => {
+            if (querySnapshot.docs.length == 0){
+                setNodes([])
+            }
+            let current_nodes = []
+                function setNodeData(){
+                    if (current_nodes.length == querySnapshot.docs.length){
+                        setNodes(current_nodes)
+                        console.log(current_nodes)
+                        setLoading(false)
+                    } else {
+                        console.log('not ready')
+                    }
+                }
+                    querySnapshot.forEach((doc) => {
+                        let current_node = doc.data()
+                        console.log(doc.data())
+                        current_node['id'] = doc.data().name
+                        current_nodes.push(current_node)
+                        setNodeData()
+                    })
+                
+            
         })
     }, [])
     return(
-        <AdminDashboard page="nodes">
-            <Typography fontWeight={500} variant="h4" component="h4">
+        <React.Fragment>
+            <Typography variant="h4">
                 Nodes
             </Typography>
-            <Button component={Link} to="/admin/nodes/create">Create Node</Button> 
-            <DataGrid loading={nodes[0] ? false : true} rows={nodes}  columns={columns} components={{
+            <Paper sx={{height: 500, mt: 2}}>
+            <DataGrid style={{border: 0}}loading={loading} rows={nodes}  columns={columns} components={{
           NoRowsOverlay: NoNodes,
+          Toolbar: Toolbar,
+          LoadingOverlay: Loading
         }} />
-            </AdminDashboard>
+        </Paper>
+            </React.Fragment>
     )
 }
 export default withRouter(AdminNodesContainer)

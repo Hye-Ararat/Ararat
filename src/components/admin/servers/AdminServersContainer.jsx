@@ -2,7 +2,9 @@ import AdminDashboard from "../AdminDashboard"
 import {
     Typography,
     Button,
-    SvgIcon
+    SvgIcon,
+    Paper,
+    CircularProgress
 } from '@material-ui/core'
 import {
     FindInPage as NoResultsIcon
@@ -24,6 +26,13 @@ function NoServers(){
             <Typography>There are no servers on this instance.</Typography>
             <Button sx={{mt: 1 }}variant="contained" component={Link} to={`/admin/instance/${instance}/servers/create`}>Create One</Button>
             </Box>
+        </GridOverlay>
+    )
+}
+function Loading(){
+    return(
+        <GridOverlay style={{backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'}}>
+        <CircularProgress />
         </GridOverlay>
     )
 }
@@ -77,16 +86,17 @@ function AdminServersContainer(){
     }, [])
     return(
         <React.Fragment>
-           <Typography fontWeight={500} variant="h4" component="h4">
+           <Typography variant="h4">
             Servers
           </Typography>
-          <div style={{height: 400}}>
-          <DataGrid pageSize={10}       rowsPerPageOptions={[10]}
+          <Paper sx={{height: 500, mt: 2}}>
+          <DataGrid style={{border: 0}} pageSize={10}       rowsPerPageOptions={[10]}
  loading={loading} rows={servers}  columns={columns} components={{
           NoRowsOverlay: NoServers,
-          Toolbar: Toolbar
+          Toolbar: Toolbar,
+          LoadingOverlay: Loading
         }} />
-        </div>
+        </Paper>
           </React.Fragment>
     )
 }

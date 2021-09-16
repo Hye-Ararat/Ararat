@@ -35,7 +35,7 @@ function AdminSettingsContainer() {
     }
     })
     return (
-        <AdminDashboard page="settings">
+        <React.Fragment>
             <Typography fontWeight={500} variant="h4" component="h4">
                 Settings
             </Typography>
@@ -114,7 +114,7 @@ function AdminSettingsContainer() {
                 Save
             </LoadingButton>
             </FormGroup>
-        </AdminDashboard>
+        </React.Fragment>
     )
 }
 export default AdminSettingsContainer
