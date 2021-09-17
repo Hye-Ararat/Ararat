@@ -32,13 +32,19 @@ function App() {
         palette: {
           mode: prefersDarkMode ? 'dark' : 'light',
           background:{
-            default: prefersDarkMode ? 'rgb(15, 15, 15)' : '#fff'
+            default: prefersDarkMode ? '#0d141d' : '#fff',
+            paper: prefersDarkMode ? '#141c26' : ""
           },
           primary: {
             main: blue[500]
           },
           success: {
-            main: '#3Be283'
+            main: prefersDarkMode ? '#163a3a' : green[500],
+            contrastText: prefersDarkMode ?'#1ee0ac' : '#fff'
+          },
+          error: {
+            main: prefersDarkMode ? '#34242b' : red[500],
+            contrastText: prefersDarkMode ? '#e85347' : '#fff'
           }
         },
         typography: {
@@ -66,16 +72,20 @@ function App() {
           MuiDrawer: {
             styleOverrides: {
               paper: {
-                backgroundColor: prefersDarkMode ? 'rgb(20, 20, 20)' : "",
-                backgroundImage: red['900']
-              }
+                backgroundColor: prefersDarkMode ? '#101924' : ""              }
             },
+          },
+          MuiTableHead: {
+            styleOverrides:{
+              root:{
+                backgroundColor: prefersDarkMode ? '#28374b' : ""              }
+            }
           },
           MuiListSubheader: {
             styleOverrides: {
               root: {
-                backgroundColor: prefersDarkMode ? 'rgb(20, 20, 20)' : "",
-                backgroundImage: red['900']              }
+                backgroundColor: prefersDarkMode ? 'rgb(18, 18, 18)' : "",
+                backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'              }
             }
           },
           MuiChip: {
@@ -89,6 +99,42 @@ function App() {
             styleOverrides: {
               root: {
                 fontWeight: 500
+              }
+            }
+          },
+          MuiTextField:{
+            styleOverrides:{
+              root:{
+                backgroundColor: '#28374b',
+              borderRadius: 6,
+              },
+            }
+          },
+          MuiInput:{
+            styleOverrides:{
+              root:{
+                borderRadius: 6,
+                
+              }
+            }
+          },
+          MuiOutlinedInput: {
+            styleOverrides:{
+              root: {
+                borderRadius: 6
+              },
+              notchedOutline:{
+                borderRadius: 6,
+                borderStyle: 'none',
+                overflow: 'hidden'
+              },
+            },
+          },
+          MuiAppBar:{
+            styleOverrides:{
+              root:{
+                background: prefersDarkMode ?'#101924' : blue['500'],
+                backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'              
               }
             }
           },

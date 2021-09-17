@@ -36,12 +36,12 @@ function AdminSettingsContainer() {
     })
     return (
         <React.Fragment>
-            <Typography fontWeight={500} variant="h4" component="h4">
+            <Typography variant="h4">
                 Settings
             </Typography>
             <FormGroup>
             <Typography mt={2} mb={1} variant="h6" component="h6">Panel Options</Typography>
-            <Paper variant="outlined">
+            <Paper>
                 <Grid container direction="row">
                     <Box sx={{ m: 2 }}>
                         <Typography variant="subtitle1" component="p" fontWeight={500}>Company Name</Typography>
@@ -68,7 +68,7 @@ function AdminSettingsContainer() {
                 </Grid>
             </Paper>
             <Typography mt={2} mb={1} variant="h6" component="h6">Mail Settings</Typography>
-            <Paper variant="outlined">
+            <Paper>
                 <Grid container direction="row">
                     <Box sx={{ m: 2 }}>
                         <Typography variant="subtitle1" component="p" fontWeight={500}>SMTP Server</Typography>

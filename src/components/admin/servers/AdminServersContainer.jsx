@@ -89,7 +89,7 @@ function AdminServersContainer(){
            <Typography variant="h4">
             Servers
           </Typography>
-          <Paper sx={{height: 500, mt: 2}}>
+          <Paper variant="outlined" sx={{height: 500, mt: 2}}>
           <DataGrid style={{border: 0}} pageSize={10}       rowsPerPageOptions={[10]}
  loading={loading} rows={servers}  columns={columns} components={{
           NoRowsOverlay: NoServers,

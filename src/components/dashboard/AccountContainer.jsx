@@ -141,7 +141,7 @@ const auth = getAuth(Firebase)
           {/* <>{user_data.email ? <Fade in={true}><Typography>{user_data.email}</Typography></Fade> : ""}</>
           <>{user_data.email ? <Typography>{user_data.email}</Typography> : ""}</> */}
                       <Typography mt={2} mb={1} variant="h6" component="h6">Personal Information</Typography>
-          <Box component={Paper} variant="outlined">
+          <Box component={Paper}>
           <Grid container direction="row">
             
           
@@ -161,13 +161,13 @@ const auth = getAuth(Firebase)
 
             <Typography mt={2} mb={1} variant="h6" component="h6">Authentication</Typography>
 
-            <Box component={Paper} variant="outlined">
+            <Box component={Paper}>
           <Grid container direction="row">
             
 
                     <Grid item sx={{ m: 2 }}>
                         <Typography variant="subtitle1" component="p" fontWeight={500}>Change Password</Typography>
-                        <TextField type="password" sx={{mt: 1, width: '15rem'}}id="current_password" label="Current Password" onChange={handleFieldChange} value={field_data.password.current_password ? field_data.password.current_password : ""}></TextField>
+                        <TextField margin="dense" type="password" sx={{mt: 1, width: '15rem'}}id="current_password" placeholder="Current Password" onChange={handleFieldChange} value={field_data.password.current_password ? field_data.password.current_password : ""}></TextField>
                         <Divider />
                         <TextField type="password" sx={{mt: 2, width: '15rem'}} id="new_password" label="New Password" onChange={handleFieldChange} value={field_data.password.new_password ? field_data.password.new_password : ""}></TextField>
                         <Divider />

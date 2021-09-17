@@ -48,6 +48,7 @@ import Dashboard from '../Dashboard'
 import {getFirestore, collection, query, orderBy, getDocs, onSnapshot} from '@firebase/firestore'
 import { getAuth } from '@firebase/auth'
 import Firebase from '../db'
+import { blue } from '@material-ui/core/colors'
 const drawerWidth = 240;
 const database = getFirestore()
 const auth = getAuth(Firebase)
@@ -84,7 +85,7 @@ function ServersContainer() {
         </Typography>
         <TableContainer sx={{mt: 3}} component={Paper}>
         <Table>
-          <TableHead>
+          <TableHead size="small">
           <TableCell align="left">Name</TableCell>
           <TableCell align="left">Address</TableCell>
           <TableCell align="right">Memory</TableCell>
@@ -104,7 +105,7 @@ function ServersContainer() {
 
                 </TableCell> */}
                 <TableCell align="left">
-                <Link style={{textDecoration: 'none', color: '#90caf9', verticalAlign: 'middle'}} to="/nice">Server Name</Link>
+                <Link style={{textDecoration: 'none', color: blue[500], verticalAlign: 'middle'}} to="/nice">Server Name</Link>
 
                 </TableCell>
               <TableCell align="left">1.1.1.1</TableCell>
