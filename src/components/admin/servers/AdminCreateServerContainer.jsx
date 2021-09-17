@@ -53,7 +53,7 @@ function AdminCreateServerContainer() {
        case 0:
          return (
            <>
-          <Card sx={{ width: 275, height: 290, m: 3 }}>
+          <Card sx={{ width: 275, height: 305, m: 3 }}>
           <CardMedia
           className={classes.media}
           image="https://cdn.thenewstack.io/media/2020/08/edd38e1d-thing.png"
@@ -68,10 +68,10 @@ function AdminCreateServerContainer() {
               </Typography>
             </CardContent>
             <CardActions>
-              <Button size="small" onClick={() => { setCollectedData({...CollectedData, type: 'N-VPS'}); setStep(1) }}>Select</Button>
+              <Button sx={{m: 1}}variant="contained" size="small" onClick={() => { setCollectedData({...CollectedData, type: 'N-VPS'}); setStep(1) }}>Select</Button>
             </CardActions>
           </Card>
-          <Card sx={{ width: 275, m: 3, height: 290 }}>
+          <Card sx={{ width: 275, m: 3, height: 305 }}>
           <CardMedia
           className={classes.media}
           image="https://3kllhk1ibq34qk6sp3bhtox1-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/how-to-deploy-java-apps-with-docker-a-quick-tutorial@3x.png"
@@ -86,10 +86,10 @@ function AdminCreateServerContainer() {
               </Typography>
             </CardContent>
             <CardActions>
-              <Button size="small" onClick={() => { setCollectedData({...CollectedData, type: 'Docker'}); setStep(1) }}>Select</Button>
+              <Button sx={{m: 1}}variant="contained" size="small" onClick={() => { setCollectedData({...CollectedData, type: 'Docker'}); setStep(1) }}>Select</Button>
             </CardActions>
           </Card>
-          <Card sx={{ width: 275, m: 3, height: 290 }}>
+          <Card sx={{ width: 275, m: 3, height: 305 }}>
           <CardMedia
           className={classes.media}
           image="https://media.discordapp.net/attachments/775877227573149707/881598139193249792/unknown.png"
@@ -104,7 +104,7 @@ function AdminCreateServerContainer() {
               </Typography>
             </CardContent>
             <CardActions>
-              <Button size="small" onClick={() => { setCollectedData({...CollectedData, type: 'KVM'}); setStep(1) }}>Select</Button>
+              <Button sx={{m: 1}}variant="contained" size="small" onClick={() => { setCollectedData({...CollectedData, type: 'KVM'}); setStep(1) }}>Select</Button>
             </CardActions>
           </Card>
           </>
@@ -135,7 +135,7 @@ function AdminCreateServerContainer() {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small" onClick={() => {
+                <Button size="small" variant="contained" onClick={() => {
                   if (cube.images) {
                     setVersionStep(
                     <Step>

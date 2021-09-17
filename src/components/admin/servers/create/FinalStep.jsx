@@ -151,11 +151,11 @@ return(
 <Paper variant="outlined">
     <Grid container direction="row">
         <Box sx={{ m: 2 }}>
-            <Typography variant="subtitle1" id="name" component="p" fontWeight={500}>Server Name</Typography>
+            <Typography variant="normal" id="name" component="div">Server Name</Typography>
             <TextField id="name" onChange={handleFieldChange} ></TextField>
         </Box>
         <Box sx={{ m: 2 }}>
-            <Typography variant="subtitle1" component="p" fontWeight={500}>Node</Typography>
+            <Typography variant="normal" component="div">Node</Typography>
             <Autocomplete onChange={(handleCompleteChange)} id="node" sx={{ width: 300 }}   groupBy={(option) => option.location}   getOptionLabel={(option) => option.name}
 freeSolo options={nodes} renderInput={(params) => <TextField {...params} />}></Autocomplete>
         </Box>

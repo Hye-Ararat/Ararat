@@ -12,6 +12,7 @@ import {getFirestore, enableMultiTabIndexedDbPersistence} from '@firebase/firest
 
 // Import the functions you need from the SDKs you need
 import Firebase from './components/db'
+import { grey, red } from '@material-ui/core/colors';
 const database = getFirestore()
 var per= getPerformance(Firebase)
 enableMultiTabIndexedDbPersistence(database).catch((error) =>{
@@ -30,14 +31,14 @@ function App() {
       createTheme({
         palette: {
           mode: prefersDarkMode ? 'dark' : 'light',
-          background: {
-            default: prefersDarkMode ? '#121212' : '#fff'
+          background:{
+            default: prefersDarkMode ? 'rgb(15, 15, 15)' : '#fff'
           },
           primary: {
             main: blue[500]
           },
           success: {
-            main: '#4bca81'
+            main: '#3Be283'
           }
         },
         typography: {
@@ -45,9 +46,18 @@ function App() {
             "Inter",
             "sans-serif"
           ].join(','),
+          body2: {
+            fontWeight: 500
+          },
+          normal: {
+            fontWeight: 600
+          },
           h4: {
             fontWeight: 700
             },
+            h6: {
+              fontWeight: 600
+              },
             h5: {
               fontWeight: 600
             },
@@ -56,21 +66,29 @@ function App() {
           MuiDrawer: {
             styleOverrides: {
               paper: {
-                backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'
+                backgroundColor: prefersDarkMode ? 'rgb(20, 20, 20)' : "",
+                backgroundImage: red['900']
               }
             },
           },
           MuiListSubheader: {
             styleOverrides: {
               root: {
-                backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'
-              }
+                backgroundColor: prefersDarkMode ? 'rgb(20, 20, 20)' : "",
+                backgroundImage: red['900']              }
             }
           },
           MuiChip: {
             styleOverrides: {
               root: {
                 fontWeight: 600
+              }
+            }
+          },
+          MuiMenuItem: {
+            styleOverrides: {
+              root: {
+                fontWeight: 500
               }
             }
           },
@@ -85,13 +103,6 @@ function App() {
                 '&:active': {
                   boxShadow: 'none',
                 },
-              },
-            },
-          },
-          MuiDivider: {
-            styleOverrides: {
-              root: {
-                backgroundColor: 'rgb(255,255,255,0.15)',
               },
             },
           },

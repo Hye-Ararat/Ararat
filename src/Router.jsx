@@ -23,7 +23,7 @@ import AdminNodesContainer from './components/nodes/AdminNodesContainer'
 import CreateNode from './components/nodes/CreateNode'
 import Firebase from './components/db'
 import { getAuth, signOut } from 'firebase/auth'
-import { Backdrop, CircularProgress } from '@material-ui/core'
+import { Backdrop, CircularProgress, Typography } from '@material-ui/core'
 import AuthLoading from './components/auth/AuthLoading'
 import InstancesContainer from './components/instances/InstancesContainer'
 import AccountContainerInstances from './components/instances/AccountContainerInstances'
@@ -101,7 +101,7 @@ function AppRouter() {
                     {logged_in === "loading" ? <AuthLoading /> : logged_in == true ? admin == true ?
                         <AdminDashboard>
                             <Switch>
-                                <Route exact path="/admin/instance/:instance" render={() => <p>yesInstance</p>} />
+                                <Route exact path="/admin/instance/:instance" render={() => <Typography variant="normal">yesInstance</Typography>} />
                                 <Route exact path="/admin/instance/:instance/nodes" component={AdminNodesContainer} />
                                 <Route exact path="/admin/instance/:instance/servers" component={AdminServersContainer} />
                                 <Route exact path="/admin/instance/:instance/settings" component={AdminSettingsContainer} />
