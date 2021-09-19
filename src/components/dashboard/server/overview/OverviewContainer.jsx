@@ -1,4 +1,4 @@
-import { Skeleton, Typography, Fade, AppBar, Toolbar, Paper, Grid, Box, IconButton, Tooltip, CardMedia, CardActionArea } from "@material-ui/core"
+import { Button, Skeleton, Typography, Fade, AppBar, Toolbar, Paper, Grid, Box, IconButton, Tooltip, CardMedia, CardActionArea, Chip, Badge } from "@material-ui/core"
 import { useParams } from "react-router"
 import React from "react"
 import {getFirestore, doc, onSnapshot} from '@firebase/firestore'
@@ -45,7 +45,7 @@ function OverviewContainer(){
         }} onMouseOver={() => {
           var image = document.getElementById('overlay')
           image.style.display = ''
-        }} sx={{height: '64px', width: '64px'}} style={{marginBottom: 3}} image="https://mc-api.net/v3/server/favicon/mc.hypixel.net">
+        }} sx={{height: '64px', width: '64px'}} image="https://mc-api.net/v3/server/favicon/mc.hypixel.net">
           <Grid container justifyContent="center" id="overlay" style={{width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.3)', display: 'none'}}>
             <IconButton sx={{width: '100%', height: '100%', ":hover":{background: 'none'}}}>
               <EditIcon/>
@@ -53,7 +53,7 @@ function OverviewContainer(){
           </Grid>
         </CardMedia>
         <Box sx={{ml: 1}}>
-        {server_data.name ? <Fade in={true}><Typography variant="h6">{server_data.name}</Typography></Fade>  : <Skeleton width={200} height={50}></Skeleton>}
+        {server_data.name ? <Fade in={true}><Typography variant="h6">{server_data.name}</Typography></Fade>  : <Skeleton width={100} height={30}></Skeleton>}
         <Grid container direction="row">
         {minecraft_server_data ?         <div style={{marginTop: 3}} dangerouslySetInnerHTML={getMinecraftMotd()} /> : "" }
         <Tooltip title="Edit">
@@ -62,8 +62,29 @@ function OverviewContainer(){
 
         </Grid>
         </Box>
+        <Grid sx={{ml: 'auto', width: 230, height: '20'}} container direction="row" item>
+        <Typography style={{marginLeft: 3}}sx={{mr: 'auto'}} variant="normal">Status: <Badge style={{marginLeft: 5, marginRight: 3}} variant="dot" color="successNoContrast"></Badge> <Typography sx={{color: '#1ee0ac'}}variant="normal">Online</Typography></Typography>
+          <Grid item container direction="row">
+       <Button sx={{m: 'auto'}} color="success" disabled variant="contained">Start</Button>
+       <Button sx={{m: 'auto'}} color="error" variant="contained">Stop</Button> 
+       <Button sx={{m: 'auto'}} color="warning" variant="contained">Restart</Button> 
+       </Grid>
+
+
+       </Grid>
         </Grid>
 
+      </Paper>
+      <Paper sx={{width: 280, p: 1.5, mt: 2}}>
+        <Typography variant="h6">Server Info</Typography>
+        <Grid sx={{width: 360, height: '20'}} container direction="column">
+        <Typography variant="body2">Server Address</Typography>
+        <Typography style={{marginBottom: 10}} variant="normal">1.1.1.1</Typography>
+        <Typography variant="body2">Server Version</Typography>
+        <Typography style={{marginBottom: 10}}  variant="normal">{minecraft_server_data ? minecraft_server_data.version: ""} </Typography>
+        <Typography variant="body2">Players</Typography>
+        <Typography variant="normal">{minecraft_server_data ? minecraft_server_data.players.online + "/" + minecraft_server_data.players.max + " Players Online": ""} </Typography>
+        </Grid>
       </Paper>
     </React.Fragment>
   )

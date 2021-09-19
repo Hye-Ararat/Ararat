@@ -12,7 +12,7 @@ import {getFirestore, enableMultiTabIndexedDbPersistence} from '@firebase/firest
 
 // Import the functions you need from the SDKs you need
 import Firebase from './components/db'
-import { grey, red } from '@material-ui/core/colors';
+import { grey, red, yellow } from '@material-ui/core/colors';
 const database = getFirestore()
 var per= getPerformance(Firebase)
 enableMultiTabIndexedDbPersistence(database).catch((error) =>{
@@ -42,6 +42,9 @@ function App() {
             main: prefersDarkMode ? '#163a3a' : green[500],
             contrastText: prefersDarkMode ?'#1ee0ac' : '#fff'
           },
+          successNoContrast: {
+            main: prefersDarkMode ? '#1ee0ac' : green[500]
+          },
           error: {
             main: prefersDarkMode ? '#34242b' : red[500],
             contrastText: prefersDarkMode ? '#e85347' : '#fff'
@@ -49,6 +52,10 @@ function App() {
           info:{
             main: prefersDarkMode ? '#133542' : blue[600],
             contrastText: prefersDarkMode ? '#09c2de' : "#fff"
+          },
+          warning:{
+            main: prefersDarkMode ? '#363422' : yellow[600],
+            contrastText: prefersDarkMode? '#f4bd0e' : '#fff'
           }
         },
         typography: {
