@@ -1,4 +1,4 @@
-import { Button, Skeleton, Typography, Fade, AppBar, Toolbar, Paper, Grid, Box, IconButton, Tooltip, CardMedia, CardActionArea, Chip, Badge } from "@material-ui/core"
+import { Button, Skeleton, Typography, Fade, AppBar, Toolbar, Paper, Grid, Box, IconButton, Tooltip, CardMedia, CardActionArea, Chip, Badge, Divider } from "@material-ui/core"
 import { useParams } from "react-router"
 import React from "react"
 import {getFirestore, doc, onSnapshot} from '@firebase/firestore'
@@ -23,7 +23,7 @@ function OverviewContainer(){
     })
   }, [])
   React.useEffect(() => {
-    axios.get('https://api.mcsrvstat.us/2/mc.hypixel.net').then((response) => {
+    axios.get('https://api.mcsrvstat.us/2/play.desicraft.xyz    ').then((response) => {
       console.log(response.data)
       setMinecraftServerData(response.data)
     }).catch((error) => {
@@ -45,7 +45,7 @@ function OverviewContainer(){
         }} onMouseOver={() => {
           var image = document.getElementById('overlay')
           image.style.display = ''
-        }} sx={{height: '64px', width: '64px'}} image="https://mc-api.net/v3/server/favicon/mc.hypixel.net">
+        }} sx={{height: '64px', width: '64px'}} image={minecraft_server_data ? minecraft_server_data.icon : ""}>
           <Grid container justifyContent="center" id="overlay" style={{width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.3)', display: 'none'}}>
             <IconButton sx={{width: '100%', height: '100%', ":hover":{background: 'none'}}}>
               <EditIcon/>
@@ -75,6 +75,7 @@ function OverviewContainer(){
         </Grid>
 
       </Paper>
+      <Grid container direction="row">
       <Paper sx={{width: 280, p: 1.5, mt: 2}}>
         <Typography variant="h6">Server Info</Typography>
         <Grid sx={{width: 360, height: '20'}} container direction="column">
@@ -86,6 +87,32 @@ function OverviewContainer(){
         <Typography variant="normal">{minecraft_server_data ? minecraft_server_data.players.online + "/" + minecraft_server_data.players.max + " Players Online": ""} </Typography>
         </Grid>
       </Paper>
+      {minecraft_server_data ? minecraft_server_data.players.list ? 
+      <Paper sx={{ml: 2, mt: 2, p: 1.5, maxWidth: 300, maxHeight: 250 }}>
+        <Typography variant="h6">Players Online</Typography>
+        <Grid container>
+        {minecraft_server_data.players.list.slice(0, 3).map((player) => {
+          var uuid = minecraft_server_data.players.uuid[player]
+          return(
+            <>
+            <Grid container display="row" sx={{mb: 1, mt: 1}}>
+            <img style={{marginRight: 3}} height={30} src={`https://crafatar.com/avatars/${uuid}`} />
+          <Typography variant="normal">{player}</Typography>
+          </Grid>
+                    <Divider />
+                    </>
+          )
+        })
+        }
+              <Grid item>
+                {minecraft_server_data.players.list -1 > 0 ? 
+                <Typography variant="body2"> and <Typography variant="normal">{minecraft_server_data.players.list.length - 3}</Typography> more</Typography> : ""}
+      <Button variant="contained" >View All Players</Button>
+      </Grid>
+         </Grid>
+        
+      </Paper> : "": ""}
+      </Grid>
     </React.Fragment>
   )
 }
