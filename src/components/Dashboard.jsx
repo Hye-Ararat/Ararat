@@ -289,7 +289,7 @@ function Dashboard(props) {
               </ListItem>
               <ListItem selected={props.page == "account" ? true : false} button component={Link} to={`/instance/${instance}/account`} key='Account'>
                 <ListItemIcon>
-                  <AccountIcon />
+                  <AccountIcon/>
                 </ListItemIcon>
                 <ListItemText primary='Account' />
               </ListItem>

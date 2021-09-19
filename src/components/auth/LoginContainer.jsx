@@ -36,7 +36,8 @@ function LoginContainer() {
       const [loggedIn, setLoggedIn] = React.useState()
       const [loggingIn, setLoggingIn] = React.useState(false)
     function login(e){
-        e.preventDefault();
+        var a = e ? e.preventDefault() : "";
+
         setLoggingIn(true);
         signInWithEmailAndPassword(auth, values.email, values.password)
         .then((userCredential) => {
@@ -49,7 +50,9 @@ function LoginContainer() {
             console.log(`message: ${errorMessage}`)
         })
     }
-
+    document.addEventListener('keydown', function ({key}){
+        if (key == "Enter") login();
+    })
     function createUser(){
         /*user.create('test', 'testing12345', function(key){
             console.log(key)
@@ -99,16 +102,16 @@ function LoginContainer() {
                     </Typography>}
                     <Hidden only={["sm", "xs"]}>
                         <FormControl sx={{ m: 1, width: '40ch' }} variant="outlined">
-                        <TextField error={error && error.data.field == "email" && error.data.field !="none" || error && error.data.field == "all" && error.data.field !="none"} helperText={error && error.data.field != 'all' && error.data.field !="none" ? error.data.message : ""} value={values.email} onChange={handleChange('email')} margin="dense" id="Email" label="Email" variant="outlined" type="email" />
-                            <TextField error={error && error.data.field == "password" && error.data.field !="none" || error && error.data.field == "all" && error.data.field !="none"} value={values.password} onChange={handleChange('password')} margin="dense" id="Password" label="Password" variant="outlined" type="password" />
+                        <TextField error={error && error.data.field == "email" && error.data.field !="none" || error && error.data.field == "all" && error.data.field !="none"} helperText={error && error.data.field != 'all' && error.data.field !="none" ? error.data.message : ""} value={values.email} onChange={handleChange('email')} margin="dense" id="Email" placeholder="Email" variant="outlined" type="email" />
+                            <TextField error={error && error.data.field == "password" && error.data.field !="none" || error && error.data.field == "all" && error.data.field !="none"} value={values.password} onChange={handleChange('password')} margin="dense" id="Password" placeholder="Password" variant="outlined" type="password" />
                             <Box component="div" mb={1} />
                             <LoadingButton loading={loggingIn && !loggedIn} onClick={login} variant="contained" disabled={values.email == '' || !values.email.includes('@') || !values.email.includes('.') || values.password == ''}>{loggedIn ? <CheckIcon color="success"/> : "Login"}</LoadingButton>
                         </FormControl>
                     </Hidden>
                     <Hidden only={["md", "lg", "xl"]}>
                         <FormControl sx={{ m: 1, width: '30ch' }} variant="outlined">
-                            <TextField error={error && error.data.field == "email" && error.data.field !="none" || error && error.data.field == "all" && error.data.field !="none"} helperText={error && error.data.field != 'all' && error.data.field !="none" ? error.data.message : ""} value={values.email} onChange={handleChange('email')} margin="dense" id="Email" label="Email" variant="outlined" type="email" />
-                            <TextField error={error && error.data.field == "password" && error.data.field !="none "|| error && error.data.field == "all" && error.data.field !="none"} value={values.password} onChange={handleChange('password')} margin="dense" id="Password" label="Password" variant="outlined" type="password" />
+                            <TextField error={error && error.data.field == "email" && error.data.field !="none" || error && error.data.field == "all" && error.data.field !="none"} helperText={error && error.data.field != 'all' && error.data.field !="none" ? error.data.message : ""} value={values.email} onChange={handleChange('email')} margin="dense" id="Email" placeholder="Email" variant="outlined" type="email" />
+                            <TextField error={error && error.data.field == "password" && error.data.field !="none "|| error && error.data.field == "all" && error.data.field !="none"} value={values.password} onChange={handleChange('password')} margin="dense" id="Password" placeholder="Password" variant="outlined" type="password" />
                             <Box component="div" mb={1} />
                             <LoadingButton loading={loggingIn && !loggedIn} onClick={login} variant="contained" disabled={values.email == '' || !values.email.includes('@') || !values.email.includes('.') || values.password == ''}>{loggedIn ? <CheckIcon color="success"/> : "Login"}</LoadingButton>
                         </FormControl>

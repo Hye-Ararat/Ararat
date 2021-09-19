@@ -9,7 +9,8 @@ import {
     CardActions,
     Button,
     Skeleton,
-    Grid
+    Grid,
+    CardActionArea
 } from '@material-ui/core'
 import {getStorage, ref, getDownloadURL} from "@firebase/storage"
 import { makeStyles } from '@material-ui/styles';
@@ -17,10 +18,10 @@ import Firebase from '../db';
 const storage = getStorage(Firebase)
 const useStyles = makeStyles({
     media: {
-      height: 140,
+      height: 200,
       width: '100%',
       objectFit: 'cover'
-    },
+        },
   });
 function Instance(props){
     const [image, setImage] = React.useState()
@@ -38,30 +39,40 @@ function Instance(props){
     }, [])
     const classes = useStyles()
     return(
-        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+        <Grid item xs={12} sm={6} md={5} lg={4} xl={3}>
                     <Fade in={true}>
+        <Card sx={{      borderRadius: 5
+        }}>
+                  <CardActionArea component={Link} to={`/instance/${props.id}`} sx={{      borderRadius: 5
+        }}>
 
-        <Card>
-            <CardMedia>
+            <CardMedia sx={{      borderRadius: 5
+        }}>
+                  <div style={{borderRadius: 5}}>
+
         <Fade in={imageLoaded}>
-        <img style={{display: imageLoaded ? "block" : "none"}}src={image} onLoad={() => handleImageLoaded()} className={classes.media} />
+        <img draggable="false" style={{      borderRadius: '50%'
+        }} style={{display: imageLoaded ? "block" : "none"}}src={image} onLoad={() => handleImageLoaded()} className={classes.media} />
         </Fade>
         {imageLoaded == false ?
     
-        <Skeleton animation="wave" className={classes.media} variant="rectangular">
+        <Skeleton sx={{      borderRadius: 5
+        }} animation="wave" className={classes.media} variant="rectangular">
         </Skeleton>
         : ""
-}
+}        </div>
+
 
         </CardMedia>
-          <CardContent>
+</CardActionArea>
+{/*           <CardContent>
             <Typography noWrap variant="h5">
               {props.name}
             </Typography>
           </CardContent>
           <CardActions>
             <Button sx={{m: 0.5}}variant="contained" component={Link} to={`/instance/${props.id}`} size="small">Select</Button>
-          </CardActions>
+          </CardActions> */}
         </Card>
         </Fade>
         </Grid>

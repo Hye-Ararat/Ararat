@@ -37,7 +37,7 @@ function App() {
           },
           primary: {
             main: blue[500]
-          },
+                    },
           success: {
             main: prefersDarkMode ? '#163a3a' : green[500],
             contrastText: prefersDarkMode ?'#1ee0ac' : '#fff'
@@ -45,6 +45,10 @@ function App() {
           error: {
             main: prefersDarkMode ? '#34242b' : red[500],
             contrastText: prefersDarkMode ? '#e85347' : '#fff'
+          },
+          info:{
+            main: prefersDarkMode ? '#133542' : blue[600],
+            contrastText: prefersDarkMode ? '#09c2de' : "#fff"
           }
         },
         typography: {
@@ -84,8 +88,8 @@ function App() {
           MuiListSubheader: {
             styleOverrides: {
               root: {
-                backgroundColor: prefersDarkMode ? 'rgb(18, 18, 18)' : "",
-                backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'              }
+                backgroundColor: prefersDarkMode ? '#101924' : "",
+             }
             }
           },
           MuiChip: {

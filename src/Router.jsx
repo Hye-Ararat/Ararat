@@ -33,6 +33,7 @@ import GetLocation from './routes/getLocation'
 import AdminDashboard from './components/admin/AdminDashboard'
 import AdminInstanceSelectContainer from './components/admin/instance_selection/AdminInstanceSelectContainer'
 import AdminInstanceSelectDashboard from './components/admin/instance_selection/AdminInstanceSelectDashboard'
+import OverviewContainer from './components/dashboard/server/overview/OverviewContainer'
 function AppRouter() {
     const [page_nav, setPageNav] = React.useState()
     const [logged_in, setLoggedIn] = React.useState('loading')
@@ -130,7 +131,15 @@ function AppRouter() {
                     {logged_in == "loading" ? <AuthLoading /> : logged_in == true ? () => logout() : <Redirect to="/auth/login" />}
                 </Route>
 
-
+                <Route path="/instance/:instance/server/:server">
+                {logged_in === "loading" ? <AuthLoading /> : logged_in == true ?
+                    <Dashboard>
+                        <Switch>
+                            <Route exact path = "/instance/:instance/server/:server" component={OverviewContainer} />
+                        </Switch>
+                    </Dashboard>
+                    :  <Redirect to="/auth/login" />}
+                </Route>
                 {/*Instance Routes*/}
                 <Route path="/instance/:instance">
                     {logged_in === "loading" ? <AuthLoading /> : logged_in == true ?

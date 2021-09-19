@@ -167,11 +167,11 @@ const auth = getAuth(Firebase)
 
                     <Grid item sx={{ m: 2 }}>
                         <Typography variant="subtitle1" component="p" fontWeight={500}>Change Password</Typography>
-                        <TextField margin="dense" type="password" sx={{mt: 1, width: '15rem'}}id="current_password" placeholder="Current Password" onChange={handleFieldChange} value={field_data.password.current_password ? field_data.password.current_password : ""}></TextField>
+                        <TextField  type="password" sx={{mt: 1, width: '15rem'}}id="current_password" placeholder="Current Password" onChange={handleFieldChange} value={field_data.password.current_password ? field_data.password.current_password : ""}></TextField>
                         <Divider />
-                        <TextField type="password" sx={{mt: 2, width: '15rem'}} id="new_password" label="New Password" onChange={handleFieldChange} value={field_data.password.new_password ? field_data.password.new_password : ""}></TextField>
+                        <TextField type="password" sx={{mt: 2, width: '15rem'}} id="new_password" placeholder="New Password" onChange={handleFieldChange} value={field_data.password.new_password ? field_data.password.new_password : ""}></TextField>
                         <Divider />
-                        <TextField type="password" sx={{mt: 2, width: '15rem'}} required={field_data.password.new_password ? true : false} id="new_password_confirm" label="Confirm New Password" onChange={handleFieldChange} value={field_data.password.new_password_confirm ? field_data.password.new_password_confirm : ""}></TextField>
+                        <TextField type="password" sx={{mt: 2, width: '15rem'}} required={field_data.password.new_password ? true : false} id="new_password_confirm" placeholder="Confirm New Password" onChange={handleFieldChange} value={field_data.password.new_password_confirm ? field_data.password.new_password_confirm : ""}></TextField>
 
                     </Grid>
                     <Grid item sx={{ m: 2 }}>

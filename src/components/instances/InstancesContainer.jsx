@@ -68,11 +68,11 @@ function InstancesContainer(){
     <CircularProgress disableShrink/>
     </div>}
     {instances.length > 0 ?
-             <Typography fontWeight={500} variant="h4" component="h4">
+             <Typography variant="h4" component="h4">
              Select an Ararat Instance
         </Typography> : ""}
     {instances.length > 0 ?
-            <Grid mt={1} container spacing={2} justifyContent="space-evenly" direction="row">
+            <Grid mt={1} container spacing={3} justifyContent="space-evenly" direction="row">
             {instances.map((instance, index) => {
                 return(
                         <Instance key={instance.id} name={instance.name} id={instance.id} />

@@ -242,7 +242,7 @@ setCollectedData({...CollectedData, image: key})
   }, [])
   return (
 <React.Fragment>
-<Typography fontWeight={500} variant="h4" component="h4">
+<Typography variant="h4" component="h4">
         Create Server
       </Typography>
       <Container>
