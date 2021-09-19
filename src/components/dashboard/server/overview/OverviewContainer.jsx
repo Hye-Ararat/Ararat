@@ -105,13 +105,17 @@ function OverviewContainer(){
         })
         }
               <Grid item>
-                {minecraft_server_data.players.list -1 > 0 ? 
+                {minecraft_server_data.players.list.length - 3  > 0 ? 
                 <Typography variant="body2"> and <Typography variant="normal">{minecraft_server_data.players.list.length - 3}</Typography> more</Typography> : ""}
       <Button variant="contained" >View All Players</Button>
       </Grid>
          </Grid>
         
       </Paper> : "": ""}
+      <Paper sx={{ml: 2, mt: 2, p: 1.5, maxWidth: 600, maxHeight: 250 }}>
+        <Typography variant="h6">Audit Log</Typography>
+        <Typography variant="normal">Started Minecraft Server         <Typography variant="body2">4 Days Ago</Typography></Typography>
+      </Paper>
       </Grid>
     </React.Fragment>
   )
