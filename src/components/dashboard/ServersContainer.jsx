@@ -62,6 +62,7 @@ import {getFirestore, collection, query, orderBy, getDocs, onSnapshot} from '@fi
 import { getAuth } from '@firebase/auth'
 import Firebase from '../db'
 import { blue } from '@material-ui/core/colors'
+import Server from './Server'
 
 const drawerWidth = 240;
 const database = getFirestore()
@@ -124,79 +125,10 @@ function ServersContainer() {
         {servers.map((server) => {
           console.log(server.name)
           return(
-            <Grid item>
-            <Fade in={true}>
-              <Card sx={{width: 400}}>
-                <CardActionArea component={Link} to={`/instance/${instance}/server/${server.id}`}>
-                  <CardContent style={{padding: '0px', background: 'url(https://wallpaperaccess.com/download/minecraft-171177)', overflow: 'hidden', backgroundSize: 'cover', backgroundPosition: 'center', WebkitBackdropFilter: 'blur(8px)', backdropFilter: 'blur(8px)', backgroundRepeat: 'no-repeat'}}>
-                    <BackdropFilter
-                    filter={'blur(7px) brightness(50%)'}
-                    >
-                      <div                     style={{padding: '16px'}}>
-                      <Grid container justifyContent="center">
-                      <img height="45px" style={{marginBottom: 3}}src="https://mc-api.net/v3/server/favicon/grmpixelmon.com" />
-                      </Grid>
-                        <Grid container justifyContent="center">
-                   <Typography style={{backdropFilter: 'blur(5px)' }}align="center" variant="h4">{server.name}</Typography>
-                   </Grid>
-                   <Typography align="center" m={1}>
-                   <Chip style={{margin: 'auto', verticalAlign: 'middle'}} color="success" size="large" label="Online" />
-                   </Typography>
-                   <Grid container direction="row" justifyContent="center">
-                  <Grid container justifyContent="center" direction="column" sx={{border: '1px', borderRadius: 1, width: 130, height: 100, boxShadow: 3, mt: 'auto', mr: 'auto', ml: 'auto'}} style={{backgroundColor: 'rgba(25, 25, 25, 0.7)'}}>
-                    <Avatar sx={{color: '#fff', bgcolor: '#2a6abf', mt: 1}}  style={{alignSelf: 'center'}}>
-                    <AddressIcon />
-                    </Avatar>
-                    <Chip sx={{mb: 'auto', mr: 'auto', ml: 'auto', mt: 'auto'}} color="info" size="large" label="1.1.1.1" />
-                    </Grid>
-                    
-                  <Grid container justifyContent="center" direction="column" sx={{border: '1px', borderRadius: 1, width: 130, height: 100, boxShadow: 3, mt: 'auto', mr: 'auto', ml: 'auto'}} style={{backgroundColor: 'rgba(25, 25, 25, 0.7)'}}>
-                    <Avatar sx={{color: '#fff', bgcolor: '#2a6abf', mt: 1}}  style={{alignSelf: 'center'}}>
-                    <PlayersIcon />
-                    </Avatar>
-                    <Fade in={serverThing ? true : false}>
-                    <Chip sx={{mb: 'auto', mr: 'auto', ml: 'auto', mt: 'auto'}} color="info" size="large" label={serverThing} />
-                    </Fade>
-                    </Grid>
-                    
-                    </Grid>
-                    
-                   <Typography align="center" m={1}>
-                   </Typography>
-                   </div>
-                   <CardContent>
-                   <Grid container direction="column" >
-                   <Typography variant="body2" style={{fontWeight: 'bold', margin: 'auto'}}>CPU Usage: 22%</Typography>
-                     <Typography variant="body2" style={{fontWeight: 'bold', margin: 'auto'}}>Memory: 2.01GB/5.0GB</Typography>
-                     <Typography variant="body2" style={{fontWeight: 'bold', margin: 'auto'}}>Disk: 22.5GB/32.0GB</Typography>
-                    </Grid>
-                  </CardContent>
-                   </BackdropFilter>
-                  </CardContent>
-                  </CardActionArea>
-              </Card>
-{/*             <TableRow align="left" key={server.name}>
-{/*               <TableCell width={10} underline="none" component="th" to="nice" scope="row">
-
-                </TableCell> */}
-                {/* <TableCell align="left">
-                <Link style={{textDecoration: 'none', color: blue[500], verticalAlign: 'middle'}} to="/nice">Server Name</Link>
-
-                </TableCell>
-              <TableCell align="left">1.1.1.1</TableCell>
-              <TableCell align="right">{server.limits.memory}</TableCell>
-              <TableCell align="right">{server.limits.cpu}</TableCell>
-              <TableCell align="right" >{server.limits.disk}</TableCell>
-              <TableCell align="right" sx={{color: '#4caf50'}} ><Chip color="success" size="small" label="Online"></Chip></TableCell>
-              <TableCell align="right"><Button size="small" variant="contained">Manage</Button></TableCell>
-            </TableRow> */}
-              </Fade>
-              </Grid>
+            <Server instance={instance} server={server} serverThing={serverThing}/>
           )
-        })}
-        </Grid>
-        {/* </Table> */}
-        {/* </TableContainer> */}
+          })}
+          </Grid>
         </React.Fragment>
         
   )
