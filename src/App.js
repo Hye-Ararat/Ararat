@@ -69,6 +69,9 @@ function App() {
           normal: {
             fontWeight: 600
           },
+          normalNoBold: {
+            fontWeight: 500
+          },
           h4: {
             fontWeight: 700
             },
