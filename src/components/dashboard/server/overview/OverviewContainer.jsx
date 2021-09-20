@@ -1,4 +1,4 @@
-import { Button, Skeleton, Typography, Fade, AppBar, Toolbar, Paper, Grid, Box, IconButton, Tooltip, CardMedia, CardActionArea, Chip, Badge, Divider, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@material-ui/core"
+import { Button, Skeleton, Typography, Fade, AppBar, Toolbar, Paper, Grid, Box, IconButton, Tooltip, CardMedia, CardActionArea, Chip, Badge, Divider, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Avatar } from "@material-ui/core"
 import { useParams } from "react-router"
 import React from "react"
 import {getFirestore, doc, onSnapshot} from '@firebase/firestore'
@@ -28,7 +28,9 @@ import {  Chart,
   SubTitle} from 'chart.js'
 import axios from "axios"
 import {
-  Edit as EditIcon
+  Add,
+  Edit as EditIcon,
+  Gavel
 } from '@material-ui/icons'
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -39,9 +41,6 @@ function OverviewContainer(){
   const {server, instance} = useParams()
   const [server_data, setServerData] = React.useState({
     name: null
-  })
-  const [suggestions, setSuggestions] = React.useState({
-    correctPlayers: true
   })
   const [minecraft_server_data, setMinecraftServerData] = React.useState()
 
@@ -267,22 +266,6 @@ function OverviewContainer(){
         </Grid>
       </Paper>
       {/*Start*/}
-      {minecraft_server_data ? minecraft_server_data.players.lsit ?minecraft_server_data.players.list.length == 12 && minecraft_server_data.players.online != minecraft_server_data.players.list.length ? 
-      <>
-      <Dialog open={suggestions.correctPlayers}
-      onClose={() => alert('closed')}
-      >
-        <DialogTitle>Ararat Suggestions</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Ararat Suggestions has detected that your server is not returning player data to Ararat correctly. To correct this issue, set enable_query=true in your server.properties file. Would you like Ararat Suggestions to automatically apply this fix?</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" onClick={() => setSuggestions({correctPlayers: false})}>Yes</Button>
-          <Button variant="contained" onClick={() => setSuggestions({correctPlayers: false})} color="error">No</Button>
-        </DialogActions>
-        </Dialog>
-        </>
-      : "" : "" : ""}
       {minecraft_server_data ? minecraft_server_data.players.list ? 
       <Paper sx={{ml: 2, mt: 2, p: 1.5, maxWidth: 300, maxHeight: 260 }}>
         <Typography variant="h6">Players Online</Typography>
@@ -302,7 +285,7 @@ function OverviewContainer(){
         }
               <Grid item>
                 {minecraft_server_data.players.list.length - 3  > 0 ? 
-                <Typography variant="body2"> and <Typography variant="normal">{minecraft_server_data.players.list.length - 3} others</Typography></Typography> : ""}
+                <Typography variant="body2"> and <Typography variant="normal">{minecraft_server_data.players.online- 3} others</Typography></Typography> : ""}
       </Grid>
          </Grid>
          <Button size="small" variant="contained" >View All Players</Button>
@@ -349,6 +332,71 @@ function OverviewContainer(){
       <Typography sx={{ml: 1.5, mt: 1.5}} align="center" variant="h6">Disk: 12.3GB/50.0GB</Typography>
       </Paper>
             {/*End*/}
+      </Grid>
+      <Grid container direction="row" sx={{mt: 2}}>
+        <Paper sx={{p: 1.5,  maxWidth: 520}}>
+        <Typography  variant="h6">Recent Tickets</Typography>
+        <Divider />
+        <Grid container direction="row" sx={{width: 500}}>
+        <Typography sx={{width: 400, mt: 2, mb: 2}} display="block" variant="normal" noWrap={true}>The UI is stunning</Typography>
+        <Chip sx={{mt: 2, mb: 2, ml: 'auto'}}size="small" color="warning" label="Agent-Reply" />
+        </Grid>
+
+        <Divider />
+        <Button sx={{mt: 17}} size="small" variant="contained" >View All Tickets</Button>
+        </Paper>
+        <Paper sx={{p: 1.5,  maxWidth: 520, ml: 2}}>
+        <Typography  variant="h6">Expiring Punishments </Typography>
+        <Grid container direction="row" sx={{width: 500}}>
+        <Grid sx={{mt: 2}}container direction="row">
+<img sx={{marginTop: 15}}height={30} src="https://crafatar.com/avatars/b68cea71-52a6-43df-85c3-2afd6bf0ded6" />
+<Typography style={{marginLeft: 3}} variant="normalNoBold">Endermined</Typography>
+<Chip sx={{ml: 'auto'}}size="small" color="info" label="4 Hours Remaining" />
+</Grid>
+        <Grid sx={{mt: 2}}container direction="row">
+<img sx={{marginTop: 15}}height={30} src="https://crafatar.com/avatars/62ae805f-b78a-4dbb-ad46-b0cb24e26ec1" />
+<Typography style={{marginLeft: 3}} variant="normalNoBold">Ctech321</Typography>
+<Chip sx={{ml: 'auto'}}size="small" color="info" label="3 Days Remaining" />
+</Grid>
+    <Grid sx={{mt: 2}}container direction="row">
+<img sx={{marginTop: 15}}height={30} src="https://crafatar.com/avatars/fe742961-072b-432c-b929-8ca3b7a267e8" />
+<Typography style={{marginLeft: 3}} variant="normalNoBold">WolfoGaming</Typography>
+<Chip sx={{ml: 'auto'}}size="small" color="info" label="13 Days Remaining" />
+</Grid>
+
+
+
+        </Grid>
+        <Button sx={{mt: 7}} size="small" variant="contained" >View All Punishments</Button>
+
+        </Paper>
+        <Paper sx={{p: 1.5,  maxWidth: 560, ml: 2}}>
+        <Typography  variant="h6">Available Plugin Updates </Typography>
+        <Typography variant="normalNoBold">Powered by Ararat Suggestions</Typography>
+        <Grid container direction="row" sx={{width: 540}}>
+        <Grid sx={{mt: 2}}container direction="row">
+<img sx={{marginTop: 15}}height={30} src="https://www.spigotmc.org/data/resource_icons/9/9089.jpg?1564514296" />
+<Typography style={{marginLeft: 3}} variant="normalNoBold">EssentialsX</Typography>
+<Chip sx={{ml: 'auto'}}size="small" color="warning" label="2.18.2 -> 2.19.0" />
+</Grid>
+<Grid sx={{mt: 2}}container direction="row">
+<img sx={{marginTop: 15}}height={30} src="https://www.spigotmc.org/data/resource_icons/28/28140.jpg?1490821714" />
+<Typography style={{marginLeft: 3}} variant="normalNoBold">LuckPerms</Typography>
+<Chip sx={{ml: 'auto'}}size="small" color="info" label="5.3.0 -> 5.3.47" />
+</Grid>
+        <Grid sx={{mt: 2}}container direction="row">
+<img sx={{marginTop: 15}}height={30} src="https://www.spigotmc.org/data/resource_icons/19/19254.jpg?1475607356" />
+<Typography style={{marginLeft: 3}} variant="normalNoBold">ViaVersion</Typography>
+<Chip sx={{ml: 'auto'}}size="small" color="info" label="4.0.0 -> 4.0.1" />
+</Grid>
+
+
+
+        </Grid>
+        <Typography sx={{mt: 1}} variant="body2">and <Typography variant="normal">7 other updates</Typography></Typography>
+        <Button sx={{mt: 0.5}}size="small" variant="contained" >View All Updates</Button>
+
+        </Paper>
       </Grid>
     </React.Fragment>
   )

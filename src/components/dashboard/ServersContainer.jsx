@@ -97,7 +97,7 @@ function ServersContainer() {
   }, [instance])
   const [serverThing, setServerThing] = React.useState()
   React.useEffect(() => {
-    axios.get('https://api.mcsrvstat.us/2/mc.hypixel.net').then(function(response){
+    axios.get('https://api.mcsrvstat.us/2/grmpixelmon.com').then(function(response){
       setServerThing(response.data.players.online + '/' + response.data.players.max)
     })
   }, [])
@@ -134,7 +134,7 @@ function ServersContainer() {
                     >
                       <div                     style={{padding: '16px'}}>
                       <Grid container justifyContent="center">
-                      <img height="45px" style={{marginBottom: 3}}src="https://mc-api.net/v3/server/favicon/mc.hypixel.net" />
+                      <img height="45px" style={{marginBottom: 3}}src="https://mc-api.net/v3/server/favicon/grmpixelmon.com" />
                       </Grid>
                         <Grid container justifyContent="center">
                    <Typography style={{backdropFilter: 'blur(5px)' }}align="center" variant="h4">{server.name}</Typography>

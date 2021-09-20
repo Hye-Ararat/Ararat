@@ -25,8 +25,10 @@ enableMultiTabIndexedDbPersistence(database).catch((error) =>{
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
 function App() {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const theme = React.useMemo(
+/*   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+ */  
+const prefersDarkMode= true
+const theme = React.useMemo(
     () =>
       createTheme({
         palette: {
