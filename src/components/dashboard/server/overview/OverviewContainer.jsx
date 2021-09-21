@@ -360,7 +360,7 @@ function OverviewContainer() {
 
 
         {/*End*/}
-        <Grid item xs={12} md={7} lg={6}>
+        <Grid item xs={12} md={7} lg={3.5}>
           <Paper sx={{p: 1.5, mt: 2, height: '100%', position: 'relative' }}>
             <Typography variant="h6">Recent Tickets</Typography>
             <Divider />
@@ -373,7 +373,7 @@ function OverviewContainer() {
           </Paper>
         </Grid>
 
-        <Grid  item lg={6} md={12} xs={12}>
+        <Grid  item lg={3.5} md={5} xs={12}>
           <Paper sx={{ p: 1.5, mt: 2, height: '100%', position: 'relative' }}>
             <Typography variant="h6">Expiring Punishments </Typography>
             <Grid container direction="row" sx={{mb: 5}}>
@@ -400,25 +400,25 @@ function OverviewContainer() {
 
           </Paper>
         </Grid>
-
+        <Grid item md={3.5} xs={6} lg={2.5}>
+          <Paper sx={{position: "relative", mt: 2, height: '100%'}}>
+            <Typography sx={{ p: 1.5 }} variant="h6">CPU</Typography>
+            <Box sx={{position: 'absolute', bottom: 0, width: '100%', height: '90%'}}>
+              <canvas id="cpuChart"></canvas>
+              </Box>
+          </Paper>
+        </Grid>
+        <Grid item md={3.5} xs={6} lg={2.5}>
+        <Paper sx={{position: "relative", mt: 2, height: '100%'}}>
+            <Typography sx={{ p: 1.5 }} variant="h6">RAM</Typography>
+            <Box sx={{position: 'absolute', bottom: 0, width: '100%', height: '90%'}}>
+              <canvas id="ramChart"></canvas>
+              </Box>
+          </Paper>
+        </Grid>
       </Grid>
       <Grid sx={{mt: 2}} justifyContent="space-between" container spacing={2} direction="row">
-        <Grid item md={6} xs={6} lg={6}>
-          <Paper>
-            <Typography sx={{ p: 1.5 }} variant="h6">CPU</Typography>
-            <Box sx={{ height: 100 }}>
-              <canvas id="cpuChart"></canvas>
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid item md={6} xs={6} lg={6}>
-          <Paper>
-            <Typography sx={{ p: 1.5 }} variant="h6">RAM</Typography>
-            <Box sx={{ height: 100 }}>
-              <canvas id="ramChart"></canvas>
-            </Box>
-          </Paper>
-        </Grid>
+
       </Grid>
 
 
