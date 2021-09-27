@@ -1,4 +1,4 @@
-import { Typography, Fade, Button, Breadcrumbs, Backdrop } from "@material-ui/core"
+import { Typography, Fade, Button, Breadcrumbs, Backdrop, Box, Grid, CircularProgress } from "@material-ui/core"
 import axios from "axios"
 import React from "react"
 import { useLocation, useHistory, useParams } from "react-router-dom"
@@ -29,10 +29,12 @@ function FilesContainer(){
     const [magma_cube_data, setMagmaCubeData] = React.useState()
     const [server_data, setServerData] = React.useState()
     const [progress, setProgress] = React.useState(0)
+    const [layout, setLayout] = React.useState("icons")
     React.useEffect(() => {
         console.log("RUN")
         const docRef = doc(database, `/instances/${instance}/servers/${server}`)
         onSnapshot(docRef, (doc) => {
+            setProgress(33)
             if (doc.exists()){
                 setServerData(doc.data())
             }
@@ -43,6 +45,7 @@ function FilesContainer(){
         if (server_data){
         const docRef = doc(database, `/instances/${instance}/magma_cubes/${server_data.magma_cube}`)
         onSnapshot(docRef, (doc) => {
+            setProgress(66)
             if (doc.exists()){
                 setMagmaCubeData(doc.data())
                 let system_path = []
@@ -56,14 +59,12 @@ function FilesContainer(){
     }
     }, [server_data, query.get("path")])
     React.useEffect(() => {
-        setProgress(10)
         const ydoc = new Y.Doc()
         const provider = new WebrtcProvider(`${query.get("path")}${instance}`, ydoc)
         const monacoType = ydoc.getText('monaco')
         axios.get(`https://nl-brd-1.hye.gg:2221/api/v1/server/4DvivxbhPdlglLG1WVzn/files?path=${query.get("path")}`, {
             transformResponse: (res, headers) => {
                 // Do your own parsing here if needed ie JSON.parse(res);
-                setProgress(20)
                 if (headers["content-type"] == "text/html; charset=utf-8"){
                     return res;
                 } else {
@@ -71,7 +72,7 @@ function FilesContainer(){
                 }
             },
         }).then(function(response){
-            setProgress(30)
+            setProgress(100)
             console.log(response.data)
             console.log(response.headers)
             if (response.headers["content-type"] == "text/html; charset=utf-8"){
@@ -122,7 +123,7 @@ function FilesContainer(){
         <React.Fragment>
             <LoadingBar color="#2196f3" progress={progress} onLoaderFinished={() => setProgress(0)} />
             <Typography variant="h4">Files</Typography>
-            <Breadcrumbs aria-label="breadcrumb">
+            <Breadcrumbs aria-label="breadcrumb" sx={{mb: 2}}>
   {path_arr ? path_arr.map((item, i) => {
       console.log(i)
       console.log(path_arr.length)
@@ -146,13 +147,27 @@ function FilesContainer(){
       }
             }) : ""}
 </Breadcrumbs>
+<Grid direction="row" container sx={{width: '100%'}}>
             {files ? files.map((file) => {
+                console.log(file.file)
+                console.log(file.file.length)
                 return(
+                    layout == "icons" ?
                     <Fade in={true}>
-                <Button onClick={() => history.push(`${location.pathname}?path=${query.get("path")}${file.file}${file.type == "folder" ? "/" : ""}`)}>{file.file}</Button>
+{/*                 <Button onClick={() => history.push(`${location.pathname}?path=${query.get("path")}${file.file}${file.type == "folder" ? "/" : ""}`)}>{file.file}</Button>
+
+ */}
+ <Grid item sx={{width: 120, height: 70, ml: 5, mr: 5, mb: 5}} alignItems="center">
+  <Grid justifyContent="center"  item container alignItems="center" sx={{width: 70, height: 70, background: '#28374b', borderRadius: 3, margin: 'auto'}}>
+<img style={{width: 50, height: 50}} src={file.file.split(".").pop() == "js" ? "/icons/files/js.svg" : file.file.split(".").pop() == "yml" ? "/icons/files/yaml.svg" : file.file.split(".").pop() == "json" ? "/icons/files/json.svg" : file.file.split(".").pop() == "jar" ? "/icons/files/java.svg" : file.file.split(".").pop() == "png" ? "/icons/files/image.svg" : file.type == 'folder' ? "/icons/files/folder_light.svg" : "/icons/files/unknown.svg"} />
+  </Grid>
+  <Typography variant="body2" noWrap align="center">{file.file.length < 19 ? file.file : file.file.substring(0, 10) + "..." + file.file.split(".").pop().split(0, 4)}</Typography>
+  </Grid>
                 </Fade>
+                    : ""
                 )
             }) : ""}
+            </Grid>
             {type == "file" ? 
             <React.Fragment>
             <div id="monaco-editor" style={{height: 500}} />

@@ -56,7 +56,8 @@ import {
   import { shadows } from '@mui/system';
   import {
     Link,
-    useParams
+    useParams,
+    useHistory
   } from 'react-router-dom'
   import Dashboard from '../Dashboard'
   import {getFirestore, collection, query, orderBy, getDocs, onSnapshot, doc, getDoc} from '@firebase/firestore'
@@ -65,6 +66,7 @@ import {
   import { blue } from '@material-ui/core/colors'
   import prettyBytes from 'pretty-bytes'
 function Server(props){
+  const history = useHistory()
   const database = getFirestore()
   const [allocation_data, setAllocationData] = React.useState()
   const [server_status, setServerStatus] = React.useState({
@@ -87,7 +89,7 @@ function Server(props){
       console.log(props.instance)
       console.log(props.server.allocations.main)
       const docRef = doc(database, "instances", props.instance, "nodes", props.server.node, "allocations", props.server.allocations.main)
-      onSnapshot(docRef, (doc) => {
+      const unsubscribe = onSnapshot(docRef, (doc) => {
         if (doc.exists()){
           console.log(doc.data())
           setAllocationData(doc.data())
@@ -95,24 +97,45 @@ function Server(props){
           console.log('nope')
         }
       })
+      history.listen((location, action) => {
+        console.log(`${action} on ${location}`)
+        if (action === "PUSH"){
+          unsubscribe()
+        }
+      })
     }
   }, [])
-
   React.useEffect(() => {
     const docRef = doc(database, "instances", props.instance, "nodes", props.server.node)
+    const unsubscribe = onSnapshot(docRef, (doc) => {
+      setNodeInfo(doc.data())
+    })
+    history.listen((location, action) => {
+      console.log(`${action} on ${location}`)
+      if (action === "PUSH"){
+        unsubscribe()
+      }
+    })
+  }, [])
+  React.useEffect(() => {
     async function websocketStuff(){
-      const node = await getDoc(docRef)
-      const node_data = node.data()
-      setNodeInfo(node_data)
-      const ws = new WebSocket(`wss://${node_data.address.hostname}:${node_data.address.port}/api/v1/server/${props.server.id}/resources`);
+      const ws = new WebSocket(`wss://${node_info.address.hostname}:${node_info.address.port}/api/v1/server/${props.server.id}/resources`);
       ws.onmessage = (event) => {
         const response = JSON.parse(event.data);
         setServerStatus(response)
       }
-    }
 
+      history.listen((location, action) => {
+        console.log(`${action} on ${location}`)
+        if (action === "PUSH"){
+          ws.close()
+        }
+      })
+    }
+    if (node_info.address.hostname != null & node_info.address.port != null){
     websocketStuff()
-  }, [])
+    }
+  }, [node_info])
     return(
         <Grid item>
             <Fade in={true}>
@@ -134,6 +157,10 @@ function Server(props){
                    <Chip style={{margin: 'auto', verticalAlign: 'middle'}} color="success" size="large" label="Online" />
                       : "" : <Skeleton style={{margin: 'auto', verticleAlign: 'middle'}}>                   <Chip style={{margin: 'auto', verticalAlign: 'middle'}} color="success" size="large" label="Online" />
 </Skeleton>                    }
+{server_status.status ? server_status.status == "exited" ?
+                   <Chip style={{margin: 'auto', verticalAlign: 'middle'}} color="error" size="large" label="Offline" />
+                      : "" : ""
+                   }
                    </Typography>
                    <Grid container direction="row" justifyContent="center">
                   <Grid container justifyContent="center" direction="column" sx={{border: '1px', borderRadius: 1, width: 190, height: 100, boxShadow: 3, mt: 'auto', mr: 'auto', ml: 'auto'}} style={{backgroundColor: 'rgba(25, 25, 25, 0.7)'}}>
@@ -159,8 +186,8 @@ function Server(props){
                    </div>
                    <CardContent>
                    <Grid container direction="column" >
-                   <Typography noWrap variant="body2" style={{fontWeight: 'bold', margin: 'auto'}}>CPU Usage: {server_status.cpu ? server_status.cpu.toFixed(2) + "%" : ""}</Typography>
-                     <Typography noWrap variant="body2" style={{fontWeight: 'bold', margin: 'auto'}}>Memory: {server_status.memory ? prettyBytes(server_status.memory, {binary: true}) + "/ 8GiB" : ""}</Typography>
+                   <Typography noWrap variant="body2" style={{fontWeight: 'bold', margin: 'auto'}}>CPU Usage: {server_status.status != "exited" ? server_status.cpu ? server_status.cpu.toFixed(2) + "%" : "" : "0%"}</Typography>
+                     <Typography noWrap variant="body2" style={{fontWeight: 'bold', margin: 'auto'}}>Memory: {server_status.status != "exited" ? server_status.memory ? prettyBytes(server_status.memory, {binary: true}) + "/ 8GiB" : "" : "0GiB / 8GiB"}</Typography>
                      <Typography noWrap variant="body2" style={{fontWeight: 'bold', margin: 'auto'}}>Disk: 22.5GB/32.0GB</Typography>
                     </Grid>
                   </CardContent>
