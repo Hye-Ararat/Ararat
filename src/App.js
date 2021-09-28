@@ -1,8 +1,7 @@
-import logo from './logo.svg';
 import './App.css';
 import AppRouter from './Router'
 import * as React from 'react';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+// import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import {blue, green} from '@mui/material/colors'
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,8 +11,9 @@ import {getFirestore, enableMultiTabIndexedDbPersistence} from '@firebase/firest
 
 // Import the functions you need from the SDKs you need
 import Firebase from './components/db'
-import { grey, red, yellow } from '@material-ui/core/colors';
+import { red, yellow } from '@material-ui/core/colors';
 const database = getFirestore()
+// eslint-disable-next-line no-unused-vars
 var per= getPerformance(Firebase)
 enableMultiTabIndexedDbPersistence(database).catch((error) =>{
   console.log(error)

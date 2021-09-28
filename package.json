@@ -29,6 +29,7 @@
     "jsonwebtoken": "^8.5.1",
     "monaco-editor": "^0.28.1",
     "monaco-editor-webpack-plugin": "^4.2.0",
+    "prettier": "^2.4.1",
     "pretty-bytes": "^5.6.0",
     "react": "^17.0.2",
     "react-backdrop-filter": "^2.1.0",
@@ -69,5 +70,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.26.0"
   }
 }
