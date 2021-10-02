@@ -32,6 +32,7 @@ function Server(props) {
     netin: null,
     netout: null,
   });
+  const [minecraft_server_query, setMinecraftServerQuery] = React.useState();
   const [node_info, setNodeInfo] = React.useState({
     address: {
       hostname: null,
@@ -87,7 +88,7 @@ function Server(props) {
     });
   }, []);
   React.useEffect(() => {
-    async function websocketStuff() {
+    async function websocketResources() {
       const ws = new WebSocket(
         `wss://${node_info.address.hostname}:${node_info.address.port}/api/v1/server/${props.server.id}/resources`
       );
@@ -103,11 +104,27 @@ function Server(props) {
         }
       });
     }
+    async function websocketPlayers() {
+      const ws = new WebSocket(
+        `wss://${node_info.address.hostname}:${node_info.address.port}/api/v1/server/${props.server.id}/minecraft/players`
+      );
+      ws.onmessage = (event) => {
+        const response = JSON.parse(event.data);
+        setMinecraftServerQuery(response);
+      };
+      history.listen((location, action) => {
+        console.log(`${action} on ${location}`);
+        if (action === "PUSH") {
+          ws.close();
+        }
+      });
+    }
     if (
       (node_info.address.hostname != null) &
       (node_info.address.port != null)
     ) {
-      websocketStuff();
+      websocketPlayers();
+      websocketResources();
     }
   }, [node_info]);
   return (
@@ -262,7 +279,15 @@ function Server(props) {
                           }}
                           color="info"
                           size="large"
-                          label={props.serverThing}
+                          label={
+                            minecraft_server_query ? (
+                              minecraft_server_query.onlinePlayers +
+                              " / " +
+                              minecraft_server_query.maxPlayers
+                            ) : (
+                              <Skeleton width={40} height={30}></Skeleton>
+                            )
+                          }
                         />
                       </Fade>
                     </Grid>

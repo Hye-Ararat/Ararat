@@ -16,6 +16,8 @@ import { WebrtcProvider } from "y-webrtc";
 import { MonacoBinding } from "y-monaco";
 import loader from "@monaco-editor/loader";
 import { getFirestore, onSnapshot, doc } from "@firebase/firestore";
+import { getAuth, getIdToken } from "@firebase/auth";
+import Firebase from "../../../db";
 
 const database = getFirestore();
 
@@ -23,6 +25,7 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 function FilesContainer() {
+  const auth = getAuth(Firebase);
   const query = useQuery();
   const { instance, server } = useParams();
   const history = useHistory();
@@ -38,6 +41,15 @@ function FilesContainer() {
   const [progress, setProgress] = React.useState(0);
   // eslint-disable-next-line no-unused-vars
   const [layout, setLayout] = React.useState("icons");
+  React.useEffect(() => {
+    getIdToken(auth.currentUser, true)
+      .then(function (idToken) {
+        console.log(idToken);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
   React.useEffect(() => {
     console.log("RUN");
     const docRef = doc(database, `/instances/${instance}/servers/${server}`);

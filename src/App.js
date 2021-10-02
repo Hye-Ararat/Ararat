@@ -1,23 +1,25 @@
-import './App.css';
-import AppRouter from './Router'
-import * as React from 'react';
+import "./App.css";
+import AppRouter from "./Router";
+import * as React from "react";
 // import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
-import {blue, green} from '@mui/material/colors'
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+import { blue, green } from "@mui/material/colors";
+import CssBaseline from "@material-ui/core/CssBaseline";
 import { getPerformance } from "firebase/performance";
-import {getFirestore, enableMultiTabIndexedDbPersistence} from '@firebase/firestore'
-
+import {
+  getFirestore,
+  enableMultiTabIndexedDbPersistence,
+} from "@firebase/firestore";
 
 // Import the functions you need from the SDKs you need
-import Firebase from './components/db'
-import { red, yellow } from '@material-ui/core/colors';
-const database = getFirestore()
+import Firebase from "./components/db";
+import { red, yellow } from "@material-ui/core/colors";
+const database = getFirestore();
 // eslint-disable-next-line no-unused-vars
-var per= getPerformance(Firebase)
-enableMultiTabIndexedDbPersistence(database).catch((error) =>{
-  console.log(error)
-})
+var per = getPerformance(Firebase);
+enableMultiTabIndexedDbPersistence(database).catch((error) => {
+  console.log(error);
+});
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -25,159 +27,157 @@ enableMultiTabIndexedDbPersistence(database).catch((error) =>{
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
 function App() {
-/*   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
- */  
-const prefersDarkMode= true
-const theme = React.useMemo(
+  /*   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+   */
+  const prefersDarkMode = true;
+  const theme = React.useMemo(
     () =>
       createTheme({
         palette: {
-          mode: prefersDarkMode ? 'dark' : 'light',
-          background:{
-            default: prefersDarkMode ? '#0d141d' : '#fff',
-            paper: prefersDarkMode ? '#141c26' : ""
+          mode: prefersDarkMode ? "dark" : "light",
+          background: {
+            default: prefersDarkMode ? "#0d141d" : "#fff",
+            paper: prefersDarkMode ? "#141c26" : "",
           },
           primary: {
-            main: blue[500]
-                    },
+            main: blue[500],
+          },
           success: {
-            main: prefersDarkMode ? '#163a3a' : green[500],
-            contrastText: prefersDarkMode ?'#1ee0ac' : '#fff'
+            main: prefersDarkMode ? "#163a3a" : green[500],
+            contrastText: prefersDarkMode ? "#1ee0ac" : "#fff",
           },
           successNoContrast: {
-            main: prefersDarkMode ? '#1ee0ac' : green[500]
+            main: prefersDarkMode ? "#1ee0ac" : green[500],
           },
           error: {
-            main: prefersDarkMode ? '#34242b' : red[500],
-            contrastText: prefersDarkMode ? '#e85347' : '#fff'
+            main: prefersDarkMode ? "#34242b" : red[500],
+            contrastText: prefersDarkMode ? "#e85347" : "#fff",
           },
-          info:{
-            main: prefersDarkMode ? '#133542' : blue[600],
-            contrastText: prefersDarkMode ? '#09c2de' : "#fff"
+          info: {
+            main: prefersDarkMode ? "#133542" : blue[600],
+            contrastText: prefersDarkMode ? "#09c2de" : "#fff",
           },
-          warning:{
-            main: prefersDarkMode ? '#363422' : yellow[600],
-            contrastText: prefersDarkMode? '#f4bd0e' : '#fff'
-          }
+          warning: {
+            main: prefersDarkMode ? "#363422" : yellow[600],
+            contrastText: prefersDarkMode ? "#f4bd0e" : "#fff",
+          },
         },
         typography: {
-          fontFamily: [
-            "Inter",
-            "sans-serif"
-          ].join(','),
+          fontFamily: ["Inter", "sans-serif"].join(","),
           body2: {
-            fontWeight: 500
+            fontWeight: 500,
           },
           normal: {
-            fontWeight: 600
+            fontWeight: 600,
           },
           normalNoBold: {
-            fontWeight: 500
+            fontWeight: 500,
           },
           h4: {
-            fontWeight: 700
-            },
-            h6: {
-              fontWeight: 600
-              },
-            h5: {
-              fontWeight: 600
-            },
+            fontWeight: 700,
           },
+          h6: {
+            fontWeight: 600,
+          },
+          h5: {
+            fontWeight: 600,
+          },
+        },
         components: {
           MuiDrawer: {
             styleOverrides: {
               paper: {
-                backgroundColor: prefersDarkMode ? '#101924' : ""              }
+                backgroundColor: prefersDarkMode ? "#101924" : "",
+              },
             },
           },
           MuiTableHead: {
-            styleOverrides:{
-              root:{
-                backgroundColor: prefersDarkMode ? '#28374b' : ""              }
-            }
+            styleOverrides: {
+              root: {
+                backgroundColor: prefersDarkMode ? "#28374b" : "",
+              },
+            },
           },
           MuiListSubheader: {
             styleOverrides: {
               root: {
-                backgroundColor: prefersDarkMode ? '#101924' : "",
-             }
-            }
+                backgroundColor: prefersDarkMode ? "#101924" : "",
+              },
+            },
           },
           MuiChip: {
             styleOverrides: {
               root: {
-                fontWeight: 600
-              }
-            }
+                fontWeight: 600,
+              },
+            },
           },
           MuiMenuItem: {
             styleOverrides: {
               root: {
-                fontWeight: 500
-              }
-            }
-          },
-          MuiTextField:{
-            styleOverrides:{
-              root:{
-                backgroundColor: '#28374b',
-              borderRadius: 6,
-              },
-            }
-          },
-          MuiInput:{
-            styleOverrides:{
-              root:{
-                borderRadius: 6,
-                
-              }
-            }
-          },
-          MuiOutlinedInput: {
-            styleOverrides:{
-              root: {
-                borderRadius: 6
-              },
-              notchedOutline:{
-                borderRadius: 6,
-                borderStyle: 'none',
-                overflow: 'hidden'
+                fontWeight: 500,
               },
             },
           },
-          MuiAppBar:{
-            styleOverrides:{
-              root:{
-                background: prefersDarkMode ?'#101924' : blue['500'],
-                backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))'              
-              }
-            }
+          MuiTextField: {
+            styleOverrides: {
+              root: {
+                backgroundColor: "#28374b",
+                borderRadius: 6,
+              },
+            },
+          },
+          MuiInput: {
+            styleOverrides: {
+              root: {
+                borderRadius: 6,
+              },
+            },
+          },
+          MuiOutlinedInput: {
+            styleOverrides: {
+              root: {
+                borderRadius: 6,
+              },
+              notchedOutline: {
+                borderRadius: 6,
+                borderStyle: "none",
+                overflow: "hidden",
+              },
+            },
+          },
+          MuiAppBar: {
+            styleOverrides: {
+              root: {
+                background: prefersDarkMode ? "#101924" : blue["500"],
+                backgroundImage:
+                  "linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))",
+              },
+            },
           },
           MuiButton: {
             styleOverrides: {
               root: {
-                textTransform: 'none',
-                fontWeight: '600'
+                textTransform: "none",
+                fontWeight: "600",
               },
               contained: {
-                boxShadow: 'none',
-                '&:active': {
-                  boxShadow: 'none',
+                boxShadow: "none",
+                "&:active": {
+                  boxShadow: "none",
                 },
               },
             },
           },
         },
-        
       }),
-    [prefersDarkMode],
+    [prefersDarkMode]
   );
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
 
-    <AppRouter />
+      <AppRouter />
     </ThemeProvider>
   );
 }
