@@ -2,7 +2,6 @@
 import { Typography, Grid } from "@material-ui/core";
 //import {ReactComponent as Logo} from '../../minecraft.svg'
 import React from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import {
   getFirestore,
@@ -45,16 +44,6 @@ function ServersContainer() {
       });
     });
   }, [instance]);
-  const [serverThing, setServerThing] = React.useState();
-  React.useEffect(() => {
-    axios
-      .get("https://api.mcsrvstat.us/2/grmpixelmon.com")
-      .then(function (response) {
-        setServerThing(
-          response.data.players.online + "/" + response.data.players.max
-        );
-      });
-  }, []);
 
   return (
     <React.Fragment>
@@ -77,13 +66,7 @@ function ServersContainer() {
       <Grid spacing={5} container direction="row">
         {servers.map((server) => {
           console.log(server.name);
-          return (
-            <Server
-              instance={instance}
-              server={server}
-              serverThing={serverThing}
-            />
-          );
+          return <Server instance={instance} server={server} />;
         })}
       </Grid>
     </React.Fragment>

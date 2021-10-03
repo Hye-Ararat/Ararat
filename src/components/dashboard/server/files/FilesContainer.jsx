@@ -119,7 +119,7 @@ function FilesContainer() {
             color: "#fff",
           });
           loader.init().then((monaco) => {
-            const editor = monaco.editor.create(
+            window.editor = monaco.editor.create(
               document.getElementById("monaco-editor"),
               {
                 value: "",
@@ -136,18 +136,20 @@ function FilesContainer() {
                 automaticLayout: true,
               }
             );
-            window.onresize = editor.layout();
+            window.onresize = window.editor.layout();
             // eslint-disable-next-line no-unused-vars
             const monacoBinding = new MonacoBinding(
               monacoType,
-              /** @type {monaco.editor.ITextModel} */ (editor.getModel()),
-              new Set([editor]),
+              /** @type {monaco.editor.ITextModel} */ (
+                window.editor.getModel()
+              ),
+              new Set([window.editor]),
               provider.awareness
             );
 
             console.log(monacoType.length);
 
-            editor.setValue(monacoType.toString());
+            window.editor.setValue(monacoType.toString());
             provider.connect();
             if (monacoType.length == 0) {
               console.log("YES");
@@ -189,7 +191,23 @@ function FilesContainer() {
         }
       });
   }, [query.get("path")]);
-
+  function saveFile() {
+    axios
+      .post(
+        `https://nl-brd-1.hye.gg:2221/api/v1/server/4DvivxbhPdlglLG1WVzn/files/write?path=${query.get(
+          "path"
+        )}`,
+        window.editor.getValue(),
+        {
+          headers: {
+            "Content-Type": "text/plain",
+          },
+        }
+      )
+      .then(() => {
+        console.log("Success");
+      });
+  }
   return (
     <React.Fragment>
       <LoadingBar
@@ -289,7 +307,9 @@ function FilesContainer() {
       {type == "file" ? (
         <React.Fragment>
           <div id="monaco-editor" style={{ height: "70vh" }} />
-          <Button variant="contained">Save</Button>
+          <Button onClick={() => saveFile()} variant="contained">
+            Save
+          </Button>
         </React.Fragment>
       ) : (
         ""

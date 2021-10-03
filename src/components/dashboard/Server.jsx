@@ -185,6 +185,7 @@ function Server(props) {
                     ) : (
                       <Skeleton
                         style={{ margin: "auto", verticleAlign: "middle" }}
+                        animation="wave"
                       >
                         {" "}
                         <Chip
@@ -269,27 +270,29 @@ function Server(props) {
                       >
                         <PlayersIcon />
                       </Avatar>
-                      <Fade in={props.serverThing ? true : false}>
-                        <Chip
-                          sx={{
-                            mb: "auto",
-                            mr: "auto",
-                            ml: "auto",
-                            mt: "auto",
-                          }}
-                          color="info"
-                          size="large"
-                          label={
-                            minecraft_server_query ? (
-                              minecraft_server_query.onlinePlayers +
-                              " / " +
-                              minecraft_server_query.maxPlayers
-                            ) : (
-                              <Skeleton width={40} height={30}></Skeleton>
-                            )
-                          }
-                        />
-                      </Fade>
+                      <Chip
+                        sx={{
+                          mb: "auto",
+                          mr: "auto",
+                          ml: "auto",
+                          mt: "auto",
+                        }}
+                        color="info"
+                        size="large"
+                        label={
+                          minecraft_server_query ? (
+                            minecraft_server_query.onlinePlayers +
+                            " / " +
+                            minecraft_server_query.maxPlayers
+                          ) : (
+                            <Skeleton
+                              animation="wave"
+                              width={40}
+                              height={30}
+                            ></Skeleton>
+                          )
+                        }
+                      />
                     </Grid>
                   </Grid>
 

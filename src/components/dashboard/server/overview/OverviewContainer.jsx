@@ -11,8 +11,9 @@ import {
   CardMedia,
   Chip,
   Divider,
+  CircularProgress,
 } from "@material-ui/core";
-import { useParams } from "react-router";
+import { useHistory, useParams } from "react-router";
 import React from "react";
 import { getFirestore, doc, onSnapshot } from "@firebase/firestore";
 import {
@@ -48,18 +49,70 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 const database = getFirestore();
 
 function OverviewContainer() {
+  const history = useHistory();
   const { server, instance } = useParams();
   const [server_data, setServerData] = React.useState({
     name: null,
+    node: null,
   });
   const [minecraft_server_data, setMinecraftServerData] = React.useState();
+  const [minecraft_player_data, setMinecraftPlayerData] = React.useState({
+    maxPlayers: null,
+    onlinePlayers: null,
+    player_list: null,
+  });
+  const [node_info, setNodeInfo] = React.useState({
+    address: {
+      hostname: null,
+      port: null,
+    },
+  });
 
   React.useEffect(() => {
     const docRef = doc(database, "instances", instance, "servers", server);
     onSnapshot(docRef, (doc) => {
-      setServerData(doc.data());
+      var info = doc.data();
+      info.id = doc.id;
+      console.log(info);
+      setServerData(info);
     });
   }, []);
+  React.useEffect(() => {
+    if (server_data.node) {
+      console.log("E");
+      console.log(server_data.node);
+      const docRef = doc(
+        database,
+        "instances",
+        instance,
+        "nodes",
+        server_data.node
+      );
+      const unsubscribe = onSnapshot(docRef, (doc) => {
+        console.log(doc.data());
+        setNodeInfo(doc.data());
+      });
+      history.listen((location, action) => {
+        if (action === "PUSH") {
+          unsubscribe();
+        }
+      });
+    }
+  }, [server_data]);
+  React.useEffect(() => {
+    if (node_info.address.hostname) {
+      const websocketPlayers = async function websocketPlayers() {
+        const ws = new WebSocket(
+          `wss://${node_info.address.hostname}:${node_info.address.port}/api/v1/server/${server_data.id}/minecraft/players`
+        );
+        ws.onmessage = (event) => {
+          const response = JSON.parse(event.data);
+          setMinecraftPlayerData(response);
+        };
+      };
+      websocketPlayers();
+    }
+  }, [node_info]);
   React.useEffect(() => {
     axios
       .get("https://api.mcsrvstat.us/2/grmpixelmon.com")
@@ -246,7 +299,11 @@ function OverviewContainer() {
               image.style.display = "";
             }}
             sx={{ height: "64px", width: "64px" }}
-            image={minecraft_server_data ? minecraft_server_data.icon : ""}
+            image={
+              minecraft_server_data
+                ? `https://${node_info.address.hostname}:${node_info.address.port}/api/v1/server/${server_data.id}/files/download?path=/server-icon.png`
+                : ""
+            }
           >
             <Grid
               justifyContent="center"
@@ -375,10 +432,10 @@ function OverviewContainer() {
               </Typography>
               <Typography variant="normal">Players</Typography>
               <Typography variant="normalNoBold">
-                {minecraft_server_data
-                  ? minecraft_server_data.players.online +
+                {minecraft_player_data.onlinePlayers
+                  ? minecraft_player_data.onlinePlayers +
                     "/" +
-                    minecraft_server_data.players.max +
+                    minecraft_player_data.maxPlayers +
                     " Online"
                   : ""}{" "}
               </Typography>
@@ -386,121 +443,134 @@ function OverviewContainer() {
           </Paper>
         </Grid>
         {/*Start*/}
-        {minecraft_server_data ? (
-          minecraft_server_data.players.list ? (
-            <>
-              <Grid item xs={12} md={3} lg={2.3}>
-                <Paper
-                  sx={{ mt: 2, p: 1.5, height: "100%", position: "relative" }}
-                >
-                  <Typography variant="h6">Players Online</Typography>
-                  <Grid container sx={{ height: 175 }}>
-                    {minecraft_server_data.players.list
-                      .slice(0, 3)
-                      .map((player) => {
-                        var uuid = minecraft_server_data.players.uuid[player];
-                        return (
-                          <>
-                            <Grid container display="row" sx={{ mb: 1, mt: 1 }}>
-                              <img
-                                style={{ marginRight: 3 }}
-                                height={30}
-                                src={`https://crafatar.com/avatars/${uuid}`}
-                              />
-                              <Typography
-                                noWrap
-                                display="block"
-                                variant="normalNoBold"
+        <>
+          <Grid item xs={12} md={3} lg={2.3}>
+            <Paper sx={{ mt: 2, p: 1.5, height: "100%", position: "relative" }}>
+              <Typography variant="h6">Players Online</Typography>
+              <Grid container sx={{ height: 175 }}>
+                {minecraft_player_data.onlinePlayers != null ? (
+                  minecraft_player_data.onlinePlayers > 0 ? (
+                    minecraft_player_data.player_list ? (
+                      minecraft_player_data.player_list
+                        .slice(0, 3)
+                        .map((player) => {
+                          console.log(player);
+                          return (
+                            <>
+                              <Grid
+                                container
+                                display="row"
+                                sx={{ mb: 1, mt: 1 }}
                               >
-                                {player}
-                              </Typography>
-                            </Grid>
-                            <Divider />
-                          </>
-                        );
-                      })}
-                    <Grid>
-                      {minecraft_server_data.players.list.length - 3 > 0 ? (
-                        <Typography variant="body2">
-                          {" "}
-                          and{" "}
-                          <Typography variant="normal">
-                            {minecraft_server_data.players.online - 3} others
-                          </Typography>
-                        </Typography>
-                      ) : (
-                        ""
-                      )}
-                    </Grid>
-                  </Grid>
-                  <Button
-                    sx={{ position: "absolute", bottom: 10 }}
-                    size="small"
-                    variant="contained"
-                  >
-                    View All Players
-                  </Button>
-                </Paper>
+                                <img
+                                  style={{ marginRight: 3 }}
+                                  height={30}
+                                  src={`https://crafatar.com/avatars/${player.id}`}
+                                />
+                                <Typography
+                                  noWrap
+                                  display="block"
+                                  variant="normalNoBold"
+                                >
+                                  {player.name}
+                                </Typography>
+                              </Grid>
+                              <Divider />
+                            </>
+                          );
+                        })
+                    ) : (
+                      <Skeleton animation="wave" width={300} height={60} />
+                    )
+                  ) : (
+                    "No Players Online"
+                  )
+                ) : (
+                  <>
+                    <Skeleton animation="wave" width={300} height={60} />
+                    <Skeleton animation="wave" width={300} height={60} />
+                    <Skeleton animation="wave" width={300} height={60} />
+                  </>
+                )}
+                {minecraft_player_data.player_list ? (
+                  minecraft_player_data.player_list.length !=
+                  minecraft_player_data.onlinePlayers ? (
+                    <CircularProgress sx={{ mr: "auto", ml: "auto", mb: 2 }} />
+                  ) : (
+                    ""
+                  )
+                ) : (
+                  ""
+                )}
+                <Grid>
+                  {minecraft_player_data.player_list &&
+                  minecraft_player_data.player_list.length - 3 > 0 ? (
+                    <Typography variant="body2">
+                      {" "}
+                      and{" "}
+                      <Typography variant="normal">
+                        {minecraft_player_data.maxPlayers - 3} others
+                      </Typography>
+                    </Typography>
+                  ) : (
+                    ""
+                  )}
+                </Grid>
               </Grid>
-              <Grid item xs={12} md={6.5} lg={4.2}>
-                <Paper
-                  sx={{ mt: 2, p: 1.5, height: "100%", position: "relative" }}
-                >
-                  <Typography variant="h6">Recent Audits</Typography>
-                  <Grid container display="row" sx={{ mt: 1 }}>
-                    <Typography variant="normal">
-                      Changed Server Icon
-                    </Typography>
-                    <Typography sx={{ ml: "auto", mt: "auto" }} variant="body2">
-                      Today at 3:46 PM
-                    </Typography>
-                  </Grid>
-                  <Grid container display="row" sx={{ mt: 1 }}>
-                    <Typography variant="normal">
-                      Changed Server Name
-                    </Typography>
-                    <Typography sx={{ ml: "auto", mt: "auto" }} variant="body2">
-                      1 day ago
-                    </Typography>
-                  </Grid>
-                  <Grid container display="row" sx={{ mt: 1 }}>
-                    <Typography variant="normal">
-                      Restarted Minecraft Server
-                    </Typography>
-                    <Typography sx={{ ml: "auto", mt: "auto" }} variant="body2">
-                      2 days ago
-                    </Typography>
-                  </Grid>
-                  <Grid container display="row" sx={{ mt: 1 }}>
-                    <Typography variant="normal">Changed MOTD</Typography>
-                    <Typography sx={{ ml: "auto", mt: "auto" }} variant="body2">
-                      2 days ago
-                    </Typography>
-                  </Grid>
-                  <Grid container display="row" sx={{ mt: 1 }}>
-                    <Typography variant="normal">
-                      Started Minecraft Server
-                    </Typography>
-                    <Typography sx={{ ml: "auto", mt: "auto" }} variant="body2">
-                      2 days ago
-                    </Typography>
-                  </Grid>
-                  <Button
-                    sx={{ position: "absolute", bottom: 10 }}
-                    variant="contained"
-                    size="small"
-                  >
-                    View Audit Log
-                  </Button>
-                </Paper>
-              </Grid>
-            </>
-          ) : (
-            ""
-          )
-        ) : (
-          ""
-        )}
+              <Button
+                sx={{ position: "absolute", bottom: 10 }}
+                size="small"
+                variant="contained"
+              >
+                View All Players
+              </Button>
+            </Paper>
+          </Grid>
+        </>
+        <Grid item xs={12} md={6.5} lg={4.2}>
+          <Paper sx={{ mt: 2, p: 1.5, height: "100%", position: "relative" }}>
+            <Typography variant="h6">Recent Audits</Typography>
+            <Grid container display="row" sx={{ mt: 1 }}>
+              <Typography variant="normal">Changed Server Icon</Typography>
+              <Typography sx={{ ml: "auto", mt: "auto" }} variant="body2">
+                Today at 3:46 PM
+              </Typography>
+            </Grid>
+            <Grid container display="row" sx={{ mt: 1 }}>
+              <Typography variant="normal">Changed Server Name</Typography>
+              <Typography sx={{ ml: "auto", mt: "auto" }} variant="body2">
+                1 day ago
+              </Typography>
+            </Grid>
+            <Grid container display="row" sx={{ mt: 1 }}>
+              <Typography variant="normal">
+                Restarted Minecraft Server
+              </Typography>
+              <Typography sx={{ ml: "auto", mt: "auto" }} variant="body2">
+                2 days ago
+              </Typography>
+            </Grid>
+            <Grid container display="row" sx={{ mt: 1 }}>
+              <Typography variant="normal">Changed MOTD</Typography>
+              <Typography sx={{ ml: "auto", mt: "auto" }} variant="body2">
+                2 days ago
+              </Typography>
+            </Grid>
+            <Grid container display="row" sx={{ mt: 1 }}>
+              <Typography variant="normal">Started Minecraft Server</Typography>
+              <Typography sx={{ ml: "auto", mt: "auto" }} variant="body2">
+                2 days ago
+              </Typography>
+            </Grid>
+            <Button
+              sx={{ position: "absolute", bottom: 10 }}
+              variant="contained"
+              size="small"
+            >
+              View Audit Log
+            </Button>
+          </Paper>
+        </Grid>
         <Grid item md={5} xs={12} lg={3.5}>
           <Paper sx={{ p: 1.5, mt: 2, height: "100%", position: "relative" }}>
             <Typography variant="h6">Available Plugin Updates </Typography>
