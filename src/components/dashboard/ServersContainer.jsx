@@ -7,8 +7,8 @@ import {
   getFirestore,
   collection,
   query,
-  orderBy,
   onSnapshot,
+  where,
 } from "@firebase/firestore";
 import { getAuth } from "@firebase/auth";
 import Firebase from "../db";
@@ -17,17 +17,24 @@ import Server from "./Server";
 const database = getFirestore();
 const auth = getAuth(Firebase);
 function ServersContainer() {
-  const { instance } = useParams();
   const [servers, setServers] = React.useState([]);
-
+  const { instance } = useParams();
   React.useEffect(() => {
+    console.log(instance);
     setServers([]);
     const serversRef = collection(database, `/instances/${instance}/servers`);
-    const q = query(serversRef, orderBy(`users.${auth.currentUser.uid}`));
+    console.log(auth.currentUser.uid);
+    const q = query(
+      serversRef,
+      where(`users.${auth.currentUser.uid}.files.read`, "==", true)
+    );
+    console.log("RIGHT BEFORE");
     onSnapshot(q, (querySnapshot) => {
+      console.log("DONE");
       console.log("fetched");
       let current_servers = [];
       function setServerData() {
+        console.log("FUNCTION RUN");
         if (querySnapshot.docs.length == current_servers.length) {
           setServers(current_servers);
           console.log(current_servers);
@@ -43,7 +50,7 @@ function ServersContainer() {
         setServerData();
       });
     });
-  }, [instance]);
+  }, []);
 
   return (
     <React.Fragment>

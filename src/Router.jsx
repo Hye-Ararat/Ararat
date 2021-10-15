@@ -25,6 +25,8 @@ import AdminInstanceSelectContainer from "./components/admin/instance_selection/
 import AdminInstanceSelectDashboard from "./components/admin/instance_selection/AdminInstanceSelectDashboard";
 import OverviewContainer from "./components/dashboard/server/overview/OverviewContainer";
 import FilesContainer from "./components/dashboard/server/files/FilesContainer";
+import ConsoleContainer from "./components/dashboard/server/console/ConsoleContainer";
+import ServerDashboard from "./components/dashboard/server/ServerDashboard";
 function AppRouter() {
   const [logged_in, setLoggedIn] = React.useState("loading");
   const [admin, setAdmin] = React.useState();
@@ -175,7 +177,7 @@ function AppRouter() {
           {logged_in === "loading" ? (
             <AuthLoading />
           ) : logged_in == true ? (
-            <Dashboard>
+            <ServerDashboard>
               <Switch>
                 <Route
                   exact
@@ -187,8 +189,13 @@ function AppRouter() {
                   path="/instance/:instance/server/:server/files"
                   component={FilesContainer}
                 />
+                <Route
+                  exact
+                  path="/instance/:instance/server/:server/console"
+                  component={ConsoleContainer}
+                />
               </Switch>
-            </Dashboard>
+            </ServerDashboard>
           ) : (
             <Redirect to="/auth/login" />
           )}

@@ -5,6 +5,7 @@ import {
   Breadcrumbs,
   Grid,
   CardActionArea,
+  Input,
 } from "@material-ui/core";
 import axios from "axios";
 import React from "react";
@@ -32,6 +33,7 @@ function FilesContainer() {
   const location = useLocation();
   const [files, setFiles] = React.useState();
   const [type, setType] = React.useState();
+
   // eslint-disable-next-line no-unused-vars
   const [file_data, setFileData] = React.useState("");
   const [path_arr, setPathArr] = React.useState([]);
@@ -208,6 +210,26 @@ function FilesContainer() {
         console.log("Success");
       });
   }
+  function uploadFile(event) {
+    const formData = new FormData();
+    formData.append("uploaded_file", event.target.files[0]);
+    console.log(event.target.files[0]);
+    axios
+      .post(
+        `https://nl-brd-1.hye.gg:2221/api/v1/server/4DvivxbhPdlglLG1WVzn/files/upload?path=/`,
+        formData,
+        {
+          headers: {
+            envtype: "multipart/form-data",
+            "Content-Type":
+              "multipart/form-data; boundary=---01100001011100000110100",
+          },
+        }
+      )
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   return (
     <React.Fragment>
       <LoadingBar
@@ -216,6 +238,18 @@ function FilesContainer() {
         onLoaderFinished={() => setProgress(0)}
       />
       <Typography variant="h4">Files</Typography>
+      <label htmlFor="upload-file-button">
+        <Input
+          sx={{ display: "none" }}
+          multiple
+          id="upload-file-button"
+          type="file"
+          onChange={(event) => uploadFile(event)}
+        />
+        <Button color="primary" variant="contained" component="span">
+          Upload
+        </Button>
+      </label>
       <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 2 }}>
         {path_arr
           ? path_arr.map((item, i) => {
