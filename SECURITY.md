@@ -11,4 +11,4 @@ currently being supported with security updates.
 
 ## Reporting a Vulnerability
 
-Please message our development direcotor, Joseph Maldjian via Discord about the vulnerability (Hye#0422)
+Please message our development director, Joseph Maldjian via Discord about the vulnerability (Hye#0422)
