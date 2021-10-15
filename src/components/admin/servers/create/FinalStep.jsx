@@ -62,9 +62,7 @@ function FinalStep(Data) {
       .then(function (response) {
         setCreatingServer(false);
         const instance = axios.create({
-          httpsAgent: new https.Agent({
-            rejectUnauthorized: false,
-          }),
+          httpsAgent: new https.Agent(),
         });
         instance
           .post("https://test-ararat.hyehosting.com:2221")
