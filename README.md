@@ -42,9 +42,9 @@ apt install -y nodejs
 
 ### Changelog & Preview
 
-_Read the changelog [here]()_
+_Read the changelog [here]()_(coming soon)
 
-_and view some screenshots [here]()._
+_and view some screenshots [here]()._(coming soon)
 
 ### Installation
 
@@ -64,8 +64,8 @@ apt install -y nodejs
 
 ### Documentation
 
-- Ararat Documentation (SoonTM)
-- Lava Documentation (SoonTM)
+- Ararat Documentation (Coming Soon)
+- Lava Documentation (Coming Soon)
 - Or, get additional help via [Community Discord](https://discord.gg/9HTSYDv58N).
 
 ### Changelog & Preview
