@@ -8,16 +8,6 @@ Ararat Panel is a panel/dashboard dedicated to management of any server. The ide
 - Ubuntu 18.04 or newer _(Must be LTS)_
 - Time, Patience, and half a cup of coffee.
 
-# Hye Ararat
-
-Ararat Panel is a panel/dashboard dedicated to management of any server. The idea is simple, its your one stop shop for linux instances.
-
-### Requirements
-
-- NodeJS > v14
-- Ubuntu 18.04 or newer _(Must be LTS)_
-- Time, Patience, and half a cup of coffee.
-
 ### Installation
 
 **The panel requires NodeJS for installation.**
