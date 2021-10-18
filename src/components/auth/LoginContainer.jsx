@@ -28,19 +28,20 @@ function LoginContainer() {
   };
   const [loggedIn, setLoggedIn] = React.useState();
   const [loggingIn, setLoggingIn] = React.useState(false);
-  function login(e) {
+  async function login(e) {
     // eslint-disable-next-line no-unused-vars
     var a = e ? e.preventDefault() : "";
 
     setLoggingIn(true);
-    try {
-      loginUser(values.email, values.password).then(() => {
+    console.log(values.email);
+    loginUser(values.email, values.password)
+      .then(() => {
         setLoggedIn(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoggingIn(false);
       });
-    } catch (error) {
-      setLoggingIn(false);
-      console.log(error);
-    }
   }
   document.addEventListener("keydown", function ({ key }) {
     if (key == "Enter") login();
