@@ -1,9 +1,9 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-function login(username, password) {
+function login(email, password) {
   return new Promise((resolve, reject) => {
     const auth_response = axios.post(`https://basalt.hye.gg:2221/auth/login`, {
-      username: username,
+      username: email,
       password: password,
     }).data;
     if (auth_response.status == "error") reject(Error(auth_response.data));
