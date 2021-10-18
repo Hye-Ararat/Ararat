@@ -13,10 +13,8 @@ import CheckIcon from "@material-ui/icons/Check";
 import React from "react";
 import { withRouter } from "react-router-dom";
 import LoadingButton from "@material-ui/lab/LoadingButton";
-import Firebase from "../db";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import loginUser from "../../api/v1/auth/login";
 
-const auth = getAuth(Firebase);
 function LoginContainer() {
   console.log(window.location.hostname);
   const [values, setValues] = React.useState({
@@ -35,18 +33,14 @@ function LoginContainer() {
     var a = e ? e.preventDefault() : "";
 
     setLoggingIn(true);
-    signInWithEmailAndPassword(auth, values.email, values.password)
-      // eslint-disable-next-line no-unused-vars
-      .then((userCredential) => {
+    try {
+      loginUser(values.email, values.password).then(() => {
         setLoggedIn(true);
-      })
-      .catch((error) => {
-        setLoggingIn(false);
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(`code: ${errorCode}`);
-        console.log(`message: ${errorMessage}`);
       });
+    } catch (error) {
+      setLoggingIn(false);
+      console.log(error);
+    }
   }
   document.addEventListener("keydown", function ({ key }) {
     if (key == "Enter") login();
