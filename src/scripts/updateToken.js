@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 async function updateToken() {
   axios.interceptors.request.use(async (config) => {
     if (Cookies.get("access_token")) return config;
-    if (Cookies.get("refresh_token")) return config;
+    if (!Cookies.get("refresh_token")) return config;
     const new_access_token = await axios.get(
       `https://basalt.hye.gg:2221/auth/refreshAccessToken`
     );
@@ -13,6 +13,7 @@ async function updateToken() {
       secure: true,
       expires: FifteenMinutes,
     });
+    return config;
   });
 }
 export default updateToken;
