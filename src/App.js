@@ -14,6 +14,7 @@ import {
 // Import the functions you need from the SDKs you need
 import Firebase from "./components/db";
 import { red, yellow } from "@material-ui/core/colors";
+import updateToken from "./scripts/updateToken";
 const database = getFirestore();
 // eslint-disable-next-line no-unused-vars
 var per = getPerformance(Firebase);
@@ -29,6 +30,7 @@ enableMultiTabIndexedDbPersistence(database).catch((error) => {
 function App() {
   /*   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
    */
+  updateToken();
   const prefersDarkMode = true;
   const theme = React.useMemo(
     () =>
