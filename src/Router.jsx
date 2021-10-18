@@ -27,6 +27,7 @@ import OverviewContainer from "./components/dashboard/server/overview/OverviewCo
 import FilesContainer from "./components/dashboard/server/files/FilesContainer";
 import ConsoleContainer from "./components/dashboard/server/console/ConsoleContainer";
 import ServerDashboard from "./components/dashboard/server/ServerDashboard";
+import Cookies from "js-cookie";
 function AppRouter() {
   const [logged_in, setLoggedIn] = React.useState("loading");
   const [admin, setAdmin] = React.useState();
@@ -36,16 +37,11 @@ function AppRouter() {
   });
 
   React.useEffect(() => {
-    auth.onAuthStateChanged(function (user) {
-      if (user) {
-        console.log(user);
-        console.log("logged in");
-        setLoggedIn(true);
-      } else {
-        console.log("logged out");
-        setLoggedIn(false);
-      }
-    });
+    if (Cookies.get("access_token")) {
+      setLoggedIn(true);
+    } else {
+      setLoggedIn(false);
+    }
   }, []);
   React.useEffect(() => {
     if (logged_in === true) {
