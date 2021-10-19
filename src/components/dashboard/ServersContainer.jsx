@@ -3,27 +3,20 @@ import { Typography, Grid } from "@material-ui/core";
 //import {ReactComponent as Logo} from '../../minecraft.svg'
 import React from "react";
 import { useParams } from "react-router-dom";
-import {
-  getFirestore,
-  collection,
-  query,
-  onSnapshot,
-  where,
-} from "@firebase/firestore";
-import { getAuth } from "@firebase/auth";
-import Firebase from "../db";
+import getServers from "../../api/v1/getServers";
 import Server from "./Server";
 
-const database = getFirestore();
-const auth = getAuth(Firebase);
 function ServersContainer() {
   const [servers, setServers] = React.useState([]);
   const { instance } = useParams();
   React.useEffect(() => {
-    console.log(instance);
+    getServers().then((servers) => {
+      console.log(servers);
+      setServers(servers);
+    });
+    /*     console.log(instance);
     setServers([]);
     const serversRef = collection(database, `/instances/${instance}/servers`);
-    console.log(auth.currentUser.uid);
     const q = query(
       serversRef,
       where(`users.${auth.currentUser.uid}.files.read`, "==", true)
@@ -49,7 +42,7 @@ function ServersContainer() {
         current_servers.push(current_server);
         setServerData();
       });
-    });
+    }); */
   }, []);
 
   return (

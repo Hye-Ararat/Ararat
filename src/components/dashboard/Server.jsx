@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import {
   Typography,
@@ -20,6 +21,7 @@ import React from "react";
 import { Link, useHistory } from "react-router-dom";
 import { getFirestore, onSnapshot, doc } from "@firebase/firestore";
 import prettyBytes from "pretty-bytes";
+import getNode from "../../api/v1/nodes/getNode";
 function Server(props) {
   const history = useHistory();
   const database = getFirestore();
@@ -39,7 +41,7 @@ function Server(props) {
       port: null,
     },
   });
-  React.useEffect(() => {
+  /*   React.useEffect(() => {
     if (props.server.allocations.main) {
       console.log(props.server.node);
       console.log(props.instance);
@@ -68,8 +70,17 @@ function Server(props) {
         }
       });
     }
-  }, []);
+  }, []); */
   React.useEffect(() => {
+    getNode(props.server.node)
+      .then((response) => {
+        setNodeInfo(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  /*   React.useEffect(() => {
     const docRef = doc(
       database,
       "instances",
@@ -86,7 +97,7 @@ function Server(props) {
         unsubscribe();
       }
     });
-  }, []);
+  }, []); */
   React.useEffect(() => {
     async function websocketResources() {
       const ws = new WebSocket(
