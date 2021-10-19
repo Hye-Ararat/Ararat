@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import {
   Box,
@@ -29,13 +30,12 @@ import {
 import React from "react";
 import Firebase from "./db";
 import { getAuth } from "firebase/auth";
-import { getStorage, getDownloadURL, ref } from "@firebase/storage";
+import { getStorage } from "@firebase/storage";
 import { doc, getFirestore, onSnapshot } from "@firebase/firestore";
 import { Link, useParams } from "react-router-dom";
 const drawerWidth = 240;
 const database = getFirestore();
 const auth = getAuth(Firebase);
-const storage = getStorage(Firebase);
 
 function Dashboard(props) {
   console.log("oh yes no");
@@ -54,23 +54,23 @@ function Dashboard(props) {
   const [, updateState] = React.useState();
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
-  React.useEffect(() => {
+  /*   React.useEffect(() => {
     const docRef = doc(database, "instances", instance);
     onSnapshot(docRef, (doc) => {
       console.log("fetched");
       setInstanceData(doc.data());
     });
-  }, [instance]);
+  }, [instance]); */
 
-  React.useEffect(() => {
+  /*   React.useEffect(() => {
     const docRef = doc(database, "users", auth.currentUser.uid);
     onSnapshot(docRef, (doc) => {
       setUser(doc.data());
       console.log(doc.data().instances);
     });
-  }, []);
+  }, []); */
 
-  React.useEffect(() => {
+  /*   React.useEffect(() => {
     if (user.instances.length > 1) {
       let current_instances = [];
 
@@ -118,9 +118,9 @@ function Dashboard(props) {
         }
       });
     }
-  }, [user, instance_data]);
+  }, [user, instance_data]); */
 
-  React.useEffect(() => {
+  /*   React.useEffect(() => {
     const pathReference = ref(storage, `instances/${instance}/images/logo.png`);
     getDownloadURL(pathReference)
       .then((url) => {
@@ -130,7 +130,7 @@ function Dashboard(props) {
         console.log(error);
         setLogo(null);
       });
-  }, []);
+  }, []); */
 
   //choose the screen size
   const handleResize = () => {
@@ -169,7 +169,7 @@ function Dashboard(props) {
     }
     setNavOpen(true);
   }; */
-  React.useEffect(() => {
+  /*   React.useEffect(() => {
     console.log("E");
     auth.currentUser
       .getIdTokenResult()
@@ -200,7 +200,7 @@ function Dashboard(props) {
       .catch((error) => {
         console.log(error);
       });
-  }, [user.instances, instance]);
+  }, [user.instances, instance]); */
   /*     React.useEffect(() => {
       user.get('email').on(function(email, key){
         user.get('admin').on(function(admin, key){

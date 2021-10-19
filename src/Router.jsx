@@ -16,10 +16,7 @@ import Firebase from "./components/db";
 import { getAuth } from "firebase/auth";
 import { Typography } from "@material-ui/core";
 import AuthLoading from "./components/auth/AuthLoading";
-import InstancesContainer from "./components/instances/InstancesContainer";
-import AccountContainerInstances from "./components/instances/AccountContainerInstances";
 import Dashboard from "./components/Dashboard";
-import InstanceNavigation from "./components/instances/Navigation";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import AdminInstanceSelectContainer from "./components/admin/instance_selection/AdminInstanceSelectContainer";
 import AdminInstanceSelectDashboard from "./components/admin/instance_selection/AdminInstanceSelectDashboard";
@@ -30,6 +27,7 @@ import ServerDashboard from "./components/dashboard/server/ServerDashboard";
 import Cookies from "js-cookie";
 function AppRouter() {
   const [logged_in, setLoggedIn] = React.useState("loading");
+  // eslint-disable-next-line no-unused-vars
   const [admin, setAdmin] = React.useState();
   const auth = getAuth(Firebase);
   React.useEffect(() => {
@@ -43,24 +41,24 @@ function AppRouter() {
       setLoggedIn(false);
     }
   }, []);
-  React.useEffect(() => {
-    if (logged_in === true) {
-      auth.currentUser
-        .getIdTokenResult()
-        .then((idTokenResult) => {
-          console.log(idTokenResult);
-          console.log(window.location.hostname);
-          if (idTokenResult.claims.admin) {
-            setAdmin(true);
-          } else {
-            setAdmin(false);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  }, [logged_in]);
+  // React.useEffect(() => {
+  //   if (logged_in === true) {
+  //     auth.currentUser
+  //       .getIdTokenResult()
+  //       .then((idTokenResult) => {
+  //         console.log(idTokenResult);
+  //         console.log(window.location.hostname);
+  //         if (idTokenResult.claims.admin) {
+  //           setAdmin(true);
+  //         } else {
+  //           setAdmin(false);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //       });
+  //   }
+  // }, [logged_in]);
 
   function logout() {
     auth
@@ -197,22 +195,14 @@ function AppRouter() {
           )}
         </Route>
         {/*Instance Routes*/}
-        <Route path="/instance/:instance">
+        <Route path="/">
           {logged_in === "loading" ? (
             <AuthLoading />
           ) : logged_in == true ? (
             <Dashboard>
               <Switch>
-                <Route
-                  exact
-                  path="/instance/:instance"
-                  component={ServersContainer}
-                />
-                <Route
-                  exact
-                  path="/instance/:instance/account"
-                  component={AccountContainer}
-                />
+                <Route exact path="/" component={ServersContainer} />
+                <Route exact path="/account" component={AccountContainer} />
               </Switch>
             </Dashboard>
           ) : (
@@ -221,29 +211,6 @@ function AppRouter() {
         </Route>
 
         {/* Instance Unselected Routes*/}
-        <React.Fragment>
-          {logged_in == "loading" ? (
-            <AuthLoading />
-          ) : logged_in == true ? (
-            <InstanceNavigation>
-              <Switch>
-                <Route exact path="/" component={InstancesContainer} />
-                <Route
-                  exact
-                  path="/account"
-                  component={AccountContainerInstances}
-                ></Route>
-                <Route
-                  exact
-                  path="*"
-                  component={() => <Redirect to="/" />}
-                ></Route>
-              </Switch>
-            </InstanceNavigation>
-          ) : (
-            <Redirect to="/auth/login" />
-          )}
-        </React.Fragment>
       </Switch>
       {/*             <Route exact path="/:instance">{logged_in == "loading" ? <AuthLoading />: logged_in == true ? <ServersContainer /> : <Redirect to="/auth/login" />}</Route>
        */}{" "}
