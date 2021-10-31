@@ -4,7 +4,6 @@ import {
 	Card,
 	CardActionArea,
 	CardContent,
-	BackdropFilter,
 	Typography,
 	Chip,
 	Skeleton,
@@ -17,14 +16,27 @@ import {
     PeopleAlt,
     SettingsEthernet as AddressIcon, SettingsEthernet,
 } from "@mui/icons-material";
+import {useEffect} from "react"
 
 export default function Server({ server }) {
-     function Allocation() {
-        const fetcher = url => axios.get(url).then(res => res.data)
-        const { data } = useSWR(`/api/v1/client/allocations/${server.allocations.main}`, fetcher)
-        if (!data) return <Skeleton width={120} height={20}/>
-        return data.data.ip_alias + ":" + data.data.port
-        }
+	useEffect(() => {
+		console.log("E")
+		async function resources() {
+			console.log("L")
+			const ws = new WebSocket(`wss://${server.node_data[0].address.hostname}:${server.node_data[0].address.port}/api/v1/server/${server._id}/resources`)
+			console.log(`wss://${server.node_data[0].address.hostname}:${server.node_data[0].address.port}/api/v1/server/${server._id}/resources`)
+			ws.onopen = () => {
+				console.log('omg yes pls')
+			}
+			ws.onerror = (error) => {
+				console.error(error)
+			}
+			ws.onmessage = (e) => {
+				console.log(JSON.parse(e.data));
+			}
+		}
+		resources();
+	}, [])
 	return (
 		<Grid item>
 			<Card sx={{ width: 500 }}>

@@ -4,7 +4,7 @@ function login(email, password) {
 	return new Promise(async (resolve, reject) => {
 		try {
 			var auth_response = await axios.post(
-				`${process.env.NEXT_PUBLIC_BASALT_URL}/api/v1/client/auth/login`,
+				`/api/v1/client/auth/login`,
 				{
 					email: email,
 					password: password,
