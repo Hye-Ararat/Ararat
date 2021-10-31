@@ -22,6 +22,18 @@ export default function Login() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
     const [loggingIn, setLoggingIn] = useState(false);
+	const loginUser = async () => {
+		try {
+			setLoggingIn(true);
+			await login(email, password);
+		} catch (error) {
+			setLoggingIn(false);
+			return console.log(error);
+		}
+		setLoggingIn(false);
+		render(<Check color="success" />)
+		router.push("/");
+	}
 	return (
 		<>
 			<Head>
@@ -63,18 +75,7 @@ export default function Login() {
 							<Box component="div" sx={{ mt: 1 }}>
 								<LoadingButton
                                     loading={loggingIn}
-									onClick={async () => {
-										try {
-                                            setLoggingIn(true);
-											await login(email, password);
-										} catch (error) {
-                                            setLoggingIn(false);
-											return console.log(error);
-										}
-                                        setLoggingIn(false);
-                                        render(<Check color="success" />)
-										router.push("/");
-									}}
+									onClick={loginUser}
 									sx={{ width: "100%" }}
 									variant="contained"
 									color="primary"
