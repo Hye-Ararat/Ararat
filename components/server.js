@@ -49,10 +49,9 @@ export default function Server({ server }) {
 				<CardActionArea component={Link} to={`/server/e`}>
 					<CardContent
 						style={{
-							height: "350px",
+							height: "400px",
 							padding: "0px",
-							background:
-								"url(https://cdn.thenewstack.io/media/2020/08/edd38e1d-thing.png)",
+							background: server.magma_cube_data[0].type == "N-VPS" ? "url(https://cdn.thenewstack.io/media/2020/08/edd38e1d-thing.png)" : server.magma_cube_data[0].type == "docker" ? "url(https://www.cloudsavvyit.com/p/uploads/2021/01/6dc7b5a0.jpeg?height=200p&trim=2,2,2,2&crop=16:9)" : "",
 							overflow: "hidden",
 							backgroundSize: "cover",
 							backdropFilter: "blur(10px)",
@@ -144,11 +143,11 @@ export default function Server({ server }) {
 											sx={{ mb: 2, mr: "auto", ml: "auto", mt: 2 }}
 											color="info"
 											size="large"
-											label="1.1.1.1"
+											label={server.magma_cube_data[0].type == "N-VPS" ? "NETWORK" : ""}
 										/>
 									</Grid>
 								</Grid>
-								<CardContent>
+								<CardContent sx={{mt: 4}}>
 									<Grid container direction="column">
 										<Typography
 											noWrap
@@ -162,14 +161,14 @@ export default function Server({ server }) {
 											variant="body2"
 											style={{ fontWeight: "bold", margin: "auto" }}
 										>
-											Memory: {resources.memory}GiB/8GiB
+											Memory: {resources.memory}GiB/{server.limits.memory}GiB
 										</Typography>
 										<Typography
 											noWrap
 											variant="body2"
 											style={{ fontWeight: "bold", margin: "auto" }}
 										>
-											Disk: {resources.disk}/32GB
+											Disk: {resources.disk}/{server.limits.disk}GB
 										</Typography>
 									</Grid>
 								</CardContent>
