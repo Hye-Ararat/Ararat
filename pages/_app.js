@@ -3,7 +3,6 @@ import { ThemeProvider } from "@mui/system";
 import theme from "../components/theme";
 import "../styles/globals.css";
 import "nprogress/nprogress.css";
-import "../public/BackdropFilter.css"
 import Router from "next/router";
 import NProgress from "nprogress";
 import axios from "axios";
