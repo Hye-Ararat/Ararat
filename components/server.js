@@ -16,9 +16,15 @@ import {
     PeopleAlt,
     SettingsEthernet as AddressIcon, SettingsEthernet,
 } from "@mui/icons-material";
-import {useEffect} from "react"
+import {useEffect, useState} from "react"
 
 export default function Server({ server }) {
+	const [resources, setResources] = useState({
+		cpu: null,
+		disk: null,
+		memory: null,
+		status: null,
+	})
 	useEffect(() => {
 		console.log("E")
 		async function resources() {
@@ -26,13 +32,13 @@ export default function Server({ server }) {
 			const ws = new WebSocket(`wss://${server.node_data[0].address.hostname}:${server.node_data[0].address.port}/api/v1/server/${server._id}/resources`)
 			console.log(`wss://${server.node_data[0].address.hostname}:${server.node_data[0].address.port}/api/v1/server/${server._id}/resources`)
 			ws.onopen = () => {
-				console.log('omg yes pls')
+				//console.log('Connected to websocket for ' + server.name)
 			}
 			ws.onerror = (error) => {
 				console.error(error)
 			}
 			ws.onmessage = (e) => {
-				console.log(JSON.parse(e.data));
+				setResources(JSON.parse(e.data))
 			}
 		}
 		resources();
@@ -82,7 +88,7 @@ export default function Server({ server }) {
 										<Chip
 											sx={{ mr: "auto", mt: "auto" }}
 											color="success"
-											label="Online"
+											label={resources.status}
 											size="medium"
 										/>
 									</Typography>
@@ -149,21 +155,21 @@ export default function Server({ server }) {
 											variant="body2"
 											style={{ fontWeight: "bold", margin: "auto" }}
 										>
-											CPU Usage: 22.5%
+											CPU Usage: {resources.cpu}%
 										</Typography>
 										<Typography
 											noWrap
 											variant="body2"
 											style={{ fontWeight: "bold", margin: "auto" }}
 										>
-											Memory: 2.2GiB/8GiB
+											Memory: {resources.memory}GiB/8GiB
 										</Typography>
 										<Typography
 											noWrap
 											variant="body2"
 											style={{ fontWeight: "bold", margin: "auto" }}
 										>
-											Disk: 1.5GB/32GB
+											Disk: {resources.disk}/32GB
 										</Typography>
 									</Grid>
 								</CardContent>
