@@ -25,53 +25,7 @@ export async function getServerSideProps(ctx) {
   const { db } = await connectToDatabase();
   const server_data = await db
     .collection("servers")
-    .aggregate([
-      {
-        $match: { [`users.616da13fe2f36f19e274a7ca`]: { $exists: true } },
-      },
-      {
-        $addFields: {
-          allocations: {
-            main: { $toObjectId: "$allocations.main" },
-          },
-        },
-      },
-      {
-        $addFields: { node: { $toObjectId: "$node" } },
-      },
-      {
-        $addFields: {
-          magma_cube: {
-            cube: { $toObjectId: "$magma_cube.cube" },
-          },
-        },
-      },
-      {
-        $lookup: {
-          from: "nodes",
-          localField: "node",
-          foreignField: "_id",
-          as: "node_data",
-        },
-      },
-      {
-        $lookup: {
-          from: "allocations",
-          localField: "allocations.main",
-          foreignField: "_id",
-          as: "allocation_data",
-        },
-      },
-      {
-        $lookup: {
-          from: "magma_cubes",
-          localField: "magma_cube.cube",
-          foreignField: "_id",
-          as: "magma_cube_data",
-        },
-      },
-    ])
-    .toArray();
+    .find({[`users.616da13fe2f36f19e274a7ca`]: { $exists: true } }).toArray();
   let data = JSON.parse(JSON.stringify(server_data));
   return { props: { data } };
 }

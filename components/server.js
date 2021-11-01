@@ -1,105 +1,187 @@
 import {
-	Grid,
-	Fade,
-	Card,
-	CardActionArea,
-	CardContent,
-	Typography,
-	Chip,
-	Skeleton,
-	Avatar,
-	Link,
-	Paper,
-	Box,
-	Badge,
+  Grid,
+  Fade,
+  Card,
+  CardActionArea,
+  CardContent,
+  Typography,
+  Chip,
+  Skeleton,
+  Avatar,
+  Link,
+  Paper,
+  Box,
+  Badge,
 } from "@mui/material";
 import useSWR, { SWRConfig } from "swr";
 import axios from "axios";
 import {
-	PeopleAlt,
-	SettingsEthernet as AddressIcon,
-	SettingsEthernet,
+  PeopleAlt,
+  SettingsEthernet as AddressIcon,
+  SettingsEthernet,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 
 export default function Server({ server }) {
-	const [resources, setResources] = useState({
-		cpu: null,
-		disk: null,
-		memory: null,
-		status: null,
-	});
-	useEffect(() => {
-		console.log("E");
-		async function resources() {
-			console.log("L");
-			const ws = new WebSocket(
-				`wss://${server.node_data[0].address.hostname}:${server.node_data[0].address.port}/api/v1/server/${server._id}/resources`
-			);
-			console.log(
-				`wss://${server.node_data[0].address.hostname}:${server.node_data[0].address.port}/api/v1/server/${server._id}/resources`
-			);
-			ws.onopen = () => {
-				//console.log('Connected to websocket for ' + server.name)
-			};
-			ws.onerror = (error) => {
-				console.error(error);
-			};
-			ws.onmessage = (e) => {
-				setResources(JSON.parse(e.data));
-			};
-		}
-		resources();
-	}, []);
-	return (
-		<Grid container item md={12} xs={12} direction="row">
-			<Paper sx={{ width: "100%", height: "100px", borderRadius: "10px" }}>
-				<Grid container direction="row" sx={{ width: "100%", height: "100%" }}>
-					<Grid item container md={1} xs={1} sx={{ height: "100%" }}>
-						<Avatar
-							sx={{ bgcolor: "#101924", width: 50, height: 50, margin: "auto" }}
-							src="https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/97_Docker_logo_logos-512.png"
-						/>
-					</Grid>
-					<Grid container item xs={3} md={3} sx={{ height: "100%" }} direction="row">
-						<Box
-							sx={{
-								borderRadius: "50%",
-								backgroundColor: "green",
-								width: 10,
-								height: 10,
-								marginTop: "auto",
-								marginBottom: "auto",
-								marginRight: 1
-							}}
-						/>
-						<Typography
-							variant="h6"
-							noWrap
-							sx={{
-								color: "#fff",
-								fontWeight: "bold",
-								marginTop: "auto",
-								marginBottom: "auto",
-							}}
-						>
-							{server.name}
-						</Typography>
-					</Grid>
-					<Grid container item xs={3} md={3} sx={{height: "100%"}} direction="row">
-						<Grid container>
-						<Typography variant="body1" sx={{marginTop: "auto", marginBottom: "auto"}} noWrap>{resources.cpu}%</Typography>
-						</Grid>
-						<Grid container>
-						<Typography variant="body1" sx={{marginTop: "auto", marginBottom: "auto"}} noWrap>{resources.cpu}%</Typography>
-						</Grid>						
-						<Grid container>
-						<Typography variant="body1" sx={{marginTop: "auto", marginBottom: "auto"}} noWrap>{resources.cpu}%</Typography>
-						</Grid>					</Grid>
-				</Grid>
-			</Paper>
+  const fetcher = (url) => axios.get(url).then((res) => res.data);
 
-			{/*
+  const [resources, setResources] = useState({
+    cpu: null,
+    disk: null,
+    memory: null,
+    status: null,
+  });
+
+  const [node_data, setNodeDat] = useState({
+	  address: {
+		  hostname: null,
+		  port: null
+	  }
+  })
+  function Allocation() {
+    const { data } = useSWR(
+      `/api/v1/client/allocations/${server.allocations.main}`,
+      fetcher
+    );
+    if (!data) {
+      return {
+        ip_alias: "Loading",
+      };
+    }
+    return {
+      ip_alias: data.data.ip_alias,
+    };
+  }
+  function Node() {
+    const { data } = useSWR(
+      `/api/v1/client/nodes/${server.node}`,
+      fetcher
+    );
+    if (!data) {
+      return {
+        address: {
+			hostname: "Loading",
+			port: "loading"
+		}
+      };
+    }
+	var node_data = {
+		address: {
+			hostname: data.data.address.hostname,
+			port: data.data.address.port
+		}
+	}
+	setNodeData(node_data)
+    return node_data;
+  }
+  useEffect(() => {
+	  if (node_data.address.hostname) {
+    async function resources() {
+      const ws = new WebSocket(
+        `wss://${node_data.address.hostname}:${
+          node_data.address.port
+        }/api/v1/server/${server._id}/resources`
+      );
+      console.log(
+        `wss://${node_data.address.hostname}:${
+          node_data.address.port
+        }/api/v1/server/${server._id}/resources`
+      );
+      ws.onopen = () => {
+        //console.log('Connected to websocket for ' + server.name)
+      };
+      ws.onerror = (error) => {
+        console.error(error);
+      };
+      ws.onmessage = (e) => {
+        setResources(JSON.parse(e.data));
+      };
+    }
+    resources();
+}
+  }, [node_data]);
+  return (
+    <Grid container item md={12} xs={12} direction="row">
+      <Paper sx={{ width: "100%", height: "100px", borderRadius: "10px" }}>
+        <Grid container direction="row" sx={{ width: "100%", height: "100%" }}>
+          <Grid item container md={1} xs={1} sx={{ height: "100%" }}>
+            <Avatar
+              sx={{ bgcolor: "#101924", width: 50, height: 50, margin: "auto" }}
+              src="https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/97_Docker_logo_logos-512.png"
+            />
+          </Grid>
+          <Grid
+            container
+            item
+            xs={3}
+            md={3}
+            sx={{ height: "100%" }}
+            direction="row"
+          >
+            <Box
+              sx={{
+                borderRadius: "50%",
+                backgroundColor: "green",
+                width: 10,
+                height: 10,
+                marginTop: "auto",
+                marginBottom: "auto",
+                marginRight: 1,
+              }}
+            />
+            <Typography
+              variant="h6"
+              noWrap
+              sx={{
+                color: "#fff",
+                fontWeight: "bold",
+                marginTop: "auto",
+                marginBottom: "auto",
+              }}
+            >
+              {server.name + Allocation().ip_alias}
+            </Typography>
+          </Grid>
+          <Grid
+            container
+            item
+            xs={3}
+            md={3}
+            sx={{ height: "100%" }}
+            direction="row"
+          >
+            <Grid container>
+              <Typography
+                variant="body1"
+                sx={{ marginTop: "auto", marginBottom: "auto" }}
+                noWrap
+              >
+                {resources.cpu}%
+              </Typography>
+            </Grid>
+            <Grid container>
+              <Typography
+                variant="body1"
+                sx={{ marginTop: "auto", marginBottom: "auto" }}
+                noWrap
+              >
+                {resources.cpu}%
+              </Typography>
+            </Grid>
+            <Grid container>
+              <Typography
+                variant="body1"
+                sx={{ marginTop: "auto", marginBottom: "auto" }}
+                noWrap
+              >
+                {resources.cpu}%
+              </Typography>
+            </Grid>{" "}
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/*
 			<Card sx={{ width: 500 }}>
 				<CardActionArea component={Link} to={`/server/e`}>
 					<CardContent
@@ -266,6 +348,6 @@ export default function Server({ server }) {
 					</CardContent>
 				</CardActionArea>
 										</Card> */}
-		</Grid>
-	);
+    </Grid>
+  );
 }
