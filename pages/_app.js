@@ -8,7 +8,7 @@ import NProgress from "nprogress";
 import axios from "axios";
 import { SWRConfig } from "swr";
 
-NProgress.configure({ showSpinner: false });
+NProgress.configure({ showSpinner: false, zIndex: 9999 });
 Router.onRouteChangeStart = (url) => {
 	NProgress.start();
 };
