@@ -13,9 +13,9 @@ import {
     ListItemText,
     Divider,
   } from "@mui/material";
-  import { Inbox as InboxIcon, Mail as MailIcon, Storage as ServersIcon, SupervisorAccount as AdminIcon, AccountCircle as AccountIcon, Code as ApiIcon } from "@mui/icons-material";
+  import { Inbox as InboxIcon, Mail as MailIcon, Storage as ServersIcon, SupervisorAccount as AdminIcon, AccountCircle as AccountIcon, Code as ApiIcon, Monitor as ConsoleIcon, Folder as FilesIcon, Backup as BackupIcon, ViewStream as DatabaseIcon, People as UsersIcon, Schedule as SchedulesIcon, SettingsEthernet as NetworkIcon, Settings as SettingsIcon} from "@mui/icons-material";
 import Link from "next/link";
-export default function Navigation({children}) {
+export default function Navigation({children, ...props}) {
         return (
             <>
               <Box sx={{ display: "flex" }}>
@@ -43,9 +43,9 @@ export default function Navigation({children}) {
                 >
                   <Toolbar />
                   <Box sx={{ overflow: "auto" }}>
-                    <List>
+                  <List>
                         <Link href="/">
-                      <ListItem button selected={true}>
+                      <ListItem button>
                         <ListItemIcon>
                           <ServersIcon />
                         </ListItemIcon>
@@ -66,6 +66,73 @@ export default function Navigation({children}) {
                       </ListItem>
                     </List>
                     <Divider />
+                      <List>
+                      <Link href={`/server/${encodeURIComponent(props.server)}`}>
+                      <ListItem button selected={true}>
+                        <ListItemIcon>
+                          <ConsoleIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Console" />
+                      </ListItem>
+                      </Link>
+                      <Link href={`/server/${encodeURIComponent(props.server)}/files`}>
+                      <ListItem button>
+                        <ListItemIcon>
+                          <FilesIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Files" />
+                      </ListItem>
+                      </Link>
+                      <Link href={`/server/${encodeURIComponent(props.server)}`}>
+                      <ListItem button>
+                        <ListItemIcon>
+                          <BackupIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Backups" />
+                      </ListItem>
+                      </Link>
+                      <Link href={`/server/${encodeURIComponent(props.server)}`}>
+                      <ListItem button>
+                        <ListItemIcon>
+                          <DatabaseIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Databases" />
+                      </ListItem>
+                      </Link>
+                      <Link href={`/server/${encodeURIComponent(props.server)}`}>
+                      <ListItem button>
+                        <ListItemIcon>
+                          <UsersIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Users" />
+                      </ListItem>
+                      </Link>
+                      <Link href={`/server/${encodeURIComponent(props.server)}`}>
+                      <ListItem button>
+                        <ListItemIcon>
+                          <SchedulesIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Schedules" />
+                      </ListItem>
+                      </Link>
+                      <Link href={`/server/${encodeURIComponent(props.server)}`}>
+                      <ListItem button>
+                        <ListItemIcon>
+                          <NetworkIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Networking" />
+                      </ListItem>
+                      </Link>
+                      <Link href={`/server/${encodeURIComponent(props.server)}`}>
+                      <ListItem button>
+                        <ListItemIcon>
+                          <SettingsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Settings" />
+                      </ListItem>
+                      </Link>
+                      </List>
+                      <Divider />
                     <List>
                     <ListItem button>
                         <ListItemIcon>
@@ -74,6 +141,7 @@ export default function Navigation({children}) {
                         <ListItemText primary="Admin" />
                       </ListItem>
                     </List>
+                    
                   </Box>
                 </Drawer>
                 <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
