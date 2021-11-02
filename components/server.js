@@ -12,7 +12,7 @@ import {
 	Box,
 	Badge,
 } from "@mui/material";
-import useSWR, { SWRConfig } from "swr";
+import useSWR, { mutate, SWRConfig } from "swr";
 import axios from "axios";
 import {
 	PeopleAlt,
@@ -43,6 +43,13 @@ export default function Server({ server }) {
 			port: null,
 		},
 	});
+	function prefetch() {
+		console.log(server)
+		mutate(`/api/v1/client/servers/${server._id}`, server, false);
+	}
+	useEffect(() => {
+		prefetch();
+	})
 	function Allocation() {
 		const { data } = useSWR(
 			`/api/v1/client/allocations/${server.allocations.main}`,
