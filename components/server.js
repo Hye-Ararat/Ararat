@@ -19,8 +19,12 @@ import {
   PeopleAlt,
   SettingsEthernet as AddressIcon,
   SettingsEthernet,
+  ShowChart as CpuIcon,
+  Memory as MemoryIcon,
+  Save as DiskIcon
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
+import prettyBytes from "pretty-bytes";
 
 export default function Server({ server }) {
   const fetcher = (url) => axios.get(url).then((res) => res.data);
@@ -32,7 +36,7 @@ export default function Server({ server }) {
     status: null,
   });
 
-  const [node_data, setNodeDat] = useState({
+  const [node_data, setNodeData] = useState({
 	  address: {
 		  hostname: null,
 		  port: null
@@ -104,7 +108,7 @@ export default function Server({ server }) {
     <Grid container item md={12} xs={12} direction="row">
       <Paper sx={{ width: "100%", height: "100px", borderRadius: "10px" }}>
         <Grid container direction="row" sx={{ width: "100%", height: "100%" }}>
-          <Grid item container md={1} xs={1} sx={{ height: "100%" }}>
+          <Grid item container md={1} xs={0} lg={1} xl={.5} sx={{ height: "100%", display: {xs: "none", md: "flex"} }}>
             <Avatar
               sx={{ bgcolor: "#101924", width: 50, height: 50, margin: "auto" }}
               src="https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/97_Docker_logo_logos-512.png"
@@ -113,7 +117,7 @@ export default function Server({ server }) {
           <Grid
             container
             item
-            xs={3}
+			xs={8}
             md={3}
             sx={{ height: "100%" }}
             direction="row"
@@ -139,44 +143,49 @@ export default function Server({ server }) {
                 marginBottom: "auto",
               }}
             >
-              {server.name + Allocation().ip_alias}
+              {server.name}
             </Typography>
           </Grid>
           <Grid
             container
             item
-            xs={3}
-            md={3}
-            sx={{ height: "100%" }}
+			xs={0}
+            md={4}
+			lg={5}
+			xl={2}
+            sx={{ height: "100%", marginLeft: "30%", display: {xs: "none", md: "flex"} }}
             direction="row"
           >
-            <Grid container>
+            <Box                sx={{ marginTop: "auto", marginBottom: "auto", marginRight: 1, display: "flex"}}>
+				<CpuIcon fontSize="small"/>
               <Typography
                 variant="body1"
-                sx={{ marginTop: "auto", marginBottom: "auto" }}
                 noWrap
               >
-                {resources.cpu}%
+                100{resources.cpu}%
               </Typography>
-            </Grid>
-            <Grid container>
+            </Box>
+            <Box     display="flex"            sx={{ marginTop: "auto", marginBottom: "auto", marginRight: 1 }}
+>
+
+			  <MemoryIcon fontSize="small" sx={{mr: 1}} />
               <Typography
                 variant="body1"
-                sx={{ marginTop: "auto", marginBottom: "auto" }}
                 noWrap
               >
-                {resources.cpu}%
+                3{resources.memory}GiB/{prettyBytes(server.limits.memory * 1048576, {binary: true})}
               </Typography>
-            </Grid>
-            <Grid container>
+            </Box>
+            <Box display="flex"             sx={{ marginTop: "auto", marginBottom: "auto"}}
+>
+	<DiskIcon fontSize="small" sx={{mr: .2}} /> 
               <Typography
                 variant="body1"
-                sx={{ marginTop: "auto", marginBottom: "auto" }}
                 noWrap
               >
-                {resources.cpu}%
+                2GB{resources.cpu}/{prettyBytes(server.limits.disk * 1000000)}
               </Typography>
-            </Grid>{" "}
+            </Box>{" "}
           </Grid>
         </Grid>
       </Paper>
