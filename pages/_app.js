@@ -2,13 +2,14 @@ import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
 import theme from "../components/theme";
 import "../styles/globals.css";
+import "../public/css/progress.css"
 import "nprogress/nprogress.css";
 import Router from "next/router";
 import NProgress from "nprogress";
 import axios from "axios";
 import { SWRConfig } from "swr";
 
-NProgress.configure({ showSpinner: false, zIndex: 9999 });
+NProgress.configure({ showSpinner: false});
 Router.onRouteChangeStart = (url) => {
 	NProgress.start();
 };
