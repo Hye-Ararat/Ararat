@@ -1,10 +1,10 @@
-import jwt from "jsonwebtoken";
+import { verify } from "jsonwebtoken";
 import { NextResponse } from "next/server";
-export async function middleware(req, res) {
+export async function middleware(req) {
 	if (req.url.includes("/api/v1/client/auth/login")) return NextResponse.next();
 	if (req.headers.get("authorization")) {
 		try {
-			jwt.verify(
+			verify(
 				req.headers.get("authorization").split(" ")[1],
 				process.env.ACCESS_TOKEN_SECRET
 			);
