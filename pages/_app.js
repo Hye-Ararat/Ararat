@@ -8,6 +8,7 @@ import Router from "next/router";
 import NProgress from "nprogress";
 import axios from "axios";
 import { SWRConfig } from "swr";
+import nookies from "nookies";
 
 NProgress.configure({ showSpinner: false });
 Router.onRouteChangeStart = (url) => {
@@ -17,7 +18,9 @@ Router.onRouteChangeComplete = () => NProgress.done();
 Router.onRouteChangeError = () => NProgress.done();
 
 axios.interceptors.request.use((config) => {
-	config.headers.authorization = `Bearer EEEE`;
+	if (process.browser) {
+	config.headers.authorization = `Bearer ${nookies.get(null).access_token}`;
+	}
 	return config;
 });
 function localStorageProvider() {
