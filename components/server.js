@@ -44,12 +44,20 @@ export default function Server({ server }) {
 		},
 	});
 	function prefetch() {
-		console.log(server)
-		mutate(`/api/v1/client/servers/${server._id}`, server, false);
+		mutate(`/api/v1/client/servers/${server._id}`, server, true);
 	}
 	useEffect(() => {
 		prefetch();
 	})
+	function Server() {
+		const {data} = useSWR(`/api/v1/client/servers/${server._id}`, fetcher);
+		if (!data) {
+			return mutate(`/api/v1/client/servers/${server._id}`, server, true);
+		}
+		return {
+			name: data.data.name
+		}
+	}
 	function Allocation() {
 		const { data } = useSWR(
 			`/api/v1/client/allocations/${server.allocations.main}`,
@@ -146,7 +154,7 @@ export default function Server({ server }) {
 								marginBottom: "auto",
 							}}
 						>
-							{server.name}
+							{Server().name}
 						</Typography>
 					</Grid>
 					<Grid container item xs={2} md={2} lg={2} xl={2}>

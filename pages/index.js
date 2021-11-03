@@ -21,7 +21,11 @@ import { Inbox as InboxIcon, Mail as MailIcon, Storage as ServersIcon, Superviso
 import { connectToDatabase } from "../util/mongodb";
 import Server from "../components/server";
 
-export async function getServerSideProps(ctx) {
+export async function getServerSideProps({req, res}) {
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=10, stale-while-revalidate=59'
+  )
   const { db } = await connectToDatabase();
   const server_data = await db
     .collection("servers")
