@@ -29,19 +29,11 @@ import Link from "next/link";
 
 export default function Server({ server }) {
 	const fetcher = (url) => axios.get(url).then((res) => res.data);
-
 	const [resources, setResources] = useState({
 		cpu: null,
 		disk: null,
 		memory: null,
 		status: null,
-	});
-
-	const [node_data, setNodeData] = useState({
-		address: {
-			hostname: null,
-			port: null,
-		},
 	});
 	function prefetch() {
 		mutate(`/api/v1/client/servers/${server._id}`, server, true);
@@ -52,8 +44,9 @@ export default function Server({ server }) {
 	function Server() {
 		const {data} = useSWR(`/api/v1/client/servers/${server._id}`, fetcher);
 		if (!data) {
-			return mutate(`/api/v1/client/servers/${server._id}`, server, true);
+			return server
 		}
+		console.log(data)
 		return {
 			name: data.data.name
 		}
@@ -74,47 +67,32 @@ export default function Server({ server }) {
 			port: data.data.port
 		};
 	}
-	function Node() {
-		const { data } = useSWR(`/api/v1/client/nodes/${server.node}`, fetcher);
-		if (!data) {
-			return {
-				address: {
-					hostname: "Loading",
-					port: "loading",
-				},
-			};
-		}
-		var node_data = {
-			address: {
-				hostname: data.data.address.hostname,
-				port: data.data.address.port,
-			},
-		};
-		setNodeData(node_data);
-		return node_data;
-	}
 	useEffect(() => {
-		if (node_data.address.hostname) {
-			async function resources() {
-				const ws = new WebSocket(
-					`wss://${node_data.address.hostname}:${node_data.address.port}/api/v1/server/${server._id}/resources`
-				);
-				console.log(
-					`wss://${node_data.address.hostname}:${node_data.address.port}/api/v1/server/${server._id}/resources`
-				);
-				ws.onopen = () => {
-					//console.log('Connected to websocket for ' + server.name)
-				};
-				ws.onerror = (error) => {
-					console.error(error);
-				};
-				ws.onmessage = (e) => {
-					setResources(JSON.parse(e.data));
-				};
-			}
-			resources();
-		}
-	}, [node_data]);
+			mutate(`/api/v1/client/nodes/${server.node}`, axios.get(`/api/v1/client/nodes/${server.node}`), true).then(res => {
+				var node_data = res.data
+				console.log(node_data)
+				async function resources() {
+					const ws = new WebSocket(
+						`wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/server/${server._id}/resources`
+					);
+					console.log(
+						`wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/server/${server._id}/resources`
+					);
+					ws.onopen = () => {
+						console.log("open")
+						//console.log('Connected to websocket for ' + server.name)
+					};
+					ws.onerror = (error) => {
+						console.error(error);
+					};
+					ws.onmessage = (e) => {
+						console.log(JSON.parse(e.data))
+						setResources(JSON.parse(e.data));
+					};
+				}
+				resources();
+			})
+	}, []);
 	return (
 		<Grid container item md={12} xs={12} direction="row">
 			<Link href={`/server/${server._id}`}>
