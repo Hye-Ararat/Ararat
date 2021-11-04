@@ -109,7 +109,7 @@ export default function Server({ server }) {
 						sx={{ height: "100%", display: { xs: "none", md: "flex" } }}
 					>
 						<Avatar
-							sx={{ padding: "10px", bgcolor: "#34242b", width: 50, height: 50, margin: "auto" }}
+							sx={{ padding: "10px", bgcolor: resources.status == "running" ? "#163a3a" : resources.status == "exited" || resources.status == "created" ? "#34242b" : "" , width: 50, height: 50, margin: "auto" }}
 							src="https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/97_Docker_logo_logos-512.png"
 						/>
 					</Grid>
@@ -165,7 +165,7 @@ export default function Server({ server }) {
 						>
 							<CpuIcon fontSize="small" sx={{mr: 1}}/>
 							<Typography variant="body1" noWrap>
-								100{resources.cpu}%
+								{resources.cpu}%
 							</Typography>
 						</Box>
 						<Box
@@ -174,7 +174,7 @@ export default function Server({ server }) {
 						>
 							<MemoryIcon fontSize="small" sx={{ mr: 1 }} />
 							<Typography variant="body1" noWrap>
-								3{resources.memory}GiB/
+								{resources.memory}/
 								{prettyBytes(server.limits.memory * 1048576, { binary: true })}
 							</Typography>
 						</Box>
@@ -184,7 +184,7 @@ export default function Server({ server }) {
 						>
 							<DiskIcon fontSize="small" sx={{ mr: 0.2 }} />
 							<Typography variant="body1" noWrap>
-								2GB{resources.cpu}/{prettyBytes(server.limits.disk * 1000000)}
+								{prettyBytes(resources.disk * 1000000)}/{prettyBytes(server.limits.disk * 1000000)}
 							</Typography>
 						</Box>{" "}
 					</Grid>
