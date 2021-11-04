@@ -7,5 +7,11 @@ export default async function handler(req, res) {
     var node = await db.collection("nodes").findOne({
         _id: ObjectId(id)
     })
-    node ? res.json({status: "success", data: node}) : res.json({status: "error", data: "Node does not exist"})
+    node ? res.json({status: "success", data: {
+        name: node.name,
+        address: {
+            hostname: node.address.hostname,
+            port: node.address.port,
+        }
+    }}) : res.json({status: "error", data: "Node does not exist"})
 }
