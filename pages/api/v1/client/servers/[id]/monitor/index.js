@@ -1,4 +1,4 @@
-import { connectToDatabase } from "../../../../../../util/mongodb";
+import { connectToDatabase } from "../../../../../../../util/mongodb";
 import bcrypt from "brcypt";
 import { sign } from "jsonwebtoken";
 export default async function handler(req, res) {
