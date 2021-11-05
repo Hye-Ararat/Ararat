@@ -9,6 +9,7 @@ export default async function handler(req, res) {
 	var access_token_jwt = sign(
 		{
 			server_id: id,
+			type: "monitor_access_token"
 		},
 		process.env.ACCESS_TOKEN_SECRET,
 		{
