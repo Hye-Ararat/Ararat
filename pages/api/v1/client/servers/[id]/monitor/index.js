@@ -2,8 +2,9 @@ import { connectToDatabase } from "../../../../../../../util/mongodb";
 import bcrypt from "bcrypt";
 import { sign } from "jsonwebtoken";
 export default async function handler(req, res) {
+
 	const {
-		params: { id },
+		query: { id },
 	} = req;
 	let { db } = await connectToDatabase();
 	var access_token_jwt = sign(
