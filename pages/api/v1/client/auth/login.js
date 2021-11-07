@@ -13,10 +13,10 @@ export default async function handler(req, res) {
         email: req.body.email,
       });
       if (user_data == null)
-        return res.json({ status: "error", data: "Incorrect email/password" });
+        return res.status(401).json({ status: "error", data: "Incorrect email/password" });
       const match = await bcrypt.compare(req.body.password, user_data.password);
       if (!match)
-        return res.json({ status: "error", data: "Incorrect email/password" });
+        return res.status(401).json({ status: "error", data: "Incorrect email/password" });
       let refresh_token = jwt.sign(
         {
           type: "refresh",
