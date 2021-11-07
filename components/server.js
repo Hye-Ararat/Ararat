@@ -68,15 +68,23 @@ export default function Server({ server }) {
       var node_data = res.data;
       console.log(node_data);
       async function resources() {
+        try {
+          var token = await axios.get(`/api/v1/client/servers/${server._id}/monitor`)
+        } catch {
+          console.log("Error while fetching token data")
+        }
+        token = token.data.data.access_token
+        // websocket headers
+        
         const ws = new WebSocket(
-          `wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/server/${server._id}/resources`
+          `wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/servers/${server._id}/monitor`
         );
         console.log(
-          `wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/server/${server._id}/resources`
+          `wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/servers/${server._id}/monitor`
         );
         ws.onopen = () => {
           console.log("open");
-          //console.log('Connected to websocket for ' + server.name)
+          ws.send({event: "authenticate", data: {monitor_token: token}});
         };
         ws.onerror = (error) => {
           console.error(error);
