@@ -1,5 +1,5 @@
 import { connectToDatabase } from "../../../../../util/mongodb";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 const { sign } = require("jsonwebtoken");
 
 export default async function handler(req, res) {
