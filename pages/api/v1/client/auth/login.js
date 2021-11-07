@@ -1,7 +1,7 @@
 import { ObjectId } from "bson";
 
 const { connectToDatabase } = require("../../../../../util/mongodb");
-const bcrypt = require("bcrypt");
+import bcrypt from "bcryptjs";
 const jwt = require("jsonwebtoken");
 
 export default async function handler(req, res) {
