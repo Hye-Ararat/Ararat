@@ -122,7 +122,7 @@ export default function Server({ server }) {
                   sx={{
                     padding: "10px",
                     bgcolor:
-                      resources.status == "running"
+                      resources.status == "running" || resources.status == "Running"
                         ? "#163a3a"
                         : resources.status == "exited" ||
                           resources.status == "created"
