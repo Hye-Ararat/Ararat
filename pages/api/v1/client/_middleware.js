@@ -10,10 +10,11 @@ export async function middleware(req) {
 			
 		} else {
 		try {
-			jwt.verify(req.headers.get("authorization").split(" ")[1], process.env.ACCESS_TOKEN_SECRET);
+			var user_data = await jwt.verify(req.headers.get("authorization").split(" ")[1], process.env.ACCESS_TOKEN_SECRET);
 		} catch (error) {
 			return NextResponse.redirect("/api/v1/unauthorized");
 		}
+		if (!user_data) return NextResponse.redirect("/api/v1/unauthorized");
 	}
 		return NextResponse.next();
 	}
