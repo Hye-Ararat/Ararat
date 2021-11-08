@@ -1,14 +1,18 @@
 import { connectToDatabase } from "../../../../../../../util/mongodb";
-import { sign } from "jsonwebtoken";
+import { sign, decode } from "jsonwebtoken";
+import { ObjectId } from "mongodb";
 export default async function handler(req, res) {
   const {
     query: { id },
   } = req;
   let { db } = await connectToDatabase();
+  let user_data = await decode(req.headers.authorization.split(" ")[1]);
+  console.log(user_data)
   var access_token_jwt = sign(
     {
       server_id: id,
       type: "monitor_access_token",
+      user: user_data.id
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -24,9 +28,10 @@ export default async function handler(req, res) {
   try {
     var sessions = await db.collection("servers").findOne({
       _id: ObjectId(id),
-      [`users.${token_data.user}`]: { $exists: true },
+      [`users.${user_data.id}`]: { $exists: true },
     });
   } catch (error) {
+    console.log(error)
     return res.status(500).send({
       status: "error",
       data: "An error occured while creating the access token credentials",

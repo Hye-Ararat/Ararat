@@ -1,5 +1,5 @@
 import { connectToDatabase } from "../../../../../../../util/mongodb";
-import { verify } from "jsonwebtoken";
+import { decode } from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       console.log("passed 2");
       console.log(req.body.access_token.split(":::")[1]);
       try {
-        var token_data = await verify(
+        var token_data = await decode(
           req.body.access_token.split(":::")[1],
           process.env.ACCESS_TOKEN_SECRET
         );
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         console.log("error 1");
         return res.status(403).send({ status: "error", data: "Unauthorized" });
       }
-
+	  console.log(token_data);
       if (token_data.server_id != id)
         return res.status(403).send({ status: "error", data: "Unauthorized" });
       console.log("passed 3");
