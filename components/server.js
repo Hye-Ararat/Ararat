@@ -91,7 +91,9 @@ export default function Server({ server }) {
         };
         ws.onmessage = (e) => {
           console.log(JSON.parse(e.data));
-          setResources(JSON.parse(e.data));
+          if (e.data != "Unauthorized") {
+            setResources(JSON.parse(e.data));
+          }
         };
       }
       resources();
