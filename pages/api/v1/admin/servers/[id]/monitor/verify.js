@@ -1,5 +1,5 @@
 import { connectToDatabase } from "../../../../../../../util/mongodb";
-import { verify } from "jsonwebtoken";
+import { decode } from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {
