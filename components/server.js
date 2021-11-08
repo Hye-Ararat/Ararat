@@ -205,7 +205,7 @@ export default function Server({ server }) {
                 <Box display="flex" sx={{ margin: "auto" }}>
                   <DiskIcon fontSize="small" sx={{ mr: 0.2 }} />
                   <Typography variant="body1" noWrap>
-                    {prettyBytes(resources.disk * 1000000)}/
+                    {resources.disk ? prettyBytes(resources.disk * 1000000): ""}/
                     {prettyBytes(server.limits.disk * 1000000)}
                   </Typography>
                 </Box>{" "}
