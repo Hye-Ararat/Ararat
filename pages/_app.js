@@ -9,6 +9,9 @@ import NProgress from "nprogress";
 import axios from "axios";
 import { SWRConfig } from "swr";
 import nookies from "nookies";
+import { config } from '@fortawesome/fontawesome-svg-core';
+import '@fortawesome/fontawesome-svg-core/styles.css';
+config.autoAddCss = false
 
 NProgress.configure({ showSpinner: false });
 Router.onRouteChangeStart = (url) => {
