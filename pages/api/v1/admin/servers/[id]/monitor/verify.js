@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       console.log("passed 2");
       console.log(req.body.access_token.split(":::")[1]);
       try {
-        var token_data = await verify(
+        var token_data = await decode(
           req.body.access_token.split(":::")[1],
           process.env.ACCESS_TOKEN_SECRET
         );
