@@ -21,11 +21,13 @@ import Link from "next/link";
 
 export default function Server({ server }) {
   const fetcher = (url) => axios.get(url).then((res) => res.data);
-  const [resources, setResources] = useState({
-    cpu: null,
-    disk: null,
-    memory: null,
+  const [monitor_data, setMonitorData] = useState({
     status: null,
+    usage: {
+      cpu: null,
+      disk: null,
+      memory: null
+    }
   });
   function prefetch() {
     mutate(`/api/v1/client/servers/${server._id}`, server, true);
@@ -67,7 +69,7 @@ export default function Server({ server }) {
     ).then((res) => {
       var node_data = res.data;
       console.log(node_data);
-      async function resources() {
+      async function monitor() {
         try {
           var token = await axios.get(`/api/v1/client/servers/${server._id}/monitor`)
         } catch {
@@ -92,11 +94,11 @@ export default function Server({ server }) {
         ws.onmessage = (e) => {
           console.log(JSON.parse(e.data));
           if (e.data != "Unauthorized") {
-            setResources(JSON.parse(e.data));
+            setMonitorData(JSON.parse(e.data));
           }
         };
       }
-      resources();
+      monitor();
     });
   }, []);
   return (
@@ -122,10 +124,10 @@ export default function Server({ server }) {
                   sx={{
                     padding: "10px",
                     bgcolor:
-                      resources.status == "running" || resources.status == "Running"
+                      monitor_data.status == "running" || monitor_data.status == "Running"
                         ? "#163a3a"
-                        : resources.status == "exited" ||
-                          resources.status == "created"
+                        : monitor_data.status == "exited" ||
+                          monitor_data.status == "created" || monitor_data.status === "Stopped"
                         ? "#34242b"
                         : "",
                     width: 50,
@@ -190,13 +192,13 @@ export default function Server({ server }) {
                 >
                   <CpuIcon fontSize="small" sx={{ mr: 1 }} />
                   <Typography variant="body1" noWrap>
-                    {resources.cpu}%
+                    {monitor_data.usage.cpu != null ? parseFloat(monitor_data.usage.cpu).toFixed(2) + "%" : ""}
                   </Typography>
                 </Box>
                 <Box display="flex" sx={{ margin: "auto" }}>
                   <MemoryIcon fontSize="small" sx={{ mr: 1 }} />
                   <Typography variant="body1" noWrap>
-                    {resources.memory}/
+                    {monitor_data.usage.memory ? prettyBytes(monitor_data.usage.memory) : ""}/
                     {prettyBytes(server.limits.memory * 1048576, {
                       binary: true,
                     })}
@@ -205,7 +207,7 @@ export default function Server({ server }) {
                 <Box display="flex" sx={{ margin: "auto" }}>
                   <DiskIcon fontSize="small" sx={{ mr: 0.2 }} />
                   <Typography variant="body1" noWrap>
-                    {resources.disk ? prettyBytes(resources.disk * 1000000): ""}/
+                    {monitor_data.usage.disk ? prettyBytes(monitor_data.usage.disk): ""}/
                     {prettyBytes(server.limits.disk * 1000000)}
                   </Typography>
                 </Box>{" "}
