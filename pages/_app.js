@@ -17,9 +17,37 @@ Router.onRouteChangeStart = (url) => {
 Router.onRouteChangeComplete = () => NProgress.done();
 Router.onRouteChangeError = () => NProgress.done();
 
-axios.interceptors.request.use((config) => {
+axios.interceptors.request.use(async (config) => {
 	if (process.browser) {
-	config.headers.authorization = `Bearer ${nookies.get(null).access_token}`;
+		var running = false;
+		if (
+			!nookies.get(null).access_token &&
+			nookies.get(null).refresh_token &&
+			!running
+		) {
+			running = true;
+			await fetch("/api/v1/client/auth/refresh_access_token", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					refresh_token: nookies.get(null).refresh_token,
+				}),
+			})
+				.then((res) => res.json())
+				.then((data) => {
+					nookies.set(null, "access_token", data.data.access_token, {
+						expires: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+						path: "/",
+					});
+					running = false;
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		}
+		config.headers.authorization = `Bearer ${nookies.get(null).access_token}`;
 	}
 	return config;
 });
@@ -41,9 +69,7 @@ function localStorageProvider() {
 }
 function MyApp({ Component, pageProps }) {
 	return (
-		<SWRConfig
-			value={{ provider: localStorageProvider }}
-		>
+		<SWRConfig value={{ provider: localStorageProvider }}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
 				<Component {...pageProps} />
