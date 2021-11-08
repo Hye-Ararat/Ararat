@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         console.log("error 1");
         return res.status(403).send({ status: "error", data: "Unauthorized" });
       }
-
+	  console.log(token_data);
       if (token_data.server_id != id)
         return res.status(403).send({ status: "error", data: "Unauthorized" });
       console.log("passed 3");
