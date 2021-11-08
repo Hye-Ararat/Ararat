@@ -84,7 +84,7 @@ export default function Server({ server }) {
         );
         ws.onopen = () => {
           console.log("open");
-          ws.send({event: "authenticate", data: {monitor_token: token}});
+          ws.send(JSON.stringify({event: "authenticate", data: {monitor_token: token}}));
         };
         ws.onerror = (error) => {
           console.error(error);
