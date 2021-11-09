@@ -45,6 +45,13 @@ export default function Server({ server }) {
 			name: data.data.name,
 		};
 	}
+  function MagmaCube() {
+    const { data } = useSWR(`/api/v1/client/magma_cubes/${server.magma_cube.cube}`, fetcher);
+    if (!data) {
+      return; 
+    }
+    return data.data;
+  }
 	function Allocation() {
 		const { data } = useSWR(
 			`/api/v1/client/allocations/${server.allocations.main}`,
@@ -72,7 +79,7 @@ export default function Server({ server }) {
 			async function monitor() {
 				try {
 					var token = await axios.get(
-						`/api/v1/client/servers/${server._id}/monitor`
+						`/api/v1/client/servers/${server._id}/monitor/ws`
 					);
 				} catch {
 					console.log("Error while fetching token data");
@@ -143,8 +150,7 @@ export default function Server({ server }) {
 										height: 50,
 										margin: "auto",
 									}}
-									src="https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/97_Docker_logo_logos-512.png"
-								/>
+                  src={server.type == "docker" ? "https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/97_Docker_logo_logos-512.png" : server.type == "N-VPS" ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg": server.type == "KVM" ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png":""}								/>
 							</Grid>
 							<Grid
 								container
@@ -227,7 +233,7 @@ export default function Server({ server }) {
 										}}
 									/>
 									<Typography variant="body1" noWrap>
-										{monitor_data.usage.memory
+										{monitor_data.usage.memory != null
 											? prettyBytes(monitor_data.usage.memory)
 											: ""}
 										/

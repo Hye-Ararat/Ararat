@@ -1,4 +1,4 @@
-import { connectToDatabase } from "../../../../../../../util/mongodb";
+import { connectToDatabase } from "../../../../../../../../util/mongodb";
 import { sign, decode } from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 export default async function handler(req, res) {
