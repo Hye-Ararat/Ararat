@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { connectToDatabase } from "../../../../../util/mongodb";
+import { connectToDatabase } from "../../../../../../util/mongodb";
 import {decode} from "jsonwebtoken";
 export default async function handler(req, res) {
     const {query: {id}} = req;
