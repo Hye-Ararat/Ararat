@@ -37,10 +37,10 @@ export default function Server({ server }) {
 	});
 	function Server() {
 		const { data } = useSWR(`/api/v1/client/servers/${server._id}`, fetcher);
+    console.log(data)
 		if (!data) {
 			return server;
 		}
-		console.log(data);
 		return {
 			name: data.data.name,
 		};
@@ -171,7 +171,7 @@ export default function Server({ server }) {
 										marginBottom: "auto",
 									}}
 								>
-									{Server().name}
+									{Server().name ? Server().name : "Loading"}
 								</Typography>
 							</Grid>
 							<Grid container item xs={2} md={2} lg={2} xl={2}>
