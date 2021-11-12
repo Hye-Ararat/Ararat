@@ -1,5 +1,5 @@
 import { connectToDatabase } from "../../../../../util/mongodb";
-import bcrypt from "bcryptjs";
+import crypto from "crypto"
 const { sign } = require("jsonwebtoken");
 
 export default async function handler(req, res) {
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 				name: req.body.name,
 				address: {
 					hostname: req.body.address.hostname,
-					port: req.body.port,
+					port: req.body.address.port,
 				},
 				access_token: access_token,
 			};
@@ -34,8 +34,9 @@ export default async function handler(req, res) {
 			var access_token_identifier = access_token_jwt.substr(0, access_token_jwt.indexOf("."))
 			var access_token = access_token_identifier + "::" + access_token_jwt;
 			try {
-				var salt = await bcrypt.genSalt(10);
-				var hashed_key = await bcrypt.hash(access_token, salt);
+				var iv = crypto.randomBytes(16);
+				let cipher = crypto.createCipheriv("aes-256-ctr", process.env.ENC_KEY, iv)
+				var hashed_key = Buffer.concat([cipher.update(access_token), cipher.final()]);
 			} catch (error) {
 				console.log(error)
 				return res.status(500).send({
@@ -47,7 +48,9 @@ export default async function handler(req, res) {
 			db.collection("nodes").updateOne({
 				_id: node_insert.insertedId,
 			}, {
-				$set: {access_token: access_token_identifier + "::" + hashed_key}
+				$set: {
+					access_token: access_token_identifier + "::" + hashed_key.toString("hex"),
+					access_token_iv: iv.toString("hex")}
 			})
 		} catch (error) {
 			console.log(error)
