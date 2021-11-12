@@ -34,7 +34,7 @@ export default function Server({ server }) {
 	}
 	useEffect(() => {
 		prefetch();
-	});
+	}, []);
 	function Server() {
 		const { data } = useSWR(`/api/v1/client/servers/${server._id}`, fetcher);
     console.log(data)
@@ -78,15 +78,24 @@ export default function Server({ server }) {
 			console.log(node_data);
 			async function monitor() {
 				try {
-					var token = await axios.get(
-						`/api/v1/client/servers/${server._id}/monitor/ws`
-					);
+					var getData = new Promise(async (resolve, reject) => {
+						var getToken = axios.get(
+							`/api/v1/client/servers/${server._id}/monitor/ws`
+						);
+						var getStats = axios.get(`/api/v1/client/servers/${server._id}/monitor`)
+						await axios.all([getToken, getStats]).then(axios.spread((...args) => {
+							resolve({
+								token: args[0].data.data.access_token,
+								monitor_data: args[1].data.data
+							})
+						}))
+					})
 				} catch {
 					console.log("Error while fetching token data");
 				}
-				token = token.data.data.access_token;
+				var {token, monitor_data} = await getData;
 				// websocket headers
-
+				setMonitorData(monitor_data)
 				const ws = new WebSocket(
 					`wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/servers/${server._id}/monitor`
 				);
