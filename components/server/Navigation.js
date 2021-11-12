@@ -46,9 +46,12 @@ export default function Navigation({ children, ...props }) {
 			fetcher
 		);
 		if (!data) {
-			return "Loading";
+			return [];
 		} else {
 			console.log(data.data);
+      if (data.status == "error" || data.data == "Server does not exist") {
+        return []
+      }
 			return data.data;
 		}
 	}
