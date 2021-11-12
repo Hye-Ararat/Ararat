@@ -1,6 +1,6 @@
 import { connectToDatabase } from "../../../../../../../util/mongodb";
 import { verify } from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export default async function handler(req, res) {
   const {
