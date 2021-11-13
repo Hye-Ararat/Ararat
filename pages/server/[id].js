@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import Navigation from "../../components/server/Navigation";
-import { Typography } from "@mui/material";
+import { Grid, Paper, Typography, Chip, Button } from "@mui/material";
 import useSWR from "swr";
 import axios from "axios";
 
@@ -22,10 +22,19 @@ export default function Server({ data }) {
     }
 	return (
 		<Navigation server={id}>
-          <Typography variant="h4" sx={{ mb: 1 }}>
-            {Server().name}
-          </Typography>
-          			{id}
+            <Paper>
+                <Grid container direction="row" sx={{p: 2}}>
+                    <Grid item xs={2}>
+                        <Typography variant="h6">{Server().name}</Typography>
+                    </Grid>
+                    <Grid container item xs={8} md={5} lg={3.7} xl={3} sx={{marginLeft: "auto"}}>
+                        <Button color="success" variant="contained" sx={{marginLeft: "auto", marginTop: "auto", marginBottom: "auto"}}>Start</Button>
+                        <Button color="error" variant="contained" sx={{marginLeft: "auto", marginTop: "auto", marginBottom: "auto"}}>Stop</Button>
+                        <Button color="warning" variant="contained" sx={{marginLeft: "auto", marginTop: "auto", marginBottom: "auto"}}>Restart</Button>
+                        <Chip sx={{ marginLeft: "auto", marginTop: "auto", marginBottom: "auto"}} size="small" label="Online" color="success" />
+                    </Grid>
+                </Grid>
+            </Paper>
 		</Navigation>
 	);
 }
