@@ -14,9 +14,13 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Snackbar,
   Divider,
+  Alert,
 } from "@mui/material";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { destroyCookie } from "nookies";
 import { Inbox as InboxIcon, Mail as MailIcon, Storage as ServersIcon, SupervisorAccount as AdminIcon, AccountCircle as AccountIcon, Code as ApiIcon } from "@mui/icons-material";
 import { connectToDatabase } from "../util/mongodb";
 import Server from "../components/server";
@@ -35,6 +39,12 @@ export async function getServerSideProps({req, res}) {
 }
 
 export default function Dashboard({ data }) {
+    const router = useRouter(); 
+    const signout = () => {
+      destroyCookie(null, "access_token")
+      destroyCookie(null, "refresh_token")
+      return router.push("/auth/login")
+    }
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -47,6 +57,11 @@ export default function Dashboard({ data }) {
             <Typography variant="h6" noWrap component="div">
               Ararat
             </Typography>
+            
+            <Button color="inherit" sx={{
+              marginLeft: "auto",
+            }} onClick={signout}>Sign Out</Button>
+
           </Toolbar>
         </AppBar>
         <Drawer

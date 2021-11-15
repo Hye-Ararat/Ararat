@@ -11,6 +11,7 @@ import {Check} from "@mui/icons-material"
 import logo from "../../public/logo.png";
 import Image from "next/image";
 import { Box } from "@mui/system";
+import Link from "next/link";
 import Head from "next/head";
 import login from "../../scripts/api/v1/auth/login";
 import { useState } from "react";
@@ -85,7 +86,9 @@ export default function Login() {
 							</Box>
 						</FormControl>
 						<Button variant="text">Forgot Password?</Button>
+						<Link href="/auth/signup">
 						<Button variant="text">Create Account</Button>
+						</Link>
 					</Grid>
 				</Grid>
 			</Container>
