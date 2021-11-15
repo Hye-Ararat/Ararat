@@ -3,6 +3,10 @@ import Navigation from "../../components/server/Navigation";
 import { Grid, Paper, Typography, Chip, Button } from "@mui/material";
 import useSWR from "swr";
 import axios from "axios";
+import dynamic from "next/dynamic"
+const Terminal = dynamic(() => import('../../components/servers/terminal'), {
+    ssr: false
+})
 
 export default function Server({ data }) {
     const router = useRouter();
@@ -20,7 +24,10 @@ export default function Server({ data }) {
             name: data.data.name
         }
     }
+
 	return (
+        <>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css" integrity="sha512-iLYuqv+v/P4u9erpk+KM83Ioe/l7SEmr7wB6g+Kg1qmEit8EShDKnKtLHlv2QXUp7GGJhmqDI+1PhJYLTsfb8w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 		<Navigation server={id}>
             <Paper>
                 <Grid container direction="row" sx={{p: 2}}>
@@ -35,6 +42,10 @@ export default function Server({ data }) {
                     </Grid>
                 </Grid>
             </Paper>
+            <>
+            <Terminal />
+            </>
 		</Navigation>
+        </>
 	);
 }
