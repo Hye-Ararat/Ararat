@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import Navigation from "../../components/server/Navigation";
-import { Grid, Paper, Typography, Chip, Button } from "@mui/material";
+import { Grid, Paper, Typography, Chip, Button, Fade} from "@mui/material";
 import useSWR from "swr";
 import axios from "axios";
 import dynamic from "next/dynamic"
@@ -43,7 +43,9 @@ export default function Server({ data }) {
                 </Grid>
             </Paper>
             <>
-            <Terminal />
+            {id ?
+            <Terminal server={id} />
+            : ""}
             </>
 		</Navigation>
         </>
