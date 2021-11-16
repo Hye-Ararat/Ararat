@@ -1,6 +1,4 @@
 import axios from 'axios';
-import next from 'next';
-import nookies from 'nookies';
 
 async function SignUp(name, surname, username, email, password) {
   return new Promise(async (resolve, reject) => {
