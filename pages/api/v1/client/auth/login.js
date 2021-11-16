@@ -1,4 +1,4 @@
-import { ObjectId } from "bson";
+import { ObjectId } from "mongodb";
 
 const { connectToDatabase } = require("../../../../../util/mongodb");
 import bcrypt from "bcryptjs";
