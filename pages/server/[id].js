@@ -42,11 +42,11 @@ export default function Server({ data }) {
                     </Grid>
                 </Grid>
             </Paper>
-            <>
+            <Grid container xs={12}>
             {id ?
             <Terminal server={id} />
             : ""}
-            </>
+            </Grid>
 		</Navigation>
         </>
 	);
