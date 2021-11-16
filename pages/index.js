@@ -21,30 +21,38 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
-import { Inbox as InboxIcon, Mail as MailIcon, Storage as ServersIcon, SupervisorAccount as AdminIcon, AccountCircle as AccountIcon, Code as ApiIcon } from "@mui/icons-material";
+import {
+  Inbox as InboxIcon,
+  Mail as MailIcon,
+  Storage as ServersIcon,
+  SupervisorAccount as AdminIcon,
+  AccountCircle as AccountIcon,
+  Code as ApiIcon,
+} from "@mui/icons-material";
 import { connectToDatabase } from "../util/mongodb";
 import Server from "../components/server";
+import signOut from "../scripts/lib/auth/signout";
 
-export async function getServerSideProps({req, res}) {
+export async function getServerSideProps({ req, res }) {
   res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=10, stale-while-revalidate=59'
-  )
+    "Cache-Control",
+    "public, s-maxage=10, stale-while-revalidate=59"
+  );
   const { db } = await connectToDatabase();
   const server_data = await db
     .collection("servers")
-    .find({[`users.616da13fe2f36f19e274a7ca`]: { $exists: true } }).toArray();
+    .find({ [`users.616da13fe2f36f19e274a7ca`]: { $exists: true } })
+    .toArray();
   let data = JSON.parse(JSON.stringify(server_data));
   return { props: { data } };
 }
 
 export default function Dashboard({ data }) {
-    const router = useRouter(); 
-    const signout = () => {
-      destroyCookie(null, "access_token")
-      destroyCookie(null, "refresh_token")
-      return router.push("/auth/login")
-    }
+  const router = useRouter();
+  const signout = async () => {
+    await signOut();
+    window.location.reload();
+  };
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -57,11 +65,16 @@ export default function Dashboard({ data }) {
             <Typography variant="h6" noWrap component="div">
               Ararat
             </Typography>
-            
-            <Button color="inherit" sx={{
-              marginLeft: "auto",
-            }} onClick={signout}>Sign Out</Button>
 
+            <Button
+              color="inherit"
+              sx={{
+                marginLeft: "auto",
+              }}
+              onClick={signout}
+            >
+              Sign Out
+            </Button>
           </Toolbar>
         </AppBar>
         <Drawer
@@ -99,7 +112,7 @@ export default function Dashboard({ data }) {
             </List>
             <Divider />
             <List>
-            <ListItem button>
+              <ListItem button>
                 <ListItemIcon>
                   <AdminIcon />
                 </ListItemIcon>
