@@ -1,4 +1,7 @@
-const { connectToDatabase } = require("../../../../../util/mongodb");
+const { connectToDatabase } = require('../../../../../util/mongodb');
+import axios from "axios";
+import bcrypt from "bcryptjs"
+
 
 
 export default async function handler(req, res) {
@@ -10,36 +13,37 @@ export default async function handler(req, res) {
         email: req.body.email,
       });
       if (user_data)
-        return res
-          .status(401)
-          .json({ status: 'error', data: 'That email already exists' });
-
-      let hashedPassword = bcryptjs.hash(res.body.password, 10);
-
-      function getRandomString(length) {
-        var randomChars =
-          'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var result = '';
-        for (var i = 0; i < length; i++) {
-          result += randomChars.charAt(
-            Math.floor(Math.random() * randomChars.length)
-          );
-        }
-        return result;
+        return res.json({ status: 'error', data: 'That email already exists' });
+      try {
+        var salt = await bcrypt.genSalt(10);
+        var hashedPassword = await bcrypt.hash(req.body.password, salt);
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({status: "error", data: "An error occured hile creating the user"});
       }
+    
 
       const user = {
-        username: res.body.username,
-        first_name: res.body.first_name,
-        last_name: res.body.last_name,
+        username: req.body.username,
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
         admin: false,
-        email: res.body.email,
+        email: req.body.email,
         password: hashedPassword,
         preferences: Array,
-        refresh_token: getRandomString(32),
-        phone_number: Null,
+        phone_number: null,
       };
-      await db.insertOne(user);
+      await db.collection("users").insertOne(user);
+      return res.json({
+        status: "Success",
+        data: "User created successfully",
+      })
+      break;
     }
-  }
+    default: {
+      res.status(400).send({
+        status: 'error',
+      });
+    } 
+  } 
 }

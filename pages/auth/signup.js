@@ -25,12 +25,15 @@ export default function SignUp() {
     const [surname, setSurname] = useState("");
     const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [signingUp, setSigningUp] = useState(false);
 	const SignUp = async () => {
 		try {
+			setSigningUp(true);
 			await signup(name, surname, username, email, password);
 		} catch (error) {
 			return console.log(error); 
 		}
+		setSigningUp(false);
 		render(<Check color="success" />)
 		router.push("/auth/login");
 	}
@@ -102,6 +105,7 @@ export default function SignUp() {
 							<Box component="div" sx={{ mt: 1 }}>
                                 
 								<LoadingButton
+									loading={signingUp}
                                     onClick={SignUp}
 									sx={{ width: "100%" }}
 									variant="contained"

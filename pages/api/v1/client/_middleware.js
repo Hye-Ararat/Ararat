@@ -3,8 +3,7 @@ import { NextResponse } from "next/server";
 export async function middleware(req) {
 	console.log(req.url);
 	if (
-		req.url.includes("/api/v1/client/auth/login") ||
-		req.url.includes("/api/v1/client/auth/refresh_access_token")
+		req.url.includes("/api/v1/client/auth")
 	)
 		return NextResponse.next();
 	if (req.headers.get("authorization")) {
