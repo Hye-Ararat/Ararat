@@ -15,7 +15,7 @@ export async function middleware(req) {
 			try {
 				var user_data = await jwt.verify(
 					req.headers.get("authorization").split(" ")[1],
-					process.env.ACCESS_TOKEN_SECRET
+					process.env.ENC_KEY
 				);
 			} catch (error) {
 				return NextResponse.redirect("/api/v1/unauthorized");

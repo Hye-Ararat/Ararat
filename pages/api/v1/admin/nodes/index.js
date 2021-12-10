@@ -10,6 +10,7 @@ export default async function handler(req, res) {
 	switch (method) {
 		case "POST": {
 			let { db } = await connectToDatabase();
+			try {
 			var node = {
 				name: req.body.name,
 				address: {
@@ -18,6 +19,11 @@ export default async function handler(req, res) {
 				},
 				access_token: access_token,
 			};
+		} catch {
+			return res
+				.status(400)
+				.send({ status: "error", data: "Invalid request" });
+		}
 			try {
 				var node_insert = await db.collection("nodes").insertOne(node);
 			} catch (error) {
@@ -28,7 +34,7 @@ export default async function handler(req, res) {
 				});
 			}
 			node.id = node_insert.insertedId;
-			var access_token_jwt = sign(node, process.env.ACCESS_TOKEN_SECRET, {
+			var access_token_jwt = sign(node, process.env.ENC_KEY, {
 				algorithm: "HS256"
 			});
 			var access_token_identifier = access_token_jwt.substr(0, access_token_jwt.indexOf("."))

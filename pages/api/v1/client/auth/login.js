@@ -22,7 +22,7 @@ export default async function handler(req, res) {
           type: "refresh",
           user: ObjectId(user_data._id).toString(),
         },
-        process.env.REFRESH_TOKEN_SECRET,
+        process.env.ENC_KEY,
         {
           algorithm: "HS256",
           expiresIn: "7d",
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
         preferences: user_data.preferences,
         phone_number: user_data.phone_number,
       };
-      let access_token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+      let access_token = jwt.sign(user, process.env.ENC_KEY, {
         algorithm: "HS256",
         expiresIn: "15m",
       });

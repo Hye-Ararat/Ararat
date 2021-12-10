@@ -1,4 +1,4 @@
-import { decode, sign } from "jsonwebtoken";
+import { verify, sign } from "jsonwebtoken";
 import { connectToDatabase } from "../../../../../util/mongodb";
 import { ObjectId } from "mongodb";
 export default async function handler(req, res) {
@@ -10,15 +10,19 @@ export default async function handler(req, res) {
 					.status(400)
 					.json({ status: "error", data: "Refresh token is required" });
 			try {
-				var refresh_token = decode(
+				var refresh_token = verify(
 					req.body.refresh_token,
-					process.env.REFRESH_TOKEN_SECRET
+					process.env.ENC_KEY
 				);
-			} catch {
-				return res.status(403).json({ status: "error", data: "Unauthorized" });
+			} catch (error){
+				console.log(error)
+				res.setHeader('Set-Cookie', `refresh_token=; Path=/; Expires=${new Date(0).toUTCString()}`);
+				return res.status(403).send("Unauthorized");
 			}
-			if (!refresh_token)
-				return res.status(403).json({ status: "error", data: "Unauthorized" });
+			if (!refresh_token) {
+			res.setHeader('Set-Cookie', `refresh_token=; Path=/; Expires=${new Date(0).toUTCString()}`);
+				return res.status(403).send("Unauthorized");
+			}
 			var { db } = await connectToDatabase();
 			try {
 				var user_data = await db.collection("users").findOne({
@@ -44,7 +48,7 @@ export default async function handler(req, res) {
 				preferences: user_data.preferences,
 				phone_number: user_data.phone_number,
 			};
-			let access_token = sign(user, process.env.ACCESS_TOKEN_SECRET, {
+			let access_token = sign(user, process.env.ENC_KEY, {
 				algorithm: "HS256",
 				expiresIn: "15m",
 			});

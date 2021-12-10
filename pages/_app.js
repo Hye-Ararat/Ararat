@@ -41,13 +41,14 @@ axios.interceptors.request.use(async (config) => {
 				.then((res) => res.json())
 				.then((data) => {
 					nookies.set(null, "access_token", data.data.access_token, {
-						expires: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+						expires: new Date(new Date().getTime() + 15 * 60000),
 						path: "/",
 					});
 					running = false;
 				})
 				.catch((err) => {
-					console.log(err);
+					nookies.destroy(null, "refresh_token");
+					window.location.href = "/auth/login"
 				});
 		}
 		config.headers.authorization = `Bearer ${nookies.get(null).access_token}`;

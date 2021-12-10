@@ -14,7 +14,7 @@ export default async function handler(req, res) {
       type: "monitor_access_token",
       user: user_data.id
     },
-    process.env.ACCESS_TOKEN_SECRET,
+    process.env.ENC_KEY,
     {
       expiresIn: "15m",
       algorithm: "HS256",

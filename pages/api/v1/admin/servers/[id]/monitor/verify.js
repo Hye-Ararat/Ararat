@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       try {
         var token_data = await decode(
           req.body.access_token.split(":::")[1],
-          process.env.ACCESS_TOKEN_SECRET
+          process.env.ENC_KEY
         );
       } catch (error) {
         console.log(error);

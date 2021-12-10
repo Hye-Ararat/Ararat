@@ -3,11 +3,11 @@ import { ObjectId } from "mongodb";
 import {verify} from "jsonwebtoken";
 import axios from "axios";
 import crypto from "crypto"
+import db from "../../../../../../../util/mongodb";
 export default async function handler(req, res) {
     const {query: {id}} = req;
-    let {db} = await connectToDatabase();
     try {
-        var user = await verify(req.headers.authorization.split(" ")[1], process.env.ACCESS_TOKEN_SECRET)
+        var user = await verify(req.headers.authorization.split(" ")[1], process.env.ENC_KEY)
     } catch (error){
         console.log(error)
         return res.status(403).json({
