@@ -20,7 +20,7 @@ export async function middleware(req) {
            console.log(error)
         }
         if (valid) {
-            var data = await fetch(`/api/v1/client/auth/refresh_token_user`, {
+            var data = await fetch(`${process.env.URL}/api/v1/client/auth/refresh_token_user`, {
                 headers: {
                     "Refresh-Token": req.cookies.refresh_token
                 }
