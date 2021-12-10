@@ -22,19 +22,23 @@ if (!dbName) {
  * @returns {import {MongoClient} from 'mongodb'.db}
  */
 export async function connectToDatabase() {
-  if (cachedClient && cachedDb) {
-    return { client: cachedClient, db: cachedDb };
-  }
 
-  const client = await MongoClient.connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+    if (cachedClient && cachedDb) {
+      console.log("Using cached database")
+      return { client: cachedClient, db: cachedDb };
+    }
+    console.log("Connected to database.")
 
-  const db = await client.db(dbName);
+    const client = await MongoClient.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
-  cachedClient = client;
-  cachedDb = db;
+    const db = await client.db(dbName);
 
-  return { client, db };
+    cachedClient = client;
+    cachedDb = db;
+
+  return {client, db}
 }
+
