@@ -13,21 +13,31 @@ export default function Server({ data }) {
     const { id } = router.query;
     const fetcher = (url) => axios.get(url).then((res) => res.data);
     function Server() {
-        const {data} = useSWR(`/api/v1/client/servers/${id}`, fetcher)
+        const {data} = useSWR(`/api/v1/client/servers/${id}?include=["magma_cube", "node", "allocations"]`, fetcher)
         console.log(data)
         if (!data) {
             return {
-                name: "Loading..."
+                name: null,
+                id: id,
+                relationships: {
+                    node: null,
+                    magma_cube: null,
+                },
             }
         }
         return {
-            name: data.data.name
+            name: data.name,
+            id: id,
+            relationships: {
+                node: data.relationships.node,
+                magma_cube: data.relationships.magma_cube,
+            }
         }
     }
-
+    
 	return (
         <>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css" integrity="sha512-iLYuqv+v/P4u9erpk+KM83Ioe/l7SEmr7wB6g+Kg1qmEit8EShDKnKtLHlv2QXUp7GGJhmqDI+1PhJYLTsfb8w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css" integrity="sha512-iLYuqv+v/P4u9erpk+KM83Ioe/l7SEmr7wB6g+Kg1qmEit8EShDKnKtLHlv2QXUp7GGJhmqDI+1PhJYLTsfb8w==" crossOrigin="anonymous" referrerpolicy="no-referrer" />
 		<Navigation server={id}>
             <Paper>
                 <Grid container direction="row" sx={{p: 2}}>
@@ -43,9 +53,7 @@ export default function Server({ data }) {
                 </Grid>
             </Paper>
             <Grid container xs={12}>
-            {id ?
-            <Terminal server={id} />
-            : ""}
+            <Terminal server={Server()} />
             </Grid>
 		</Navigation>
         </>
