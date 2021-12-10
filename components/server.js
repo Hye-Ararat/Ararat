@@ -5,6 +5,9 @@ import {
 	Avatar,
 	Paper,
 	Box,
+	Dialog,
+	DialogTitle,
+	Alert
 } from "@mui/material";
 import useSWR, { mutate, SWRConfig } from "swr";
 import axios from "axios";
@@ -21,6 +24,7 @@ import Link from "next/link";
 
 export default function Server({ server }) {
 	const fetcher = (url) => axios.get(url).then((res) => res.data);
+	const [monitor_error, setMonitorError] = useState(false)
 	const [monitor_data, setMonitorData] = useState({
 		status: null,
 		usage: {
@@ -36,64 +40,61 @@ export default function Server({ server }) {
 		prefetch();
 	}, []);
 	function Server() {
-		const { data } = useSWR(`/api/v1/client/servers/${server._id}`, fetcher);
+		const { data } = useSWR(`/api/v1/client/servers/${server._id}?include=["magma_cube", "node", "allocations"]`, fetcher);
     console.log(data)
 		if (!data) {
+			server.relationships = {}
+			server.relationships.allocations = {}
+			server.relationships.allocations.main = {
+				ip_alias: "loading",
+				port: "loading"
+			}
 			return server;
 		}
-		return {
-			name: data.data.name,
-		};
-	}
-  function MagmaCube() {
-    const { data } = useSWR(`/api/v1/client/magma_cubes/${server.magma_cube.cube}`, fetcher);
-    if (!data) {
-      return; 
-    }
-    return data.data;
-  }
-	function Allocation() {
-		const { data } = useSWR(
-			`/api/v1/client/allocations/${server.allocations.main}`,
-			fetcher
-		);
-		if (!data) {
-			return {
-				ip_alias: "Loading",
-				port: "Loading",
-			};
-		}
-		return {
-			ip_alias: data.data.ip_alias,
-			port: data.data.port,
-		};
+		mutate(`/api/v1/client/nodes/${server.node}`, data.relationships.node, false)
+		return data;
 	}
 	useEffect(() => {
 		mutate(
 			`/api/v1/client/nodes/${server.node}`,
 			axios.get(`/api/v1/client/nodes/${server.node}`),
-			true
+			false
 		).then((res) => {
+			console.log("INSTANT")
 			var node_data = res.data;
 			console.log(node_data);
 			async function monitor() {
-				try {
 					var getData = new Promise(async (resolve, reject) => {
+						try {
 						var getToken = axios.get(
 							`/api/v1/client/servers/${server._id}/monitor/ws`
 						);
 						var getStats = axios.get(`/api/v1/client/servers/${server._id}/monitor`)
+						} catch {
+							reject("An error occured")
+						}
 						await axios.all([getToken, getStats]).then(axios.spread((...args) => {
 							resolve({
 								token: args[0].data.data.access_token,
 								monitor_data: args[1].data.data
 							})
-						}))
+						})).catch(() => {
+							reject("An error occured")
+							setMonitorError(true);
+						})
 					})
-				} catch {
-					console.log("Error while fetching token data");
-				}
+				try {
 				var {token, monitor_data} = await getData;
+				} catch {
+					var monitor_data = {
+						status: null,
+						usage: {
+							cpu: null,
+							disk: null,
+							memory: null,
+						},
+					}
+				}
 				// websocket headers
 				setMonitorData(monitor_data)
 				const ws = new WebSocket(
@@ -113,6 +114,7 @@ export default function Server({ server }) {
 				};
 				ws.onerror = (error) => {
 					console.error(error);
+					setMonitorError(true)
 				};
 				ws.onmessage = (e) => {
 					console.log(JSON.parse(e.data));
@@ -129,6 +131,9 @@ export default function Server({ server }) {
 			<Link href={`/server/${server._id}`}>
 				<CardActionArea sx={{ borderRadius: "10px" }}>
 					<Paper sx={{ width: "100%", height: "100px", borderRadius: "10px" }}>
+					{monitor_error ? <Alert severity="error" sx={{width: "100%", position: "absolute", height: "40%", opacity: 0.5}}>
+				An error occured while connecting to this server.
+			</Alert> : ""}
 						<Grid
 							container
 							direction="row"
@@ -194,7 +199,7 @@ export default function Server({ server }) {
 										}}
 									/>
 									<Typography variant="body1" sx={{ fontWeight: "bold" }}>
-										{Allocation().ip_alias + ":" + Allocation().port}
+										{Server().relationships.allocations.main.ip_alias + ":" + Server().relationships.allocations.main.port}
 									</Typography>
 								</Box>
 							</Grid>
