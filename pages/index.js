@@ -16,7 +16,6 @@ import {
   ListItemText,
   Snackbar,
   Divider,
-  Alert,
 } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -29,19 +28,30 @@ import {
   AccountCircle as AccountIcon,
   Code as ApiIcon,
 } from "@mui/icons-material";
-import { connectToDatabase } from "../util/mongodb";
 import Server from "../components/server";
 import signOut from "../scripts/lib/auth/signout";
 
 export async function getServerSideProps({ req, res }) {
+  if (!req.cookies.access_token) {
+    return {
+      redirect: {
+        destination: "/auth/login",
+        permanent: false,
+      },
+      }
+    }
   res.setHeader(
     "Cache-Control",
     "public, s-maxage=10, stale-while-revalidate=59"
   );
-  const { db } = await connectToDatabase();
+  var {connectToDatabase} = require("../util/mongodb")
+  var {db} = await connectToDatabase();
+  var {decode} = require("jsonwebtoken");
+  var user_data = decode(req.cookies.access_token)
+  console.log(user_data)
   const server_data = await db
     .collection("servers")
-    .find({ [`users.616da13fe2f36f19e274a7ca`]: { $exists: true } })
+    .find({ [`users.${user_data.id}`]: { $exists: true } })
     .toArray();
   let data = JSON.parse(JSON.stringify(server_data));
   return { props: { data } };
