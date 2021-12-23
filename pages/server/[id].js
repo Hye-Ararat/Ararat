@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
 import Navigation from "../../components/server/Navigation";
-import { Grid, Paper, Typography, Chip, Button, Fade} from "@mui/material";
+import { Grid, Paper, Typography, Chip, Button, Fade, Container} from "@mui/material";
 import useSWR from "swr";
 import axios from "axios";
 import dynamic from "next/dynamic"
+import { useState } from "react";
 const Terminal = dynamic(() => import('../../components/servers/terminal'), {
     ssr: false
 })
@@ -52,8 +53,12 @@ export default function Server({ data }) {
                     </Grid>
                 </Grid>
             </Paper>
-            <Grid container xs={12}>
-            <Terminal server={Server()} />
+            <Grid container xs={12} sx={{mt: 2}}>
+                <Grid item xs={3} />
+                <Grid item xs={6}>
+                <Terminal server={Server()} />
+                </Grid>
+                <Grid item xs={3} />
             </Grid>
 		</Navigation>
         </>
