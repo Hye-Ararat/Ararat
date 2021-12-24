@@ -14,7 +14,7 @@ export default function Instance({ data }) {
     const { id } = router.query;
     const fetcher = (url) => axios.get(url).then((res) => res.data);
     function Instance() {
-        const {data} = useSWR(`/api/v1/client/instances/${id}?include=["magma_cube", "node", "allocations"]`, fetcher)
+        const {data} = useSWR(`/api/v1/client/instances/${id}?include=["magma_cube", "node", "network_container"]`, fetcher)
         console.log(data)
         if (!data) {
             return {

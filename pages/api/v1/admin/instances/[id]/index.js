@@ -22,20 +22,30 @@ export default async function handler(req, res) {
             instance.relationships.node.access_token = undefined;
             instance.relationships.node.access_token_iv = undefined;
         }
-        if (include.includes("allocations")) {
-            instance.relationships.allocations = {}
-            instance.relationships.allocations.main = {}
-            instance.relationships.allocations.list = []
-            instance.relationships.allocations.main = await db.collection("allocations").findOne({
-                _id: ObjectId(instance.allocations.main)
+        if (include.includes("network_container")) {
+            instance.relationships.network_container = {
+                id: null,
+                address: {
+                    ipv4: null,
+                    ipv6: null,
+                    ip_alias: null
+                },
+                relationships: {
+                    network_forwards: []
+                }
+            }
+            var network_container = await db.collection("network_containers").findOne({
+                _id: ObjectId(instance.network_container)
             })
-            for (var i = 0; i < instance.allocations.list.length; i++) {
-                var allocation = instance.allocations.list[i]
-                var allocation_object = await db.collection("allocations").findOne({
-                    _id: ObjectId(allocation)
+            if (network_container) {
+                instance.relationships.network_container.id = network_container._id
+                instance.relationships.network_container.address.ipv4 = network_container.address.ipv4
+                instance.relationships.network_container.address.ipv6 = network_container.address.ipv6
+                instance.relationships.network_container.address.ip_alias = network_container.address.ip_alias
+                var network_forwards = await db.collection("network_forwards").find({
+                    network_container: instance.network_container
                 })
-                instance.relationships.allocations.list.push(allocation_object)
-                console.log(allocation_object)
+                instance.relationships.network_container.relationships.network_forwards =  await network_forwards.toArray()
             }
         }
     }

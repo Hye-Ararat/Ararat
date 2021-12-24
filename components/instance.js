@@ -40,14 +40,14 @@ export default function Instance({ instance }) {
 		prefetch();
 	}, []);
 	function Instance() {
-		const { data } = useSWR(`/api/v1/client/instances/${instance._id}?include=["magma_cube", "node", "allocations"]`, fetcher);
+		const { data } = useSWR(`/api/v1/client/instances/${instance._id}?include=["magma_cube", "node", "network_container"]`, fetcher);
     console.log(data)
 		if (!data) {
 			instance.relationships = {}
-			instance.relationships.allocations = {}
-			instance.relationships.allocations.main = {
-				ip_alias: "loading",
-				port: "loading"
+			instance.relationships.network_container = {
+				address: {
+					ip_alias: null
+				}
 			}
 			return instance;
 		}
@@ -164,7 +164,7 @@ export default function Instance({ instance }) {
 										height: 50,
 										margin: "auto",
 									}}
-                  src={instance.type == "docker" ? "https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/97_Docker_logo_logos-512.png" : instance.type == "N-VPS" ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg": instance.type == "KVM" ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png":""}								/>
+                  src={ Instance().relationships.magma_cube != undefined ? Instance().relationships.magma_cube.type == "n-vps" ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg": Instance().relationships.magma_cube.type == "kvm" ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png":"" : ""}								/>
 							</Grid>
 							<Grid
 								container
@@ -199,7 +199,7 @@ export default function Instance({ instance }) {
 										}}
 									/>
 									<Typography variant="body1" sx={{ fontWeight: "bold" }}>
-										{Instance().relationships.allocations.main.ip_alias + ":" + Instance().relationships.allocations.main.port}
+										{Instance().relationships.network_container.address.ip_alias + ":" + instance.primary_port ? instance.primary_port : ""}
 									</Typography>
 								</Box>
 							</Grid>
