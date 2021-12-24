@@ -8,8 +8,8 @@ const fitAddon = new FitAddon();
 export default function TermComponent(props) {
     console.log(props)
     useEffect(() => {
-        if (props.server.relationships.magma_cube != null) {
-            if (props.server.relationships.magma_cube.console == "xterm") {
+        if (props.instance.relationships.magma_cube != null) {
+            if (props.instance.relationships.magma_cube.console == "xterm") {
                 const term = new Terminal({
                     renderType: "dom",
 
@@ -21,7 +21,7 @@ export default function TermComponent(props) {
                     term.write(".")
                 }, 4)
                     fitAddon.fit()
-                const socket = new WebSocket(`wss://${props.server.relationships.node.address.hostname}:${props.server.relationships.node.address.port}/api/v1/servers/${props.server.id}/console?type=xterm`)
+                const socket = new WebSocket(`wss://${props.instance.relationships.node.address.hostname}:${props.instance.relationships.node.address.port}/api/v1/instances/${props.instance.id}/console?type=xterm`)
                 socket.onopen = () => {
                     socket.send('{"event":"authenticate"}')
                     console.log("CONNECTED")
@@ -35,11 +35,11 @@ export default function TermComponent(props) {
 
             }
         }
-    }, [props.server])
+    }, [props.instance])
     return (
         <>
-            {props.server.relationships.magma_cube != null ?
-                props.server.relationships.magma_cube.console == "vga" ?
+            {props.instance.relationships.magma_cube != null ?
+                props.instance.relationships.magma_cube.console == "vga" ?
                     <Spice />
                     :
                     <>

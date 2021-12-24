@@ -18,7 +18,7 @@ export default async function handler(req, res) {
         return res.status(403).send("Unauthorized")
     }
     var token_data = decode(req.body.access_token.split(":::")[1]);
-    if (token_data.server_id != req.query.id) return res.status(403).send("Unauthorized");
+    if (token_data.instance_id != req.query.id) return res.status(403).send("Unauthorized");
     if (token_data.type != "console_access_token") return res.status(403).send("Unauthorized");
     return res.send("Access Token Is Valid!")
 }

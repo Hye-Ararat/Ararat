@@ -16,25 +16,25 @@ export default async function handler(req, res) {
         })
     }
     try {
-        var server = await db.collection("servers").findOne({
+        var instance = await db.collection("instances").findOne({
             _id: ObjectId(id),
             [`users.${user.id}`]: {$exists: true}
         })
     } catch {
         return res.status(500).json({
             status: "error",
-            data: "An error occured while fetching the server data"
+            data: "An error occured while fetching the instance data"
         })
     }
-    if (!server){
+    if (!instance){
         return res.status(404).json({
             status: "error",
-            data: "Server does not exist"
+            data: "Instance does not exist"
         })
     }
     try {
         var node = await db.collection("nodes").findOne({
-            _id: ObjectId(server.node)
+            _id: ObjectId(instance.node)
         })
     } catch {
         return res.status(500).json({
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
         var decipher = crypto.createDecipheriv("aes-256-ctr", process.env.ENC_KEY, Buffer.from(node.access_token_iv, "hex"))
         var access_token = Buffer.concat([decipher.update(Buffer.from(node.access_token, "hex")), decipher.final()])
         console.log(access_token.toString())
-        var monitor = await axios.get(`https://${node.address.hostname}:${node.address.port}/api/v1/servers/${id}/monitor`, {
+        var monitor = await axios.get(`https://${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/monitor`, {
             headers: {
                 Authorization: `Bearer ${access_token.toString()}`
             }

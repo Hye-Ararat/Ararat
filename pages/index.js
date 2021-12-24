@@ -23,12 +23,12 @@ import { destroyCookie } from "nookies";
 import {
   Inbox as InboxIcon,
   Mail as MailIcon,
-  Storage as ServersIcon,
+  Storage as InstanceIcon,
   SupervisorAccount as AdminIcon,
   AccountCircle as AccountIcon,
   Code as ApiIcon,
 } from "@mui/icons-material";
-import Server from "../components/server";
+import Instance from "../components/instance";
 import signOut from "../scripts/lib/auth/signout";
 
 export async function getServerSideProps({ req, res }) {
@@ -49,11 +49,11 @@ export async function getServerSideProps({ req, res }) {
   var {decode} = require("jsonwebtoken");
   var user_data = decode(req.cookies.access_token)
   console.log(user_data)
-  const server_data = await db
-    .collection("servers")
+  const instance_data = await db
+    .collection("instances")
     .find({ [`users.${user_data.id}`]: { $exists: true } })
     .toArray();
-  let data = JSON.parse(JSON.stringify(server_data));
+  let data = JSON.parse(JSON.stringify(instance_data));
   return { props: { data } };
 }
 
@@ -103,9 +103,9 @@ export default function Dashboard({ data }) {
             <List>
               <ListItem button selected={true}>
                 <ListItemIcon>
-                  <ServersIcon />
+                  <InstanceIcon />
                 </ListItemIcon>
-                <ListItemText primary="Servers" />
+                <ListItemText primary="Instances" />
               </ListItem>
               <ListItem button>
                 <ListItemIcon>
@@ -137,11 +137,11 @@ export default function Dashboard({ data }) {
             <title>Dashboard | Ararat</title>
           </Head>
           <Typography variant="h4" sx={{ mb: 1 }}>
-            Your Servers
+            Your Instances
           </Typography>
           <Grid spacing={5} container direction="row">
-            {data.map((server) => {
-              return <Server server={server} key={server._id} />;
+            {data.map((instance) => {
+              return <Instance instance={instance} key={instance._id} />;
             })}
           </Grid>
         </Box>

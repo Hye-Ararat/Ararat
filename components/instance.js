@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import prettyBytes from "pretty-bytes";
 import Link from "next/link";
 
-export default function Server({ server }) {
+export default function Instance({ instance }) {
 	const fetcher = (url) => axios.get(url).then((res) => res.data);
 	const [monitor_error, setMonitorError] = useState(false)
 	const [monitor_data, setMonitorData] = useState({
@@ -34,30 +34,30 @@ export default function Server({ server }) {
 		},
 	});
 	function prefetch() {
-		mutate(`/api/v1/client/servers/${server._id}`, server, true);
+		mutate(`/api/v1/client/instances/${instance._id}`, instance, true);
 	}
 	useEffect(() => {
 		prefetch();
 	}, []);
-	function Server() {
-		const { data } = useSWR(`/api/v1/client/servers/${server._id}?include=["magma_cube", "node", "allocations"]`, fetcher);
+	function Instance() {
+		const { data } = useSWR(`/api/v1/client/instances/${instance._id}?include=["magma_cube", "node", "allocations"]`, fetcher);
     console.log(data)
 		if (!data) {
-			server.relationships = {}
-			server.relationships.allocations = {}
-			server.relationships.allocations.main = {
+			instance.relationships = {}
+			instance.relationships.allocations = {}
+			instance.relationships.allocations.main = {
 				ip_alias: "loading",
 				port: "loading"
 			}
-			return server;
+			return instance;
 		}
-		mutate(`/api/v1/client/nodes/${server.node}`, data.relationships.node, false)
+		mutate(`/api/v1/client/nodes/${instance.node}`, data.relationships.node, false)
 		return data;
 	}
 	useEffect(() => {
 		mutate(
-			`/api/v1/client/nodes/${server.node}`,
-			axios.get(`/api/v1/client/nodes/${server.node}`),
+			`/api/v1/client/nodes/${instance.node}`,
+			axios.get(`/api/v1/client/nodes/${instance.node}`),
 			false
 		).then((res) => {
 			console.log("INSTANT")
@@ -67,9 +67,9 @@ export default function Server({ server }) {
 					var getData = new Promise(async (resolve, reject) => {
 						try {
 						var getToken = axios.get(
-							`/api/v1/client/servers/${server._id}/monitor/ws`
+							`/api/v1/client/instances/${instance._id}/monitor/ws`
 						);
-						var getStats = axios.get(`/api/v1/client/servers/${server._id}/monitor`)
+						var getStats = axios.get(`/api/v1/client/instances/${instance._id}/monitor`)
 						} catch {
 							reject("An error occured")
 						}
@@ -98,10 +98,10 @@ export default function Server({ server }) {
 				// websocket headers
 				setMonitorData(monitor_data)
 				const ws = new WebSocket(
-					`wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/servers/${server._id}/monitor`
+					`wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/instances/${instance._id}/monitor`
 				);
 				console.log(
-					`wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/servers/${server._id}/monitor`
+					`wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/instances/${instance._id}/monitor`
 				);
 				ws.onopen = () => {
 					console.log("open");
@@ -128,11 +128,11 @@ export default function Server({ server }) {
 	}, []);
 	return (
 		<Grid container item md={12} xs={12} direction="row">
-			<Link href={`/server/${server._id}`}>
+			<Link href={`/instance/${instance._id}`}>
 				<CardActionArea sx={{ borderRadius: "10px" }}>
 					<Paper sx={{ width: "100%", height: "100px", borderRadius: "10px" }}>
 					{monitor_error ? <Alert severity="error" sx={{width: "100%", position: "absolute", height: "40%", opacity: 0.5}}>
-				An error occured while connecting to this server.
+				An error occured while connecting to this instance.
 			</Alert> : ""}
 						<Grid
 							container
@@ -164,7 +164,7 @@ export default function Server({ server }) {
 										height: 50,
 										margin: "auto",
 									}}
-                  src={server.type == "docker" ? "https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/97_Docker_logo_logos-512.png" : server.type == "N-VPS" ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg": server.type == "KVM" ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png":""}								/>
+                  src={instance.type == "docker" ? "https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/97_Docker_logo_logos-512.png" : instance.type == "N-VPS" ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg": instance.type == "KVM" ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png":""}								/>
 							</Grid>
 							<Grid
 								container
@@ -185,7 +185,7 @@ export default function Server({ server }) {
 										marginBottom: "auto",
 									}}
 								>
-									{Server().name ? Server().name : "Loading"}
+									{Instance().name ? Instance().name : "Loading"}
 								</Typography>
 							</Grid>
 							<Grid container item xs={2} md={2} lg={2} xl={2}>
@@ -199,7 +199,7 @@ export default function Server({ server }) {
 										}}
 									/>
 									<Typography variant="body1" sx={{ fontWeight: "bold" }}>
-										{Server().relationships.allocations.main.ip_alias + ":" + Server().relationships.allocations.main.port}
+										{Instance().relationships.allocations.main.ip_alias + ":" + Instance().relationships.allocations.main.port}
 									</Typography>
 								</Box>
 							</Grid>
@@ -251,7 +251,7 @@ export default function Server({ server }) {
 											? prettyBytes(monitor_data.usage.memory)
 											: ""}
 										/
-										{prettyBytes(server.limits.memory * 1048576, {
+										{prettyBytes(instance.limits.memory * 1048576, {
 											binary: true,
 										})}
 									</Typography>
@@ -269,7 +269,7 @@ export default function Server({ server }) {
 										{monitor_data.usage.disk
 											? prettyBytes(monitor_data.usage.disk)
 											: ""}
-										/{prettyBytes(server.limits.disk * 1000000)}
+										/{prettyBytes(instance.limits.disk * 1000000)}
 									</Typography>
 								</Box>{" "}
 							</Grid>

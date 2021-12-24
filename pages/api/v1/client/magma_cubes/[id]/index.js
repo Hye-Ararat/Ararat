@@ -9,13 +9,13 @@ export default async function handler(req, res) {
     } catch {
         res.status(403).json({status: "error", data: "Unauthorized"});
     }
-    let server_check = db.collection("servers").findOne({
+    let instance_check = db.collection("instances").findOne({
         [`users.${user_data.user}`]: {$exists: true},
         magma_cube: {
             cube: id
         }
     })
-    if (!server_check) return res.status(404).json({
+    if (!instance_check) return res.status(404).json({
         status: "error",
         data: "Magma Cube does not exist"
     })

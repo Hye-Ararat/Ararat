@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   console.log(user_data)
   var access_token_jwt = sign(
     {
-      server_id: id,
+      instance_id: id,
       type: "monitor_access_token",
       user: user_data.id
     },
@@ -26,7 +26,7 @@ export default async function handler(req, res) {
   );
   var access_token = access_token_identifier + ":::" + access_token_jwt;
   try {
-    var sessions = await db.collection("servers").findOne({
+    var sessions = await db.collection("instances").findOne({
       _id: ObjectId(id),
       [`users.${user_data.id}`]: { $exists: true },
     });
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
   if (!sessions)
     return res.status(403).send({
       status: "error",
-      data: "You do not have permission to create an access token for this server",
+      data: "You do not have permission to create an access token for this instance",
     });
   return res.json({
     status: "success",

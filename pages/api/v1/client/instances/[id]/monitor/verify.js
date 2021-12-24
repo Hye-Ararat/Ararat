@@ -1,6 +1,6 @@
 import { connectToDatabase } from "../../../../../../../util/mongodb";
-import { decode } from "jsonwebtoken";
-import { ObjectId } from "mongodb";
+import { verify } from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 export default async function handler(req, res) {
   const {
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       console.log("passed 2");
       console.log(req.body.access_token.split(":::")[1]);
       try {
-        var token_data = await decode(
+        var token_data = await verify(
           req.body.access_token.split(":::")[1],
           process.env.ENC_KEY
         );
@@ -29,19 +29,39 @@ export default async function handler(req, res) {
         console.log("error 1");
         return res.status(403).send({ status: "error", data: "Unauthorized" });
       }
-	  console.log(token_data);
-      if (token_data.server_id != id)
+      if (token_data.instance_id != id)
         return res.status(403).send({ status: "error", data: "Unauthorized" });
       console.log("passed 3");
       if (token_data.type != "monitor_access_token")
         return res.status(403).send({ status: "error", data: "Unauthorized" });
       console.log("passed 4");
-      var sessions = await db.collection("servers").findOne({
-        _id: ObjectId(id),
-        [`users.${token_data.user}`]: { $exists: true },
-      });
+      var sessions = await db
+        .collection("sessions")
+        .find({
+          instance_id: id,
+          type: "monitor_access_token",
+        })
+        .toArray();
       let match = false;
-      sessions ? (match = true) : (match = false);
+      console.log(sessions);
+      async function run() {
+        return new Promise((resolve, reject) => {
+          sessions.forEach(async (session) => {
+            if (!match) {
+              let is_match = await bcrypt.compare(
+                req.body.access_token,
+                session.access_token
+              );
+              console.log(is_match);
+              if (is_match) {
+                match = true;
+                return resolve(true);
+              }
+            }
+          });
+        });
+      }
+      await run();
       if (!match)
         return res.status(403).send({ status: "error", data: "Unauthorized" });
       console.log("passed 5");

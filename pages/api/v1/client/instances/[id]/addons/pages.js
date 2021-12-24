@@ -8,19 +8,19 @@ export default async function handler(req, res) {
     console.log(id);
 	let { db } = await connectToDatabase();
     try {
-    var server = await db.collection("servers").findOne({
+    var instance = await db.collection("instances").findOne({
         _id: ObjectId(id)
     })
 } catch {
     return res.status(404).send({
         status: "error",
-        data: "Server does not exist"
+        data: "Instance does not exist"
     })
 }
-    if (!server) {
-        return res.status(404).send({status: "error", data: "Server does not exist"})
+    if (!instance) {
+        return res.status(404).send({status: "error", data: "Instance does not exist"})
     }
-    let magma_cube_id = server.magma_cube.cube;
+    let magma_cube_id = instance.magma_cube.cube;
 	let magmaCube = await db
 		.collection("magma_cubes")
 		.findOne({ _id: ObjectId(magma_cube_id) });
