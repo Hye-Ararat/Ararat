@@ -27,7 +27,6 @@ export default async function handler(req, res) {
 			try {
 				var node_insert = await db.collection("nodes").insertOne(node);
 			} catch (error) {
-				console.log(error);
 				return res.status(500).send({
 					status: "error",
 					data: "An error occured while creating the node",
@@ -44,7 +43,6 @@ export default async function handler(req, res) {
 				let cipher = crypto.createCipheriv("aes-256-ctr", process.env.ENC_KEY, iv)
 				var hashed_key = Buffer.concat([cipher.update(access_token), cipher.final()]);
 			} catch (error) {
-				console.log(error)
 				return res.status(500).send({
 					status: "error",
 					data: "An error occured while creating the node",
@@ -59,7 +57,6 @@ export default async function handler(req, res) {
 					access_token_iv: iv.toString("hex")}
 			})
 		} catch (error) {
-			console.log(error)
 			return res.status(500).send({
 				status: "error",
 				data: "An error occured while creating the node"

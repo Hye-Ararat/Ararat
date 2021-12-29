@@ -48,7 +48,6 @@ export async function getServerSideProps({ req, res }) {
   var {db} = await connectToDatabase();
   var {decode} = require("jsonwebtoken");
   var user_data = decode(req.cookies.access_token)
-  console.log(user_data)
   const instance_data = await db
     .collection("instances")
     .find({ [`users.${user_data.id}`]: { $exists: true } })

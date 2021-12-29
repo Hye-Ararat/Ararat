@@ -41,7 +41,6 @@ export default function Instance({ instance }) {
 	}, []);
 	function Instance() {
 		const { data } = useSWR(`/api/v1/client/instances/${instance._id}?include=["magma_cube", "node", "network_container"]`, fetcher);
-    console.log(data)
 		if (!data) {
 			instance.relationships = {}
 			instance.relationships.network_container = {
@@ -52,6 +51,7 @@ export default function Instance({ instance }) {
 			return instance;
 		}
 		mutate(`/api/v1/client/nodes/${instance.node}`, data.relationships.node, false)
+		instance = data;
 		return data;
 	}
 	useEffect(() => {
@@ -60,9 +60,7 @@ export default function Instance({ instance }) {
 			axios.get(`/api/v1/client/nodes/${instance.node}`),
 			false
 		).then((res) => {
-			console.log("INSTANT")
 			var node_data = res.data;
-			console.log(node_data);
 			async function monitor() {
 					var getData = new Promise(async (resolve, reject) => {
 						try {
@@ -100,11 +98,7 @@ export default function Instance({ instance }) {
 				const ws = new WebSocket(
 					`wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/instances/${instance._id}/monitor`
 				);
-				console.log(
-					`wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/instances/${instance._id}/monitor`
-				);
 				ws.onopen = () => {
-					console.log("open");
 					ws.send(
 						JSON.stringify({
 							event: "authenticate",
@@ -117,7 +111,6 @@ export default function Instance({ instance }) {
 					setMonitorError(true)
 				};
 				ws.onmessage = (e) => {
-					console.log(JSON.parse(e.data));
 					if (e.data != "Unauthorized") {
 						setMonitorData(JSON.parse(e.data));
 					}
@@ -199,7 +192,7 @@ export default function Instance({ instance }) {
 										}}
 									/>
 									<Typography variant="body1" sx={{ fontWeight: "bold" }}>
-										{Instance().relationships.network_container.address.ip_alias + ":" + instance.primary_port ? instance.primary_port : ""}
+										{instance.relationships ? instance.relationships.network_container.address.ip_alias : ""}{instance.primary_port ? ":" + instance.primary_port : ""}
 									</Typography>
 								</Box>
 							</Grid>

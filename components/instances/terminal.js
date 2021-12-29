@@ -6,7 +6,6 @@ import Spice from "./spice";
 import ResizeObserver from "react-resize-observer";
 const fitAddon = new FitAddon();
 export default function TermComponent(props) {
-    console.log(props)
     useEffect(() => {
         if (props.instance.relationships.magma_cube != null) {
             if (props.instance.relationships.magma_cube.console == "xterm") {
@@ -24,7 +23,6 @@ export default function TermComponent(props) {
                 const socket = new WebSocket(`wss://${props.instance.relationships.node.address.hostname}:${props.instance.relationships.node.address.port}/api/v1/instances/${props.instance.id}/console?type=xterm`)
                 socket.onopen = () => {
                     socket.send('{"event":"authenticate"}')
-                    console.log("CONNECTED")
                     clearInterval(interval)
                 }
                 socket.onerror = (error) => {

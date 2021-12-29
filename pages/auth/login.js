@@ -29,7 +29,6 @@ export default function Login() {
 			await login(email, password);
 		} catch (error) {
 			setLoggingIn(false);
-			return console.log(error);
 		}
 		setLoggingIn(false);
 		render(<Check color="success" />)

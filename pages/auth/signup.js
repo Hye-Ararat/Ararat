@@ -31,7 +31,6 @@ export default function SignUp() {
 			setSigningUp(true);
 			await signup(name, surname, username, email, password);
 		} catch (error) {
-			return console.log(error); 
 		}
 		setSigningUp(false);
 		render(<Check color="success" />)

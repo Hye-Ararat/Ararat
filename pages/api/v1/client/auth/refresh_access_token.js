@@ -15,7 +15,6 @@ export default async function handler(req, res) {
 					process.env.ENC_KEY
 				);
 			} catch (error){
-				console.log(error)
 				res.setHeader('Set-Cookie', `refresh_token=; Path=/; Expires=${new Date(0).toUTCString()}`);
 				return res.status(403).send("Unauthorized");
 			}

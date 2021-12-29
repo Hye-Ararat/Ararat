@@ -7,7 +7,6 @@ export default async function handler(req, res) {
   } = req;
   let { db } = await connectToDatabase();
   let user_data = await decode(req.headers.authorization.split(" ")[1]);
-  console.log(user_data)
   var access_token_jwt = sign(
     {
       instance_id: id,
@@ -31,7 +30,6 @@ export default async function handler(req, res) {
       [`users.${user_data.id}`]: { $exists: true },
     });
   } catch (error) {
-    console.log(error)
     return res.status(500).send({
       status: "error",
       data: "An error occured while creating the access token credentials",

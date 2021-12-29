@@ -1,7 +1,6 @@
 import jwt from "@tsndr/cloudflare-worker-jwt";
 import { NextResponse } from "next/server";
 export async function middleware(req) {
-	console.log(req.url);
 	if (
 		req.url.includes("/api/v1/client/auth")
 	)

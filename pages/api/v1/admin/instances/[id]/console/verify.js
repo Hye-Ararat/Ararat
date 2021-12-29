@@ -10,11 +10,9 @@ export default async function handler(req, res) {
     try {
         var valid = verify(req.body.access_token.split(":::")[1], process.env.ENC_KEY);
     } catch (error) {
-        console.log(error);
         return res.status(403).send("Unauthorized");
     }
     if (!valid)  {
-        console.log("not valid")
         return res.status(403).send("Unauthorized")
     }
     var token_data = decode(req.body.access_token.split(":::")[1]);

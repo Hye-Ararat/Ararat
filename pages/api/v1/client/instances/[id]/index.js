@@ -10,12 +10,9 @@ export default async function handler(req, res) {
         _id: ObjectId(id),
         [`users.${user_info.id}`]: {$exists: true}
     })
-    console.log(user_info)
     if (instance && include) {
-        console.log(include)
         instance.relationships = {}
         if (include.includes("magma_cube")) {
-            console.log(include)
             instance.relationships.magma_cube = await db.collection("magma_cubes").findOne({
                 _id: ObjectId(instance.magma_cube.cube)
             })

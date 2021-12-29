@@ -48,7 +48,6 @@ export default function Navigation({ children, ...props }) {
 		if (!data) {
 			return [];
 		} else {
-			console.log(data.data);
       if (data.status == "error" || data.data == "Instance does not exist") {
         return []
       }
@@ -173,7 +172,6 @@ export default function Navigation({ children, ...props }) {
 							{Addons()
 								? Addons() != "Loading"
 									? Addons().map((addon) => {
-											console.log("yes", addon);
 											library.add();
 											return (
 												<Link

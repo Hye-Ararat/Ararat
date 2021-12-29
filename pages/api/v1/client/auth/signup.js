@@ -18,7 +18,6 @@ export default async function handler(req, res) {
         var salt = await bcrypt.genSalt(10);
         var hashedPassword = await bcrypt.hash(req.body.password, salt);
       } catch (error) {
-        console.log(error);
         return res.status(500).json({status: "error", data: "An error occured hile creating the user"});
       }
     

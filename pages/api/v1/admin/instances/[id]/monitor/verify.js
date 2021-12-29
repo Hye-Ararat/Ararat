@@ -14,28 +14,20 @@ export default async function handler(req, res) {
         return res
           .status(400)
           .send({ status: "error", data: "Access Token is required" });
-      console.log("passed 1");
       if (!req.body.access_token.includes(":::"))
         return res.status(403).send({ status: "error", data: "Unauthorized" });
-      console.log("passed 2");
-      console.log(req.body.access_token.split(":::")[1]);
       try {
         var token_data = await decode(
           req.body.access_token.split(":::")[1],
           process.env.ENC_KEY
         );
       } catch (error) {
-        console.log(error);
-        console.log("error 1");
         return res.status(403).send({ status: "error", data: "Unauthorized" });
       }
-	  console.log(token_data);
       if (token_data.instance_id != id)
         return res.status(403).send({ status: "error", data: "Unauthorized" });
-      console.log("passed 3");
       if (token_data.type != "monitor_access_token")
         return res.status(403).send({ status: "error", data: "Unauthorized" });
-      console.log("passed 4");
       var sessions = await db.collection("instances").findOne({
         _id: ObjectId(id),
         [`users.${token_data.user}`]: { $exists: true },
@@ -44,7 +36,6 @@ export default async function handler(req, res) {
       sessions ? (match = true) : (match = false);
       if (!match)
         return res.status(403).send({ status: "error", data: "Unauthorized" });
-      console.log("passed 5");
       return res.json({ status: "success", data: "Access Token Is Valid" });
       break;
     default:

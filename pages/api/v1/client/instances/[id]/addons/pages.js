@@ -5,7 +5,6 @@ export default async function handler(req, res) {
 	const {
 		query: { id },
 	} = req;
-    console.log(id);
 	let { db } = await connectToDatabase();
     try {
     var instance = await db.collection("instances").findOne({
@@ -40,12 +39,9 @@ export default async function handler(req, res) {
                             enhancement: enhancement
                         }).toArray()
                         if (i == magmaCube.enhancements.length) {
-                            console.log("IT'S DONE")
-                            console.log(full_pages);
                             return resolve(full_pages);
                         }
                         full_pages = full_pages.concat(pages);
-                        console.log(full_pages)
                     }
                 })
             })

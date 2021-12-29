@@ -1,7 +1,6 @@
 import { verify, decode } from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 export default async function handler(req, res) {
-    console.log(req.headers["refresh-token"]);
     try {
     var token_data = verify(req.headers["refresh-token"], process.env.ENC_KEY);
     } catch {
