@@ -34,26 +34,11 @@ export default function Instance({ instance }) {
 		},
 	});
 	function prefetch() {
-		mutate(`/api/v1/client/instances/${instance._id}`, instance, true);
+		mutate(`/api/v1/client/instances/${instance._id}?include=["magma_cube", "node", "network_container"]`, instance, true);
 	}
 	useEffect(() => {
 		prefetch();
 	}, []);
-	function Instance() {
-		const { data } = useSWR(`/api/v1/client/instances/${instance._id}?include=["magma_cube", "node", "network_container"]`, fetcher);
-		if (!data) {
-			instance.relationships = {}
-			instance.relationships.network_container = {
-				address: {
-					ip_alias: null
-				}
-			}
-			return instance;
-		}
-		mutate(`/api/v1/client/nodes/${instance.node}`, data.relationships.node, false)
-		instance = data;
-		return data;
-	}
 	useEffect(() => {
 		mutate(
 			`/api/v1/client/nodes/${instance.node}`,
@@ -107,7 +92,6 @@ export default function Instance({ instance }) {
 					);
 				};
 				ws.onerror = (error) => {
-					console.error(error);
 					setMonitorError(true)
 				};
 				ws.onmessage = (e) => {
@@ -157,7 +141,7 @@ export default function Instance({ instance }) {
 										height: 50,
 										margin: "auto",
 									}}
-                  src={ Instance().relationships.magma_cube != undefined ? Instance().relationships.magma_cube.type == "n-vps" ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg": Instance().relationships.magma_cube.type == "kvm" ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png":"" : ""}								/>
+                  src={ instance.relationships ? instance.relationships.magma_cube.type == "n-vps" ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg": instance.relationships.magma_cube.type == "kvm" ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png":"" : ""}								/>
 							</Grid>
 							<Grid
 								container
@@ -178,7 +162,7 @@ export default function Instance({ instance }) {
 										marginBottom: "auto",
 									}}
 								>
-									{Instance().name ? Instance().name : "Loading"}
+									{instance.name ? instance.name : "Loading"}
 								</Typography>
 							</Grid>
 							<Grid container item xs={2} md={2} lg={2} xl={2}>

@@ -47,12 +47,41 @@ export async function getServerSideProps({ req, res }) {
   var {connectToDatabase} = require("../util/mongodb")
   var {db} = await connectToDatabase();
   var {decode} = require("jsonwebtoken");
+  var {ObjectId} = require("mongodb");
   var user_data = decode(req.cookies.access_token)
   const instance_data = await db
     .collection("instances")
     .find({ [`users.${user_data.id}`]: { $exists: true } })
     .toArray();
-  let data = JSON.parse(JSON.stringify(instance_data));
+  var instances = [];
+  function awaitAllInstancesDone() {
+    return new Promise((resolve, reject) => {
+      if (instances.length == instance_data.length) {
+        return resolve()
+      }
+      var instanceCheck = setInterval(() => {
+        if (instances.length == instance_data.length) {
+          clearInterval(instanceCheck)
+          return resolve()
+        }
+      }, 100)
+    });
+  }
+  instance_data.forEach(async instance => {
+    instance.relationships = {};
+    instance.relationships.magma_cube = await db.collection("magma_cubes").findOne({
+      _id: ObjectId(instance.magma_cube.cube)
+    })
+    instance.relationships.node = await db.collection("nodes").findOne({
+      _id: ObjectId(instance.node)
+    })
+    instance.relationships.network_container = await db.collection("network_containers").findOne({
+      _id: ObjectId(instance.network_container)
+    })
+    instances.push(instance);
+  })
+  await awaitAllInstancesDone()
+  let data = JSON.parse(JSON.stringify(instances));
   return { props: { data } };
 }
 
