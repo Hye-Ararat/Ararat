@@ -1,14 +1,14 @@
 import { useRouter } from "next/router";
-import Navigation from "../../components/instance/Navigation";
+import Navigation from "../../../components/instance/Navigation";
 import { Grid, Paper, Typography, Chip, Button, Fade, Container} from "@mui/material";
 import useSWR from "swr";
 import axios from "axios";
 import dynamic from "next/dynamic"
 import { useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
-import StartButton from "../../components/instance/StartButton";
-import StopButton from "../../components/instance/StopButton";
-const Terminal = dynamic(() => import('../../components/instances/terminal'), {
+import StartButton from "../../../components/instance/StartButton";
+import StopButton from "../../../components/instance/StopButton";
+const Terminal = dynamic(() => import('../../../components/instances/terminal'), {
     ssr: false
 })
 
