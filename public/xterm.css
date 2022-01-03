@@ -1,0 +1,4 @@
+.xterm .xterm-viewport {
+    border-radius: 4px;
+    overflow-y: hidden;
+}
