@@ -4,7 +4,10 @@ import { Grid, Paper, Typography, Chip, Button, Fade, Container} from "@mui/mate
 import useSWR from "swr";
 import axios from "axios";
 import dynamic from "next/dynamic"
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { LoadingButton } from "@mui/lab";
+import StartButton from "../../components/instance/StartButton";
+import StopButton from "../../components/instance/StopButton";
 const Terminal = dynamic(() => import('../../components/instances/terminal'), {
     ssr: false
 })
@@ -13,6 +16,8 @@ export default function Instance({ data }) {
     const router = useRouter();
     const { id } = router.query;
     const fetcher = (url) => axios.get(url).then((res) => res.data);
+    const [status, setStatus] = useState(null);
+    const [state, setState] = useState(null);
     function Instance() {
         const {data} = useSWR(`/api/v1/client/instances/${id}?include=["magma_cube", "node", "network_container"]`, fetcher)
         if (!data) {
@@ -31,9 +36,23 @@ export default function Instance({ data }) {
             relationships: {
                 node: data.relationships.node,
                 magma_cube: data.relationships.magma_cube,
+                network_container: data.relationships.network_container,
             }
         }
     }
+    useEffect(() => {
+        var socket = new WebSocket("ws://81.205.168.8:3535/api/v1/instances/616defe0c1310382eda9773c/monitor");
+        socket.onopen = () => {
+                socket.send("eeeeruqweiruqieworuqweiruqweuro")
+        }
+        socket.onmessage = (data) => {
+            console.log(JSON.parse(JSON.stringify(data.data)))
+            var e = JSON.parse(data.data)
+            console.log(e.state)
+            setStatus(e.state)
+            setState(e.containerState)
+        }
+    }, [])
     
 	return (
         <>
@@ -45,17 +64,17 @@ export default function Instance({ data }) {
                         <Typography variant="h6">{Instance().name}</Typography>
                     </Grid>
                     <Grid container item xs={8} md={5} lg={3.7} xl={3} sx={{marginLeft: "auto"}}>
-                        <Button color="success" variant="contained" sx={{marginLeft: "auto", marginTop: "auto", marginBottom: "auto"}}>Start</Button>
-                        <Button color="error" variant="contained" sx={{marginLeft: "auto", marginTop: "auto", marginBottom: "auto"}}>Stop</Button>
+                        <StartButton instance={id} />
+                        <StopButton instance={id} />
                         <Button color="warning" variant="contained" sx={{marginLeft: "auto", marginTop: "auto", marginBottom: "auto"}}>Restart</Button>
-                        <Chip sx={{ marginLeft: "auto", marginTop: "auto", marginBottom: "auto"}} size="small" label="Online" color="success" />
+                        <Chip sx={{ marginLeft: "auto", marginTop: "auto", marginBottom: "auto"}} size="small" label={status} color={status == "Online" ? "success" : status == "Starting" ? "warning" : status == "Stopping" ? "warning" : "error"} />
                     </Grid>
                 </Grid>
             </Paper>
             <Grid container xs={12} sx={{mt: 2}}>
                 <Grid item xs={3} />
                 <Grid item xs={6}>
-                <Terminal instance={Instance()} />
+                <Terminal status={state} instance={Instance()} />
                 </Grid>
                 <Grid item xs={3} />
             </Grid>
