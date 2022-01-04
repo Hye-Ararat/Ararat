@@ -36,6 +36,7 @@ function TermComponent(props) {
                     socket.close()
                     term.dispose()
                     controlws.close()
+                    window.onresize = null
                 }
             }
         }
@@ -54,13 +55,15 @@ function TermComponent(props) {
                     :
                     <>
                     <ResizeObserver onResize={rect => {
-                        var yes = document.getElementsByClassName("xterm-viewport");
-                        yes = yes[0];
-                        if (yes) {
-                        yes.style.width = `${rect.width}px`;
-                        yes.style.height = `${rect.height}px`;
+                        if (props.instance.relationships.magma_cube.console == "xterm") {
+                            var yes = document.getElementsByClassName("xterm-viewport");
+                            yes = yes[0];
+                            if (yes) {
+                            yes.style.width = `${rect.width}px`;
+                            yes.style.height = `${rect.height}px`;
+                            }
+                            fitAddon.fit()
                         }
-                        fitAddon.fit()
                 
                    }} />
                     <div id="terminal" style={{width: "100%"}}></div>
@@ -72,9 +75,6 @@ function TermComponent(props) {
 }
 function areEqual(prevProps, nextProps) {
     console.log("are equal?", JSON.stringify(prevProps) === JSON.stringify(nextProps))
-    if (nextProps.status == undefined || nextProps.status == null) {
-        return true
-    }
     return JSON.stringify(prevProps) === JSON.stringify(nextProps)
 }
 export default memo(TermComponent, areEqual)
