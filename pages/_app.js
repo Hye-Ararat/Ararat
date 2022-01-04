@@ -11,14 +11,11 @@ import { SWRConfig } from "swr";
 import nookies from "nookies";
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
+import { useEffect, useState } from "react";
+import Navigation from "../components/instance/Navigation";
 config.autoAddCss = false;
 
 NProgress.configure({ showSpinner: false });
-Router.onRouteChangeStart = (url) => {
-	NProgress.start();
-};
-Router.onRouteChangeComplete = () => NProgress.done();
-Router.onRouteChangeError = () => NProgress.done();
 
 axios.interceptors.request.use(async (config) => {
 	if (process.browser) {
@@ -72,11 +69,53 @@ function localStorageProvider() {
 	} else return new Map();
 }
 function MyApp({ Component, pageProps }) {
+	const [instance, setInstance] = useState(null);
+	const [instanceNav, setInstanceNav] = useState(null)
+
+	Router.onRouteChangeError = () => NProgress.done();
+	useEffect(() => {
+		if (window.location.pathname.includes("instance")) {
+		if (window.location.pathname.split("instance")[1].split("/")[1] != undefined) {
+			setInstance(window.location.pathname.split("instance")[1].split("/")[1])
+			if (window.location.pathname.split("instance")[1].split("/")[2] != null) {
+				setInstanceNav(window.location.pathname.split("instance")[1].split("/")[2])
+			} else {
+				setInstanceNav(null)
+			}
+		}
+	} else {
+		setInstance(null)
+		setInstanceNav(null)
+	}
+		Router.onRouteChangeStart = (url) => {
+			NProgress.start();
+		};
+		Router.onRouteChangeComplete = (url) =>{ 
+			if (url.includes("instance")) {
+				if (url.split("instance")[1].split("/")[1] != undefined) {
+					setInstance(url.split("instance")[1].split("/")[1]);
+					if (url.split("instance")[1].split("/")[2] != null) {
+						setInstanceNav(url.split("instance")[1].split("/")[2])
+					} else {
+						setInstanceNav(null)
+					}
+				} else {
+					setInstance(null)
+					setInstanceNav(null)
+				}
+			} else {
+				setInstance(null)
+				setInstanceNav(null)
+			}
+			NProgress.done()}	}, [])
 	return (
 		<SWRConfig value={{ provider: localStorageProvider }}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
-				<Component {...pageProps} />
+				{instance ? <Navigation instance={instance} page={instanceNav}>
+					<Component {...pageProps} />
+				</Navigation>: <Component {...pageProps} />}
+				{instanceNav ? instanceNav : ""}
 			</ThemeProvider>
 		</SWRConfig>
 	);

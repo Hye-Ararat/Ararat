@@ -37,9 +37,11 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as Icons from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
+import { useEffect } from "react";
 const fetcher = (url) => axios.get(url).then((res) => res.data);
 
 export default function Navigation({ children, ...props }) {
+	console.log(props.page)
 	function Addons() {
 		const { data } = useSWR(
 			`/api/v1/client/instances/${props.instance}/addons/pages`,
@@ -54,6 +56,9 @@ export default function Navigation({ children, ...props }) {
 			return data.data;
 		}
 	}
+	useEffect(() => {
+		console.log("Nav redone")
+	}, [])
 	return (
 		<>
 			<Box sx={{ display: "flex" }}>
@@ -106,7 +111,7 @@ export default function Navigation({ children, ...props }) {
 						<Divider />
 						<List>
 							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
-								<ListItem button selected={true}>
+								<ListItem button selected={props.page==null ? true : false}>
 									<ListItemIcon>
 										<ConsoleIcon />
 									</ListItemIcon>
@@ -114,7 +119,7 @@ export default function Navigation({ children, ...props }) {
 								</ListItem>
 							</Link>
 							<Link href={`/instance/${encodeURIComponent(props.instance)}/files`}>
-								<ListItem button>
+								<ListItem button selected={props.page != null ? props.page.includes("files") ? true : false : false}>
 									<ListItemIcon>
 										<FilesIcon />
 									</ListItemIcon>
@@ -122,7 +127,7 @@ export default function Navigation({ children, ...props }) {
 								</ListItem>
 							</Link>
 							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
-								<ListItem button>
+								<ListItem button selected={props.page=="backups" ? true : false}>
 									<ListItemIcon>
 										<BackupIcon />
 									</ListItemIcon>
@@ -130,7 +135,7 @@ export default function Navigation({ children, ...props }) {
 								</ListItem>
 							</Link>
 							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
-								<ListItem button>
+								<ListItem button selected={props.page=="databases" ? true : false}>
 									<ListItemIcon>
 										<DatabaseIcon />
 									</ListItemIcon>
@@ -138,7 +143,7 @@ export default function Navigation({ children, ...props }) {
 								</ListItem>
 							</Link>
 							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
-								<ListItem button>
+								<ListItem button selected={props.page=="users" ? true : false}>
 									<ListItemIcon>
 										<UsersIcon />
 									</ListItemIcon>
@@ -146,7 +151,7 @@ export default function Navigation({ children, ...props }) {
 								</ListItem>
 							</Link>
 							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
-								<ListItem button>
+								<ListItem button selected={props.page=="schedules" ? true : false}>
 									<ListItemIcon>
 										<SchedulesIcon />
 									</ListItemIcon>
@@ -154,7 +159,7 @@ export default function Navigation({ children, ...props }) {
 								</ListItem>
 							</Link>
 							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
-								<ListItem button>
+								<ListItem button selected={props.page=="networking" ? true : false}>
 									<ListItemIcon>
 										<NetworkIcon />
 									</ListItemIcon>
@@ -162,7 +167,7 @@ export default function Navigation({ children, ...props }) {
 								</ListItem>
 							</Link>
 							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
-								<ListItem button>
+								<ListItem button selected={props.page=="settings" ? true : false}>
 									<ListItemIcon>
 										<SettingsIcon />
 									</ListItemIcon>
