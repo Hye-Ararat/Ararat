@@ -57,7 +57,6 @@ export default function Instance({ data }) {
 	return (
         <>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css" integrity="sha512-iLYuqv+v/P4u9erpk+KM83Ioe/l7SEmr7wB6g+Kg1qmEit8EShDKnKtLHlv2QXUp7GGJhmqDI+1PhJYLTsfb8w==" crossOrigin="anonymous" referrerpolicy="no-referrer" />
-		<Navigation instance={id}>
             <Paper>
                 <Grid container direction="row" sx={{p: 2}}>
                     <Grid item xs={2}>
@@ -78,7 +77,6 @@ export default function Instance({ data }) {
                 </Grid>
                 <Grid item xs={3} />
             </Grid>
-		</Navigation>
         </>
 	);
 }
