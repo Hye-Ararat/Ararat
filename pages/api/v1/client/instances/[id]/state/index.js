@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     try {
         var decipher = crypto.createDecipheriv("aes-256-ctr", process.env.ENC_KEY, Buffer.from(node.access_token_iv, "hex"))
         var access_token = Buffer.concat([decipher.update(Buffer.from(node.access_token, "hex")), decipher.final()])
-        var state = await post(`http://${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/state`, req.body, {
+        var state = await post(`${node.address.ssl ? "https://" : "http://"}${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/state`, req.body, {
             headers: {
                 Aunthorization: `Bearer ${access_token.toString()}`
             }

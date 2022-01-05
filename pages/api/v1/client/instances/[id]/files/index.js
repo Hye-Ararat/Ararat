@@ -38,8 +38,8 @@ export default async function handler(req, res) {
     try {
         var decipher = crypto.createDecipheriv("aes-256-ctr", process.env.ENC_KEY, Buffer.from(node.access_token_iv, "hex"))
         var access_token = Buffer.concat([decipher.update(Buffer.from(node.access_token, "hex")), decipher.final()])
-        console.log(`${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/files?path=${path}`)
-        var files = await get(`${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/files?path=/${path}`, {
+        console.log(`${node.address.ssl ? "https://" : "http://"}${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/files?path=${path}`)
+        var files = await get(`${node.address.ssl ? "https://" : "http://"}${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/files?path=/${path}`, {
             Authorization: `Bearer ${access_token.toString()}`
         })
     } catch (error) {
