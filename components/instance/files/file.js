@@ -1,3 +1,5 @@
+import { faFile, faFolder } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {Grid, Typography, Checkbox} from "@mui/material"
 import prettyBytes from "pretty-bytes"
 import { useState } from "react";
@@ -21,8 +23,9 @@ export default function File({file, allChecked}) {
         <Grid item container xs={.6}>
         <Checkbox checked={checked || allChecked} id={file.name} sx={{mt: "auto", mb: "auto"}} onClick={handleClick}/>
     </Grid>
-    <Grid item container xs={6}>
-        <Typography sx={{mt: "auto", mb: "auto", fontWeight: "bold"}} variant="body2">{file.name}</Typography>
+    <Grid item container xs={6} direction="row">
+        <FontAwesomeIcon icon={file.type == "directory" ? faFolder : faFile} style={{marginTop: "auto", marginBottom: "auto", marginRight: 6, color: "grey"}}/>
+        <Typography sx={{mt: "auto", mb: "auto", mr: 3, fontWeight: "bold"}} variant="body2">{file.name}</Typography>
     </Grid>
     <Grid item container xs={1}>
         <Typography sx={{mt: "auto", mb: "auto"}} variant="body2">{file.size ? prettyBytes(parseInt(file.size)) : ""}</Typography>
