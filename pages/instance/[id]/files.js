@@ -93,7 +93,7 @@ export default function Files(props) {
                         </Grid>
                     </Grid>
                     <Grid item container xs={5.4}>
-                        {files ? files.list ? showOptions? <><Button sx={{ mt: "auto", mb: "auto", ml: "auto" }} variant="contained" color="error">Delete</Button> <Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="warning">Move</Button><Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="success">Download</Button><Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="info">Archive</Button></>:
+                        {files ? files.list ? showOptions? <><Button sx={{ mt: "auto", mb: "auto", ml: "auto" }} variant="contained" color="error">Delete</Button> <Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="warning">Move</Button><Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="success">Download</Button></>:
                         <>
                         <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Create Directory</Button>
                         <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: 3 }}>Upload</Button>
