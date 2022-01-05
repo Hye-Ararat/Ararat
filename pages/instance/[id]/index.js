@@ -15,33 +15,18 @@ const Terminal = dynamic(() => import('../../../components/instances/terminal'),
 export default function Instance({ data }) {
     const router = useRouter();
     const { id } = router.query;
+    console.log(id)
     const fetcher = (url) => axios.get(url).then((res) => res.data);
     const [status, setStatus] = useState(null);
     const [state, setState] = useState(null);
-    function Instance() {
-        const {data} = useSWR(`/api/v1/client/instances/${id}?include=["magma_cube", "node", "network_container"]`, fetcher)
-        if (!data) {
-            return {
-                name: null,
-                id: id,
-                relationships: {
-                    node: null,
-                    magma_cube: null,
-                },
-            }
-        }
-        return {
-            name: data.name,
-            id: id,
-            relationships: {
-                node: data.relationships.node,
-                magma_cube: data.relationships.magma_cube,
-                network_container: data.relationships.network_container,
-            }
-        }
-    }
+    var {data: instanceData} = useSWR(() => `/api/v1/client/instances/${id}?include=["magma_cube", "node", "network_container"]`, fetcher)
+    var {data: monitorAuth} = useSWR(`/api/v1/client/instances/${id}/monitor/ws`, fetcher)
     useEffect(() => {
-        var socket = new WebSocket("ws://81.205.168.8:3535/api/v1/instances/616defe0c1310382eda9773c/monitor");
+        if (instanceData) {
+            console.log("yes")
+        if (monitorAuth) {
+            console.log("yes2")
+        var socket = new WebSocket(`${instanceData.relationships.node.address.ssl ? "wss" : "ws"}://${instanceData.relationships.node.address.hostname}:${instanceData.relationships.node.address.port}/api/v1/instances/${id}/monitor`);
         socket.onopen = () => {
                 socket.send("eeeeruqweiruqieworuqweiruqweuro")
         }
@@ -52,7 +37,17 @@ export default function Instance({ data }) {
             setStatus(e.state)
             setState(e.containerState)
         }
-    }, [])
+        return() => {
+            socket.close();
+            instanceData = null;
+        }
+    } else {
+        console.log('no2')
+    }
+} else {
+    console.log("no")
+}
+    }, [monitorAuth, instanceData])
     
 	return (
         <>
@@ -60,7 +55,7 @@ export default function Instance({ data }) {
             <Paper>
                 <Grid container direction="row" sx={{p: 2}}>
                     <Grid item xs={2}>
-                        <Typography variant="h6">{Instance().name}</Typography>
+                        <Typography variant="h6">{instanceData ? instanceData.name : ""}</Typography>
                     </Grid>
                     <Grid container item xs={8} md={5} lg={3.7} xl={3} sx={{marginLeft: "auto"}}>
                         <StartButton instance={id} />
@@ -73,7 +68,10 @@ export default function Instance({ data }) {
             <Grid container xs={12} sx={{mt: 2}}>
                 <Grid item xs={3} />
                 <Grid item xs={6}>
-                <Terminal status={state} instance={Instance()} />
+                    {instanceData ? console.log("asldkfj;lsdkfj") : ""}
+                {instanceData ?
+                <Terminal status={state} instance={instanceData} instanceId={id} />
+                : ""}
                 </Grid>
                 <Grid item xs={3} />
             </Grid>
