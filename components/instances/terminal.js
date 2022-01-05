@@ -30,6 +30,7 @@ function TermComponent(props) {
                         if (controlws) {
                             controlws.send(JSON.stringify({event: "resize", rows: dimensions.rows, cols: dimensions.cols}))
                         } 
+                        fitAddon.fit()
                     }
                 }
                 return () => {
@@ -62,7 +63,6 @@ function TermComponent(props) {
                             yes.style.width = `${rect.width}px`;
                             yes.style.height = `${rect.height}px`;
                             }
-                            fitAddon.fit()
                         }
                 
                    }} />
