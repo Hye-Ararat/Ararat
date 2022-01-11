@@ -1,14 +1,20 @@
 import dynamic from "next/dynamic";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Monaco, {useMonaco} from "@monaco-editor/react";
 import { Button, Container, Grid } from "@mui/material";
 import ResizeObserver from "react-resize-observer";
+import axios from "axios";
 
 export default function FileEditor({file, path, instance}) {    
+    const [data, setData] = useState(file);
     function language() {
         if (path.includes(".js")) {
             return "javascript";
-        } else {
+        } else if (path.includes("sshd_config")){
+            return "ssh_config";
+        }         else if (path.includes(".conf")){
+            return "ini";
+        }  else {
             return "plaintext";
         }
     }
@@ -228,8 +234,16 @@ export default function FileEditor({file, path, instance}) {
     }, [monaco])
     return (
         <div style={{cursor: "text", width: "100%"}}>
-        <Monaco height={"50vh"} width={"100%"} id="monaco-editor-parent" theme="hye" value={file.toString()} style={{marginLeft: "auto", marginRight: "auto"}}language={language()} options={{cursorSmoothCaretAnimation: true, cursorBlinking: "smooth", smoothScrolling: true, automaticLayout: true}}/>
-        <Button sx={{mt: 1}}variant="contained" color="success">Save</Button>
+        <Monaco height={"50vh"} width={"100%"} onChange={(data) => setData(data)} id="monaco-editor-parent" theme="hye" value={typeof(file) == "object" ? JSON.stringify(file) : file.length == 0 ? " " : file} style={{marginLeft: "auto", marginRight: "auto"}} language={language()} options={{cursorSmoothCaretAnimation: true, cursorBlinking: "smooth", smoothScrolling: true, automaticLayout: true}}/>
+        <Button sx={{mt: 1}}variant="contained" color="success" onClick={async () => {
+            console.log(data);
+            await axios.post(`http://81.205.168.8:3535/api/v1/instances/${instance}/files?path=${path}`, data, {
+                headers: {
+                    'Content-Type': 'text/plain',
+                }
+            });
+            
+        }}>Save</Button>
         </div>
     )
 }
