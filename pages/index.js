@@ -150,12 +150,14 @@ export default function Dashboard({ data }) {
             </List>
             <Divider />
             <List>
+              <Link href="/admin">
               <ListItem button>
                 <ListItemIcon>
                   <AdminIcon />
                 </ListItemIcon>
                 <ListItemText primary="Admin" />
               </ListItem>
+              </Link>
             </List>
           </Box>
         </Drawer>
