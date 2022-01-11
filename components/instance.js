@@ -25,13 +25,17 @@ import Link from "next/link";
 export default function Instance({ instance }) {
 	const fetcher = (url) => axios.get(url).then((res) => res.data);
 	const [monitor_error, setMonitorError] = useState(false)
-	const [monitor_data, setMonitorData] = useState({
-		status: null,
-		usage: {
-			cpu: null,
-			disk: null,
-			memory: null,
+	const [monitorData, setMonitorData] = useState({
+		state: null,
+		cpu: null,
+		memory: {
+			usage: null,
+			percent: null
 		},
+		disk: {
+			usage: null,
+		},
+		containerState: null
 	});
 	function prefetch() {
 		mutate(`/api/v1/client/instances/${instance._id}?include=["magma_cube", "node", "network_container"]`, instance, true);
@@ -63,19 +67,22 @@ export default function Instance({ instance }) {
 							})
 						})).catch(() => {
 							reject("An error occured")
-							setMonitorError(true);
 						})
 					})
 				try {
 				var {token, monitor_data} = await getData;
 				} catch {
 					var monitor_data = {
-						status: null,
-						usage: {
-							cpu: null,
-							disk: null,
-							memory: null,
+						state: null,
+						cpu: null,
+						memory: {
+							usage: null,
+							percent: null
 						},
+						disk: {
+							usage: null,
+						},
+						containerState: null
 					}
 				}
 				// websocket headers
@@ -96,6 +103,9 @@ export default function Instance({ instance }) {
 				};
 				ws.onmessage = (e) => {
 					if (e.data != "Unauthorized") {
+						if (monitor_error) {
+							setMonitorError(false);
+						}
 						setMonitorData(JSON.parse(e.data));
 					}
 				};
@@ -129,12 +139,12 @@ export default function Instance({ instance }) {
 									sx={{
 										padding: "10px",
 										bgcolor:
-											monitor_data.status == "running" ||
-											monitor_data.status == "Running"
+											monitorData.state == "online" ||
+											monitorData.state == "Online"
 												? "#163a3a"
-												: monitor_data.status == "exited" ||
-												  monitor_data.status == "created" ||
-												  monitor_data.status === "Stopped"
+												: monitorData.state == "offline" ||
+												  monitorData.state == "created" ||
+												  monitorData.state === "Stopped"
 												? "#34242b"
 												: "",
 										width: 50,
@@ -209,8 +219,8 @@ export default function Instance({ instance }) {
 										}}
 									/>
 									<Typography variant="body1" noWrap>
-										{monitor_data.usage.cpu != null
-											? parseFloat(monitor_data.usage.cpu).toFixed(2) + "%"
+										{monitorData.cpu != undefined && monitorData.cpu != null
+											? parseFloat(monitorData.cpu).toFixed(2) + "%"
 											: ""}
 									</Typography>
 								</Box>
@@ -224,8 +234,8 @@ export default function Instance({ instance }) {
 										}}
 									/>
 									<Typography variant="body1" noWrap>
-										{monitor_data.usage.memory != null
-											? prettyBytes(monitor_data.usage.memory)
+										{monitorData.memory.usage != undefined && monitorData.memory.usage != null
+											? prettyBytes(parseFloat(monitorData.memory.usage), {binary: true})
 											: ""}
 										/
 										{prettyBytes(instance.limits.memory * 1048576, {
@@ -243,8 +253,8 @@ export default function Instance({ instance }) {
 										}}
 									/>
 									<Typography variant="body1" noWrap>
-										{monitor_data.usage.disk
-											? prettyBytes(monitor_data.usage.disk)
+										{monitorData.disk.usage != undefined && monitorData.disk.usage != null
+											? parseFloat(monitorData.disk.usage)
 											: ""}
 										/{prettyBytes(instance.limits.disk * 1000000)}
 									</Typography>
