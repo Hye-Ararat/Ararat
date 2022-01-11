@@ -11,8 +11,19 @@ import File from "../../../components/instance/files/file";
 import dynamic from "next/dynamic";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { InstanceStore } from "../../../states/instance";
+import Navigation from "../../../components/instance/Navigation";
 const FileEditor = dynamic(import("../../../components/instance/files/FileEditor"), { ssr: false });
 export default function Files(props) {
+    const instance = {
+        data: InstanceStore.useStoreState(state => state.data),
+        setData: InstanceStore.useStoreActions(state => state.setData),
+        containerState: InstanceStore.useStoreState(state => state.containerState),
+        sockets: {
+            monitor: InstanceStore.useStoreState(state => state.sockets.monitor),
+            setMonitor: InstanceStore.useStoreActions(state => state.sockets.setMonitor)
+        }
+    }
     const [checked, setChecked] = useState([])
     const [allChecked, setAllChecked] = useState(false)
     const [showOptions, setShowOptions] = useState(false)
@@ -145,5 +156,15 @@ export default function Files(props) {
                 </Grid>
             </Container>
         </>
+    )
+}
+
+Files.getLayout = function getLayout(page) {
+    return(
+        <InstanceStore.Provider>
+            <Navigation page="files" >
+                {page}
+            </Navigation>
+        </InstanceStore.Provider>
     )
 }

@@ -1,13 +1,14 @@
 import { useRouter } from "next/router";
-import Navigation from "../../../components/instance/Navigation";
-import { Grid, Paper, Typography, Chip, Button, Fade, Container} from "@mui/material";
+import { Grid, Paper, Typography, Chip, Button } from "@mui/material";
 import useSWR from "swr";
+import {InstanceStore} from "../../../states/instance";
 import axios from "axios";
 import dynamic from "next/dynamic"
-import { useEffect, useState } from "react";
-import { LoadingButton } from "@mui/lab";
+import { useEffect } from "react";
 import StartButton from "../../../components/instance/StartButton";
 import StopButton from "../../../components/instance/StopButton";
+import Navigation from "../../../components/instance/Navigation";
+import StateIndicator from "../../../components/instance/StateIndicator";
 const Terminal = dynamic(() => import('../../../components/instances/terminal'), {
     ssr: false
 })
@@ -17,64 +18,81 @@ export default function Instance({ data }) {
     const { id } = router.query;
     console.log(id)
     const fetcher = (url) => axios.get(url).then((res) => res.data);
-    const [status, setStatus] = useState(null);
-    const [state, setState] = useState(null);
-    var {data: instanceData} = useSWR(() => `/api/v1/client/instances/${id}?include=["magma_cube", "node", "network_container"]`, fetcher)
-    var {data: monitorAuth} = useSWR(`/api/v1/client/instances/${id}/monitor/ws`, fetcher)
-    useEffect(() => {
-        if (instanceData) {
-            console.log("yes")
-        if (monitorAuth) {
-            console.log("yes2")
-        var socket = new WebSocket(`${instanceData.relationships.node.address.ssl ? "wss" : "ws"}://${instanceData.relationships.node.address.hostname}:${instanceData.relationships.node.address.port}/api/v1/instances/${id}/monitor`);
-        socket.onopen = () => {
-                socket.send("eeeeruqweiruqieworuqweiruqweuro")
+    const instance = {
+        data: InstanceStore.useStoreState(state => state.data),
+        setData: InstanceStore.useStoreActions(state => state.setData),
+        containerState: InstanceStore.useStoreState(state => state.containerState),
+        sockets: {
+            monitor: InstanceStore.useStoreState(state => state.sockets.monitor),
+            setMonitor: InstanceStore.useStoreActions(state => state.sockets.setMonitor)
         }
-        socket.onmessage = (data) => {
-            console.log(JSON.parse(JSON.stringify(data.data)))
-            var e = JSON.parse(data.data)
-            console.log(e.state)
-            setStatus(e.state)
-            setState(e.containerState)
-        }
-        return() => {
-            socket.close();
-            instanceData = null;
-        }
-    } else {
-        console.log('no2')
     }
-} else {
-    console.log("no")
-}
-    }, [monitorAuth, instanceData])
+
+    var {data: instanceData} = useSWR(`/api/v1/client/instances/${id}?include=["magma_cube", "node", "network_container"]`, fetcher)
     
-	return (
+    useEffect(() => {
+        if (instance.data) {
+            console.log("exists")
+            console.log(instance.data)
+        } else {
+            console.log("doesnt")
+            instance.setData(instanceData)
+        }
+    }, [instance.data, instanceData])
+    useEffect(() => {
+        if (instance.data) {
+            console.log("yes")
+            console.log("yes2")
+            if (instance.sockets.monitor) {
+                instance.sockets.monitor.onopen = () => {
+                    axios.get("/api/v1/client/instances/" + instance.data._id + "/monitor/ws").then((res) => {
+                        instance.sockets.monitor.send((res.data.data.access_token))
+                    })
+                }
+            } else {
+                instance.sockets.setMonitor(new WebSocket(`${instance.data.relationships.node.address.ssl ? "wss" : "ws"}://${instance.data.relationships.node.address.hostname}:${instance.data.relationships.node.address.port}/api/v1/instances/${instance.data._id}/monitor`));
+            }
+        } else {
+            console.log("no")
+        }
+    }, [instance.data, instance.sockets.monitor])
+
+    return (
         <>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css" integrity="sha512-iLYuqv+v/P4u9erpk+KM83Ioe/l7SEmr7wB6g+Kg1qmEit8EShDKnKtLHlv2QXUp7GGJhmqDI+1PhJYLTsfb8w==" crossOrigin="anonymous" referrerpolicy="no-referrer" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css" integrity="sha512-iLYuqv+v/P4u9erpk+KM83Ioe/l7SEmr7wB6g+Kg1qmEit8EShDKnKtLHlv2QXUp7GGJhmqDI+1PhJYLTsfb8w==" crossOrigin="anonymous" referrerpolicy="no-referrer" />
             <Paper>
-                <Grid container direction="row" sx={{p: 2}}>
+                <Grid container direction="row" sx={{ p: 2 }}>
                     <Grid item xs={2}>
-                        <Typography variant="h6">{instanceData ? instanceData.name : ""}</Typography>
+                        <Typography variant="h6">{instance.data ? instance.data.name : ""}</Typography>
                     </Grid>
-                    <Grid container item xs={8} md={5} lg={3.7} xl={3} sx={{marginLeft: "auto"}}>
+                    <Grid container item xs={8} md={5} lg={3.7} xl={3} sx={{ marginLeft: "auto" }}>
                         <StartButton instance={id} />
                         <StopButton instance={id} />
-                        <Button color="warning" variant="contained" sx={{marginLeft: "auto", marginTop: "auto", marginBottom: "auto"}}>Restart</Button>
-                        <Chip sx={{ marginLeft: "auto", marginTop: "auto", marginBottom: "auto"}} size="small" label={status} color={status == "Online" ? "success" : status == "Starting" ? "warning" : status == "Stopping" ? "warning" : "error"} />
+                        <Button color="warning" variant="contained" sx={{ marginLeft: "auto", marginTop: "auto", marginBottom: "auto" }}>Restart</Button>
+                        <StateIndicator />
                     </Grid>
                 </Grid>
             </Paper>
-            <Grid container xs={12} sx={{mt: 2}}>
+            <Grid container xs={12} sx={{ mt: 2 }}>
                 <Grid item xs={3} />
                 <Grid item xs={6}>
-                    {instanceData ? console.log("asldkfj;lsdkfj") : ""}
-                {instanceData ?
-                <Terminal status={state} instance={instanceData} instanceId={id} />
-                : ""}
+                    {instance ? console.log("asldkfj;lsdkfj") : ""}
+                    {instance.containerState ?
+                        <Terminal status={instance.containerState} instance={instance.data} instanceId={id} />
+                        : ""}
                 </Grid>
                 <Grid item xs={3} />
             </Grid>
         </>
-	);
+    );
+}
+
+Instance.getLayout = function getLayout(page) {
+    return(
+        <InstanceStore.Provider>
+            <Navigation>
+                {page}
+            </Navigation>
+        </InstanceStore.Provider>
+    )
 }
