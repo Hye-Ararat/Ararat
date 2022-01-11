@@ -22,7 +22,7 @@ import {
 	SupervisorAccount as AdminIcon,
 	AccountCircle as AccountIcon,
 	Code as ApiIcon,
-	Monitor as ConsoleIcon,
+	Terminal as ConsoleIcon,
 	Folder as FilesIcon,
 	Backup as BackupIcon,
 	ViewStream as DatabaseIcon,
@@ -38,13 +38,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as Icons from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
 const fetcher = (url) => axios.get(url).then((res) => res.data);
 
 export default function Navigation({ children, ...props }) {
 	console.log(props.page)
+	const router = useRouter();
+	const {id} = router.query; 
 	function Addons() {
 		const { data } = useSWR(
-			`/api/v1/client/instances/${props.instance}/addons/pages`,
+			`/api/v1/client/instances/${id}/addons/pages`,
 			fetcher
 		);
 		if (!data) {
@@ -110,7 +113,7 @@ export default function Navigation({ children, ...props }) {
 						</List>
 						<Divider />
 						<List>
-							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
+							<Link href={`/instance/${encodeURIComponent(id)}`}>
 								<ListItem button selected={props.page==null ? true : false}>
 									<ListItemIcon>
 										<ConsoleIcon />
@@ -118,7 +121,7 @@ export default function Navigation({ children, ...props }) {
 									<ListItemText primary="Console" />
 								</ListItem>
 							</Link>
-							<Link href={`/instance/${encodeURIComponent(props.instance)}/files`}>
+							<Link href={`/instance/${encodeURIComponent(id)}/files`}>
 								<ListItem button selected={props.page != null ? props.page.includes("files") ? true : false : false}>
 									<ListItemIcon>
 										<FilesIcon />
@@ -126,7 +129,7 @@ export default function Navigation({ children, ...props }) {
 									<ListItemText primary="Files" />
 								</ListItem>
 							</Link>
-							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
+							<Link href={`/instance/${encodeURIComponent(id)}`}>
 								<ListItem button selected={props.page=="backups" ? true : false}>
 									<ListItemIcon>
 										<BackupIcon />
@@ -134,7 +137,7 @@ export default function Navigation({ children, ...props }) {
 									<ListItemText primary="Backups" />
 								</ListItem>
 							</Link>
-							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
+							<Link href={`/instance/${encodeURIComponent(id)}`}>
 								<ListItem button selected={props.page=="databases" ? true : false}>
 									<ListItemIcon>
 										<DatabaseIcon />
@@ -142,7 +145,7 @@ export default function Navigation({ children, ...props }) {
 									<ListItemText primary="Databases" />
 								</ListItem>
 							</Link>
-							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
+							<Link href={`/instance/${encodeURIComponent(id)}`}>
 								<ListItem button selected={props.page=="users" ? true : false}>
 									<ListItemIcon>
 										<UsersIcon />
@@ -150,7 +153,7 @@ export default function Navigation({ children, ...props }) {
 									<ListItemText primary="Users" />
 								</ListItem>
 							</Link>
-							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
+							<Link href={`/instance/${encodeURIComponent(id)}`}>
 								<ListItem button selected={props.page=="schedules" ? true : false}>
 									<ListItemIcon>
 										<SchedulesIcon />
@@ -158,7 +161,7 @@ export default function Navigation({ children, ...props }) {
 									<ListItemText primary="Schedules" />
 								</ListItem>
 							</Link>
-							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
+							<Link href={`/instance/${encodeURIComponent(id)}`}>
 								<ListItem button selected={props.page=="networking" ? true : false}>
 									<ListItemIcon>
 										<NetworkIcon />
@@ -166,7 +169,7 @@ export default function Navigation({ children, ...props }) {
 									<ListItemText primary="Networking" />
 								</ListItem>
 							</Link>
-							<Link href={`/instance/${encodeURIComponent(props.instance)}`}>
+							<Link href={`/instance/${encodeURIComponent(id)}`}>
 								<ListItem button selected={props.page=="settings" ? true : false}>
 									<ListItemIcon>
 										<SettingsIcon />
@@ -180,7 +183,7 @@ export default function Navigation({ children, ...props }) {
 											library.add();
 											return (
 												<Link
-													href={`/instances/${encodeURIComponent(props.instance)}${
+													href={`/instances/${encodeURIComponent(id)}${
 														addon.route
 													}`}
 													key={addon._id}
@@ -201,12 +204,14 @@ export default function Navigation({ children, ...props }) {
 						</List>
 						<Divider />
 						<List>
+							<Link href="/admin">
 							<ListItem button>
 								<ListItemIcon>
 									<AdminIcon />
 								</ListItemIcon>
 								<ListItemText primary="Admin" />
 							</ListItem>
+							</Link>
 						</List>
 					</Box>
 				</Drawer>
