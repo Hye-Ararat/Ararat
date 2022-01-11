@@ -64,7 +64,7 @@ const theme = createTheme({
         MuiTableHead: {
             styleOverrides: {
                 root: {
-                    backgroundColor: "#23874b",
+                    backgroundColor: "#28374b",
                 }
             }
         },
