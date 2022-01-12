@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import jwt from "@tsndr/cloudflare-worker-jwt"
-import URL from "url";
+
 export async function middleware(req) {
+    console.log(req)
     try {
-        var u = req.url
+        var u = req.url;
         if (!u.startsWith('http')) u = 'http://localhost' + u
-        var url = new URL(u)
-        var path = url.pathname
+        var path = u.pathname
     } catch (error) {
        
     }
