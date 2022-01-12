@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import jwt from "@tsndr/cloudflare-worker-jwt"
-
+import URL from "url";
 export async function middleware(req) {
     try {
         var u = req.url
