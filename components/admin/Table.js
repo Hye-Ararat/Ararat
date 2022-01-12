@@ -8,19 +8,19 @@ export default function Table({cells, rows, ...props}) {
         <TableContainer sx={{borderRadius: 1.5}}>
             <MuiTable>
                 <TableHead>
-                    {cells.map(cell => (
-                        <TableCell>{cell}</TableCell>
+                    {cells.map((cell, index) => (
+                        <TableCell key={index}>{cell}</TableCell>
                     ))}
                 </TableHead>
                 <TableBody >
-                    {rows.map(row => (
-                        <TableRow  onClick={() => {
+                    {rows.map((row, index) => (
+                        <TableRow key={index} onClick={() => {
                             if (row.link) {
                                 router.push(row.link);
                             }
                         }} style={{cursor: row.link ? "pointer": ""}}>
-                            {row.cells.map(cell => (
-                                <TableCell>{cell}</TableCell>
+                            {row.cells.map((cell, index) => (
+                                <TableCell key={index}>{cell}</TableCell>
                             ))}
                         </TableRow>
                     ))}
