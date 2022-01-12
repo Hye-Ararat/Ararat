@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import jwt from "@tsndr/cloudflare-worker-jwt"
 
 export async function middleware(req) {
     console.log(req)
     try {
-        var url = req.url;
+        var path = NextRequest.nextUrl.pathname;
     } catch (error) {
        console.log(error)
     }
-    if (url.includes("/api/v1")) return NextResponse.next();
-    if (req.cookies.refresh_token && !req.cookies.access_token && !url.includes("/auth")) {
+    if (path.includes("/api/v1")) return NextResponse.next();
+    if (req.cookies.refresh_token && !req.cookies.access_token && !path.includes("/auth")) {
         try {
            var valid = await jwt.verify(req.cookies.refresh_token, process.env.ENC_KEY)
         } catch (error) {
@@ -22,7 +22,7 @@ export async function middleware(req) {
             })
             if (data.status == 200) {
                 var access_token = await jwt.sign(await data.json(), process.env.ENC_KEY)
-                return NextResponse.redirect(`/api/v1/client/auth/set_access_token?access_token=${access_token}&route=${req.url}`)
+                return NextResponse.redirect(`/api/v1/client/auth/set_access_token?access_token=${access_token}&route=${NextRequest.nextUrl}`)
             } else {
                 return NextResponse.redirect(`/api/v1/client/auth/remove_refresh_token`)
 
@@ -30,10 +30,10 @@ export async function middleware(req) {
         }
         return NextResponse.redirect(`/api/v1/client/auth/remove_refresh_token`)
     }
-    if (req.cookies.refresh_token && url.includes("/auth")) {
+    if (req.cookies.refresh_token && path.includes("/auth")) {
         return NextResponse.redirect("/");
     }
-    if (req.cookies.refresh_token || url.includes("/auth")) {
+    if (req.cookies.refresh_token || path.includes("/auth")) {
         return NextResponse.next();
     }
     return NextResponse.redirect("/auth/login", 307);
