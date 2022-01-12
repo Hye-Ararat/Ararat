@@ -34,7 +34,7 @@ export default function InstallHyeLava(props) {
             <Command command={"fs.aio-max-nr = 524288\nfs.inotify.max_queued_events = 1048576\nfs.inotify.max_user_instances = 1048576\nfs.inotify.max_user_watches = 1048576\nkernel.dmesg_restrict = 1\nkernel.keys.maxbytes = 2000000\nkernel.keys.maxkeys = 2000\nnet.core.bpf_jit_limit = 3000000000\nnet.ipv4.neigh.default.gc_thresh3 = 8192\nnet.ipv6.neigh.default.gc_thresh3 = 8192\nvm.max_map_count = 262144\n"} />
             <Typography variant="p">Reboot your node</Typography>
             <Command command="lxd init" sx={{ mb: 2 }} />
-            <Typography variant="p">Here we've compiled a list of options applicable to most users, but feel free to use your own.</Typography>
+            <Typography variant="p">Here we&apos;ve compiled a list of options applicable to most users, but feel free to use your own.</Typography>
             <Table sx={{mt: 1}}>
                 <TableHead>
                     <TableCell>Option</TableCell>
@@ -83,7 +83,7 @@ export default function InstallHyeLava(props) {
                     </TableRow>
                 </TableBody>
             </Table>
-            <Typography sx={{mt: 2}} variant="p" fontWeight="bold">Congratulations! Hye Lava is now installed on your system. You're ready to continue to the next step. </Typography>
+            <Typography sx={{mt: 2}} variant="p" fontWeight="bold">Congratulations! Hye Lava is now installed on your system. You&apos;re ready to continue to the next step. </Typography>
         </>
     )
 }
