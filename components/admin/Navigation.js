@@ -110,22 +110,6 @@ export default function AdminNav({ children, ...props }) {
 									<ListItemText primary="Nodes" />
 								</ListItem>
 							</Link>
-							<Link href={`/admin/networks`}>
-								<ListItem button selected={props.page == "networks"}>
-									<ListItemIcon>
-										<NetworkIcon />
-									</ListItemIcon>
-									<ListItemText primary="Networks" />
-								</ListItem>
-							</Link>
-							<Link href={`/admin/network_forwards`}>
-								<ListItem button selected={props.page == "network_forwards"}>
-									<ListItemIcon>
-										<NetworkForwardsIcon />
-									</ListItemIcon>
-									<ListItemText primary="Network Forwards" />
-								</ListItem>
-							</Link>
 							<Link href={``}>
 								<ListItem button selected={props.page=="databases" ? true : false}>
 									<ListItemIcon>
@@ -150,12 +134,14 @@ export default function AdminNav({ children, ...props }) {
 									<ListItemText primary="Ranks" />
 								</ListItem>
 							</Link>
-                            <ListItem button>
+							<Link href={`/admin/magma_cubes`}>
+                            <ListItem button selected={props.page=="magma_cubes" ? true : false}>
 								<ListItemIcon>
 									<MagmaCubeIcon />
 								</ListItemIcon>
 								<ListItemText primary="Magma Cubes" />
 							</ListItem>
+							</Link>
 						</List>
                         <Divider />
                         <Link href={`/`}>
