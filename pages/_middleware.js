@@ -4,14 +4,12 @@ import jwt from "@tsndr/cloudflare-worker-jwt"
 export async function middleware(req) {
     console.log(req)
     try {
-        var u = req.url;
-        if (!u.startsWith('http')) u = 'http://localhost' + u
-        var path = u.pathname
+        var url = req.url;
     } catch (error) {
-       
+       console.log(error)
     }
-    if (path.includes("/api/v1")) return NextResponse.next();
-    if (req.cookies.refresh_token && !req.cookies.access_token && !path.includes("/auth")) {
+    if (url.includes("/api/v1")) return NextResponse.next();
+    if (req.cookies.refresh_token && !req.cookies.access_token && !url.includes("/auth")) {
         try {
            var valid = await jwt.verify(req.cookies.refresh_token, process.env.ENC_KEY)
         } catch (error) {
@@ -32,10 +30,10 @@ export async function middleware(req) {
         }
         return NextResponse.redirect(`/api/v1/client/auth/remove_refresh_token`)
     }
-    if (req.cookies.refresh_token && path.includes("/auth")) {
+    if (req.cookies.refresh_token && url.includes("/auth")) {
         return NextResponse.redirect("/");
     }
-    if (req.cookies.refresh_token || path.includes("/auth")) {
+    if (req.cookies.refresh_token || url.includes("/auth")) {
         return NextResponse.next();
     }
     return NextResponse.redirect("/auth/login", 307);
