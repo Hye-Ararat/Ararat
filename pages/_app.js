@@ -71,10 +71,10 @@ function localStorageProvider() {
 }
 function MyApp({ Component, pageProps }) {
 	Router.onRouteChangeError = () => NProgress.done();
-		Router.onRouteChangeStart = (url) => {
+		Router.onRouteChangeStart = () => {
 			NProgress.start();
 		};
-		Router.onRouteChangeComplete = (url) => {
+		Router.onRouteChangeComplete = () => {
 			NProgress.done()
 		}
 		const getLayout = Component.getLayout || ((page) => page)
