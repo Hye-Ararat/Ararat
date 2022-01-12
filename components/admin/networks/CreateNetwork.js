@@ -7,8 +7,10 @@ export default function CreateNetwork(props) {
     const [ipv6, setIpv6] = useState(null);
     const [ip_alias, setIpAlias] = useState(null);
     const [name, setName] = useState(null);
+    const [error, setError] = useState(null);
     return (
         <Grid sx={{ p: 2 }} item container md={12} xs={12} lg={12} direction="column">
+            {error ? error : ""}
             <FormControl sx={{ m: 2 }} variant="outlined">
                 <Grid container direction="row">
                     <Box sx={{ mr: 3, mb: 2 }}>
@@ -46,9 +48,11 @@ export default function CreateNetwork(props) {
                     })
                 } catch (err) {
                     console.log(err)
+                    setError(err.response.data.error)
                     return;
+                } finally {
+                    window.location.reload();
                 }
-                window.location.reload();
             }}>Create</Button>
         </Grid>
     )
