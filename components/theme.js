@@ -6,10 +6,10 @@ const theme = createTheme({
     mode: "dark",
     background: {
       default: "#0d141d",
-      paper: "#141c26"
+      paper: "#141c26",
     },
     primary: {
-      main: blue[500]
+      main: blue[500],
     },
     success: {
       main: "#163a3a",
@@ -30,66 +30,55 @@ const theme = createTheme({
     warning: {
       main: "#363422",
       contrastText: "#f4bd0e"
-    }
+    },
   },
   typography: {
     fontFamily: ["Inter", "sans-serif"].join(","),
     body2: {
-      fontWeight: 500
+      fontWeight: 500,
     },
     normal: {
-      fontWeight: 600
+      fontWeight: 600,
     },
     normalNoBold: {
-      fontWeight: 500
+      fontWeight: 500,
     },
     h4: {
-      fontWeight: 700
+      fontWeight: 700,
     },
     h6: {
-      fontWeight: 600
+      fontWeight: 600,
     },
     h5: {
-      fontWeight: 600
-    }
+      fontWeight: 600,
+    },
   },
   components: {
-    MuiAlert: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#480d0d",
-          color: "#dc9796"
-        },
-        icon: {
-          color: "#ef5350 !important"
-        }
-      }
-    },
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          backgroundColor: "#101924"
+          backgroundColor: "#101924",
         }
       }
     },
     MuiTableHead: {
       styleOverrides: {
         root: {
-          backgroundColor: "#28374b"
+          backgroundColor: "#28374b",
         }
       }
     },
     MuiListSubheader: {
       styleOverrides: {
         root: {
-          backgroundColor: "#101924"
+          backgroundColor: "#101924",
         }
       }
     },
     MuiChip: {
       styleOverrides: {
         root: {
-          fontWeight: 600
+          fontWeight: 600,
         }
       }
     },
@@ -104,7 +93,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: "#28374b",
-          borderRadius: 6
+          borderRadius: 6,
         }
       }
     },
@@ -144,11 +133,11 @@ const theme = createTheme({
         contained: {
           boxShadow: "none",
           "&:active": {
-            boxShadow: "none"
+            boxShadow: "none",
           }
         }
       }
     }
   }
-});
+})
 export default theme;
