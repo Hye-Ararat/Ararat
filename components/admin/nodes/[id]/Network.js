@@ -51,7 +51,7 @@ export default function Network({user, node}) {
                             return (
                                 <TableRow key={index} onClick={async () => {
                                     setSelectedNetwork(network._id)
-                                    var items = await axios.get(`/api/v1/admin/networks/${network._id}/?include=["ports"]`)
+                                    var items = await axios.get(`/api/v1/admin/networks/${network._id}?include=["ports"]`)
                                     setSetNetworkForwards(items.data.relationships.ports)
                                     setPage("ports")
                                 }}>
