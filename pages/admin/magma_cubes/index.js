@@ -1,5 +1,7 @@
-import { Button, Grid, Typography } from "@mui/material"
+import { Button, Grid, Modal, Typography } from "@mui/material"
+import { Box } from "@mui/system"
 import { useEffect, useState } from "react"
+import CreateMagmaCube from "../../../components/admin/magma_cubes/CreateMagmaCube"
 import Navigation from "../../../components/admin/Navigation"
 import Table from "../../../components/admin/Table"
 
@@ -58,10 +60,11 @@ export async function getServerSideProps({ req, res }) {
 
 export default function MagmaCubes({ magma_cubes, user }) {
     const [magmaCubeRows, setMagmaCubeRows] = useState([]);
+    const [createMagmaCube, setCreateMagmaCube] = useState(false);
     useEffect(() => {
         var rows = []
         magma_cubes.forEach(async magma_cube => {
-            rows.push({cells: [magma_cube.name, magma_cube.stateless && magma_cube.type == "n-vps" ? "Stateless N-VPS" : magma_cube.type]})
+            rows.push({cells: [magma_cube.name, magma_cube.stateless ? "Stateless Single Application Container" : "Full OS Instance"]})
         })
         setMagmaCubeRows(rows)
     }, [])
@@ -69,11 +72,35 @@ export default function MagmaCubes({ magma_cubes, user }) {
         <>
             <Grid direction="row" container>
                 <Typography variant="h4" sx={{ mb: 1 }}>Images</Typography>
-                {user.admin && user.admin.magma_cubes && user.admin.magma_cubes.write ? <Button variant="contained" color="primary" sx={{mt: "auto", mb: "auto", ml: "auto"}}>Create Image</Button> : ""}
+                {user.admin && user.admin.magma_cubes && user.admin.magma_cubes.write 
+                ? 
+                <>
+                <Button variant="contained" color="primary" onClick={() => setCreateMagmaCube(true)} sx={{mt: "auto", mb: "auto", ml: "auto"}}>Create Image</Button> 
+                <Modal open={createMagmaCube} onClose={() => setCreateMagmaCube(false)}>
+                <Box sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "50%",
+                        bgcolor: 'background.paper',
+                        border: '2px solid #000',
+                        boxShadow: 24,
+                        p: 4,
+                    }}>
+                    <Grid container direction="column" sx={{ p: 3 }}>
+                        <Typography variant="h5">Create Image</Typography>
+                        <CreateMagmaCube />
+                    </Grid>
+                </Box>
+                </Modal>                                
+                </>
+                : ""}
             </Grid>
-            {!user.admin || !user.admin.magma_cubes || !user.admin.magma_cubes.read ? <Typography variant="h6" sx={{ mb: 1 }}>You do not have permission to view this page.</Typography>
+            {!user.admin || !user.admin.magma_cubes || !user.admin.magma_cubes.read ?
+             <Typography variant="h6" sx={{ mb: 1 }}>You do not have permission to view this page.</Typography>
             : 
-            <Table cells={["Name", "Type"]} rows={magmaCubeRows} />}
+            <Table cells={["Name", "Stateless"]} rows={magmaCubeRows} />}
 
         </>
     )
