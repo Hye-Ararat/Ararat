@@ -70,17 +70,18 @@ export async function getServerSideProps({ req, res }) {
   instance_data.forEach(async instance => {
     instance.relationships = {};
     instance.relationships.magma_cube = await db.collection("magma_cubes").findOne({
-      _id: ObjectId(instance.magma_cube.cube)
+      _id: ObjectId(instance.magma_cube.id)
     })
     instance.relationships.node = await db.collection("nodes").findOne({
       _id: ObjectId(instance.node)
     })
-    instance.relationships.network_container = await db.collection("network_containers").findOne({
-      _id: ObjectId(instance.network_container)
+    instance.relationships.network = await db.collection("networks").findOne({
+      _id: ObjectId(instance.network)
     })
     instances.push(instance);
   })
   await awaitAllInstancesDone()
+  console.log(instances)
   let data = JSON.parse(JSON.stringify(instances));
   return { props: { data } };
 }

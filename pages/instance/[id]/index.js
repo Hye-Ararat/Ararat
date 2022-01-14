@@ -28,7 +28,7 @@ export default function Instance({ data }) {
         }
     }
 
-    var {data: instanceData} = useSWR(`/api/v1/client/instances/${id}?include=["magma_cube", "node", "network_container"]`, fetcher)
+    var {data: instanceData} = useSWR(`/api/v1/client/instances/${id}?include=["magma_cube", "node", "network"]`, fetcher)
     
     useEffect(() => {
         if (instance.data) {

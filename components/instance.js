@@ -38,7 +38,7 @@ export default function Instance({ instance }) {
 		containerState: null
 	});
 	function prefetch() {
-		mutate(`/api/v1/client/instances/${instance._id}?include=["magma_cube", "node", "network_container"]`, instance, true);
+		mutate(`/api/v1/client/instances/${instance._id}?include=["magma_cube", "node", "network"]`, instance, true);
 	}
 	useEffect(() => {
 		prefetch();
@@ -151,7 +151,7 @@ export default function Instance({ instance }) {
 										height: 50,
 										margin: "auto",
 									}}
-                  src={ instance.relationships ? instance.relationships.magma_cube.type == "n-vps" ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg": instance.relationships.magma_cube.type == "kvm" ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png":"" : ""}								/>
+                  src={ instance.relationships ? instance.type == "n-vps" ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg": instance.type == "kvm" ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png":"" : ""}								/>
 							</Grid>
 							<Grid
 								container
@@ -186,7 +186,7 @@ export default function Instance({ instance }) {
 										}}
 									/>
 									<Typography variant="body1" sx={{ fontWeight: "bold" }}>
-										{instance.relationships ? instance.relationships.network_container.address.ip_alias : ""}{instance.primary_port ? ":" + instance.primary_port : ""}
+										{instance.relationships ? instance.relationships.network.address.ip_alias : ""}{instance.primary_port ? ":" + instance.primary_port : ""}
 									</Typography>
 								</Box>
 							</Grid>

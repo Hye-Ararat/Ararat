@@ -5,7 +5,10 @@ export default async function handler(req, res) {
     const { method, query: { id, include } } = req;
     const { connectToDatabase } = require("../../../../../../util/mongodb");
     const { db } = await connectToDatabase();
-    console.log(req.headers)
+    console.log(req)
+    if (!req.headers["authorization"]) {
+        return res.status(403).send("Not allowed to access this resource")
+    }
     if (req.headers["authorization"].split(" ")[1].includes("::")) {
 
     } else if (req.headers["authorization"].split(" ")[1].includes(":")) {
