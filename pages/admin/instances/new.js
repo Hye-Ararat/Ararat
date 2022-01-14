@@ -1,5 +1,5 @@
 import Navigation from "../../../components/admin/Navigation"
-import { Box, Divider, FormControl, Grid, Paper, Stepper, TextField, Typography, Step, StepLabel, Container, Button, Card, CardContent, CardActionArea, Switch, Modal, Select, MenuItem } from "@mui/material"
+import { Box, Divider, FormControl, Grid, Paper, Stepper, TextField, Typography, Step, StepLabel, Container, Button, Card, CardContent, CardActionArea, Switch, Modal, Select, MenuItem, FormControlLabel, Checkbox } from "@mui/material"
 import { useState, Fragment } from "react"
 import { convertNetworkID } from "../../../util/converter"
 
@@ -80,6 +80,15 @@ export default function NewInstance({ magma_cubes, user, networks }) {
     const [storageName, setStorageName] = useState("root");
     const [networkID, setNetworkID] = useState(null);
     const [storageSize, setStorageSize] = useState(null);
+    const [users, setUsers] = useState({});
+    const [addUserOpen, setAddUserOpen] = useState(false);
+    const [userID, setUserID] = useState(null);
+    const [permissions, setPermissions] = useState({
+        files: {
+            read: false,
+            write: false
+        }
+    })
     const isStepOptional = (step) => {
         return false;
     };
@@ -198,7 +207,7 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                 <Card sx={{ mt: 1, width: "20%", mr: 2 }}>
                                                     <CardActionArea onClick={() => {
                                                         setType("kvm");
-                                                        if (image){
+                                                        if (image) {
                                                             handleNext();
                                                         }
                                                     }}>
@@ -221,27 +230,27 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                 </Card>
                                             </Grid>
                                         </>
-                                        : type && !image ? 
-                                        <>
-                                        <Typography variant="h6" sx={{ mt: 1 }}>Select Image</Typography>
-                                        <Grid direction="row" container>
-                                            {Object.keys(cube.images).map((image) => {
-                                                return (
-                                                    <Card key={image} sx={{ mt: 1, width: "20%", mr: 2 }}>
-                                                        <CardActionArea onClick={() => {
-                                                            setImage(image);
-                                                            handleNext();
-                                                        }}>
-                                                            <CardContent>
-                                                                <Typography variant="h6">{image}</Typography>
-                                                            </CardContent>
-                                                        </CardActionArea>
-                                                    </Card>
-                                                )
-                                            })}
-                                        </Grid>
-                                        </>
-                                        : ""}
+                                        : type && !image ?
+                                            <>
+                                                <Typography variant="h6" sx={{ mt: 1 }}>Select Image</Typography>
+                                                <Grid direction="row" container>
+                                                    {Object.keys(cube.images).map((image) => {
+                                                        return (
+                                                            <Card key={image} sx={{ mt: 1, width: "20%", mr: 2 }}>
+                                                                <CardActionArea onClick={() => {
+                                                                    setImage(image);
+                                                                    handleNext();
+                                                                }}>
+                                                                    <CardContent>
+                                                                        <Typography variant="h6">{image}</Typography>
+                                                                    </CardContent>
+                                                                </CardActionArea>
+                                                            </Card>
+                                                        )
+                                                    })}
+                                                </Grid>
+                                            </>
+                                            : ""}
                             </>
                             : activeStep === 1 ?
                                 <>
@@ -300,7 +309,7 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                                         <Typography fontWeight="bold">Storage Pool</Typography>
                                                                         <TextField placeholder="default" value={storagePool} onChangeCapture={(e) => setStoragePool(e.target.value)}></TextField>
                                                                     </Box>
-                                                                    <Box sx={{ mr: 3}}>
+                                                                    <Box sx={{ mr: 3 }}>
                                                                         <Typography fontWeight="bold">Storage Size</Typography>
                                                                         <TextField placeholder="30GB" value={storageSize} onChangeCapture={(e) => setStorageSize(e.target.value)}></TextField>
                                                                     </Box>
@@ -331,18 +340,18 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                             <Grid sx={{ p: 2 }} item container md={12} xs={12} direction="column">
                                                 <FormControl sx={{ m: 2 }} variant="outlined">
                                                     <Grid container direction="column">
-                                                    {Object.keys(devices).filter(key => devices[key].type == "disk").length <= 0 ?
-                                                        <> 
-                                                        <Typography fontWeight={500} sx={{m: "auto"}}>No Disks</Typography> 
-                                                        <Typography fontWeight={300} sx={{m: "auto"}}>When a root disk is not added, Ararat will automatically create an unmetered disk on the default storage pool</Typography>
-                                                        </>: ""}
+                                                        {Object.keys(devices).filter(key => devices[key].type == "disk").length <= 0 ?
+                                                            <>
+                                                                <Typography fontWeight={500} sx={{ m: "auto" }}>No Disks</Typography>
+                                                                <Typography fontWeight={300} sx={{ m: "auto" }}>When a root disk is not added, Ararat will automatically create an unmetered disk on the default storage pool</Typography>
+                                                            </> : ""}
                                                         {devices ? Object.keys(devices).filter(key => devices[key].type == "disk").map((key, index) => {
                                                             return (
-                                                                <Grid key={key} container direction="row" sx={{backgroundColor: "background.default", borderRadius: 2, p: 2, mb: 1}}>
+                                                                <Grid key={key} container direction="row" sx={{ backgroundColor: "background.default", borderRadius: 2, p: 2, mb: 1 }}>
                                                                     <Box>
-                                                                    <Typography variant="h6">{key.charAt(0).toUpperCase() + key.slice(1)}</Typography>
-                                                                    {devices[key].size ? <Typography fontWeight={500}>Size: {devices[key].size}</Typography> : <Typography fontWeight={500}>Size: Unmetered</Typography>}
-                                                                    {devices[key].pool ? <Typography fontWeight={500}>Storage Pool: {devices[key].pool}</Typography> : <Typography fontWeight={500}>Storage Pool: default</Typography>}
+                                                                        <Typography variant="h6">{key.charAt(0).toUpperCase() + key.slice(1)}</Typography>
+                                                                        {devices[key].size ? <Typography fontWeight={500}>Size: {devices[key].size}</Typography> : <Typography fontWeight={500}>Size: Unmetered</Typography>}
+                                                                        {devices[key].pool ? <Typography fontWeight={500}>Storage Pool: {devices[key].pool}</Typography> : <Typography fontWeight={500}>Storage Pool: default</Typography>}
                                                                     </Box>
                                                                     <Button variant="contained" color="error" sx={{ width: "10%", ml: "auto", mt: "auto", mb: "auto" }} onClick={(e) => {
                                                                         var temporaryDevices = devices;
@@ -353,7 +362,7 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                                     }}>Remove</Button>
                                                                 </Grid>
                                                             )
-                                                        }) : "" }
+                                                        }) : ""}
                                                         <Button sx={{ ml: "auto", mt: 2 }} variant="contained" color="success" onClick={() => setAddDiskOpen(true)}>Add Disk</Button>
                                                     </Grid>
                                                 </FormControl>
@@ -386,7 +395,7 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                                         <TextField placeholder="Network ID" value={networkID} onChangeCapture={(e) => setNetworkID(e.target.value)}></TextField>
                                                                     </Box>
                                                                 </Grid>
-                                                                 <Button variant="contained" color="success" sx={{ width: "30%", mt: 3 }} onClick={(e) => {
+                                                                <Button variant="contained" color="success" sx={{ width: "30%", mt: 3 }} onClick={(e) => {
                                                                     e.preventDefault();
                                                                     var tempDevices = devices;
                                                                     tempDevices[convertNetworkID(networkID)] = {
@@ -407,15 +416,15 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                 <FormControl sx={{ m: 2 }} variant="outlined">
                                                     <Grid container direction="column">
                                                         {Object.keys(devices).filter(key => devices[key].type == "nic").length <= 0 ?
-                                                        <> 
-                                                        <Typography fontWeight={500} sx={{m: "auto"}}>No Networks</Typography> 
-                                                        <Typography fontWeight={300} sx={{m: "auto"}}>This instance will have no internet access without a network attached</Typography>
-                                                        </>: ""}
+                                                            <>
+                                                                <Typography fontWeight={500} sx={{ m: "auto" }}>No Networks</Typography>
+                                                                <Typography fontWeight={300} sx={{ m: "auto" }}>This instance will have no internet access without a network attached</Typography>
+                                                            </> : ""}
                                                         {devices ? Object.keys(devices).filter(key => devices[key].type == "nic").map((key, index) => {
                                                             return (
-                                                                <Grid key={key} container direction="row" sx={{backgroundColor: "background.default", borderRadius: 2, p: 2, mb: 1}}>
+                                                                <Grid key={key} container direction="row" sx={{ backgroundColor: "background.default", borderRadius: 2, p: 2, mb: 1 }}>
                                                                     <Box>
-                                                                    <Typography variant="h6">{key.charAt(0).toUpperCase() + key.slice(1)}</Typography>
+                                                                        <Typography variant="h6">{key.charAt(0).toUpperCase() + key.slice(1)}</Typography>
                                                                     </Box>
                                                                     <Button variant="contained" color="error" sx={{ width: "10%", ml: "auto" }} onClick={(e) => {
                                                                         var temporaryDevices = devices;
@@ -426,7 +435,7 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                                     }}>Remove</Button>
                                                                 </Grid>
                                                             )
-                                                        }) : "" }
+                                                        }) : ""}
                                                         <Button sx={{ ml: "auto" }} variant="contained" color="success" onClick={() => setAttachNetworkOpen(true)}>Attach Network</Button>
                                                     </Grid>
                                                 </FormControl>
@@ -471,7 +480,100 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                         </Paper>
                                     </Grid>
                                 </>
-                                : <p>step 2</p>}
+                                : <>
+                                    <Grid container direction="row">
+                                        <Paper sx={{ mt: 1, width: "100%" }}>
+                                            <Typography variant="h6" sx={{ ml: 2, mt: 2, mb: 1 }}>Users</Typography>
+                                            <Divider />
+                                            <Modal open={addUserOpen} onClose={() => setAddUserOpen(false)}>
+                                                <Box sx={{
+                                                    position: "absolute",
+                                                    top: "50%",
+                                                    left: "50%",
+                                                    transform: "translate(-50%, -50%)",
+                                                    width: "50%",
+                                                    bgcolor: 'background.paper',
+                                                    border: '2px solid #000',
+                                                    boxShadow: 24,
+                                                    p: 4,
+                                                }}>
+                                                    <Typography variant="h6">Add User</Typography>
+                                                    <Grid container direction="column" sx={{ p: 3 }}>
+                                                        <Grid direction="row">
+                                                            <Box sx={{ mr: 3 }}>
+                                                                <Typography fontWeight="bold">User ID</Typography>
+                                                                <TextField placeholder="User ID" value={userID} onChangeCapture={(e) => setUserID(e.target.value)} />
+                                                            </Box>
+                                                            <Box sx={{ mr: 3 }} sx={{ display: "flex", flexDirection: "column" }}>
+                                                                <FormControl variant="outlined">
+                                                                    <Typography fontWeight="bold">Permissions</Typography>
+                                                                    <Grid container direction="column">
+                                                                        <FormControlLabel label="Permissions" control={
+                                                                            <Checkbox checked={permissions.files.read && permissions.files.write} indeterminate={permissions.files.read != permissions.files.write} onChange={(e) => {
+                                                                                setPermissions({ ...permissions, files: { ...permissions.files, read: e.target.checked, write: e.target.checked } })
+                                                                            }} />
+                                                                        } />
+                                                                        <FormControlLabel style={{ marginLeft: 1 }} label="Files" control={
+                                                                            <Checkbox indeterminate={permissions.files.read !== permissions.files.write} checked={permissions.files.write && permissions.files.read} onChange={(e) => {
+                                                                                setPermissions({ ...permissions, files: { ...permissions.files, write: e.target.checked, read: e.target.checked } })
+                                                                            }} />
+                                                                        } />
+                                                                        <Box sx={{ ml: 3, display: "flex", flexDirection: "column" }}>
+                                                                            <FormControlLabel label="Read" control={
+                                                                                <Checkbox checked={permissions.files.read} onChange={(e) => setPermissions({ ...permissions, files: { ...permissions.files, read: e.target.checked } })} />
+                                                                            } />
+                                                                            <FormControlLabel label="Write" control={
+                                                                                <Checkbox checked={permissions.files.write} onChange={(e) => setPermissions({ ...permissions, files: { ...permissions.files, write: e.target.checked } })} />
+                                                                            } />
+                                                                        </Box>
+                                                                    </Grid>
+                                                                    <Button variant="contained" color="success" sx={{ width: "30%", mt: 3 }} onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        setUsers({ ...users, [userID]: permissions });
+                                                                        setAddUserOpen(false);
+                                                                        setUserID(null);
+                                                                        setPermissions({ files: { read: false, write: false } });
+                                                                    }}>Add User</Button>
+                                                                </FormControl>
+                                                            </Box>
+                                                        </Grid>
+                                                    </Grid>
+                                                </Box>
+                                            </Modal>
+                                            <Grid sx={{ p: 2 }} item container md={12} xs={12} direction="column">
+                                                <FormControl sx={{ m: 2 }} variant="outlined">
+                                                    <Grid container direction="column">
+                                                        {users ? Object.keys(users).map((key, index) => {
+                                                            return (
+                                                                <Grid key={key} container direction="row" sx={{ backgroundColor: "background.default", borderRadius: 2, p: 2, mb: 1 }}>
+                                                                    <Box>
+                                                                        <Typography variant="h6">{key.charAt(0).toUpperCase() + key.slice(1)}</Typography>
+                                                                        <Typography fontWeight={500}>Permissions:</Typography>
+                                                                        {users[key].files.read ? <Typography fontWeight={300} sx={{ ml: 3 }}>Read Files</Typography> : ""}
+                                                                        {users[key].files.write ? <Typography fontWeight={300} sx={{ ml: 3 }}>Write Files</Typography> : ""}
+                                                                    </Box>
+                                                                    <Button variant="contained" color="error" sx={{ width: "10%", ml: "auto", mt: "auto", mb: "auto" }} onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        var temporaryUsers = users;
+                                                                        delete temporaryUsers[key];
+                                                                        setUsers(temporaryUsers);
+                                                                        setUserID("");
+                                                                    }}>Remove</Button>
+                                                                </Grid>
+                                                            )
+                                                        }) : ""
+                                                        }
+                                                        {Object.keys(users).length <= 0 ? <>
+                                                            <Typography fontWeight={500} sx={{ m: "auto" }}>No Users</Typography>
+                                                            <Typography fontWeight={300} sx={{ m: "auto" }}>A user must be added in order to manage this server from Ararat.</Typography>
+                                                        </> : ""}
+                                                    </Grid>
+                                                    <Button sx={{ ml: "auto", mt: 2 }} variant="contained" color="success" onClick={() => setAddUserOpen(true)}>Add User</Button>
+                                                </FormControl>
+                                            </Grid>
+                                        </Paper>
+                                    </Grid>
+                                </>}
                     </Container>
                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                         <Button
