@@ -20,6 +20,7 @@ NProgress.configure({ showSpinner: false });
 
 axios.interceptors.request.use(async (config) => {
 	if (process.browser) {
+		console.log("adslkfjas;lkfj")
 		var running = false;
 		if (
 			!nookies.get(null).access_token &&
@@ -49,7 +50,7 @@ axios.interceptors.request.use(async (config) => {
 					window.location.href = "/auth/login"
 				});
 		}
-		config.headers.authorization = `Bearer ${nookies.get(null).access_token}`;
+		config.headers["authorization"] = `Bearer ${nookies.get(null).access_token}`;
 	}
 	return config;
 });

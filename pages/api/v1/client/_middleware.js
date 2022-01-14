@@ -2,7 +2,7 @@ import jwt from "@tsndr/cloudflare-worker-jwt";
 import { NextResponse } from "next/server";
 export async function middleware(req) {
 	if (
-		req.url.includes("/api/v1/client/auth")
+		req.nextUrl.pathname.includes("/api/v1/client/auth")
 	)
 		return NextResponse.next();
 	if (req.headers.get("authorization")) {

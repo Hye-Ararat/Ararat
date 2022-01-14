@@ -3,10 +3,7 @@ import jwt from "@tsndr/cloudflare-worker-jwt"
 
 export async function middleware(req) {
     try {
-        var u = req.url
-        if (!u.startsWith('http')) u = 'http://localhost' + u
-        var url = new URL(u)
-        var path = url.pathname
+        var path = req.nextUrl.pathname;
     } catch (error) {
        
     }
@@ -24,7 +21,7 @@ export async function middleware(req) {
             })
             if (data.status == 200) {
                 var access_token = await jwt.sign(await data.json(), process.env.ENC_KEY)
-                return NextResponse.redirect(`/api/v1/client/auth/set_access_token?access_token=${access_token}&route=${req.url}`)
+                return NextResponse.redirect(`/api/v1/client/auth/set_access_token?access_token=${access_token}&route=${req.nextUrl}`)
             } else {
                 return NextResponse.redirect(`/api/v1/client/auth/remove_refresh_token`)
 
