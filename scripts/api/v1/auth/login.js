@@ -12,19 +12,15 @@ function login(email, password) {
       else return reject("An error occured while sending the request.");
     }
     auth_response = auth_response.data;
-    if (auth_response.status == "success") {
-      nookies.set(null, "access_token", auth_response.data.access_token, {
-        expires: new Date(new Date().getTime() + 15 * 60 * 1000),
-        path: "/"
-      });
-      nookies.set(null, "refresh_token", auth_response.data.refresh_token, {
-        expires: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
-        path: "/"
-      });
-      return resolve("Success");
-    } else {
-      return reject(Error(auth_response.data));
-    }
+    nookies.set(null, "access_token", auth_response.data.access_token, {
+      expires: new Date(new Date().getTime() + 15 * 60 * 1000),
+      path: "/"
+    });
+    nookies.set(null, "refresh_token", auth_response.data.refresh_token, {
+      expires: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+      path: "/"
+    });
+    return resolve("Success");
   });
 }
 export default login;
