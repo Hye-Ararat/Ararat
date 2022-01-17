@@ -51,26 +51,26 @@ export default function Instance({ instance }) {
 		).then((res) => {
 			var node_data = res.data;
 			async function monitor() {
-					var getData = new Promise(async (resolve, reject) => {
-						try {
+				var getData = new Promise(async (resolve, reject) => {
+					try {
 						var getToken = axios.get(
 							`/api/v1/client/instances/${instance._id}/monitor/ws`
 						);
 						var getStats = axios.get(`/api/v1/client/instances/${instance._id}/monitor`)
-						} catch {
-							reject("An error occured")
-						}
-						await axios.all([getToken, getStats]).then(axios.spread((...args) => {
-							resolve({
-								token: args[0].data.data.access_token,
-								monitor_data: args[1].data.data
-							})
-						})).catch(() => {
-							reject("An error occured")
+					} catch {
+						reject("An error occured")
+					}
+					await axios.all([getToken, getStats]).then(axios.spread((...args) => {
+						resolve({
+							token: args[0].data.data.access_token,
+							monitor_data: args[1].data.data
 						})
+					})).catch(() => {
+						reject("An error occured")
 					})
+				})
 				try {
-				var {token, monitor_data} = await getData;
+					var { token, monitor_data } = await getData;
 				} catch {
 					var monitor_data = {
 						state: null,
@@ -118,9 +118,9 @@ export default function Instance({ instance }) {
 			<Link href={`/instance/${instance._id}`}>
 				<CardActionArea sx={{ borderRadius: "10px" }}>
 					<Paper sx={{ width: "100%", height: "100px", borderRadius: "10px" }}>
-					{monitor_error ? <Alert severity="error" sx={{width: "100%", position: "absolute", height: "40%", opacity: 0.5}}>
-				An error occured while connecting to this instance.
-			</Alert> : ""}
+						{monitor_error ? <Alert severity="error" sx={{ width: "100%", position: "absolute", height: "40%", opacity: 0.5 }}>
+							An error occured while connecting to this instance.
+						</Alert> : ""}
 						<Grid
 							container
 							direction="row"
@@ -140,18 +140,17 @@ export default function Instance({ instance }) {
 										padding: "10px",
 										bgcolor:
 											monitorData.state == "online" ||
-											monitorData.state == "Online"
+												monitorData.state == "Online"
 												? "#163a3a"
-												: monitorData.state == "offline" ||
-												  monitorData.state == "created" ||
-												  monitorData.state === "Stopped"
-												? "#34242b"
-												: "",
+												: monitorData.state == "Offline" ||
+													monitorData.state === "Stopped"
+													? "#34242b"
+													: monitorData.state == "Stopping" || monitorData.state == "Starting" ? "#363422" : "#34242b",
 										width: 50,
 										height: 50,
 										margin: "auto",
 									}}
-                  src={ instance.relationships ? instance.type == "n-vps" ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg": instance.type == "kvm" ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png":"" : ""}								/>
+									src={instance.relationships ? instance.type == "n-vps" ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg" : instance.type == "kvm" ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png" : "" : ""} />
 							</Grid>
 							<Grid
 								container
@@ -186,7 +185,7 @@ export default function Instance({ instance }) {
 										}}
 									/>
 									<Typography variant="body1" sx={{ fontWeight: "bold" }}>
-										{instance.relationships ? instance.relationships.network.address.ip_alias : ""}{instance.primary_port ? ":" + instance.primary_port : ""}
+										{instance.relationships ? instance.relationships.network ? instance.relationships.network.address.ip_alias : "" : ""}{instance.primary_port ? ":" + instance.primary_port : ""}
 									</Typography>
 								</Box>
 							</Grid>
@@ -235,10 +234,10 @@ export default function Instance({ instance }) {
 									/>
 									<Typography variant="body1" noWrap>
 										{monitorData.memory.usage != undefined && monitorData.memory.usage != null
-											? prettyBytes(parseFloat(monitorData.memory.usage), {binary: true})
+											? prettyBytes(parseFloat(monitorData.memory.usage), { binary: true })
 											: ""}
 										/
-										{prettyBytes(instance.limits.memory * 1048576, {
+										{prettyBytes(parseInt(instance.limits.memory.limit) * 1048576, {
 											binary: true,
 										})}
 									</Typography>
@@ -256,7 +255,7 @@ export default function Instance({ instance }) {
 										{monitorData.disk.usage != undefined && monitorData.disk.usage != null
 											? parseFloat(monitorData.disk.usage)
 											: ""}
-										/{prettyBytes(instance.limits.disk * 1000000)}
+										/{prettyBytes(parseInt(instance.devices.root.size) * 1000000)}
 									</Typography>
 								</Box>{" "}
 							</Grid>
