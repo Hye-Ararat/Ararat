@@ -2,6 +2,7 @@ import Navigation from "../../../components/admin/Navigation"
 import { Box, Divider, FormControl, Grid, Paper, Stepper, TextField, Typography, Step, StepLabel, Container, Button, Card, CardContent, CardActionArea, Switch, Modal, Select, MenuItem, FormControlLabel, Checkbox } from "@mui/material"
 import { useState, Fragment } from "react"
 import { convertNetworkID } from "../../../util/converter"
+import axios from "axios"
 
 export async function getServerSideProps({ req, res }) {
     if (!req.cookies.access_token) {
@@ -68,7 +69,7 @@ export default function NewInstance({ magma_cubes, user, networks }) {
     const [cpu, setCPU] = useState(null);
     const [cpuPriority, setCPUPriority] = useState("10");
     const [memory, setMemory] = useState(null);
-    const [diskPriority, setDiskPriority] = useState("5");
+    const [diskPriority, setDiskPriority] = useState(null);
     const [enforceMemoryLimit, setEnforceMemoryLimit] = useState(true);
     const [devices, setDevices] = useState({
         root: {
@@ -96,13 +97,48 @@ export default function NewInstance({ magma_cubes, user, networks }) {
     const isStepSkipped = (step) => {
         return skipped.has(step);
     };
-    const handleNext = () => {
+    const handleNext = async () => {
         let newSkipped = skipped;
         if (isStepSkipped(activeStep)) {
             newSkipped = new Set(newSkipped.values());
             newSkipped.delete(activeStep);
         }
+        if (activeStep + 1 === steps.length) {
+            let config = {
+                name: "Ararat Instance",
+                node: "618d6c85be4d5528396d9e7a",
+                magma_cube: {
+                    id: cube._id,
+                    image: image
+                },
+                limits: {
+                    cpu: {
+                        limit: parseInt(cpu),
+                    },
+                    memory: {
+                        limit: memory,
+                        enforce: enforceMemoryLimit
+                    },
+                    disk: {
+                        priority: parseInt(diskPriority),
+                    }
+                },
+                devices: devices,
+                users: users,
+                type: type
+            }
+            if (type == "n-vps") {
+                config.limits.cpu.priority = parseInt(cpuPriority);
+            }
 
+            try {
+                var createData = await axios.post("/api/v1/admin/instances", config)
+            } catch (error) {
+                console.log(error)
+            } finally {
+                console.log(createData)
+            }
+        }
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         setSkipped(newSkipped);
     };
@@ -273,7 +309,7 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                             <TextField onChangeCapture={(e) => {
                                                                 e.preventDefault();
                                                                 setMemory(e.target.value);
-                                                            }} variant="outlined" placeholder="1024" />
+                                                            }} variant="outlined" placeholder="1024MB" />
                                                         </Box>
                                                     </Grid>
                                                 </FormControl>
@@ -504,7 +540,7 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                                 <Typography fontWeight="bold">User ID</Typography>
                                                                 <TextField placeholder="User ID" value={userID} onChangeCapture={(e) => setUserID(e.target.value)} />
                                                             </Box>
-                                                            <Box sx={{ mr: 3 }} sx={{ display: "flex", flexDirection: "column" }}>
+                                                            <Box sx={{ display: "flex", flexDirection: "column", mr: 3 }}>
                                                                 <FormControl variant="outlined">
                                                                     <Typography fontWeight="bold">Permissions</Typography>
                                                                     <Grid container direction="column">
