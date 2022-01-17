@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../../../../../../util/mongodb";
 export default async function handler(req, res) {
-    const {method, query: {id, include}} = req;
+    const { method, query: { id, include } } = req;
     var { db } = await connectToDatabase();
     var instance = await db.collection("instances").findOne({
         _id: ObjectId(id),
@@ -10,7 +10,7 @@ export default async function handler(req, res) {
         instance.relationships = {}
         if (include.includes("magma_cube")) {
             instance.relationships.magma_cube = await db.collection("magma_cubes").findOne({
-                _id: ObjectId(instance.magma_cube.cube)
+                _id: ObjectId(instance.magma_cube.id)
             })
         }
         if (include.includes("node")) {
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
                 var network_forwards = await db.collection("network_forwards").find({
                     network: instance.network
                 })
-                instance.relationships.network.relationships.network_forwards =  await network_forwards.toArray()
+                instance.relationships.network.relationships.network_forwards = await network_forwards.toArray()
             }
         }
     }
