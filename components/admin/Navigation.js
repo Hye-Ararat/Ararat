@@ -28,8 +28,8 @@ import {
 	Schedule as SchedulesIcon,
 	Lan as NetworkIcon,
 	Settings as SettingsIcon,
-    Person as ClientIcon,
-    ViewInAr as MagmaCubeIcon,
+	Person as ClientIcon,
+	ViewInAr as MagmaCubeIcon,
 	Sensors as NetworkForwardsIcon
 } from "@mui/icons-material";
 import Link from "next/link";
@@ -52,7 +52,7 @@ export default function AdminNav({ children, ...props }) {
 						<Typography variant="h6" noWrap component="div">
 							Ararat
 						</Typography>
-                        <Typography variant="h6" noWrap component="div" sx={{ml: .8}} fontWeight={400}>
+						<Typography variant="h6" noWrap component="div" sx={{ ml: .8 }} fontWeight={400}>
 							Administrator
 						</Typography>
 					</Toolbar>
@@ -72,7 +72,7 @@ export default function AdminNav({ children, ...props }) {
 					<Box sx={{ overflow: "auto" }}>
 						<List>
 							<Link href="/admin">
-								<ListItem button selected={props.page==null ? true : false}>
+								<ListItem button selected={props.page == null ? true : false}>
 									<ListItemIcon>
 										<OverviewIcon />
 									</ListItemIcon>
@@ -97,7 +97,7 @@ export default function AdminNav({ children, ...props }) {
 							<Link href={`/admin/instances`}>
 								<ListItem button selected={props.page == "instances"}>
 									<ListItemIcon>
-                                        <InstanceIcon />
+										<InstanceIcon />
 									</ListItemIcon>
 									<ListItemText primary="Instances" />
 								</ListItem>
@@ -111,23 +111,23 @@ export default function AdminNav({ children, ...props }) {
 								</ListItem>
 							</Link>
 							<Link href={``}>
-								<ListItem button selected={props.page=="databases" ? true : false}>
+								<ListItem button selected={props.page == "databases" ? true : false}>
 									<ListItemIcon>
 										<DatabaseIcon />
 									</ListItemIcon>
 									<ListItemText primary="Databases" />
 								</ListItem>
 							</Link>
-							<Link href={``}>
-								<ListItem button selected={props.page=="users" ? true : false}>
+							<Link href={`/admin/users`}>
+								<ListItem button selected={props.page == "users" ? true : false}>
 									<ListItemIcon>
 										<UsersIcon />
 									</ListItemIcon>
 									<ListItemText primary="Users" />
 								</ListItem>
 							</Link>
-                            <Link href={``}>
-								<ListItem button selected={props.page=="users" ? true : false}>
+							<Link href={``}>
+								<ListItem button selected={props.page == "ranks" ? true : false}>
 									<ListItemIcon>
 										<RanksIcon />
 									</ListItemIcon>
@@ -135,25 +135,25 @@ export default function AdminNav({ children, ...props }) {
 								</ListItem>
 							</Link>
 							<Link href={`/admin/magma_cubes`}>
-                            <ListItem button selected={props.page=="magma_cubes" ? true : false}>
-								<ListItemIcon>
-									<MagmaCubeIcon />
-								</ListItemIcon>
-								<ListItemText primary="Magma Cubes" />
-							</ListItem>
+								<ListItem button selected={props.page == "magma_cubes" ? true : false}>
+									<ListItemIcon>
+										<MagmaCubeIcon />
+									</ListItemIcon>
+									<ListItemText primary="Magma Cubes" />
+								</ListItem>
 							</Link>
 						</List>
-                        <Divider />
-                        <Link href={`/`}>
-						<List>
-							<ListItem button>
-								<ListItemIcon>
-									<ClientIcon />
-								</ListItemIcon>
-								<ListItemText primary="Client" />
-							</ListItem>
-						</List>
-                        </Link>
+						<Divider />
+						<Link href={`/`}>
+							<List>
+								<ListItem button>
+									<ListItemIcon>
+										<ClientIcon />
+									</ListItemIcon>
+									<ListItemText primary="Client" />
+								</ListItem>
+							</List>
+						</Link>
 					</Box>
 				</Drawer>
 				<Box component="main" sx={{ flexGrow: 1, p: 3 }}>
