@@ -24,6 +24,10 @@ export const InstanceStore = createContextStore({
         setConsole: action((state, payload) => {
             state.console = payload
         }),
+        consoleReady: false,
+        setConsoleReady: action((state, payload) => {
+            state.consoleReady = payload
+        }),
         control: null,
         setControl: action((state, payload) => {
             state.control = payload
