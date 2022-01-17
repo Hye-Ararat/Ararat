@@ -4,7 +4,7 @@ import Navigation from "../../../components/admin/Navigation"
 import Table from "../../../components/admin/Table"
 import Link from "next/link"
 
-export async function getServerSideProps({req, res}) {
+export async function getServerSideProps({ req, res }) {
     if (!req.cookies.access_token) {
         return {
             redirect: {
@@ -54,29 +54,31 @@ export async function getServerSideProps({req, res}) {
         }
     }
 }
-export default function Instances({instances, user}) {
+export default function Instances({ instances, user }) {
     const [instanceRows, setInstanceRows] = useState([]);
     useEffect(() => {
         var rows = [];
         instances.forEach(async instance => {
-            rows.push({cells: [instance.name]})
+            rows.push({ cells: [instance.name] })
         })
         setInstanceRows(rows);
     }, [])
     return (
         <>
             <Grid direction="row" container>
-                <Typography variant="h4" sx={{mb: 1}}>Instances</Typography>
-                {user.admin && user.admin.instances && user.admin.instances.write ? 
-                <>
-                <Link href="/admin/instances/new">
-                <Button variant="contained" color="primary" sx={{ml: "auto", mt: "auto", mb: "auto"}}>Create Instance</Button>
-                </Link>
-                </> : ""}
+                <Typography variant="h4" sx={{ mb: 1 }}>Instances</Typography>
+                {user.admin && user.admin.instances && user.admin.instances.write ?
+                    <>
+                        <Link href="/admin/instances/new">
+                            <Button variant="contained" color="primary" sx={{ ml: "auto", mt: "auto", mb: "auto" }}>Create Instance</Button>
+                        </Link>
+                    </> : ""}
             </Grid>
             {user.admin && user.admin.instances && user.admin.instances.read ?
                 <>
-                <Table cells={["Name"]} rows={instanceRows}/>
+                    {instances.length > 0 ?
+                        <Table cells={["Name"]} rows={instanceRows} />
+                        : <Typography>No Instances</Typography>}
                 </> : <Typography>You do not have access to this resource</Typography>}
         </>
     )
