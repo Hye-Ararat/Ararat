@@ -90,6 +90,7 @@ export default function NewInstance({ magma_cubes, user, networks }) {
             write: false
         }
     })
+    const [node, setNode] = useState(null);
     const isStepOptional = (step) => {
         return false;
     };
@@ -106,7 +107,7 @@ export default function NewInstance({ magma_cubes, user, networks }) {
         if (activeStep + 1 === steps.length) {
             let config = {
                 name: "Ararat Instance",
-                node: "618d6c85be4d5528396d9e7a",
+                node: node,
                 magma_cube: {
                     id: cube._id,
                     image: image
@@ -297,6 +298,13 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                             <Grid sx={{ p: 2 }} item container md={12} xs={12} direction="column">
                                                 <FormControl sx={{ m: 2 }} variant="outlined">
                                                     <Grid container direction="row">
+                                                        <Box sx={{ mr: 3, mb: 2 }}>
+                                                            <Typography fontWeight="bold">Node</Typography>
+                                                            <TextField onChangeCapture={(e) => {
+                                                                e.preventDefault();
+                                                                setNode(e.target.value);
+                                                            }} variant="outlined" placeholder="Node ID" />
+                                                        </Box>
                                                         <Box sx={{ mr: 3, mb: 2 }}>
                                                             <Typography fontWeight="bold">CPU</Typography>
                                                             <TextField onChangeCapture={(e) => {
