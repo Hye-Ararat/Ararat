@@ -1,12 +1,21 @@
 //import useSWR from "swr";
 //import axios from "axios";
-import { memo } from "react";
+import axios from "axios";
+import { memo, useEffect, useState } from "react";
 
 function Spice(props) {
-	//const fetcher = (url) => axios.get(url).then((res) => res.data);
+    //const fetcher = (url) => axios.get(url).then((res) => res.data);
     //const {data, error} = useSWR("/api/v1/client/instances/" + props.instance._id + "/console/ws", fetcher)
+    const [authToken, setAuthToken] = useState(null);
+    useEffect(() => {
+        axios.get(`/api/v1/client/instances/${props.instance._id}/console/ws`).then((res) => {
+            setAuthToken(res.data);
+        })
+    }, [])
     return (
-        <iframe height="550px" width="100%" frameBorder="0" src={`${props.instance.relationships.node.address.ssl ? "https://" : "http://"}${props.instance.relationships.node.address.hostname}:${props.instance.relationships.node.address.port}/api/v1/instances/61d1f283396fc0779ee1e2f8/console`} />
+        authToken ?
+            <iframe height="550px" width="100%" frameBorder="0" src={`${props.instance.relationships.node.address.ssl ? "https://" : "http://"}${props.instance.relationships.node.address.hostname}:${props.instance.relationships.node.address.port}/api/v1/instances/${props.instance._id}/console?auth=${authToken}`} />
+            : "Loading..."
     )
 }
 function areEqual(prevProps, nextProps) {
