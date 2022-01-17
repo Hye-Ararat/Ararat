@@ -1,15 +1,15 @@
-const {connectToDatabase} = require("../../../../../../../util/mongodb");
-const {ObjectId} = require("mongodb");
+const { connectToDatabase } = require("../../../../../../../util/mongodb");
+const { ObjectId } = require("mongodb");
 import axios from "axios";
 import crypto from "crypto";
 import { decode, verify } from "jsonwebtoken";
 
 export default async function handler(req, res) {
-    const {method, query: {forwardId: id, id: networkID}} = req;
+    const { method, query: { forwardId: id, id: networkID } } = req;
     switch (method) {
         case "GET":
-            var {db} = await connectToDatabase();
-            const network_forward = await db.collection("network_forwards").findOne({_id: ObjectId(id)})
+            var { db } = await connectToDatabase();
+            const network_forward = await db.collection("network_forwards").findOne({ _id: ObjectId(id) })
             network_forward ? res.send(network_forward) : res.status(404).send("Network Forward does not exist")
             break;
         case "POST":
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
                     return res.status(403).send("Not allowed to access this resource")
                 }
             }
-            var {db} = await connectToDatabase();
+            var { db } = await connectToDatabase();
             try {
                 var network = await db.collection("networks").findOne({
                     _id: ObjectId(networkID)
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
             }
             try {
                 var decipher = crypto.createDecipheriv("aes-256-ctr", process.env.ENC_KEY, Buffer.from(node.access_token_iv, "hex"))
-                var access_token = Buffer.concat([decipher.update(Buffer.from(node.access_token, "hex")), decipher.final()])
+                var access_token = Buffer.concat([decipher.update(Buffer.from(node.access_token.split("::")[1], "hex")), decipher.final()])
 
             } catch (error) {
                 console.log(error);
@@ -66,7 +66,9 @@ export default async function handler(req, res) {
                     listen_address: network.address.ipv4,
                     network: networkID
                 }, {
-                    Authorization: `Bearer ${access_token}`
+                    headers: {
+                        Authorization: `Bearer ${access_token}`
+                    }
                 })
             } catch (error) {
                 console.log(error)
@@ -74,14 +76,14 @@ export default async function handler(req, res) {
             }
             try {
                 await db.collection("ports").addOne({
-                        "network": networkID,
-                        "description": req.body.ports[0].description,
-                        "listen_port": req.body.ports[0].listen_port,
-                        "protocol": req.body.ports[0].protocol,
-                        "target_address": network.address.ipv4,
-                        "target_port": req.body.ports[0].target_port
-                    }
-                )        
+                    "network": networkID,
+                    "description": req.body.ports[0].description,
+                    "listen_port": req.body.ports[0].listen_port,
+                    "protocol": req.body.ports[0].protocol,
+                    "target_address": network.address.ipv4,
+                    "target_port": req.body.ports[0].target_port
+                }
+                )
             } catch (error) {
                 console.log(error)
             }
