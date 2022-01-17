@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../../../../../../util/mongodb";
-import {decode} from "jsonwebtoken";
+import { decode } from "jsonwebtoken";
 
 export default async function handler(req, res) {
     const { method, query: { id, include } } = req;
@@ -8,13 +8,13 @@ export default async function handler(req, res) {
     var user_info = decode(req.headers.authorization.split(" ")[1])
     var instance = await db.collection("instances").findOne({
         _id: ObjectId(id),
-        [`users.${user_info.id}`]: {$exists: true}
+        [`users.${user_info.id}`]: { $exists: true }
     })
     if (instance && include) {
         instance.relationships = {}
         if (include.includes("magma_cube")) {
             instance.relationships.magma_cube = await db.collection("magma_cubes").findOne({
-                _id: ObjectId(instance.magma_cube.cube)
+                _id: ObjectId(instance.magma_cube.id)
             })
         }
         if (include.includes("node")) {
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
                 var ports = await db.collection("ports").find({
                     network: instance.network
                 })
-                instance.relationships.network.relationships.network_forwards =  await ports.toArray()
+                instance.relationships.network.relationships.network_forwards = await ports.toArray()
             }
         }
     }
