@@ -1,21 +1,21 @@
-import {get} from "axios"
-import {decode} from "jsonwebtoken"
+import { get } from "axios"
+import { decode } from "jsonwebtoken"
 import { connectToDatabase } from "../../../../../../../util/mongodb";
 import { ObjectId } from "mongodb";
 import crypto from "crypto"
 export default async function handler(req, res) {
-    const {query: {id, path}} = req;
+    const { query: { id, path } } = req;
     console.log(id);
     try {
         var user = decode(req.headers.authorization.split(" ")[1])
     } catch {
         return res.status(403).send("Unauthorized");
     }
-    var {db} = await connectToDatabase();
+    var { db } = await connectToDatabase();
     try {
         var instance = await db.collection("instances").findOne({
             _id: ObjectId(id),
-            [`users.${user.id}`]: {$exists: true}
+            [`users.${user.id}`]: { $exists: true }
         })
     } catch (error) {
         console.log(error)
@@ -37,10 +37,13 @@ export default async function handler(req, res) {
     }
     try {
         var decipher = crypto.createDecipheriv("aes-256-ctr", process.env.ENC_KEY, Buffer.from(node.access_token_iv, "hex"))
-        var access_token = Buffer.concat([decipher.update(Buffer.from(node.access_token, "hex")), decipher.final()])
+        var access_token = Buffer.concat([decipher.update(Buffer.from(node.access_token.split("::")[1], "hex")), decipher.final()])
+        console.log(access_token.toString())
         console.log(`${node.address.ssl ? "https://" : "http://"}${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/files?path=${path}`)
         var files = await get(`${node.address.ssl ? "https://" : "http://"}${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/files?path=/${path}`, {
-            Authorization: `Bearer ${access_token.toString()}`
+            headers: {
+                Authorization: `Bearer ${access_token.toString()}`
+            }
         })
     } catch (error) {
         console.log(error)
@@ -48,25 +51,25 @@ export default async function handler(req, res) {
         return res.status(500).send("An error occured while fetching the files")
     }
     try {
-    var sorted = files.data.list.sort((a, b) => {
-        if (a.type == "directory" && b.type == "file") {
-            return -1
-        } else if (a.type == "file" && b.type == "directory") {
-            return 1
-        } else {
-            if (a.name > b.name) {
+        var sorted = files.data.list.sort((a, b) => {
+            if (a.type == "directory" && b.type == "file") {
                 return -1
-            } else if (b.name > a.name){
+            } else if (a.type == "file" && b.type == "directory") {
                 return 1
             } else {
-                return 0
-            }
+                if (a.name > b.name) {
+                    return -1
+                } else if (b.name > a.name) {
+                    return 1
+                } else {
+                    return 0
+                }
 
-        }
-    })
-} catch {
-    return res.send(files.data)
-}
+            }
+        })
+    } catch {
+        return res.send(files.data)
+    }
     files.data.list = sorted;
     res.send(files.data)
 
