@@ -16,9 +16,12 @@ function TermComponent(props) {
             setConsole: InstanceStore.useStoreActions(state => state.sockets.setConsole),
             control: InstanceStore.useStoreState(state => state.sockets.control),
             setControl: InstanceStore.useStoreActions(state => state.sockets.setControl),
+            consoleReady: InstanceStore.useStoreState(state => state.sockets.consoleReady),
+            setConsoleReady: InstanceStore.useStoreActions(state => state.sockets.setConsoleReady)
         }
     }
     useEffect(() => {
+        console.log(props.instance.relationships)
         if (props.instance.relationships.magma_cube != null) {
             if (props.instance.relationships.magma_cube.console == "xterm") {
                 console.log("THIS IS GOING")
@@ -28,31 +31,53 @@ function TermComponent(props) {
                     instance.sockets.setControl(new WebSocket(`${props.instance.relationships.node.address.ssl ? "wss" : "ws"}://${props.instance.relationships.node.address.hostname}:${props.instance.relationships.node.address.port}/api/v1/instances/${props.instance._id}/control`))
                 } else {
                     console.log("THIS IS GOING 2")
-                    instance.sockets.console.onopen = () => {
-                        axios.get("/api/v1/client/instances/" + props.instanceId + "/console/ws").then((res) => {
-                            res = res.data;
-                            instance.sockets.console.send(`{"event":"authenticate", "data": ${res}}`)
-                        })
+                    if (!instance.sockets.consoleReady) {
+                        instance.sockets.console.onmessage = (e) => {
+                            function isJSON(leJson) {
+                                console.log(leJson)
+                                try {
+                                    JSON.parse(leJson)
+                                } catch (error) {
+                                    return false
+                                }
+                                return true
+                            }
+                            console.log(isJSON(e.data.toString()))
+                            if (isJSON(e.data.toString())) {
+                                var data = JSON.parse(e.data.toString())
+                                console.log(data)
+                                if (data.event == "ready") {
+                                    axios.get("/api/v1/client/instances/" + props.instanceId + "/console/ws").then((res) => {
+                                        res = res.data;
+                                        instance.sockets.console.send(`{"event":"authenticate", "data": "${res}"}`)
+                                        instance.sockets.console.onmessage = null
+                                        instance.sockets.setConsoleReady(true)
+                                    })
+                                }
+                            }
+                        }
+                    } else {
                         instance.sockets.control.onopen = () => {
                             axios.get("/api/v1/client/instances/" + props.instanceId + "/console/ws").then((res) => {
                                 res = res.data;
-                                instance.sockets.console.send(`{"event":"authenticate", "data": ${res}}`)
+                                instance.sockets.control.send(`{"event":"authenticate", "data": "${res}"}`)
                                 window.onresize = () => {
                                     var dimensions = fitAddon.proposeDimensions();
                                     instance.sockets.control.send(JSON.stringify({ event: "resize", data: { cols: dimensions.cols, rows: dimensions.rows } }))
                                 }
                             })
                         }
-                    }
-                    term = new Terminal();
-                    console.log("GOING STILL")
-                    term.loadAddon(fitAddon);
-                    term.open(document.getElementById("terminal"))
-                    fitAddon.fit()
-                    const attachAddon = new AttachAddon(instance.sockets.console);
-                    term.loadAddon(attachAddon);
-                    instance.sockets.console.onclose = () => {
-                        instance.sockets.setConsole(null);
+                        term = new Terminal();
+                        console.log("GOING STILL")
+                        term.loadAddon(fitAddon);
+                        term.open(document.getElementById("terminal"))
+                        fitAddon.fit()
+                            const attachAddon = new AttachAddon(instance.sockets.console);
+                            term.loadAddon(attachAddon);
+                        instance.sockets.console.onclose = () => {
+                            instance.sockets.setConsole(null);
+                            instance.sockets.setConsoleReady(false);
+                        }
                     }
                 }
             }
@@ -66,7 +91,7 @@ function TermComponent(props) {
             }
             window.onresize = null
         }
-    }, [props.instance, instance.sockets.console, instance.sockets.control])
+    }, [props.instance, instance.sockets.console, instance.sockets.control, instance.sockets.consoleReady])
     return (
         <>
             <link rel="stylesheet" type="text/css" href="/xterm.css" />
