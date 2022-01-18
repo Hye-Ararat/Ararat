@@ -255,7 +255,7 @@ export default function Instance({ instance }) {
 										{monitorData.disk.usage != undefined && monitorData.disk.usage != null
 											? parseFloat(monitorData.disk.usage)
 											: ""}
-										/{prettyBytes(parseInt(instance.devices.root.size) * 1000000)}
+										/{instance.devices.root.size ? prettyBytes(parseInt(instance.devices.root.size) * 1000000) : "♾️"}
 									</Typography>
 								</Box>{" "}
 							</Grid>
