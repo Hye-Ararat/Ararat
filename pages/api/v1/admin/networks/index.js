@@ -1,6 +1,7 @@
 import { decode, verify } from "jsonwebtoken";
 import { ObjectId } from "mongodb";
-import axios from "axios"
+import axios from "axios";
+import crypto from "crypto";
 
 export default async function handler(req, res) {
     const { method, query: { id, include } } = req;
@@ -46,6 +47,13 @@ export default async function handler(req, res) {
                 return res.status(500).send("An error occured while creating the network")
             }
             console.log()
+
+            try {
+                var decipher = crypto.createDecipheriv("aes-256-ctr", process.env.ENC_KEY, Buffer.from(node.access_token_iv, "hex"))
+                var access_token = Buffer.concat([decipher.update(Buffer.from(node.access_token.split("::")[1], "hex")), decipher.final()])
+            } catch {
+                return res.status(500).send("Internal Server Error");
+            }
             try {
                 await axios.post(`${node.address.ssl ? "https" : "http"}://${node.address.hostname}:${node.address.port}/api/v1/network`, {
                     id: network.insertedId.toHexString(),
@@ -53,8 +61,12 @@ export default async function handler(req, res) {
                         ipv4: req.body.address.ipv4 ? req.body.address.ipv4 : null,
                         ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
                     }
+                }, {
+                    headers: {
+                        "Authorization": `Bearer ${access_token}`
+                    }
                 })
-            } catch (error){
+            } catch (error) {
                 console.log(error)
                 return res.status(500).send("An error occured while creating the network")
             }
