@@ -18,18 +18,16 @@ export default async function handler(req, res) {
         var salt = await bcrypt.genSalt(10);
         var hashedPassword = await bcrypt.hash(req.body.password, salt);
       } catch (error) {
-        return res.status(500).json({status: "error", data: "An error occured hile creating the user"});
+        return res.status(500).json({ status: "error", data: "An error occured hile creating the user" });
       }
-    
+
 
       const user = {
         username: req.body.username,
         first_name: req.body.name,
         last_name: req.body.surname,
-        admin: false,
         email: req.body.email,
         password: hashedPassword,
-        preferences: Array,
         phone_number: null,
       };
       await db.collection("users").insertOne(user);
@@ -43,6 +41,6 @@ export default async function handler(req, res) {
       res.status(400).send({
         status: 'error',
       });
-    } 
-  } 
+    }
+  }
 }
