@@ -24,8 +24,8 @@ export default async function handler(req, res) {
 
       const user = {
         username: req.body.username,
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
+        first_name: req.body.name,
+        last_name: req.body.surname,
         admin: false,
         email: req.body.email,
         password: hashedPassword,
