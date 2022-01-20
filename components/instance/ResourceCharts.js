@@ -16,7 +16,7 @@ export default function ResourceCharts() {
         if (cpuChart && memChart) {
             if (memChart) {
                 let lastmem;
-                setInterval(() => {
+                var interval1 = setInterval(() => {
                     if (!lastmem) {
                         lastmem = memChart.data.datasets[0].data[memChart.data.datasets[0].data.length - 1];
                     }
@@ -33,7 +33,7 @@ export default function ResourceCharts() {
             }
             if (cpuChart) {
                 let lastcpu;
-                setInterval(() => {
+                var interval2 = setInterval(() => {
                     if (!lastcpu) {
                         lastcpu = cpuChart.data.datasets[0].data[cpuChart.data.datasets[0].data.length - 1];
                     }
@@ -47,6 +47,14 @@ export default function ResourceCharts() {
                         lastcpu = cpuChart.data.datasets[0].data[cpuChart.data.datasets[0].data.length - 1];
                     }
                 }, 1000)
+            }
+        }
+        return () => {
+            if (interval1) {
+                clearInterval(interval1)
+            }
+            if (interval2) {
+                clearInterval(interval2)
             }
         }
     }, [memChart, cpuChart])
@@ -283,14 +291,14 @@ export default function ResourceCharts() {
     return (
         <>
             <Grid container xs={12} direction="row" sx={{ mt: 2 }}>
-                <Grid conatiner xs={5.5} direction="column" sx={{ mr: "auto", width: "100%" }}>
-                    <Typography fontWeight="bold">CPU</Typography>
+                <Grid conatiner xs={5.8} direction="column" sx={{ mr: "auto", width: "100%" }}>
+                    <Typography fontWeight="bold" sx={{ mb: 1 }}>CPU</Typography>
                     <Paper style={{ width: "100%" }}>
                         <canvas id="cpuChart" />
                     </Paper>
                 </Grid>
-                <Grid container xs={5.5} direction="column" sx={{ ml: "auto", width: "100%" }}>
-                    <Typography fontWeight="bold">Memory</Typography>
+                <Grid container xs={5.8} direction="column" sx={{ ml: "auto", width: "100%" }}>
+                    <Typography fontWeight="bold" sx={{ mb: 1 }}>Memory</Typography>
                     <Paper style={{ width: "100%" }}>
                         <canvas id="memoryChart" />
                     </Paper>
