@@ -77,7 +77,7 @@ export default function Instance({ data }) {
                     </Grid>
                 </Grid>
             </Paper>
-            <Grid container xs={12} sx={{ mt: 2, gridAutoRows: "1f" }}>
+            <Grid container xs={12} sx={{ mt: 2 }}>
                 <Grid item xs={12} sx={{ height: "100%" }} container>
                     {instance ? console.log("asldkfj;lsdkfj") : ""}
                     {instance.containerState ?

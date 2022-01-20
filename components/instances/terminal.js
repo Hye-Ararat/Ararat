@@ -67,7 +67,12 @@ function TermComponent(props) {
                                 }
                             })
                         }
-                        term = new Terminal();
+                        term = new Terminal({
+                            fontSize: 12,
+                            theme: {
+                                background: "#141c26"
+                            }
+                        });
                         console.log("GOING STILL")
                         term.loadAddon(fitAddon);
                         term.open(document.getElementById("terminal"))
@@ -113,7 +118,9 @@ function TermComponent(props) {
 
                         }} />
                         <Fade in={instance.sockets.console} style={{ height: "100%" }}>
-                            <div id="terminal" className="thisIsLeTerminal" style={{ width: "100%", height: "100%" }}></div>
+                            <div style={{ borderRadius: "50%", width: "100%" }}>
+                                <div id="terminal" className="thisIsLeTerminal" style={{ width: "100%", height: "100%" }}></div>
+                            </div>
                         </Fade>
                     </>
                 :
