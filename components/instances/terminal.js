@@ -72,8 +72,8 @@ function TermComponent(props) {
                         term.loadAddon(fitAddon);
                         term.open(document.getElementById("terminal"))
                         fitAddon.fit()
-                            const attachAddon = new AttachAddon(instance.sockets.console);
-                            term.loadAddon(attachAddon);
+                        const attachAddon = new AttachAddon(instance.sockets.console);
+                        term.loadAddon(attachAddon);
                         instance.sockets.console.onclose = () => {
                             instance.sockets.setConsole(null);
                             instance.sockets.setConsoleReady(false);
@@ -112,8 +112,8 @@ function TermComponent(props) {
                             }
 
                         }} />
-                        <Fade in={instance.sockets.console}>
-                            <div id="terminal" className="thisIsLeTerminal" style={{ width: "100%" }}></div>
+                        <Fade in={instance.sockets.console} style={{ height: "100%" }}>
+                            <div id="terminal" className="thisIsLeTerminal" style={{ width: "100%", height: "100%" }}></div>
                         </Fade>
                     </>
                 :
