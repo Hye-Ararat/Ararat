@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { Grid, Paper, Typography, Chip, Button } from "@mui/material";
 import useSWR from "swr";
-import {InstanceStore} from "../../../states/instance";
+import { InstanceStore } from "../../../states/instance";
 import axios from "axios";
 import dynamic from "next/dynamic"
 import { useEffect } from "react";
@@ -9,6 +9,9 @@ import StartButton from "../../../components/instance/StartButton";
 import StopButton from "../../../components/instance/StopButton";
 import Navigation from "../../../components/instance/Navigation";
 import StateIndicator from "../../../components/instance/StateIndicator";
+const ResourceCharts = dynamic(() => import("../../../components/instance/ResourceCharts"), {
+    ssr: false
+})
 const Terminal = dynamic(() => import('../../../components/instances/terminal'), {
     ssr: false
 })
@@ -25,11 +28,12 @@ export default function Instance({ data }) {
         sockets: {
             monitor: InstanceStore.useStoreState(state => state.sockets.monitor),
             setMonitor: InstanceStore.useStoreActions(state => state.sockets.setMonitor)
-        }
+        },
+        monitor: InstanceStore.useStoreState(state => state.monitor),
     }
 
-    var {data: instanceData} = useSWR(`/api/v1/client/instances/${id}?include=["magma_cube", "node", "network"]`, fetcher)
-    
+    var { data: instanceData } = useSWR(`/api/v1/client/instances/${id}?include=["magma_cube", "node", "network"]`, fetcher)
+
     useEffect(() => {
         if (instance.data) {
             console.log("exists")
@@ -73,22 +77,23 @@ export default function Instance({ data }) {
                     </Grid>
                 </Grid>
             </Paper>
-            <Grid container xs={12} sx={{ mt: 2 }}>
-                <Grid item xs={3} />
-                <Grid item xs={6}>
+            <Grid container xs={12} sx={{ mt: 2, gridAutoRows: "1f" }}>
+                <Grid item xs={12} sx={{ height: "100%" }} container>
                     {instance ? console.log("asldkfj;lsdkfj") : ""}
                     {instance.containerState ?
                         <Terminal status={instance.containerState} instance={instance.data} instanceId={id} />
                         : ""}
                 </Grid>
-                <Grid item xs={3} />
+            </Grid>
+            <Grid container xs={12}>
+                <ResourceCharts />
             </Grid>
         </>
     );
 }
 
 Instance.getLayout = function getLayout(page) {
-    return(
+    return (
         <InstanceStore.Provider>
             <Navigation>
                 {page}

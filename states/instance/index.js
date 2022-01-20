@@ -5,7 +5,21 @@ export const InstanceStore = createContextStore({
     setData: action((state, payload) => {
         state.data = payload
     }),
-    monitor: null,
+    monitor: {
+        state: null,
+        cpu: null,
+        swap: {
+            usage: null
+        },
+        memory: {
+            usage: null,
+            percent: null
+        },
+        disk: {
+            usage: null
+        },
+        containerState: null
+    },
     setMonitor: action((state, payload) => {
         state.monitor = payload
     }),
