@@ -117,9 +117,9 @@ function TermComponent(props) {
                             }
 
                         }} />
-                        <Fade in={instance.sockets.console} style={{ height: "100%" }}>
-                            <div style={{ borderRadius: "50%", width: "100%" }}>
-                                <div id="terminal" className="thisIsLeTerminal" style={{ width: "100%", height: "100%" }}></div>
+                        <Fade in={instance.sockets.console} style={{ height: "100%", minHeight: "400px" }}>
+                            <div style={{ borderRadius: "50%", width: "100%", minHeight: "400px" }}>
+                                <div id="terminal" className="thisIsLeTerminal" style={{ width: "100%", height: "100%", minHeight: "400px" }}></div>
                             </div>
                         </Fade>
                     </>
