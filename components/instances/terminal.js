@@ -112,15 +112,15 @@ function TermComponent(props) {
                                 if (yes) {
                                     yes.style.width = `${rect.width}px`;
                                     yes.style.height = `${rect.height}px`;
-                                    yes.style.minHeight = "400px";
+                                    yes.style.minHeight = "500px";
                                 }
                                 fitAddon.fit()
                             }
 
                         }} />
-                        <Fade in={instance.sockets.console} style={{ height: "100%", minHeight: "400px", width: "100%" }}>
-                            <div style={{ width: "100%" }}>
-                                <div id="terminal" className="thisIsLeTerminal" style={{ width: "100%", height: "100%", minHeight: "400px", border: "solid 5px rgb(30, 40, 50)", borderRadius: "5px", borderColor: "rgb(30, 40, 50)", overflowY: "hidden" }}></div>
+                        <Fade in={instance.sockets.console} style={{ height: "100%", minHeight: "500px", width: "100%" }}>
+                            <div style={{ width: "100%", minHeight: "500px" }}>
+                                <div id="terminal" className="thisIsLeTerminal" style={{ width: "100%", height: "100%", minHeight: "500px", border: "solid 5px rgb(30, 40, 50)", borderRadius: "5px", borderColor: "rgb(30, 40, 50)", overflowY: "hidden" }}></div>
                             </div>
                         </Fade>
                     </>

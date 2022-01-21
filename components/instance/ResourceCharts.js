@@ -93,213 +93,215 @@ export default function ResourceCharts() {
         }
     }, [memChart, instance.monitor.memory.usage, cpuChart])
     useEffect(() => {
-        Chart.register(
-            ArcElement,
-            LineElement,
-            BarElement,
-            PointElement,
-            BarController,
-            BubbleController,
-            DoughnutController,
-            LineController,
-            PieController,
-            PolarAreaController,
-            RadarController,
-            ScatterController,
-            CategoryScale,
-            LinearScale,
-            RadialLinearScale,
-            TimeScale,
-            TimeSeriesScale,
-            Decimation,
-            Filler,
-            Title,
-            Tooltip,
-            SubTitle,
-            ChartDataLabels
+        console.log("a;lsdfj;adlsjf;laskdjf;lskdjf;laskdjfa");
+        if (instance.data.limits) {
+            Chart.register(
+                ArcElement,
+                LineElement,
+                BarElement,
+                PointElement,
+                BarController,
+                BubbleController,
+                DoughnutController,
+                LineController,
+                PieController,
+                PolarAreaController,
+                RadarController,
+                ScatterController,
+                CategoryScale,
+                LinearScale,
+                RadialLinearScale,
+                TimeScale,
+                TimeSeriesScale,
+                Decimation,
+                Filler,
+                Title,
+                Tooltip,
+                SubTitle,
+                ChartDataLabels
 
-        )
-        const memoryChart = document.getElementById("memoryChart").getContext("2d");
-        const cpuChart = document.getElementById("cpuChart").getContext("2d");
+            )
+            const memoryChart = document.getElementById("memoryChart").getContext("2d");
+            const cpuChart = document.getElementById("cpuChart").getContext("2d");
 
-        const memoryChartData = {
-            labels: Array(10).fill(""),
-            datasets: [
-                {
-                    label: "Memory Usage",
-                    fill: true,
-                    backgroundColor: "#133542",
-                    data: [],
-                    datalabels: {
-                        display: function (context) {
-                            var index = context.dataIndex;
-                            var value = context.dataset.data[index];
-                            return index == context.dataset.data.length - 1 ? true : false;
-                        },
-                        color: "#fff",
-                        align: "left",
-                        formatter: function (value) {
-                            return prettyBytes(value) + "/" + prettyBytes(parseInt(instance.data.limits.memory.limit.includes("GB") ? parseInt(instance.data.limits.memory.limit) * 1073741824 : parseInt(instance.data.limits.memory.limit) * 1048576), { binary: true });
-                        },
-                        font: {
-                            size: 15,
-                            weight: 600,
-                            family: "Inter"
-                        }
-                    },
-                    elements: {
-                        point: {
-                            radius: function (context) {
+            const memoryChartData = {
+                labels: Array(10).fill(""),
+                datasets: [
+                    {
+                        label: "Memory Usage",
+                        fill: true,
+                        backgroundColor: "#133542",
+                        data: [],
+                        datalabels: {
+                            display: function (context) {
                                 var index = context.dataIndex;
-                                return index == context.dataset.data.length - 1 ? 5 : 0;
+                                var value = context.dataset.data[index];
+                                return index == context.dataset.data.length - 1 ? true : false;
                             },
-                            pointBackgroundColor: "#09c2de"
+                            color: "#fff",
+                            align: "left",
+                            formatter: function (value) {
+                                return prettyBytes(value) + "/" + prettyBytes(parseInt(instance.data.limits.memory.limit.includes("GB") ? parseInt(instance.data.limits.memory.limit) * 1073741824 : parseInt(instance.data.limits.memory.limit) * 1048576), { binary: true });
+                            },
+                            font: {
+                                size: 15,
+                                weight: 600,
+                                family: "Inter"
+                            }
+                        },
+                        elements: {
+                            point: {
+                                radius: function (context) {
+                                    var index = context.dataIndex;
+                                    return index == context.dataset.data.length - 1 ? 5 : 0;
+                                },
+                                pointBackgroundColor: "#09c2de"
+                            }
                         }
                     }
-                }
-            ]
-        }
+                ]
+            }
 
-        const cpuChartData = {
-            labels: Array(10).fill(""),
-            datasets: [
-                {
-                    label: "CPU Usage",
-                    fill: true,
-                    backgroundColor: "#133542",
-                    data: [],
-                    datalabels: {
-                        display: function (context) {
-                            var index = context.dataIndex;
-                            var value = context.dataset.data[index];
-                            return index == context.dataset.data.length - 1 ? true : false;
-                        },
-                        color: "#fff",
-                        align: "left",
-                        formatter: function (value) {
-                            return value + "%";
-                        },
-                        font: {
-                            size: 15,
-                            weight: 600,
-                            family: "Inter"
-                        }
-                    },
-                    elements: {
-                        point: {
-                            radius: function (context) {
+            const cpuChartData = {
+                labels: Array(10).fill(""),
+                datasets: [
+                    {
+                        label: "CPU Usage",
+                        fill: true,
+                        backgroundColor: "#133542",
+                        data: [],
+                        datalabels: {
+                            display: function (context) {
                                 var index = context.dataIndex;
-                                return index == context.dataset.data.length - 1 ? 5 : 0;
+                                var value = context.dataset.data[index];
+                                return index == context.dataset.data.length - 1 ? true : false;
                             },
-                            pointBackgroundColor: "#09c2de"
+                            color: "#fff",
+                            align: "left",
+                            formatter: function (value) {
+                                return value + "%";
+                            },
+                            font: {
+                                size: 15,
+                                weight: 600,
+                                family: "Inter"
+                            }
+                        },
+                        elements: {
+                            point: {
+                                radius: function (context) {
+                                    var index = context.dataIndex;
+                                    return index == context.dataset.data.length - 1 ? 5 : 0;
+                                },
+                                pointBackgroundColor: "#09c2de"
+                            }
                         }
                     }
-                }
-            ]
-        }
-        var memoryChartOptions = {
-            legend: {
-                display: false,
-            },
-            animations: true,
-            maintainAspectRatio: false,
-            responsive: true,
-            scales: {
-                x: {
-                    ticks: {
-                        display: false,
+                ]
+            }
+            var memoryChartOptions = {
+                legend: {
+                    display: false,
+                },
+                animations: true,
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    x: {
+                        ticks: {
+                            display: false,
+                        },
+                        grid: {
+                            display: false,
+                        },
                     },
-                    grid: {
-                        display: false,
+                    y: {
+                        grid: {
+                            display: false,
+                            drawBorder: false,
+                        },
+                        ticks: {
+                            display: false,
+                        },
+                        beginAtZero: true,
+                        max: 4294967296,
                     },
                 },
-                y: {
-                    grid: {
-                        display: false,
-                        drawBorder: false,
+                elements: {
+                    point: {
+                        radius: 0,
                     },
-                    ticks: {
-                        display: false,
+                    line: {
+                        borderColor: "#09c2de",
+                        tension: 0.3,
                     },
-                    beginAtZero: true,
-                    max: 4294967296,
                 },
-            },
-            elements: {
-                point: {
-                    radius: 0,
-                },
-                line: {
-                    borderColor: "#09c2de",
-                    tension: 0.3,
-                },
-            },
-        }
+            }
 
-        var cpuChartOptions = {
-            legend: {
-                display: false,
-            },
-            animations: true,
-            maintainAspectRatio: false,
-            responsive: true,
-            scales: {
-                x: {
-                    ticks: {
-                        display: false,
+            var cpuChartOptions = {
+                legend: {
+                    display: false,
+                },
+                animations: true,
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    x: {
+                        ticks: {
+                            display: false,
+                        },
+                        grid: {
+                            display: false,
+                        },
                     },
-                    grid: {
-                        display: false,
+                    y: {
+                        grid: {
+                            display: false,
+                            drawBorder: false,
+                        },
+                        ticks: {
+                            display: false,
+                        },
+                        beginAtZero: true,
+                        max: 100,
                     },
                 },
-                y: {
-                    grid: {
-                        display: false,
-                        drawBorder: false,
+                elements: {
+                    point: {
+                        radius: 0,
                     },
-                    ticks: {
-                        display: false,
+                    line: {
+                        borderColor: "#09c2de",
+                        tension: 0.3,
                     },
-                    beginAtZero: true,
-                    max: 100,
                 },
-            },
-            elements: {
-                point: {
-                    radius: 0,
-                },
-                line: {
-                    borderColor: "#09c2de",
-                    tension: 0.3,
-                },
-            },
+            }
+            var memoryChartConfig = {
+                type: "line",
+                options: memoryChartOptions,
+                data: memoryChartData
+            }
+            setMemChart(new Chart(memoryChart, memoryChartConfig))
+            var cpuChartConfig = {
+                type: "line",
+                options: cpuChartOptions,
+                data: cpuChartData
+            }
+            setCpuChart(new Chart(cpuChart, cpuChartConfig))
         }
-        var memoryChartConfig = {
-            type: "line",
-            options: memoryChartOptions,
-            data: memoryChartData
-        }
-        setMemChart(new Chart(memoryChart, memoryChartConfig))
-        var cpuChartConfig = {
-            type: "line",
-            options: cpuChartOptions,
-            data: cpuChartData
-        }
-        setCpuChart(new Chart(cpuChart, cpuChartConfig))
-
-    }, [])
+    }, [instance.data])
     return (
         <>
-            <Grid container xs={12} direction="row" sx={{ mt: 2 }}>
-                <Grid conatiner xs={5.8} direction="column" sx={{ mr: "auto", width: "100%" }}>
+            <Grid container xs={12} direction="row" sx={{ mt: 2, minHeight: "250px", height: "100%" }}>
+                <Grid conatiner xs={5.8} direction="column" sx={{ mr: "auto", width: "100%", height: "100%", minHeight: "250px" }}>
                     <Typography fontWeight="bold" sx={{ mb: 1 }}>CPU</Typography>
-                    <Paper style={{ width: "100%" }}>
+                    <Paper style={{ width: "100%", height: "100%", minHeight: "250px" }}>
                         <canvas id="cpuChart" />
                     </Paper>
                 </Grid>
-                <Grid container xs={5.8} direction="column" sx={{ ml: "auto", width: "100%" }}>
+                <Grid container xs={5.8} direction="column" sx={{ ml: "auto", width: "100%", height: "100%", minHeight: "250px" }}>
                     <Typography fontWeight="bold" sx={{ mb: 1 }}>Memory</Typography>
-                    <Paper style={{ width: "100%" }}>
+                    <Paper style={{ width: "100%", minHeight: "250px" }}>
                         <canvas id="memoryChart" />
                     </Paper>
                 </Grid>
