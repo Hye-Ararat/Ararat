@@ -41,6 +41,11 @@ export default async function handler(req, res) {
                         ipv4: req.body.address.ipv4 ? req.body.address.ipv4 : null,
                         ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
                         ip_alias: req.body.address.ip_alias ? req.body.address.ip_alias : null
+                    },
+                    remote: {
+                        remote: req.body.remote.remote,
+                        primary: req.body.remote.primary,
+                        protocol: req.body.remote.protocol
                     }
                 })
             } catch {
