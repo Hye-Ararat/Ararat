@@ -68,7 +68,7 @@ export default function Instance({ data }) {
     } else {
       console.log("no");
     }
-  }, [instance.data, instance.sockets]);
+  }, [instance.data, instance.sockets.monitor]);
 
   return (
     <>
