@@ -45,7 +45,7 @@ export default function Instance({ data }) {
       console.log("doesnt");
       instance.setData(instanceData);
     }
-  }, [instance, instanceData]);
+  }, [instance.data, instanceData]);
   useEffect(() => {
     if (instance.data) {
       console.log("yes");

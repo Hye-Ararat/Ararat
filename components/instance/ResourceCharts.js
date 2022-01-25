@@ -323,7 +323,7 @@ export default function ResourceCharts() {
       };
       setCpuChart(new Chart(cpuChart, cpuChartConfig));
     }
-  }, [instance]);
+  }, [instance.data]);
   return (
     <>
       <Grid container xs={12} direction="row" sx={{ mt: 2, minHeight: "250px", height: "100%" }}>
