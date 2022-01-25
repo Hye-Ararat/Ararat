@@ -27,7 +27,7 @@ export default function Instance({ instance }) {
   }
   useEffect(() => {
     prefetch();
-  });
+  }, []);
   useEffect(() => {
     mutate(`/api/v1/client/nodes/${instance.node}`, axios.get(`/api/v1/client/nodes/${instance.node}`), false).then(
       (res) => {
@@ -98,7 +98,7 @@ export default function Instance({ instance }) {
         monitor();
       }
     );
-  }, [instance]);
+  }, []);
   return (
     <Grid container item md={12} xs={12} direction="row">
       <Link href={`/instance/${instance._id}`}>

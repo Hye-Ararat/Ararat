@@ -61,7 +61,7 @@ export default function Users({ users, user }) {
       rows.push({ cells: [user.first_name, user.last_name, user.email] });
     });
     setUserRows(rows);
-  }, [users]);
+  }, []);
   return (
     <>
       <Typography variant="h4" sx={{ mb: 1 }}>
