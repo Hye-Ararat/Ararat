@@ -62,7 +62,7 @@ export default function Instances({ instances, user }) {
       rows.push({ cells: [instance.name] });
     });
     setInstanceRows(rows);
-  }, [instances]);
+  }, []);
   return (
     <>
       <Grid direction="row" container>

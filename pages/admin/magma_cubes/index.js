@@ -66,7 +66,7 @@ export default function MagmaCubes({ magma_cubes, user }) {
       });
     });
     setMagmaCubeRows(rows);
-  }, [magma_cubes]);
+  }, []);
   return (
     <>
       <Grid direction="row" container>
