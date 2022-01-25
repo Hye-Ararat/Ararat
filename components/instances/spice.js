@@ -11,7 +11,7 @@ function Spice(props) {
     axios.get(`/api/v1/client/instances/${props.instance._id}/console/ws`).then((res) => {
       setAuthToken(res.data);
     });
-  });
+  }, []);
   return authToken ? (
     <iframe
       height="550px"
