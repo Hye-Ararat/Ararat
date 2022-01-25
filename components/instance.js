@@ -27,7 +27,7 @@ export default function Instance({ instance }) {
   }
   useEffect(() => {
     prefetch();
-  });
+  }, []);
   useEffect(() => {
     mutate(`/api/v1/client/nodes/${instance.node}`, axios.get(`/api/v1/client/nodes/${instance.node}`), false).then(
       (res) => {
