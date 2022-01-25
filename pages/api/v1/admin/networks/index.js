@@ -32,11 +32,11 @@ export default async function handler(req, res) {
                 }
             }
             var node = await db.collection("nodes").findOne({
-                _id: ObjectId(req.body.node)
+                _id: ObjectId(req.body.node.id)
             })
             try {
                 var network = await db.collection("networks").insertOne({
-                    node: req.body.node,
+                    node: req.body.node.id,
                     address: {
                         ipv4: req.body.address.ipv4 ? req.body.address.ipv4 : null,
                         ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
@@ -63,8 +63,9 @@ export default async function handler(req, res) {
 
             try {
                 if (req.body.remote.remote == true && req.body.remote.primary == true) {
+                    console.log(network.insertedId.toString())
                     await axios.post(`${node.address.ssl ? "https" : "http"}://${node.address.hostname}:${node.address.port}/api/v1/network`, {
-                        id: network.insertedId.toHexString(),
+                        id: network.insertedId.toString(),
                         address: {
                             ipv4: req.body.address.ipv4 ? req.body.address.ipv4 : null,
                             ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
@@ -84,7 +85,7 @@ export default async function handler(req, res) {
                         _id: ObjectId(req.body.remote.primaryNetwork)
                     })
                     await axios.post(`${node.address.ssl ? "https" : "http"}://${node.address.hostname}:${node.address.port}/api/v1/network`, {
-                        id: network.insertedId.toHexString(),
+                        id: network.insertedId.toString(),
                         address: {
                             ipv4: req.body.address.ipv4,
                             ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
@@ -92,7 +93,14 @@ export default async function handler(req, res) {
                         remote: {
                             remote: req.body.remote.remote,
                             primary: req.body.remote.primary,
-                            primaryNetwork: primaryNetwork.id.toHexString()
+                            primaryNetwork: primaryNetwork["_id"].toString(),
+                            address: {
+                                ipv4: primaryNetwork.address.ipv4
+                            }
+                        }
+                    }, {
+                        headers: {
+                            "Authorization": `Bearer ${access_token}`
                         }
                     });
                     let primaryNetworkNode = await db.collection("nodes").findOne({
@@ -104,12 +112,16 @@ export default async function handler(req, res) {
                     } catch (error) {
                         console.log(error)
                     }
-                    await axios.post(`${primaryNetworkNode.address.ssl ? "https" : "http"}://${primaryNetworkNode.address.hostname}:${primaryNetworkNode.address.port}/api/v1/network/${primaryNetwork.id.toHexString()}/remotes`, {
-                        remoteID: network.insertedId.toHexString(),
+                    await axios.post(`${primaryNetworkNode.address.ssl ? "https" : "http"}://${primaryNetworkNode.address.hostname}:${primaryNetworkNode.address.port}/api/v1/network/${req.body.remote.primaryNetwork}/remotes`, {
+                        remoteID: network.insertedId.toString(),
                         localID: req.body.remote.primaryNetwork,
                         protocol: "gre",
                         local: primaryNetwork.address.ipv4,
                         remote: req.body.address.ipv4
+                    }, {
+                        headers: {
+                            "Authorization": `Bearer ${accessToken2}`
+                        }
                     });
 
                 }
