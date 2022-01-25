@@ -45,7 +45,8 @@ export default async function handler(req, res) {
                     remote: {
                         remote: req.body.remote.remote,
                         primary: req.body.remote.primary,
-                        protocol: req.body.remote.protocol
+                        protocol: req.body.remote.protocol,
+                        primaryNetwork: req.body.remote.primaryNetwork
                     }
                 })
             } catch {
@@ -59,18 +60,59 @@ export default async function handler(req, res) {
             } catch {
                 return res.status(500).send("Internal Server Error");
             }
+
             try {
-                await axios.post(`${node.address.ssl ? "https" : "http"}://${node.address.hostname}:${node.address.port}/api/v1/network`, {
-                    id: network.insertedId.toHexString(),
-                    address: {
-                        ipv4: req.body.address.ipv4 ? req.body.address.ipv4 : null,
-                        ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
+                if (req.body.remote.remote == true && req.body.remote.primary == true) {
+                    await axios.post(`${node.address.ssl ? "https" : "http"}://${node.address.hostname}:${node.address.port}/api/v1/network`, {
+                        id: network.insertedId.toHexString(),
+                        address: {
+                            ipv4: req.body.address.ipv4 ? req.body.address.ipv4 : null,
+                            ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
+                        },
+                        remote: {
+                            remote: req.body.remote.remote,
+                            primary: req.body.remote.primary,
+                            primaryNetwork: req.body.remote.primaryNetwork
+                        }
+                    }, {
+                        headers: {
+                            "Authorization": `Bearer ${access_token}`
+                        }
+                    })
+                } else if (req.body.remote.remote == true && req.body.remote.primary == false) {
+                    let primaryNetwork = await db.collection("networks").findOne({
+                        _id: ObjectId(req.body.remote.primaryNetwork)
+                    })
+                    await axios.post(`${node.address.ssl ? "https" : "http"}://${node.address.hostname}:${node.address.port}/api/v1/network`, {
+                        id: network.insertedId.toHexString(),
+                        address: {
+                            ipv4: req.body.address.ipv4,
+                            ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
+                        },
+                        remote: {
+                            remote: req.body.remote.remote,
+                            primary: req.body.remote.primary,
+                            primaryNetwork: primaryNetwork.id.toHexString()
+                        }
+                    });
+                    let primaryNetworkNode = await db.collection("nodes").findOne({
+                        _id: ObjectId(primaryNetwork.node)
+                    })
+                    try {
+                        var decipher2 = crypto.createDecipheriv("aes-256-ctr", process.env.ENC_KEY, Buffer.from(primaryNetworkNode.access_token_iv, "hex"))
+                        var accessToken2 = Buffer.concat([decipher2.update(Buffer.from(primaryNetworkNode.access_token.split("::")[1], "hex")), decipher2.final()])
+                    } catch (error) {
+                        console.log(error)
                     }
-                }, {
-                    headers: {
-                        "Authorization": `Bearer ${access_token}`
-                    }
-                })
+                    await axios.post(`${primaryNetworkNode.address.ssl ? "https" : "http"}://${primaryNetworkNode.address.hostname}:${primaryNetworkNode.address.port}/api/v1/network/${primaryNetwork.id.toHexString()}/remotes`, {
+                        remoteID: network.insertedId.toHexString(),
+                        localID: req.body.remote.primaryNetwork,
+                        protocol: "gre",
+                        local: primaryNetwork.address.ipv4,
+                        remote: req.body.address.ipv4
+                    });
+
+                }
             } catch (error) {
                 console.log(error)
                 return res.status(500).send("An error occured while creating the network")

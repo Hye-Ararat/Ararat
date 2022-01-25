@@ -8,7 +8,7 @@ export default function CreateNetwork({ node }) {
     const [name, setName] = useState(null);
     const [error, setError] = useState(null);
     const [tunnel, setTunnel] = useState(false);
-    const [primaryNode, setPrimaryNode] = useState(null);
+    const [primaryNetwork, setPrimaryNetwork] = useState(null);
     const [isPrimary, setIsPrimary] = useState(false);
     const [protocol, setProtocol] = useState("gre");
     return (
@@ -36,7 +36,7 @@ export default function CreateNetwork({ node }) {
                         : ""}
                     {tunnel && !isPrimary ? <Box sx={{ mr: 3, mb: 2 }}>
                         <Typography fontWeight="bold">Remote Network</Typography>
-                        <TextField placeholder="Network ID" value={primaryNode} variant="outlined" onChange={(e) => setPrimaryNode(e.target.value)}></TextField>
+                        <TextField placeholder="Network ID" value={primaryNetwork} variant="outlined" onChange={(e) => setPrimaryNetwork(e.target.value)}></TextField>
                     </Box> : ""
                     }
                     {tunnel && isPrimary ?
@@ -47,18 +47,11 @@ export default function CreateNetwork({ node }) {
                             </Select>
                         </Box>
                         : ""}
-                    {!tunnel ?
-                        <Box sx={{ mr: 3 }}>
-                            <Typography fontWeight="bold">IPv4</Typography>
-                            <TextField placeholder="192.0.2.146" variant="outlined" value={ipv4} onChange={(e) => setIpv4(e.target.value)}></TextField>
-                        </Box>
-                        :
-                        <>
-                            <Box sx={{ mr: 3 }}>
-                                <Typography fontWeight="bold">{isPrimary ? "IPv4" : "Local IPv4"}</Typography>
-                                <TextField placeholder="1.1.1.1" />
-                            </Box>
-                        </>}
+                    <Box sx={{ mr: 3 }}>
+                        <Typography fontWeight="bold">{isPrimary || !tunnel ? "IPv4" : "Local IPv4"}</Typography>
+                        <TextField placeholder="192.0.2.146" variant="outlined" value={ipv4} onChange={(e) => setIpv4(e.target.value)}></TextField>
+                    </Box>
+
                     {!tunnel ? <Box sx={{ mr: 3 }}>
                         <Typography fontWeight="bold">IPv6</Typography>
                         <TextField placeholder="2001:0db8:85a3:0000:0000:8a2e:0370:7334" variant="outlined" value={ipv6} onChange={(e) => setIpv6(e.target.value)}></TextField>
@@ -83,6 +76,7 @@ export default function CreateNetwork({ node }) {
                             remote: tunnel,
                             primary: isPrimary,
                             protocol: protocol,
+                            primaryNetwork: primaryNetwork
                         }
                     })
                 } catch (err) {
