@@ -109,6 +109,7 @@ function TermComponent(props) {
                             if (props.instance.relationships.magma_cube.console == "xterm") {
                                 var yes = document.getElementsByClassName("xterm-viewport");
                                 yes = yes[0];
+                                console.log(rect.width)
                                 if (yes) {
                                     yes.style.width = `${rect.width}px`;
                                     yes.style.height = `${rect.height}px`;
@@ -120,7 +121,7 @@ function TermComponent(props) {
                         }} />
                         <Fade in={instance.sockets.console} style={{ height: "100%", minHeight: "500px", width: "100%" }}>
                             <div style={{ width: "100%", minHeight: "500px" }}>
-                                <div id="terminal" className="thisIsLeTerminal" style={{ width: "100%", height: "100%", minHeight: "500px", border: "solid 5px rgb(30, 40, 50)", borderRadius: "5px", borderColor: "rgb(30, 40, 50)", overflowY: "hidden", padding: 10, background: "#141c26" }}></div>
+                                <div id="terminal" className="thisIsLeTerminal" style={{ height: "100%", minHeight: "500px", borderRadius: "5px", borderColor: "rgb(30, 40, 50)", overflowY: "hidden", background: "#141c26" }}></div>
                             </div>
                         </Fade>
                     </>
