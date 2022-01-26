@@ -6,19 +6,38 @@ export default function StopButton(props) {
   const [stopping, setStopping] = useState(false);
   const [killing, setKilling] = useState(false);
   const [showKill, setShowKill] = useState(false);
+
+  const stop = () => {
+    setStopping(true);
+    axios
+      .post(`/api/v1/client/instances/${props.instance}/state`, {
+        state: "stop"
+      })
+      .then((res) => {
+        setShowKill(false);
+      });
+  };
+
+  const kill = () => {
+    setKilling(true);
+    setStopping(false);
+    axios
+      .post(`/api/v1/client/instances/${props.instance}/state`, {
+        state: "kill"
+      })
+      .then((res) => {
+        setShowKill(false);
+        setKilling(false);
+      });
+  };
+
   return showKill == false ? (
     <LoadingButton
       loading={stopping}
       color="error"
       variant="contained"
       sx={{ marginLeft: "auto", marginTop: "auto", marginBottom: "auto" }}
-      onClick={async () => {
-        setStopping(true);
-        await axios.post(`/api/v1/client/instances/${props.instance}/state`, {
-          state: "stop"
-        });
-        setShowKill(true);
-      }}
+      onClick={stop}
     >
       Stop
     </LoadingButton>
@@ -28,16 +47,7 @@ export default function StopButton(props) {
       color="error"
       variant="contained"
       sx={{ marginLeft: "auto", marginTop: "auto", marginBottom: "auto" }}
-      onClick={async () => {
-        setKilling(true);
-        setStopping(false);
-        await axios.post(`/api/v1/client/instances/${props.instance}/state`, {
-          state: "stop",
-          force: "true"
-        });
-        setKilling(false);
-        setShowKill(false);
-      }}
+      onClick={kill}
     >
       Kill
     </LoadingButton>
