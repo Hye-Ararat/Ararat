@@ -124,6 +124,24 @@ export default async function handler(req, res) {
                         }
                     });
 
+                } else {
+                    console.log(network.insertedId.toString())
+                    await axios.post(`${node.address.ssl ? "https" : "http"}://${node.address.hostname}:${node.address.port}/api/v1/network`, {
+                        id: network.insertedId.toString(),
+                        address: {
+                            ipv4: req.body.address.ipv4 ? req.body.address.ipv4 : null,
+                            ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
+                        },
+                        remote: {
+                            remote: req.body.remote.remote,
+                            primary: req.body.remote.primary,
+                            primaryNetwork: req.body.remote.primaryNetwork
+                        }
+                    }, {
+                        headers: {
+                            "Authorization": `Bearer ${access_token}`
+                        }
+                    })
                 }
             } catch (error) {
                 console.log(error)
