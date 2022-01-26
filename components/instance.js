@@ -125,16 +125,17 @@ export default function Instance({ instance }) {
                   sx={{
                     padding: "10px",
                     bgcolor:
-                      monitorData.state.toLocaleLowerCase() == "online" ||
-                      monitorData.state.toLocaleLowerCase() == "online"
-                        ? "#163a3a"
-                        : monitorData.state.toLocaleLowerCase() == "offline" ||
-                          monitorData.state.toLocaleLowerCase() === "stopped"
-                        ? "#34242b"
-                        : monitorData.state.toLocaleLowerCase() == "stopping" ||
-                          monitorData.state.toLocaleLowerCase() == "starting"
-                        ? "#363422"
-                        : "#34242b",
+                      monitorData.state ?
+                        monitorData.state.toLocaleLowerCase() == "online" ||
+                          monitorData.state.toLocaleLowerCase() == "online"
+                          ? "#163a3a"
+                          : monitorData.state.toLocaleLowerCase() == "offline" ||
+                            monitorData.state.toLocaleLowerCase() === "stopped"
+                            ? "#34242b"
+                            : monitorData.state.toLocaleLowerCase() == "stopping" ||
+                              monitorData.state.toLocaleLowerCase() == "starting"
+                              ? "#363422"
+                              : "#34242b" : "#34242b",
                     width: 50,
                     height: 50,
                     margin: "auto"
@@ -144,8 +145,8 @@ export default function Instance({ instance }) {
                       ? instance.type == "n-vps"
                         ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg"
                         : instance.type == "kvm"
-                        ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png"
-                        : ""
+                          ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png"
+                          : ""
                       : ""
                   }
                 />
