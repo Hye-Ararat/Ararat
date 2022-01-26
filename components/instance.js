@@ -125,6 +125,7 @@ export default function Instance({ instance }) {
                   sx={{
                     padding: "10px",
                     bgcolor:
+<<<<<<< HEAD
                       monitorData.state.toLocaleLowerCase() == "online" ||
                       monitorData.state.toLocaleLowerCase() == "online"
                         ? "#163a3a"
@@ -133,6 +134,13 @@ export default function Instance({ instance }) {
                         ? "#34242b"
                         : monitorData.state.toLocaleLowerCase() == "stopping" ||
                           monitorData.state.toLocaleLowerCase() == "starting"
+=======
+                      monitorData.state == "online" || monitorData.state == "Online"
+                        ? "#163a3a"
+                        : monitorData.state == "Offline" || monitorData.state === "Stopped"
+                        ? "#34242b"
+                        : monitorData.state == "Stopping" || monitorData.state == "Starting"
+>>>>>>> d5dbdcbc30a312c1fe8f906ecc34b73d4628348b
                         ? "#363422"
                         : "#34242b",
                     width: 50,
