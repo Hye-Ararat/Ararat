@@ -100,15 +100,17 @@ export default function Instance({ data }) {
             <Grid container xs={12} sx={{ mt: 2 }}>
                 <Grid item xs={12} sx={{ minHeight: "400px" }} container>
                     {instance ? console.log("asldkfj;lsdkfj") : ""}
-                    {instance.containerState ? (
+                    {instance.containerState ?
                         <Terminal status={instance.containerState} instance={instance.data} instanceId={id} />
-                    ) : (
+                        :
                         ""
-                    )}
+                    }
                 </Grid>
             </Grid>
             <Grid container xs={12}>
-                <ResourceCharts />
+                {instance.containerState ?
+                    <ResourceCharts />
+                    : ""}
             </Grid>
         </>
     );
