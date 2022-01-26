@@ -118,11 +118,7 @@ export default function ResourceCharts() {
   }, [memChart, instance.monitor.memory.usage, cpuChart]);
   useEffect(() => {
     console.log("a;lsdfj;adlsjf;laskdjf;lskdjf;laskdjfa");
-<<<<<<< HEAD
-    if (instance.data.limits) {
-=======
     if (instance.data) {
->>>>>>> d5dbdcbc30a312c1fe8f906ecc34b73d4628348b
       Chart.register(
         ArcElement,
         LineElement,
