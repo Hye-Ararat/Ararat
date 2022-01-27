@@ -2,7 +2,7 @@ import { Paper, TableContainer, Table, TableHead, TableCell, TableBody, TableRow
 import axios from "axios";
 import { useEffect, useState } from "react";
 import CreateNetwork from "../../networks/CreateNetwork";
-import ForwardPort from "../../network_forwards/ForwardPort";
+import ForwardPort from "../../ports/ForwardPort";
 
 export default function Network({ user, node }) {
     const [page, setPage] = useState("networks");

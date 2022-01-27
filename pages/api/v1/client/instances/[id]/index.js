@@ -33,7 +33,7 @@ export default async function handler(req, res) {
                     ip_alias: null
                 },
                 relationships: {
-                    network_forwards: []
+                    ports: []
                 }
             }
             var network = await db.collection("network").findOne({
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
                 var ports = await db.collection("ports").find({
                     network: instance.network
                 })
-                instance.relationships.network.relationships.network_forwards = await ports.toArray()
+                instance.relationships.network.relationships.ports = await ports.toArray()
             }
         }
     }
