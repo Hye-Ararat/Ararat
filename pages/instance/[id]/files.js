@@ -1,5 +1,5 @@
 import Router, { useRouter } from "next/router";
-import { Typography, Paper, Button, Grid, Checkbox, Container, CircularProgress, Skeleton } from "@mui/material";
+import { Typography, Paper, Button, Grid, Checkbox, Container, CircularProgress, Skeleton, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions } from "@mui/material";
 import useSWR from "swr";
 import nookies from "nookies"
 import { Suspense, useEffect, useState } from "react";
@@ -28,6 +28,8 @@ export default function Files(props) {
     const [allChecked, setAllChecked] = useState(false)
     const [showOptions, setShowOptions] = useState(false)
     const [theFiles, setTheFiles] = useState([])
+    const [creatingFile, setCreatingFile] = useState(false)
+    const [newFileName, setNewFileName] = useState("");
     const router = useRouter();
     Router.onRouteChangeStart = () => {
         setChecked([])
@@ -73,9 +75,30 @@ export default function Files(props) {
             {files ? console.log("THE FILES:", files) : ""}
             {error ? console.log("ERROR:", error) : ""}
             <Container>
+                <Dialog open={creatingFile} onClose={() => setCreatingFile(false)}>
+                    <DialogTitle>Create File</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>What would you like to name your file?</DialogContentText>
+                        <TextField autoFocus placeholder="File Name" onChange={(e) => setNewFileName(e.target.value)} />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setCreatingFile(false)} color="error" variant="contained">Cancel</Button>
+                        <Button onClick={async () => {
+                            await axios.post("/api/v1/client/instances/" + id + "/files" + `?path=${path}/${newFileName}`, null, {
+                                headers: {
+                                    "Content-Type": "text/plain",
+                                    "Content-Length": 0
+                                }
+                            })
+                            router.push(`/instance/${id}/files?path=${path}/${newFileName}`.replace("//", "/"))
+                            setCreatingFile(false)
+                        }
+                        } color="success" variant="contained">Create</Button>
+                    </DialogActions>
+                </Dialog>
                 <Grid xs={12} container direction="row">
                     <Grid item container xs={.6}>
-                        {files ? files.list ? <Checkbox checked={allChecked} onClick={(e) => {
+                        {files != null ? files.list ? <Checkbox checked={allChecked} onClick={(e) => {
                             e.preventDefault();
                             setAllChecked(!allChecked);
                             setChecked([]);
@@ -107,17 +130,17 @@ export default function Files(props) {
                         </Grid>
                     </Grid>
                     <Grid item container xs={5.4}>
-                        {files ? files.list ? showOptions ? <><Button sx={{ mt: "auto", mb: "auto", ml: "auto" }} variant="contained" color="error">Delete</Button> <Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="warning">Move</Button><Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="success">Download</Button></> :
+                        {files != null ? files.list ? showOptions ? <><Button sx={{ mt: "auto", mb: "auto", ml: "auto" }} variant="contained" color="error">Delete</Button> <Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="warning">Move</Button><Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="success">Download</Button></> :
                             <>
                                 <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Create Directory</Button>
                                 <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: 3 }}>Upload</Button>
-                                <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: 3 }}>New File</Button>
+                                <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: 3 }} onClick={() => setCreatingFile(true)}>New File</Button>
                             </>
                             : <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Open In Visual Studio Code</Button> : ""}
                     </Grid>
                 </Grid>
                 <Grid xs={12} container sx={{ mt: 1 }}>
-                    {!files ? <><Skeleton sx={{ width: "100%", height: "50px" }} animation="wave" />
+                    {files == null ? <><Skeleton sx={{ width: "100%", height: "50px" }} animation="wave" />
                         <Skeleton sx={{ width: "100%", height: "50px" }} animation="wave" />
                         <Skeleton sx={{ width: "100%", height: "50px" }} animation="wave" />
                         <Skeleton sx={{ width: "100%", height: "50px" }} animation="wave" />
@@ -128,7 +151,7 @@ export default function Files(props) {
                         <Skeleton sx={{ width: "100%", height: "50px" }} animation="wave" />
                         <Skeleton sx={{ width: "100%", height: "50px" }} animation="wave" />
                         <Skeleton sx={{ width: "100%", height: "50px" }} animation="wave" /></> : <></>}
-                    {files && files.list ? files.list.map((file) => {
+                    {files != null && files.list ? files.list.map((file) => {
                         /*                 if (file.lastModified) {
                                             //if time is less than a day
                                             if (moment().diff(moment(file.lastModified), 'days') < 1) {
@@ -155,7 +178,7 @@ export default function Files(props) {
                                 router.push(`/instance/${id}/files?path=${newPath}`)
                             }} sx={{ width: "30%", mt: 2, mr: "auto", ml: "auto" }} variant="contained" color="primary">Go Back</Button>
                         </Grid></> : "" : ""}
-                    {files ? typeof (files) != "object" ? <Grid xs={12} container><FileEditor file={files} path={path} instance={id} /></Grid> : "" : ""}
+                    {files != null ? typeof (files) != "object" ? <Grid xs={12} container><FileEditor file={files} path={path} instance={id} /></Grid> : "" : ""}
                 </Grid>
             </Container>
         </>
