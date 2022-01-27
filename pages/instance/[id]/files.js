@@ -45,6 +45,7 @@ export default function Files(props) {
         e.preventDefault();
         console.log(e.target)
         console.log(e.target.id)
+
         if (e.target.localName == "input") {
             console.log("checkbox")
             var tempChecked = checked;
@@ -59,6 +60,8 @@ export default function Files(props) {
             }
             console.log(tempChecked)
             setChecked(tempChecked);
+        } else if (e.target.innerText == null) {
+            console.log("dfdf")
         } else {
             console.log(e.target)
             router.push(`/instance/${id}/files?path=${path}/${e.target.innerText}`.replace("//", "/"))
@@ -79,38 +82,38 @@ export default function Files(props) {
                             setShowOptions(!allChecked)
                         }} sx={{ mt: "auto", mb: "auto" }} /> : <Typography sx={{ mt: "auto", mb: "auto" }}>
                             <FontAwesomeIcon onClick={() => {
-                                    var arr = path.split("/").slice("/")
-                                    arr.pop()
-                                    var newPath = arr.join("/").replace("//", "/")
-                                    router.push(`/instance/${id}/files?path=${newPath}`)
-                            }} style={{cursor: "pointer"}} icon={faArrowLeft} /> 
-                            </Typography> : <CircularProgress size={15} color="info" sx={{ mt: "auto", mb: "auto" }} />}
+                                var arr = path.split("/").slice("/")
+                                arr.pop()
+                                var newPath = arr.join("/").replace("//", "/")
+                                router.push(`/instance/${id}/files?path=${newPath}`)
+                            }} style={{ cursor: "pointer" }} icon={faArrowLeft} />
+                        </Typography> : <CircularProgress size={15} color="info" sx={{ mt: "auto", mb: "auto" }} />}
                     </Grid>
                     <Grid item container xs={6}>
-                        <Grid container direction="row" item xs={12} sx={{mt: "auto", mb: "auto"}}>
-                        <Link href={`/instance/${id}/files`}>
-                        <Typography sx={{cursor: "pointer"}} variant="body2">/</Typography>
-                        </Link>
-                        {path.split("/").map((item, index) => {
-                            console.log(item)
-                            return (
-                            <>
-                            <Link href={`/instance/${id}/files?path=${path.split("/").slice(0, index + 1).join("/").replace("//", "/")}`}>
-                            {item == "" ? "" : <Typography style={{cursor: "pointer"}} variant="body2">&nbsp;{(item + " /")} </Typography>}
+                        <Grid container direction="row" item xs={12} sx={{ mt: "auto", mb: "auto" }}>
+                            <Link href={`/instance/${id}/files`}>
+                                <Typography sx={{ cursor: "pointer" }} variant="body2">/</Typography>
                             </Link>
-                            </>
-                            )
-                        })}
+                            {path.split("/").map((item, index) => {
+                                console.log(item)
+                                return (
+                                    <>
+                                        <Link href={`/instance/${id}/files?path=${path.split("/").slice(0, index + 1).join("/").replace("//", "/")}`}>
+                                            {item == "" ? "" : <Typography style={{ cursor: "pointer" }} variant="body2">&nbsp;{(item + " /")} </Typography>}
+                                        </Link>
+                                    </>
+                                )
+                            })}
                         </Grid>
                     </Grid>
                     <Grid item container xs={5.4}>
-                        {files ? files.list ? showOptions? <><Button sx={{ mt: "auto", mb: "auto", ml: "auto" }} variant="contained" color="error">Delete</Button> <Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="warning">Move</Button><Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="success">Download</Button></>:
-                        <>
-                        <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Create Directory</Button>
-                        <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: 3 }}>Upload</Button>
-                        <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: 3 }}>New File</Button>
-                        </>
-                        :                         <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Open In Visual Studio Code</Button>         :""           }
+                        {files ? files.list ? showOptions ? <><Button sx={{ mt: "auto", mb: "auto", ml: "auto" }} variant="contained" color="error">Delete</Button> <Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="warning">Move</Button><Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="success">Download</Button></> :
+                            <>
+                                <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Create Directory</Button>
+                                <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: 3 }}>Upload</Button>
+                                <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: 3 }}>New File</Button>
+                            </>
+                            : <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Open In Visual Studio Code</Button> : ""}
                     </Grid>
                 </Grid>
                 <Grid xs={12} container sx={{ mt: 1 }}>
@@ -142,16 +145,16 @@ export default function Files(props) {
                             </Grid>
                         )
                     }) : ""}
-                    {files && files.list ? files.list.length == 0 ?<>
-                    <Grid direction="column" container>
-                     <Typography variant="h6" sx={{ m: "auto" }}>Directory is Empty</Typography> 
-                    <Button onClick={() => {
-                        var arr = path.split("/").slice("/")
-                        arr.pop()
-                        var newPath = arr.join("/").replace("//", "/")
-                        router.push(`/instance/${id}/files?path=${newPath}`)
-                    }} sx={{width: "30%", mt: 2, mr: "auto", ml: "auto"}} variant="contained" color="primary">Go Back</Button>
-                    </Grid></>: "" : ""}
+                    {files && files.list ? files.list.length == 0 ? <>
+                        <Grid direction="column" container>
+                            <Typography variant="h6" sx={{ m: "auto" }}>Directory is Empty</Typography>
+                            <Button onClick={() => {
+                                var arr = path.split("/").slice("/")
+                                arr.pop()
+                                var newPath = arr.join("/").replace("//", "/")
+                                router.push(`/instance/${id}/files?path=${newPath}`)
+                            }} sx={{ width: "30%", mt: 2, mr: "auto", ml: "auto" }} variant="contained" color="primary">Go Back</Button>
+                        </Grid></> : "" : ""}
                     {files ? typeof (files) != "object" ? <Grid xs={12} container><FileEditor file={files} path={path} instance={id} /></Grid> : "" : ""}
                 </Grid>
             </Container>
@@ -160,7 +163,7 @@ export default function Files(props) {
 }
 
 Files.getLayout = function getLayout(page) {
-    return(
+    return (
         <InstanceStore.Provider>
             <Navigation page="files" >
                 {page}
