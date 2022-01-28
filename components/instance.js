@@ -2,7 +2,7 @@ import { Grid, CardActionArea, Typography, Avatar, Paper, Box, Dialog, DialogTit
 import useSWR, { mutate, SWRConfig } from "swr";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMicrochip, faHardDrive, faMemory, faEthernet } from "@fortawesome/free-solid-svg-icons";
+import { faMicrochip, faHardDrive, faMemory, faEthernet, faInfinity } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import prettyBytes from "pretty-bytes";
 import Link from "next/link";
@@ -103,7 +103,7 @@ export default function Instance({ instance }) {
     <Grid container item md={12} xs={12} direction="row">
       <Link href={`/instance/${instance._id}`}>
         <CardActionArea sx={{ borderRadius: "10px" }}>
-          <Paper sx={{ width: "100%", height: "100px", borderRadius: "10px" }}>
+          <Paper sx={{ width: "100%", height: "100px", borderRadius: "10px", background: monitor_error ? "red" : "background.paper" }}>
             {monitor_error ? (
               <Alert severity="error" sx={{ width: "100%", position: "absolute", height: "40%", opacity: 0.5 }}>
                 An error occured while connecting to this instance.
@@ -125,17 +125,18 @@ export default function Instance({ instance }) {
                   sx={{
                     padding: "10px",
                     bgcolor:
-                      monitorData.state ?
-                        monitorData.state.toLocaleLowerCase() == "online" ||
-                          monitorData.state.toLocaleLowerCase() == "online"
-                          ? "#163a3a"
-                          : monitorData.state.toLocaleLowerCase() == "offline" ||
-                            monitorData.state.toLocaleLowerCase() === "stopped"
-                            ? "#34242b"
-                            : monitorData.state.toLocaleLowerCase() == "stopping" ||
-                              monitorData.state.toLocaleLowerCase() == "starting"
-                              ? "#363422"
-                              : "#34242b" : "#34242b",
+                      monitor_error != true ?
+                        monitorData.state ?
+                          monitorData.state.toLocaleLowerCase() == "online" ||
+                            monitorData.state.toLocaleLowerCase() == "online"
+                            ? "#163a3a"
+                            : monitorData.state.toLocaleLowerCase() == "offline" ||
+                              monitorData.state.toLocaleLowerCase() === "stopped"
+                              ? "#34242b"
+                              : monitorData.state.toLocaleLowerCase() == "stopping" ||
+                                monitorData.state.toLocaleLowerCase() == "starting"
+                                ? "#363422"
+                                : "#34242b" : "#34242b" : "",
                     width: 50,
                     height: 50,
                     margin: "auto"
@@ -151,7 +152,7 @@ export default function Instance({ instance }) {
                   }
                 />
               </Grid>
-              <Grid container item xs={8} md={2.8} xl={3} sx={{ height: "100%" }} direction="row">
+              <Grid container item xs={10} md={4.8} xl={5} sx={{ height: "100%" }} direction="row">
                 <Typography
                   variant="h6"
                   noWrap
@@ -162,28 +163,8 @@ export default function Instance({ instance }) {
                     marginBottom: "auto"
                   }}
                 >
-                  {instance.name ? instance.name : "Loading"}
+                  {instance.name ? instance.name : ""}
                 </Typography>
-              </Grid>
-              <Grid container item xs={2} md={2} lg={2} xl={2}>
-                <Box display="flex" sx={{ margin: "auto" }}>
-                  <FontAwesomeIcon
-                    icon={faEthernet}
-                    style={{
-                      marginRight: 10,
-                      marginTop: "auto",
-                      marginBottom: "auto"
-                    }}
-                  />
-                  <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                    {instance.relationships
-                      ? instance.relationships.network
-                        ? instance.relationships.network.address.ip_alias
-                        : ""
-                      : ""}
-                    {instance.primary_port ? ":" + instance.primary_port : ""}
-                  </Typography>
-                </Box>
               </Grid>
               <Grid
                 container
@@ -251,7 +232,7 @@ export default function Instance({ instance }) {
                     {monitorData.disk.usage != undefined && monitorData.disk.usage != null
                       ? parseFloat(monitorData.disk.usage)
                       : ""}
-                    /{instance.devices.root.size ? prettyBytes(parseInt(instance.devices.root.size) * 1000000) : "♾️"}
+                    /{instance.devices.root.size ? prettyBytes(parseInt(instance.devices.root.size) * 1000000) : <FontAwesomeIcon icon={faInfinity} />}
                   </Typography>
                 </Box>{" "}
               </Grid>
