@@ -70,7 +70,10 @@ export default async function handler(req, res) {
                     }
                 })
             } catch {
-                return res.send(files.data)
+                res.headers = {
+                    "Content-Type": "text/plain"
+                }
+                return res.send(JSON.stringify(files.data))
             }
             files.data.list = sorted;
             return res.send(files.data)
