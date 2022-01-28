@@ -9,11 +9,13 @@ export default function StopButton(props) {
 
   const stop = () => {
     setStopping(true);
+    setShowKill(true);
     axios
       .post(`/api/v1/client/instances/${props.instance}/state`, {
         state: "stop"
       })
       .then((res) => {
+        setStopping(false);
         setShowKill(false);
       });
   };
