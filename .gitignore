@@ -34,3 +34,4 @@ yarn-error.log*
 .vercel
 .devcontainer/devcontainer.json
 .DS_Store
+.DS_Store
