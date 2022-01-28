@@ -38,12 +38,14 @@ export default function Instance({ data }) {
     );
 
     useEffect(() => {
-        if (instance.data) {
-            console.log("exists");
-            console.log(instance.data);
-        } else {
-            console.log("doesnt");
-            instance.setData(instanceData);
+        if (id) {
+            if (instance.data) {
+                console.log("exists");
+                console.log(instance.data);
+            } else {
+                console.log("doesnt");
+                instance.setData(instanceData);
+            }
         }
     }, [instance.data, instanceData]);
     useEffect(() => {
@@ -80,7 +82,7 @@ export default function Instance({ data }) {
             />
             <Paper>
                 <Grid container direction="row" sx={{ p: 2 }}>
-                    <Grid item xs={2}>
+                    <Grid item xs={3}>
                         <Typography variant="h6">{instance.data ? instance.data.name : ""}</Typography>
                     </Grid>
                     <Grid container item xs={8} md={5} lg={3.7} xl={3} sx={{ marginLeft: "auto" }}>
@@ -100,10 +102,10 @@ export default function Instance({ data }) {
             <Grid container xs={12} sx={{ mt: 2 }}>
                 <Grid item xs={12} sx={{ minHeight: "400px" }} container>
                     {instance ? console.log("asldkfj;lsdkfj") : ""}
-                    {instance.containerState ?
+                    {instance.containerState ? instance.data ?
                         <Terminal status={instance.containerState} instance={instance.data} instanceId={id} />
                         :
-                        ""
+                        "" : ""
                     }
                 </Grid>
             </Grid>
