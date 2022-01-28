@@ -29,6 +29,8 @@ export default function FileEditor({ file, path, instance }) {
         return "json";
       case "md":
         return "markdown";
+      case "java":
+        return "java";
       default:
         return "plaintext";
     }
