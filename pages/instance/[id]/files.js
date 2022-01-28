@@ -1,5 +1,5 @@
 import Router, { useRouter } from "next/router";
-import { Typography, Paper, Button, Grid, Checkbox, Container, CircularProgress, Skeleton, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions } from "@mui/material";
+import { Typography, Paper, Button, Grid, Checkbox, Container, CircularProgress, Skeleton, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Input } from "@mui/material";
 import useSWR from "swr";
 import nookies from "nookies"
 import { Suspense, useEffect, useState } from "react";
@@ -30,6 +30,7 @@ export default function Files(props) {
     const [theFiles, setTheFiles] = useState([])
     const [creatingFile, setCreatingFile] = useState(false)
     const [newFileName, setNewFileName] = useState("");
+    const [uploading, setUploading] = useState(false)
     const router = useRouter();
     Router.onRouteChangeStart = () => {
         setChecked([])
@@ -133,7 +134,25 @@ export default function Files(props) {
                         {files != null ? files.list ? showOptions ? <><Button sx={{ mt: "auto", mb: "auto", ml: "auto" }} variant="contained" color="error">Delete</Button> <Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="warning">Move</Button><Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="success">Download</Button></> :
                             <>
                                 <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Create Directory</Button>
-                                <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: 3 }}>Upload</Button>
+                                <label htmlFor="file-upload" style={{ marginTop: "auto", marginBottom: "auto" }}>
+                                    <Input onChange={(e) => {
+                                        setUploading(true);
+                                        console.log(e.target.files[0])
+                                        let reader = new FileReader();
+                                        reader.readAsText(e.target.files[0]);
+                                        reader.onloadend = async () => {
+                                            console.log(reader.result)
+                                            await axios.post("/api/v1/client/instances/" + id + "/files" + `?path=${path}/${e.target.files[0].name}`.replace("//", "/"), reader.result, {
+                                                headers: {
+                                                    "Content-Type": "text/plain",
+                                                }
+                                            })
+                                            setUploading(false);
+                                        }
+                                        setUploading(false)
+                                    }} sx={{ display: "none" }} accept="*" type="file" id="file-upload" />
+                                    <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: 3 }} component="span">{uploading ? "Loading" : "Upload"}</Button>
+                                </label>
                                 <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: 3 }} onClick={() => setCreatingFile(true)}>New File</Button>
                             </>
                             : <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Open In Visual Studio Code</Button> : ""}
