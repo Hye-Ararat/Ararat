@@ -197,7 +197,7 @@ export default function Files(props) {
                                 router.push(`/instance/${id}/files?path=${newPath}`)
                             }} sx={{ width: "30%", mt: 2, mr: "auto", ml: "auto" }} variant="contained" color="primary">Go Back</Button>
                         </Grid></> : "" : ""}
-                    {files != null ? typeof (files) != "object" ? <Grid xs={12} container><FileEditor file={files} path={path} instance={id} /></Grid> : "" : ""}
+                    {files != null ? !files.list ? <Grid xs={12} container><FileEditor file={files} path={path} instance={id} /></Grid> : "" : ""}
                 </Grid>
             </Container>
         </>

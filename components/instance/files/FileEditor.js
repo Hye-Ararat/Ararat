@@ -9,6 +9,7 @@ import { LoadingButton } from "@mui/lab";
 export default function FileEditor({ file, path, instance }) {
   const [data, setData] = useState(file);
   const [saving, setSaving] = useState(false);
+  console.log(file)
   function language() {
     switch (path.split(".").pop()) {
       case "js":
@@ -251,17 +252,17 @@ export default function FileEditor({ file, path, instance }) {
   }, [monaco])
   return (
     <div style={{ cursor: "text", width: "100%" }}>
-      <Monaco height={"50vh"} width={"100%"} onChange={(data) => setData(data)} id="monaco-editor-parent" theme="hye" value={typeof (file) == "object" ? JSON.stringify(file) : file.length == 0 ? " " : file} style={{ marginLeft: "auto", marginRight: "auto" }} language={language()} options={{ cursorSmoothCaretAnimation: true, cursorBlinking: "smooth", smoothScrolling: true, automaticLayout: true }} />
+      <Monaco height={"50vh"} width={"100%"} onChange={(data) => setData(data)} id="monaco-editor-parent" theme="hye" value={typeof (file) == "object" ? JSON.stringify(file) : file.length == 0 ? "" : file} style={{ marginLeft: "auto", marginRight: "auto" }} language={language()} options={{ cursorSmoothCaretAnimation: true, cursorBlinking: "smooth", smoothScrolling: true, automaticLayout: true }} />
       <LoadingButton loading={saving} sx={{ mt: 1 }} variant="contained" color="success" onClick={async () => {
         console.log(data);
         setSaving(true);
-        await axios.post(`/api/v1/client/instances/${instance}/files?path=${path}`, data, {
+        await axios.post(`/api/v1/client/instances/${instance}/files?path=${path}`, typeof (data) == "object" ? JSON.stringify(JSON.parse(data)) : data, {
           headers: {
             'Content-Type': 'text/plain',
           }
         });
         setSaving(false);
       }}>Save</LoadingButton>
-    </div>
+    </div >
   )
 }
