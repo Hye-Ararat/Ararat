@@ -6,7 +6,7 @@ import Spice from "./spice";
 import ResizeObserver from "react-resize-observer";
 import axios from "axios"
 import { InstanceStore } from "../../states/instance";
-import { Fade } from "@mui/material"
+import { Fade, Paper, Typography } from "@mui/material"
 const fitAddon = new FitAddon();
 function TermComponent(props) {
     let term;
@@ -105,24 +105,27 @@ function TermComponent(props) {
                     <Spice instance={props.instance} />
                     :
                     <>
-                        <ResizeObserver onResize={rect => {
-                            if (props.instance.relationships.magma_cube.console == "xterm") {
-                                var yes = document.getElementsByClassName("xterm-viewport");
-                                yes = yes[0];
-                                console.log(rect.width)
-                                if (yes) {
-                                    yes.style.width = `${rect.width}px`;
-                                    yes.style.height = `${rect.height}px`;
-                                    yes.style.minHeight = "500px";
-                                }
-                                fitAddon.fit()
-                            }
-
-                        }} />
                         <Fade in={instance.sockets.console} style={{ height: "100%", minHeight: "500px", width: "100%" }}>
-                            <div style={{ width: "100%", minHeight: "500px" }}>
-                                <div id="terminal" className="thisIsLeTerminal" style={{ height: "100%", minHeight: "500px", borderRadius: "5px", borderColor: "rgb(30, 40, 50)", overflowY: "hidden", background: "#141c26" }}></div>
-                            </div>
+                            <Paper sx={{ p: 1 }}>
+                                <ResizeObserver onResize={rect => {
+                                    if (props.instance.relationships.magma_cube.console == "xterm") {
+                                        var yes = document.getElementsByClassName("xterm-viewport");
+                                        yes = yes[0];
+                                        console.log(rect.width)
+                                        if (yes) {
+                                            yes.style.width = `${rect.width}px`;
+                                            yes.style.height = `${rect.height}px`;
+                                            yes.style.minHeight = "500px";
+                                        }
+                                        fitAddon.fit()
+                                    }
+
+                                }} />
+                                <Typography fontWeight="bold">Console</Typography>
+                                <div style={{ width: "100%", minHeight: "500px" }}>
+                                    <div id="terminal" className="thisIsLeTerminal" style={{ height: "100%", minHeight: "500px", borderRadius: "5px", borderColor: "rgb(30, 40, 50)", overflowY: "hidden", background: "#141c26" }}></div>
+                                </div>
+                            </Paper>
                         </Fade>
                     </>
                 :
