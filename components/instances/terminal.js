@@ -6,7 +6,8 @@ import Spice from "./spice";
 import ResizeObserver from "react-resize-observer";
 import axios from "axios"
 import { InstanceStore } from "../../states/instance";
-import { Fade, Paper, Typography } from "@mui/material"
+import { Fade, Paper, Typography, Grid } from "@mui/material"
+import StateIndicator from "../instance/StateIndicator";
 const fitAddon = new FitAddon();
 function TermComponent(props) {
     let term;
@@ -21,7 +22,6 @@ function TermComponent(props) {
         }
     }
     useEffect(() => {
-        console.log(props.instance.relationships)
         if (props.instance.relationships.magma_cube != null) {
             if (props.instance.relationships.magma_cube.console == "xterm") {
                 console.log("THIS IS GOING")
@@ -105,8 +105,8 @@ function TermComponent(props) {
                     <Spice instance={props.instance} />
                     :
                     <>
-                        <Fade in={instance.sockets.console} style={{ height: "100%", minHeight: "500px", width: "100%" }}>
-                            <Paper sx={{ p: 1 }}>
+                        <Fade in={instance.sockets.console} style={{ height: "100%", minHeight: props.external ? "100vh" : "500px", width: "100%" }}>
+                            <Paper sx={{ p: 1, background: "#141c26", minHeight: props.external ? "100vh" : "" }}>
                                 <ResizeObserver onResize={rect => {
                                     if (props.instance.relationships.magma_cube.console == "xterm") {
                                         var yes = document.getElementsByClassName("xterm-viewport");
@@ -115,21 +115,27 @@ function TermComponent(props) {
                                         if (yes) {
                                             yes.style.width = `${rect.width}px`;
                                             yes.style.height = `${rect.height}px`;
-                                            yes.style.minHeight = "500px";
+                                            yes.style.minHeight = props.external ? "90vh" : "500px";
                                         }
                                         fitAddon.fit()
                                     }
 
                                 }} />
-                                <Typography fontWeight="bold">Console</Typography>
-                                <div style={{ width: "100%", minHeight: "500px" }}>
-                                    <div id="terminal" className="thisIsLeTerminal" style={{ height: "100%", minHeight: "500px", borderRadius: "5px", borderColor: "rgb(30, 40, 50)", overflowY: "hidden", background: "#141c26" }}></div>
+                                <Grid container direction="row" sx={{ borderBottom: "1px solid rgb(30, 34, 48)" }}>
+                                    <Typography fontWeight="bold">{props.external ? props.instance.name + " Console" : "Console"}</Typography>
+                                    {props.external ?
+                                        <StateIndicator />
+                                        : ""}
+                                </Grid>
+                                <div style={{ width: "100%", minHeight: props.external ? "90vh" : "500px" }}>
+                                    <div id="terminal" className="thisIsLeTerminal" style={{ height: "100%", minHeight: props.external ? "90vh" : "500px", borderRadius: "5px", borderColor: "rgb(30, 40, 50)", overflowY: "hidden", background: "#141c26" }}></div>
                                 </div>
                             </Paper>
                         </Fade>
                     </>
                 :
-                ""}
+                ""
+            }
         </>
     )
 }
