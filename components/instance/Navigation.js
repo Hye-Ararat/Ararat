@@ -29,7 +29,8 @@ import {
   People as UsersIcon,
   Schedule as SchedulesIcon,
   SettingsEthernet as NetworkIcon,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  History as SnapshotsIcon
 } from "@mui/icons-material";
 import Link from "next/link";
 import useSWR from "swr";
@@ -191,10 +192,18 @@ export default function Navigation({ children, ...props }) {
                   <ListItemText primary="Files" />
                 </ListItem>
               </Link>
-              <Link href={`/instance/${encodeURIComponent(id)}`}>
-                <ListItem button selected={props.page == "snapshots" ? true : false}>
+              <Link href={`/instance/${encodeURIComponent(id)}/backups`}>
+                <ListItem button selected={props.page == "backups" ? true : false}>
                   <ListItemIcon>
                     <BackupIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Backups" />
+                </ListItem>
+              </Link>
+              <Link href={`/instance/${encodeURIComponent(id)}/snapshots`}>
+                <ListItem button selected={props.page == "snapshots" ? true : false}>
+                  <ListItemIcon>
+                    <SnapshotsIcon />
                   </ListItemIcon>
                   <ListItemText primary="Snapshots" />
                 </ListItem>
