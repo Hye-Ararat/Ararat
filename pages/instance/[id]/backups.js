@@ -4,6 +4,7 @@ import { Typography, Grid, Paper, Button, Modal, Box, TextField, Chip } from "@m
 import { Download, Delete as DeleteIcon } from "@mui/icons-material";
 import { useState } from "react";
 import { post } from "axios";
+import { useRouter } from "next/router";
 
 export async function getServerSideProps({ req, res, query }) {
     if (!req.cookies.access_token) {
@@ -31,13 +32,14 @@ export async function getServerSideProps({ req, res, query }) {
 }
 
 export default function Backups({ backups, instanceId }) {
+    const router = useRouter();
     const [creatingBackup, setCreatingBackup] = useState(false);
     const [tempBackupName, setTempBackupName] = useState(null);
     return (
         <>
             <Grid container direction="row" sx={{ mb: 1 }}>
                 <Typography variant="h5" fontWeight="bold" sx={{ mt: "auto", mb: "auto" }}>Backups</Typography>
-                <Button variant="contained" color="primary" sx={{ ml: "auto", mt: "auto", mb: "auto" }} onClick={() => {
+                <Button variant="contained" color="primary" sx={{ ml: "auto", mt: "auto", mb: "auto " }} onClick={() => {
                     setCreatingBackup(true);
                 }}>Create Backup</Button>
 
@@ -67,6 +69,7 @@ export default function Backups({ backups, instanceId }) {
                             }
                             setTempBackupName(null);
                             setCreatingBackup(false);
+                            router.replace(router.asPath)
                         }}>Create</Button>
                     </Grid>
                 </Box>
@@ -86,7 +89,7 @@ export default function Backups({ backups, instanceId }) {
                                     <Grid xs={3} item container sx={{ height: "100%", width: "100%", marginTop: "auto", marginBottom: "auto" }}>
                                         <Typography variant="body2" style={{ marginTop: "auto", marginBottom: "auto", marginLeft: "auto" }}>{`${date.toLocaleDateString()}, ${date.toLocaleTimeString()}`}</Typography>
                                     </Grid>
-                                    <Grid item xs={2} container sx={{ height: "100%", width: "100%", marginLeft: "auto" }}>
+                                    <Grid item xs={1.5} container sx={{ height: "100%", width: "100%", marginLeft: "auto" }}>
                                         <Button variant="contained" color="error" sx={{ marginLeft: "auto" }}><DeleteIcon /></Button>
                                         <Button variant="contained" color="success" sx={{ marginLeft: "auto" }}><Download /></Button>
                                     </Grid>
