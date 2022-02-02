@@ -30,7 +30,7 @@ export default function File({ file, allChecked }) {
                 <Typography sx={{ mt: "auto", mb: "auto", mr: 3, fontWeight: "bold" }} variant="body2">{file.name}</Typography>
             </Grid>
             <Grid item container xs={1}>
-                <Typography sx={{ mt: "auto", mb: "auto" }} variant="body2">{file.size ? prettyBytes(parseInt(file.size)) : ""}</Typography>
+                <Typography sx={{ mt: "auto", mb: "auto" }} variant="body2">{file.size != null || file.size != undefined ? prettyBytes(parseInt(file.size)) : ""}</Typography>
             </Grid>
             <Grid item container xs={1} sx={{ ml: "auto", mt: "auto", mb: "auto" }}>
                 <MoreHoriz id={`options${file.name}`} sx={{ ml: "auto", mr: 2 }} onClick={() => {
