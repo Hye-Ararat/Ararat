@@ -1,6 +1,6 @@
 import jwt from "@tsndr/cloudflare-worker-jwt";
 import { NextResponse } from "next/server";
-export async function middleware(req) {
+export async function middleware(req, res) {
 	if (
 		req.nextUrl.pathname.includes("/api/v1/client/auth")
 	)
@@ -21,6 +21,10 @@ export async function middleware(req) {
 			}
 			if (!user_data) return NextResponse.redirect("/api/v1/unauthorized");
 		}
+		return NextResponse.next();
+	} else if (req.nextUrl.searchParams.get("authorization")) {
+		//req.headers.set("authorization", req.nextUrl.searchParams.get("authorization"));
+		req.headers["authorization"] = "Bearer " + req.nextUrl.searchParams.get("authorization")
 		return NextResponse.next();
 	}
 	return NextResponse.redirect("/api/v1/unauthorized");

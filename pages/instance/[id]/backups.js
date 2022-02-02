@@ -3,8 +3,9 @@ import { InstanceStore } from "../../../states/instance";
 import { Typography, Grid, Paper, Button, Modal, Box, TextField, Chip } from "@mui/material";
 import { Download, Delete as DeleteIcon } from "@mui/icons-material";
 import { useState } from "react";
-import { post } from "axios";
+import axios, { post } from "axios";
 import { useRouter } from "next/router";
+import nookies from "nookies";
 
 export async function getServerSideProps({ req, res, query }) {
     if (!req.cookies.access_token) {
@@ -74,6 +75,7 @@ export default function Backups({ backups, instanceId }) {
                     </Grid>
                 </Box>
             </Modal>
+            {backups.length == 0 ? <Typography variant="body1" align="center">No Backups</Typography> : ""}
             {backups.map((backup) => {
                 let date = new Date(backup.created_at);
                 return (
@@ -90,8 +92,26 @@ export default function Backups({ backups, instanceId }) {
                                         <Typography variant="body2" style={{ marginTop: "auto", marginBottom: "auto", marginLeft: "auto" }}>{`${date.toLocaleDateString()}, ${date.toLocaleTimeString()}`}</Typography>
                                     </Grid>
                                     <Grid item xs={1.5} container sx={{ height: "100%", width: "100%", marginLeft: "auto" }}>
-                                        <Button variant="contained" color="error" sx={{ marginLeft: "auto" }}><DeleteIcon /></Button>
-                                        <Button variant="contained" color="success" sx={{ marginLeft: "auto" }}><Download /></Button>
+                                        <Button disabled={backup.pending} variant="contained" color="error" sx={{ marginLeft: "auto" }} onClick={async () => {
+                                            if (!backup.pending) {
+                                                try {
+                                                    await axios.delete(`/api/v1/client/instances/${instanceId}/backups/${backup._id}`)
+                                                } catch (error) {
+                                                    console.log(error);
+                                                }
+                                                router.replace(router.asPath)
+                                            }
+                                        }}><DeleteIcon /></Button>
+                                        <Button disabled={backup.pending} variant="contained" color="success" sx={{ marginLeft: "auto" }} onClick={async () => {
+                                            if (!backup.pending) {
+                                                console.log("clicked and going")
+                                                let download = window.open("/api/v1/client/instances/" + instanceId + "/backups/" + backup._id + "/download" + "?authorization=" + nookies.get(null).access_token, "_blank");
+                                                setTimeout(() => {
+                                                    download.close();
+
+                                                }, 5000)
+                                            }
+                                        }}><Download /></Button>
                                     </Grid>
                                 </Grid>
 

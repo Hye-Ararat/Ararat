@@ -6,6 +6,10 @@ import crypto from "crypto"
 
 export default async function handler(req, res) {
     const { method, query: { id, backup } } = req;
+    console.log(req.headers)
+    if (req.query.authorization) {
+        req.headers["authorization"] = "Bearer " + req.query.authorization
+    }
     let user;
     try {
         user = verify(req.headers.authorization.split(" ")[1], process.env.ENC_KEY);
