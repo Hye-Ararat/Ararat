@@ -4,35 +4,26 @@ Ararat is a panel/dashboard dedicated to management of any server. The idea is s
 
 ### Requirements
 
-- NodeJS > v14
+- NodeJS > v16
 - Ubuntu 18.04 or newer _(Must be LTS)_
+- A MongoDB instance (Easily deploy one at MongoDB Atlas for free)
 - Time, Patience, and half a cup of coffee.
 
 ### Installation
 
-**The panel requires NodeJS for installation.**
-
+Simply run this command to automatically install and configure Ararat (ALPHA, UNSTABLE)
 ```
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-```
-
-```
-apt install -y nodejs
+bash <(curl -s https://gist.githubusercontent.com/Hye-Dev/dc9302b13001652a28ee816e71e3d6f2/raw/42750401540f5e0bd763d83fbb72ddee9dfcc88d/installAraratAlpha.sh)
 ```
 
-1. Clone the source code by Git URL or by ZIP or download from the [releases](https://github.com/Hye-Organization/Ararat/releases)
-2. `cd Ararat` then `npm install`
-3. `npm run build` to make a high-performance build of the panel
-4. Finally, `npm run start` to start an instance of the panel
+`cd /srv/ararat` then `npm run start` to start to start the application
 
 ### Documentation
 
-- Ararat Documentation (SoonTM)
-- Lava Documentation (SoonTM)
+- Hye Ararat Documentation (Soon)
+- Hye Lava Documentation (SoonTM)
 - Or, get additional help via [Community Discord](https://discord.gg/9HTSYDv58N).
 
 ### Changelog & Preview
 
 _Read the changelog [here]()_(coming soon)
-
-_and view some screenshots [here]()._(coming soon)
