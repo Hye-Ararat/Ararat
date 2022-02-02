@@ -4,7 +4,7 @@ Ararat is a panel/dashboard dedicated to management of any server. The idea is s
 
 ### Requirements
 
-- NodeJS > v16
+- NodeJS v16
 - Ubuntu 18.04 or newer _(Must be LTS)_
 - A MongoDB instance (Easily deploy one at MongoDB Atlas for free)
 - Time, Patience, and half a cup of coffee.
