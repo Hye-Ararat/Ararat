@@ -78,5 +78,5 @@ export default async function handler(req, res) {
         "Content-Type": "application/octet-stream",
         "Content-Disposition": `attachment; filename="${backupData.name}.tar.gz"`,
     })
-    download.data.pipe(res);
+    return download.data.pipe(res);
 }
