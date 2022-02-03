@@ -32,7 +32,7 @@ export default function FileEditor({ file, path, instance }) {
         return "markdown";
       case "java":
         return "java";
-      case "yaml":
+      case "yml":
         return "yaml";
       default:
         return "plaintext";
