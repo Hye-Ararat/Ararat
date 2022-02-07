@@ -8,6 +8,7 @@ export default function Network({ user, node }) {
     const [page, setPage] = useState("networks");
     const [selectedNetwork, setSelectedNetwork] = useState(null);
     const [networkForwards, setSetNetworkForwards] = useState([]);
+    const [instances, setInstances] = useState([]);
     const [forwardPortOpen, setForwardPortOpen] = useState(false);
     const [createNetworkOpen, setCreateNetworkOpen] = useState(false);
     return (
@@ -51,8 +52,9 @@ export default function Network({ user, node }) {
                                         return (
                                             <TableRow key={index} onClick={async () => {
                                                 setSelectedNetwork(network._id)
-                                                var items = await axios.get(`/api/v1/admin/networks/${network._id}?include=["ports"]`)
+                                                var items = await axios.get(`/api/v1/admin/networks/${network._id}?include=["ports", "instances"]`)
                                                 setSetNetworkForwards(items.data.relationships.ports)
+                                                setInstances(items.data.relationships.instances)
                                                 setPage("ports")
                                             }}>
                                                 <TableCell>{network.name}</TableCell>
@@ -86,7 +88,7 @@ export default function Network({ user, node }) {
                                     }}
                                     >
                                         <Typography variant="h6">Forward Port</Typography>
-                                        <ForwardPort id={selectedNetwork} />
+                                        <ForwardPort id={selectedNetwork} instances={instances} />
                                     </Box>
                                 </Modal>
                             </>
@@ -97,18 +99,23 @@ export default function Network({ user, node }) {
                                     <TableHead>
                                         <TableCell align="left">Description</TableCell>
                                         <TableCell align="left">Address</TableCell>
+                                        <TableCell align="left">Instance</TableCell>
                                         <TableCell align="left">Protocol</TableCell>
                                         <TableCell align="left">Listen Port(s)</TableCell>
                                         <TableCell align="left">Target Port(s)</TableCell>
                                     </TableHead>
                                     <TableBody sx={{ borderRadius: 1.5 }}>
                                         {networkForwards.map((port, index) => {
+                                            if (port.meta && port.meta.target_type && port.meta.target) {
+                                                console.log(instances.find(el => el._id == port.meta.target))
+                                            }
                                             return (
                                                 <TableRow key={index} onClick={async () => {
 
                                                 }}>
                                                     <TableCell>{port.description}</TableCell>
                                                     <TableCell>{port.target_address}</TableCell>
+                                                    <TableCell>{port.meta && port.meta.target && port.meta.target_type == "instance" ? instances.find(el => el._id == port.meta.target).name : ""}</TableCell>
                                                     <TableCell>{port.protocol}</TableCell>
                                                     <TableCell>{port.listen_port}</TableCell>
                                                     <TableCell>{port.target_port}</TableCell>
