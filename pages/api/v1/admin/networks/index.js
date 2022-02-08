@@ -36,6 +36,7 @@ export default async function handler(req, res) {
             })
             try {
                 var network = await db.collection("networks").insertOne({
+                    name: req.body.name,
                     node: req.body.node.id,
                     address: {
                         ipv4: req.body.address.ipv4 ? req.body.address.ipv4 : null,
@@ -149,6 +150,36 @@ export default async function handler(req, res) {
             }
             return res.status(200).send("Success");
             break;
+        case "GET":
+            if (req.headers["authorization"].split(" ")[1].includes("::")) {
+
+            } else if (req.headers["authorization"].split(" ")[1].includes(":")) {
+                try {
+                    var token_data = decode(req.headers["authorization"].split(" ")[1].split(":")[1]);
+                } catch {
+                    return res.status(403).send("Not allowed to access this resource")
+                }
+                if (!token_data.admin.networks.read) {
+                    return res.status(403).send("Not allowed to access this resource")
+                }
+            } else {
+                try {
+                    var token_data = decode(req.headers["authorization"].split(" ")[1]);
+                } catch {
+                    return res.status(403).send("Not allowed to access this resource")
+                }
+                if (!token_data.admin.networks.read) {
+                    return res.status(403).send("Not allowed to access this resource")
+                }
+            }
+
+            let networks;
+            try {
+                networks = await db.collection("networks").find({}).toArray();
+            } catch (error) {
+                return res.status(500).send("Internal Server Error");
+            }
+            return res.status(200).send(networks);
         default:
             return res.status(400).send("Invalid request method");
     }
