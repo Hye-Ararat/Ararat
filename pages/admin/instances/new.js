@@ -1,6 +1,6 @@
 import Navigation from "../../../components/admin/Navigation"
-import { Box, Divider, FormControl, Grid, Paper, Stepper, TextField, Typography, Step, StepLabel, Container, Button, Card, CardContent, CardActionArea, Switch, Modal, Select, MenuItem, FormControlLabel, Checkbox } from "@mui/material"
-import { useState, Fragment } from "react"
+import { Box, Divider, FormControl, Grid, Paper, Stepper, TextField, Typography, Step, StepLabel, Container, Button, Card, CardContent, CardActionArea, Switch, Modal, Select, MenuItem, FormControlLabel, Checkbox, Autocomplete } from "@mui/material"
+import { useState, Fragment, useEffect } from "react"
 import { convertNetworkID } from "../../../util/converter"
 import axios from "axios"
 
@@ -42,21 +42,33 @@ export async function getServerSideProps({ req, res }) {
 
     var user_data = decode(req.cookies.access_token);
     console.log(user_data);
+    let nodes;
+    let users;
     if (user_data.admin && user_data.admin.instances && user_data.admin.instances.write) {
         var magma_cubes = await db.collection("magma_cubes").find({}).toArray();
         console.log(magma_cubes);
         var networks = await db.collection("networks").find({}).toArray();
+        nodes = await db.collection("nodes").find({}).toArray();
+        users = await db.collection("users").find({}).toArray();
     }
     return {
         props: {
             magma_cubes: magma_cubes ? JSON.parse(JSON.stringify(magma_cubes)) : JSON.parse(JSON.stringify([])),
             networks: networks ? JSON.parse(JSON.stringify(networks)) : JSON.parse(JSON.stringify([])),
+            users: users ? JSON.parse(JSON.stringify(users)) : JSON.parse(JSON.stringify([])),
+            nodes: nodes ? JSON.parse(JSON.stringify(nodes)) : JSON.parse(JSON.stringify([])),
             user: JSON.parse(JSON.stringify(user_data))
         }
     }
 }
 
-export default function NewInstance({ magma_cubes, user, networks }) {
+export default function NewInstance({ magma_cubes, user, networks, nodes, users: allUsers }) {
+    const [autoCompleteNodes, setAutoCompleteNodes] = useState([]);
+    const [autoCompleteNetworks, setAutoCompleteNetworks] = useState([]);
+    const [autoCompleteUsers, setAutoCompleteUsers] = useState([]);
+
+    const [usedNets, setUsedNets] = useState([]);
+
     const [activeStep, setActiveStep] = useState(0);
     const [skipped, setSkipped] = useState(new Set());
     const [addDiskOpen, setAddDiskOpen] = useState(false);
@@ -169,8 +181,39 @@ export default function NewInstance({ magma_cubes, user, networks }) {
     const handleReset = () => {
         setActiveStep(0);
     };
-    const steps = ["Image Data", "Device Configuration", "User Configuration"]
+    const steps = ["Image Data", "Device Configuration", "User Configuration"];
 
+    useEffect(() => {
+        let tempNodes = [];
+        nodes.forEach(node => {
+            let tempNode = {
+                label: node.name,
+                id: node._id.toString()
+            }
+            tempNodes.push(tempNode);
+        })
+        let tempNetworks = [];
+        networks.forEach(network => {
+            let tempNetwork = {
+                label: network.name,
+                node: network.node,
+                id: network._id.toString()
+            }
+            tempNetworks.push(tempNetwork);
+        })
+        let tempUsers = [];
+        allUsers.forEach(user => {
+            let tempUser = {
+                label: `${user.first_name} ${user.last_name} (${user.email})`,
+                id: user._id.toString()
+            }
+            tempUsers.push(tempUser);
+        })
+        setAutoCompleteNodes(tempNodes);
+        setAutoCompleteNetworks(tempNetworks);
+        setAutoCompleteUsers(tempUsers);
+
+    }, [])
     return (
         <>
             <Typography variant="h4" sx={{ mb: 1 }}>Create Instance</Typography>
@@ -300,10 +343,15 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                     <Grid container direction="row">
                                                         <Box sx={{ mr: 3, mb: 2 }}>
                                                             <Typography fontWeight="bold">Node</Typography>
-                                                            <TextField onChangeCapture={(e) => {
-                                                                e.preventDefault();
-                                                                setNode(e.target.value);
-                                                            }} variant="outlined" placeholder="Node ID" />
+                                                            <Autocomplete onChange={(e, newValue) => {
+                                                                if (newValue) {
+                                                                    setNode(newValue.id)
+                                                                } else {
+                                                                    setNode(null);
+                                                                }
+                                                            }}
+                                                                options={autoCompleteNodes}
+                                                                renderInput={(params) => <TextField sx={{ minWidth: 200 }} {...params} placeholder="Node" variant="outlined" />} />
                                                         </Box>
                                                         <Box sx={{ mr: 3, mb: 2 }}>
                                                             <Typography fontWeight="bold">CPU</Typography>
@@ -435,8 +483,8 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                             <FormControl variant="outlined">
                                                                 <Grid direction="row">
                                                                     <Box sx={{ mr: 3 }}>
-                                                                        <Typography fontWeight="bold">Network ID</Typography>
-                                                                        <TextField placeholder="Network ID" value={networkID} onChangeCapture={(e) => setNetworkID(e.target.value)}></TextField>
+                                                                        <Typography fontWeight="bold">Network</Typography>
+                                                                        <Autocomplete options={node ? autoCompleteNetworks.filter(network => network.node == node) : autoCompleteNetworks} getOptionLabel={(option) => option.label} onChange={(e, value) => setNetworkID(value.id)} renderInput={(params) => <TextField {...params} variant="outlined" placeholder="Network" />} />
                                                                     </Box>
                                                                 </Grid>
                                                                 <Button variant="contained" color="success" sx={{ width: "30%", mt: 3 }} onClick={(e) => {
@@ -465,10 +513,11 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                                 <Typography fontWeight={300} sx={{ m: "auto" }}>This instance will have no internet access without a network attached</Typography>
                                                             </> : ""}
                                                         {devices ? Object.keys(devices).filter(key => devices[key].type == "nic").map((key, index) => {
+                                                            console.log(autoCompleteNetworks.filter(network => convertNetworkID(network.id) == key)[0].label)
                                                             return (
                                                                 <Grid key={key} container direction="row" sx={{ backgroundColor: "background.default", borderRadius: 2, p: 2, mb: 1 }}>
                                                                     <Box>
-                                                                        <Typography variant="h6">{key.charAt(0).toUpperCase() + key.slice(1)}</Typography>
+                                                                        <Typography variant="h6">{autoCompleteNetworks.filter(network => convertNetworkID(network.id) == key)[0].label}</Typography>
                                                                     </Box>
                                                                     <Button variant="contained" color="error" sx={{ width: "10%", ml: "auto" }} onClick={(e) => {
                                                                         var temporaryDevices = devices;
@@ -545,8 +594,14 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                     <Grid container direction="column" sx={{ p: 3 }}>
                                                         <Grid direction="row">
                                                             <Box sx={{ mr: 3 }}>
-                                                                <Typography fontWeight="bold">User ID</Typography>
-                                                                <TextField placeholder="User ID" value={userID} onChangeCapture={(e) => setUserID(e.target.value)} />
+                                                                <Typography fontWeight="bold">User</Typography>
+                                                                <Autocomplete onChange={(e, value) => {
+                                                                    if (value) {
+                                                                        setUserID(value.id);
+                                                                    } else {
+                                                                        setUserID(null);
+                                                                    }
+                                                                }} options={autoCompleteUsers} renderInput={(params) => <TextField {...params} variant="outlined" placeholder="User" />} />
                                                             </Box>
                                                             <Box sx={{ display: "flex", flexDirection: "column", mr: 3 }}>
                                                                 <FormControl variant="outlined">
@@ -591,7 +646,7 @@ export default function NewInstance({ magma_cubes, user, networks }) {
                                                             return (
                                                                 <Grid key={key} container direction="row" sx={{ backgroundColor: "background.default", borderRadius: 2, p: 2, mb: 1 }}>
                                                                     <Box>
-                                                                        <Typography variant="h6">{key.charAt(0).toUpperCase() + key.slice(1)}</Typography>
+                                                                        <Typography variant="h6">{autoCompleteUsers.filter(user => user.id == key)[0].label}</Typography>
                                                                         <Typography fontWeight={500}>Permissions:</Typography>
                                                                         {users[key].files.read ? <Typography fontWeight={300} sx={{ ml: 3 }}>Read Files</Typography> : ""}
                                                                         {users[key].files.write ? <Typography fontWeight={300} sx={{ ml: 3 }}>Write Files</Typography> : ""}

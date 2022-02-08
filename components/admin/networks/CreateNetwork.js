@@ -1,7 +1,7 @@
-import { Grid, FormControl, Box, Typography, TextField, Button, Checkbox, Select, MenuItem, Paper } from "@mui/material"
+import { Grid, FormControl, Box, Typography, TextField, Button, Checkbox, Select, MenuItem, Paper, Autocomplete } from "@mui/material"
 import axios from "axios"
-import { useState } from "react"
-export default function CreateNetwork({ node }) {
+import { useState, useEffect } from "react"
+export default function CreateNetwork({ node, remoteNetworks }) {
     const [ipv4, setIpv4] = useState(null);
     const [ipv6, setIpv6] = useState(null);
     const [ip_alias, setIpAlias] = useState(null);
@@ -11,6 +11,20 @@ export default function CreateNetwork({ node }) {
     const [primaryNetwork, setPrimaryNetwork] = useState(null);
     const [isPrimary, setIsPrimary] = useState(false);
     const [protocol, setProtocol] = useState("gre");
+
+    const [autoCompleteRemoteNetworks, setAutoCompleteRemoteNetworks] = useState([]);
+
+    useEffect(() => {
+        let tempRemoteNetworks = [];
+        remoteNetworks.forEach(remoteNetwork => {
+            let tempRemoteNetwork = {};
+            tempRemoteNetwork.label = remoteNetwork.name;
+            tempRemoteNetwork.id = remoteNetwork._id.toString();
+            tempRemoteNetworks.push(tempRemoteNetwork);
+        })
+        setAutoCompleteRemoteNetworks(tempRemoteNetworks);
+    }, []);
+
     return (
         <Grid sx={{ p: 2 }} item container md={12} xs={12} lg={12} direction="column">
             {error ? error : ""}
@@ -36,7 +50,7 @@ export default function CreateNetwork({ node }) {
                         : ""}
                     {tunnel && !isPrimary ? <Box sx={{ mr: 3, mb: 2 }}>
                         <Typography fontWeight="bold">Remote Network</Typography>
-                        <TextField placeholder="Network ID" value={primaryNetwork} variant="outlined" onChange={(e) => setPrimaryNetwork(e.target.value)}></TextField>
+                        <Autocomplete noOptionsText="No Remote Networks" options={autoCompleteRemoteNetworks} onChange={(e, value) => setPrimaryNetwork(value.id)} disablePortal renderInput={(params) => <TextField sx={{ minWidth: 200 }} {...params} placeholder="Remote Network" />} />
                     </Box> : ""
                     }
                     {tunnel && isPrimary ?

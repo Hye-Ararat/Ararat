@@ -1,6 +1,7 @@
 import { Paper, TableContainer, Table, TableHead, TableCell, TableBody, TableRow, Button, Modal, Box, Typography } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import useSWR from "swr";
 import CreateNetwork from "../../networks/CreateNetwork";
 import ForwardPort from "../../ports/ForwardPort";
 
@@ -11,6 +12,11 @@ export default function Network({ user, node }) {
     const [instances, setInstances] = useState([]);
     const [forwardPortOpen, setForwardPortOpen] = useState(false);
     const [createNetworkOpen, setCreateNetworkOpen] = useState(false);
+    const fetcher = (url) => axios.get(url).then((res) => res.data);
+    const { data: remoteNetworks } = useSWR(`/api/v1/admin/networks`, fetcher);
+    useEffect(() => {
+        console.log(remoteNetworks)
+    }, [remoteNetworks])
     return (
 
         user.admin && user.admin.networks && user.admin.networks.read ?
@@ -33,7 +39,9 @@ export default function Network({ user, node }) {
                                 }}
                                 >
                                     <Typography variant="h6">Create Network</Typography>
-                                    <CreateNetwork node={node} />
+                                    {remoteNetworks ?
+                                        <CreateNetwork node={node} remoteNetworks={remoteNetworks.filter(net => net.remote.remote == true && net.remote.primary == true && net.node != node)} />
+                                        : ""}
                                 </Box>
                             </Modal>
                         </>
