@@ -58,7 +58,7 @@ export default function Network({ user, node }) {
                                 <TableBody sx={{ borderRadius: 1.5 }}>
                                     {node.relationships.networks.map((network, index) => {
                                         return (
-                                            <TableRow key={index} onClick={async () => {
+                                            <TableRow key={index} sx={{ cursor: "pointer" }} onClick={async () => {
                                                 setSelectedNetwork(network._id)
                                                 var items = await axios.get(`/api/v1/admin/networks/${network._id}?include=["ports", "instances"]`)
                                                 setSetNetworkForwards(items.data.relationships.ports)
