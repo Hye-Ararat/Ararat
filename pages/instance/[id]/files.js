@@ -131,7 +131,12 @@ export default function Files(props) {
                         </Grid>
                     </Grid>
                     <Grid item container xs={5.4}>
-                        {files != null ? files.list ? showOptions ? <><Button sx={{ mt: "auto", mb: "auto", ml: "auto" }} variant="contained" color="error">Delete</Button> <Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="warning">Move</Button><Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="success">Download</Button></> :
+                        {files != null ? files.list ? showOptions ? <><Button sx={{ mt: "auto", mb: "auto", ml: "auto" }} variant="contained" color="error" onClick={() => {
+                            checked.forEach(async file => {
+                                console.log((path + "/" + file).replace("//", "/"))
+                                await axios.delete("/api/v1/client/instances/" + id + "/files" + `?path=${path + "/" + file}`);
+                            })
+                        }}>Delete</Button> <Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="warning">Move</Button><Button sx={{ mt: "auto", mb: "auto", ml: 3 }} variant="contained" color="success">Download</Button></> :
                             <>
                                 <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Create Directory</Button>
                                 <label htmlFor="file-upload" style={{ marginTop: "auto", marginBottom: "auto" }}>
