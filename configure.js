@@ -31,7 +31,7 @@ const bcrypt = require("bcryptjs");
                             let database = db.db(mongodb_db);
 
                             console.log("Creating Collections");
-                            let collections = ["users", "instances", "magma_cubes", "networks", "ports", "nodes"];
+                            let collections = ["users", "instances", "magma_cubes", "networks", "ports", "nodes", "backups", "snapshots"];
                             collections.forEach(async (collection) => {
                                 try {
                                     await database.createCollection(collection);
