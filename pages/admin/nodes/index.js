@@ -83,7 +83,7 @@ export default function Nodes({ nodes, user }) {
                             <TableBody sx={{ borderRadius: 1.5 }}>
                                 {nodes.map(node => {
                                     return (
-                                        <TableRow>
+                                        <TableRow key={node.id}>
                                             <TableCell onClick={() => {
                                                 router.push(`/admin/nodes/${node.id}`)
                                             }} style={{ cursor: "pointer" }}>{node.name}</TableCell>

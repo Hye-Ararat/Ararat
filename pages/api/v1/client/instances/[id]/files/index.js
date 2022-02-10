@@ -122,7 +122,7 @@ export default async function handler(req, res) {
                         }
                     })
                 } else {
-                    let folder = await axios.patch(`${node.address.ssl ? "https://" : "http://"}${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/files?path=/${path}`, null, {
+                    var folder = await axios.patch(`${node.address.ssl ? "https://" : "http://"}${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/files?path=/${path}`, null, {
                         headers: {
                             Authorization: `Bearer ${access_token.toString()}`,
                         }
@@ -136,15 +136,15 @@ export default async function handler(req, res) {
             return res.send("Success")
             break;
         case "DELETE":
-            let user;
+            var user;
             try {
                 user = verify(req.headers.authorization.split(" ")[1], process.env.ENC_KEY)
             } catch (error) {
                 return res.status(403).send("Unauthorized");
             }
-            let { db } = await connectToDatabase();
+            var { db } = await connectToDatabase();
 
-            let instance;
+            var instance;
             try {
                 instance = await db.collection("instances").findOne({
                     _id: ObjectId(id),
@@ -156,7 +156,7 @@ export default async function handler(req, res) {
 
             if (!instance) return res.status(404).send("Instance does not exist");
 
-            let node;
+            var node;
             try {
                 node = await db.collection("nodes").findOne({
                     _id: ObjectId(instance.node)
