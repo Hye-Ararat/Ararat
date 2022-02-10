@@ -3,12 +3,12 @@
  * @param {string} identifier 
  * @returns {string}
  */
- function convertNetworkID (identifier) {
+function convertNetworkID(identifier) {
     const md5 = require("md5")
-    return md5(identifier).slice(0, 15)
+    return md5(identifier).slice(0, 10)
 }
 /**
- * 
+ *  
  * @param {string} identifier 
  * @returns {string}
  */
@@ -16,7 +16,7 @@ function convertID(identifier) {
     const md5 = require("md5")
     identifier = md5(identifier);
     for (const i of identifier) {
-        if (i >='0' && i <= '9') {
+        if (i >= '0' && i <= '9') {
             identifier = identifier.substring(1)
         } else {
             break;

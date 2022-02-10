@@ -1,6 +1,6 @@
 import Navigation from "../../../components/admin/Navigation";
 import { DataGrid } from '@mui/x-data-grid';
-import { Table, TableContainer, TableHead, TableCell, TableBody, Paper, Typography, Button, Grid } from "@mui/material";
+import { Table, TableContainer, TableHead, TableCell, TableBody, Paper, Typography, Button, Grid, TableRow } from "@mui/material";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -57,55 +57,55 @@ export async function getServerSideProps({ req, res }) {
     console.log(safeNodes)
     return {
         props: {
-                nodes: safeNodes ? JSON.parse(JSON.stringify(safeNodes)) : JSON.parse(JSON.stringify([])),
-                user: JSON.parse(JSON.stringify(user_data))
+            nodes: safeNodes ? JSON.parse(JSON.stringify(safeNodes)) : JSON.parse(JSON.stringify([])),
+            user: JSON.parse(JSON.stringify(user_data))
         }
     }
 }
-export default function Nodes({nodes, user}) {
+export default function Nodes({ nodes, user }) {
     console.log(nodes)
     console.log(user)
     const router = useRouter()
     return (
         <>
-        <Grid direction="row" container><Typography variant="h4" sx={{mb: 1}}>Nodes</Typography> {user.admin && user.admin.nodes && user.admin.nodes.write ? <Link href={"/admin/nodes/new"}><Button sx={{mt: "auto", mb: "auto", ml: "auto"}} variant="contained" color="primary">Create Node</Button></Link> : ""}</Grid>
-        {user.admin && user.admin.nodes && user.admin.nodes.read ?
-        <Paper sx={{borderRadius: 1.5}}>
-                <TableContainer sx={{borderRadius: 1.5}}>
-                    <Table>
-                        <TableHead>
-                            <TableCell>Name</TableCell>
-                            <TableCell align="left">Memory</TableCell>
-                            <TableCell align="left">Disk</TableCell>
-                            <TableCell align="left">CPU</TableCell>
-                            <TableCell align="left">SSL</TableCell>
-                        </TableHead>
-                        <TableBody sx={{borderRadius: 1.5}}>
-                            {nodes.map(node => {
-                                return (
-                                    <>
-                                <TableCell onClick={() => {
-                                    router.push(`/admin/nodes/${node.id}`)
-                                }} style={{cursor: "pointer"}}>{node.name}</TableCell>
-                                <TableCell onClick={() => {
-                                    router.push(`/admin/nodes/${node.id}`)
-                                }} style={{cursor: "pointer"}} align="left">{node.limits.memory}</TableCell>
-                                <TableCell onClick={() => {
-                                    router.push(`/admin/nodes/${node.id}`)
-                                }} style={{cursor: "pointer"}} align="left">{node.limits.disk}</TableCell>
-                                <TableCell onClick={() => {
-                                    router.push(`/admin/nodes/${node.id}`)
-                                }} style={{cursor: "pointer"}} align="left">{node.limits.cpu}</TableCell>
-                                <TableCell onClick={() => {
-                                    router.push(`/admin/nodes/${node.id}`)
-                                }} style={{cursor: "pointer"}} align="left">{node.address.ssl ? "true": "false"}</TableCell>
-                                </>
-                                )
-                            })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-        </Paper> : "You do not have access to this resource"}
+            <Grid direction="row" container><Typography variant="h4" sx={{ mb: 1 }}>Nodes</Typography> {user.admin && user.admin.nodes && user.admin.nodes.write ? <Link href={"/admin/nodes/new"}><Button sx={{ mt: "auto", mb: "auto", ml: "auto" }} variant="contained" color="primary">Create Node</Button></Link> : ""}</Grid>
+            {user.admin && user.admin.nodes && user.admin.nodes.read ?
+                <Paper sx={{ borderRadius: 1.5 }}>
+                    <TableContainer sx={{ borderRadius: 1.5 }}>
+                        <Table>
+                            <TableHead>
+                                <TableCell>Name</TableCell>
+                                <TableCell align="left">Memory</TableCell>
+                                <TableCell align="left">Disk</TableCell>
+                                <TableCell align="left">CPU</TableCell>
+                                <TableCell align="left">SSL</TableCell>
+                            </TableHead>
+                            <TableBody sx={{ borderRadius: 1.5 }}>
+                                {nodes.map(node => {
+                                    return (
+                                        <TableRow>
+                                            <TableCell onClick={() => {
+                                                router.push(`/admin/nodes/${node.id}`)
+                                            }} style={{ cursor: "pointer" }}>{node.name}</TableCell>
+                                            <TableCell onClick={() => {
+                                                router.push(`/admin/nodes/${node.id}`)
+                                            }} style={{ cursor: "pointer" }} align="left">{node.limits.memory}</TableCell>
+                                            <TableCell onClick={() => {
+                                                router.push(`/admin/nodes/${node.id}`)
+                                            }} style={{ cursor: "pointer" }} align="left">{node.limits.disk}</TableCell>
+                                            <TableCell onClick={() => {
+                                                router.push(`/admin/nodes/${node.id}`)
+                                            }} style={{ cursor: "pointer" }} align="left">{node.limits.cpu}</TableCell>
+                                            <TableCell onClick={() => {
+                                                router.push(`/admin/nodes/${node.id}`)
+                                            }} style={{ cursor: "pointer" }} align="left">{node.address.ssl ? "true" : "false"}</TableCell>
+                                        </TableRow>
+                                    )
+                                })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Paper> : "You do not have access to this resource"}
         </>
     )
 }

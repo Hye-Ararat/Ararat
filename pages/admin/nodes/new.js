@@ -156,7 +156,7 @@ export default function NewNode() {
                             </Box>
                             <Box sx={{ mr: 3, mb: 2 }}>
                               <Typography fontWeight="bold">Port</Typography>
-                              <TextField placeholder="3535" variant="outlined" onChange={(e) => {
+                              <TextField placeholder="3434" variant="outlined" onChange={(e) => {
                                 e.preventDefault();
                                 setPort(e.target.value);
                               }} />

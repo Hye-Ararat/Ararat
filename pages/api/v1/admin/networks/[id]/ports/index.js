@@ -9,8 +9,8 @@ export default async function handler(req, res) {
     switch (method) {
         case "GET":
             var { db } = await connectToDatabase();
-            const network_forward = await db.collection("network_forwards").findOne({ _id: ObjectId(id) })
-            network_forward ? res.send(network_forward) : res.status(404).send("Network Forward does not exist")
+            const port = await db.collection("port").findOne({ _id: ObjectId(id) })
+            port ? res.send(port) : res.status(404).send("Network Forward does not exist")
             break;
         case "POST":
             if (req.headers["authorization"].split(" ")[1].includes("::")) {
@@ -61,6 +61,33 @@ export default async function handler(req, res) {
             }
             try {
                 console.log(req.body)
+                if (req.body.target_type == "instance") {
+                    console.log("yes please")
+                    let ip;
+                    try {
+                        ip = await axios.get(`${node.address.ssl ? "https://" : "http://"}${node.address.hostname}:${node.address.port}/api/v1/instances/${req.body.target}/network`, {
+                            headers: {
+                                "Authorization": `Bearer ${access_token.toString()}`
+                            }
+                        })
+                    } catch (error) {
+                        console.log("1 error");
+                        return res.status(400).send("The instance has never obtained an IP address. Try powering on the instance then trying again.");
+                    }
+                    console.log(ip.data)
+                    let tempPorts = []
+                    req.body.ports.forEach(async port => {
+                        console.log(ip.data)
+                        if (ip.data.ipv4_address) {
+                            port.target_address = ip.data.ipv4_address
+                        } else {
+                            port.target_address = ip.data.ipv6_address
+                        }
+                        tempPorts.push(port);
+                    })
+                    console.log(tempPorts)
+                    req.body.ports = tempPorts;
+                }
                 await axios.put(`${node.address.ssl ? "https" : "http"}://${node.address.hostname}:${node.address.port}/api/v1/network/${networkID}/forwards/ports`, {
                     ports: req.body.ports,
                     listen_address: network.address.ipv4,
@@ -72,16 +99,20 @@ export default async function handler(req, res) {
                 })
             } catch (error) {
                 console.log(error)
-                return res.status(500).send()
+                return res.status(500).send("An error occured")
             }
             try {
-                await db.collection("ports").addOne({
+                await db.collection("ports").insertOne({
                     "network": networkID,
                     "description": req.body.ports[0].description,
                     "listen_port": req.body.ports[0].listen_port,
                     "protocol": req.body.ports[0].protocol,
-                    "target_address": network.address.ipv4,
-                    "target_port": req.body.ports[0].target_port
+                    "target_address": req.body.ports[0].target_address,
+                    "target_port": req.body.ports[0].target_port,
+                    "meta": {
+                        "target_type": req.body.target_type,
+                        "target": req.body.target
+                    }
                 }
                 )
             } catch (error) {

@@ -6,7 +6,8 @@ import Spice from "./spice";
 import ResizeObserver from "react-resize-observer";
 import axios from "axios"
 import { InstanceStore } from "../../states/instance";
-import { Fade } from "@mui/material"
+import { Fade, Paper, Typography, Grid } from "@mui/material"
+import StateIndicator from "../instance/StateIndicator";
 const fitAddon = new FitAddon();
 function TermComponent(props) {
     let term;
@@ -21,7 +22,6 @@ function TermComponent(props) {
         }
     }
     useEffect(() => {
-        console.log(props.instance.relationships)
         if (props.instance.relationships.magma_cube != null) {
             if (props.instance.relationships.magma_cube.console == "xterm") {
                 console.log("THIS IS GOING")
@@ -67,13 +67,18 @@ function TermComponent(props) {
                                 }
                             })
                         }
-                        term = new Terminal();
+                        term = new Terminal({
+                            fontSize: 12,
+                            theme: {
+                                background: "#141c26"
+                            }
+                        });
                         console.log("GOING STILL")
                         term.loadAddon(fitAddon);
                         term.open(document.getElementById("terminal"))
                         fitAddon.fit()
-                            const attachAddon = new AttachAddon(instance.sockets.console);
-                            term.loadAddon(attachAddon);
+                        const attachAddon = new AttachAddon(instance.sockets.console);
+                        term.loadAddon(attachAddon);
                         instance.sockets.console.onclose = () => {
                             instance.sockets.setConsole(null);
                             instance.sockets.setConsoleReady(false);
@@ -100,24 +105,37 @@ function TermComponent(props) {
                     <Spice instance={props.instance} />
                     :
                     <>
-                        <ResizeObserver onResize={rect => {
-                            if (props.instance.relationships.magma_cube.console == "xterm") {
-                                var yes = document.getElementsByClassName("xterm-viewport");
-                                yes = yes[0];
-                                if (yes) {
-                                    yes.style.width = `${rect.width}px`;
-                                    yes.style.height = `${rect.height}px`;
-                                }
-                                fitAddon.fit()
-                            }
+                        <Fade in={instance.sockets.console} style={{ height: "100%", minHeight: props.external ? "100vh" : "500px", width: "100%" }}>
+                            <Paper sx={{ p: 1, background: "#141c26", minHeight: props.external ? "100vh" : "" }}>
+                                <ResizeObserver onResize={rect => {
+                                    if (props.instance.relationships.magma_cube.console == "xterm") {
+                                        var yes = document.getElementsByClassName("xterm-viewport");
+                                        yes = yes[0];
+                                        console.log(rect.width)
+                                        if (yes) {
+                                            yes.style.width = `${rect.width}px`;
+                                            yes.style.height = `${rect.height}px`;
+                                            yes.style.minHeight = props.external ? "90vh" : "500px";
+                                        }
+                                        fitAddon.fit()
+                                    }
 
-                        }} />
-                        <Fade in={instance.sockets.console}>
-                            <div id="terminal" className="thisIsLeTerminal" style={{ width: "100%" }}></div>
+                                }} />
+                                <Grid container direction="row" sx={{ borderBottom: "1px solid rgb(30, 34, 48)" }}>
+                                    <Typography fontWeight="bold">{props.external ? props.instance.name + " Console" : "Console"}</Typography>
+                                    {props.external ?
+                                        <StateIndicator />
+                                        : ""}
+                                </Grid>
+                                <div style={{ width: "100%", minHeight: props.external ? "90vh" : "500px" }}>
+                                    <div id="terminal" className="thisIsLeTerminal" style={{ height: "100%", minHeight: props.external ? "90vh" : "500px", borderRadius: "5px", borderColor: "rgb(30, 40, 50)", overflowY: "hidden", background: "#141c26" }}></div>
+                                </div>
+                            </Paper>
                         </Fade>
                     </>
                 :
-                ""}
+                ""
+            }
         </>
     )
 }
