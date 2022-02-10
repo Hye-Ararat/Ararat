@@ -22,6 +22,7 @@ export default async function handler(req, res) {
         username: req.body.username,
         first_name: req.body.name,
         last_name: req.body.surname,
+        admin: {},
         email: req.body.email,
         password: hashedPassword,
         phone_number: null
