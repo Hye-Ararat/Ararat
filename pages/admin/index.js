@@ -14,4 +14,4 @@ Admin.getLayout = function getLayout(page) {
             {page}
         </Navigation>
     )
-}
+}   
