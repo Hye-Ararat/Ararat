@@ -80,26 +80,21 @@ export default function CreateNetwork({ node, remoteNetworks }) {
                 try {
                     await axios.post("/api/v1/admin/networks", {
                         name: name,
-                        node: node,
-                        address: {
-                            ipv4: ipv4,
-                            ipv6: ipv6,
-                            ip_alias: ip_alias
-                        },
-                        remote: {
-                            remote: tunnel,
-                            primary: isPrimary,
-                            protocol: protocol,
-                            primaryNetwork: primaryNetwork
-                        }
+                        node: node.id,
+                        ipv4: ipv4,
+                        ipv6: ipv6,
+                        ipAlias: ip_alias,
+                        remote: tunnel,
+                        isPrimaryRemoteNetwork: isPrimary,
+                        protocol: protocol,
+                        primaryRemoteNetworkId: primaryNetwork
                     })
                 } catch (err) {
                     console.log(err)
                     setError(err.response.data.error)
                     return;
-                } finally {
-                    window.location.reload();
-                }
+                };
+                window.location.reload()
             }}>Create</Button>
         </Grid>
     )
