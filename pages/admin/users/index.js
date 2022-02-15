@@ -2,6 +2,7 @@ import { Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import Navigation from "../../../components/admin/Navigation";
 import Table from "../../../components/admin/Table";
+import { PrismaClient } from "@prisma/client";
 
 export async function getServerSideProps({ req, res }) {
   if (!req.cookies.access_token) {
@@ -14,11 +15,8 @@ export async function getServerSideProps({ req, res }) {
   }
 
   res.setHeader("Cache-Control", "public, s-maxage=10, stale-while-revalidate=59");
-
-  var { connectToDatabase } = require("../../../util/mongodb");
-  var { db } = await connectToDatabase();
-  var { verify, decode } = require("jsonwebtoken");
-  var { ObjectId } = require("mongodb");
+  const prisma = new PrismaClient();
+  const { verify, decode } = require("jsonwebtoken");
 
   try {
     var valid_session = verify(req.cookies.access_token, process.env.ENC_KEY);
@@ -39,10 +37,11 @@ export async function getServerSideProps({ req, res }) {
     };
   }
 
-  var user_data = decode(req.cookies.access_token);
+  const user_data = decode(req.cookies.access_token);
   console.log(user_data);
-  if (user_data.admin && user_data.admin.users && user_data.admin.users.read) {
-    var users = await db.collection("users").find({}).toArray();
+  let users = [];
+  if (user_data.permissions.includes("list-users")) {
+    users = await prisma.user.findMany();
     console.log(users);
   }
   return {
@@ -58,7 +57,7 @@ export default function Users({ users, user }) {
   useEffect(() => {
     let rows = [];
     users.forEach(async (user) => {
-      rows.push({ cells: [user.first_name, user.last_name, user.email] });
+      rows.push({ cells: [user.firstName, user.lastName, user.email] });
     });
     setUserRows(rows);
   }, []);
@@ -67,7 +66,7 @@ export default function Users({ users, user }) {
       <Typography variant="h4" sx={{ mb: 1 }}>
         Users
       </Typography>
-      {user.admin && user.admin.users && user.admin.users.read ? (
+      {user.permissions.includes("list-users") ? (
         <>
           {users.length > 0 ? (
             <Table cells={["First Name", "Last Name", "Email"]} rows={userRows} />

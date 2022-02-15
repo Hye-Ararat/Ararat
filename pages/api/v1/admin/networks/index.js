@@ -2,12 +2,14 @@ import { decode, verify } from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 import axios from "axios";
 import crypto from "crypto";
+import { PrismaClient } from "@prisma/client";
 
 export default async function handler(req, res) {
     const { method, query: { id, include } } = req;
     const { connectToDatabase } = require("../../../../../util/mongodb");
     const { db } = await connectToDatabase();
     console.log(req.headers)
+    const prisma = new PrismaClient();
     switch (method) {
         case "POST":
             if (req.headers["authorization"].split(" ")[1].includes("::")) {
@@ -18,7 +20,7 @@ export default async function handler(req, res) {
                 } catch {
                     return res.status(403).send("Not allowed to access this resource")
                 }
-                if (!token_data.admin.networks.write) {
+                if (!token_data.permissions.includes("create-network")) {
                     return res.status(403).send("Not allowed to access this resource")
                 }
             } else {
@@ -27,30 +29,42 @@ export default async function handler(req, res) {
                 } catch {
                     return res.status(403).send("Not allowed to access this resource")
                 }
-                if (!token_data.admin.networks.write) {
+                if (!token_data.permissions.includes("create-network")) {
                     return res.status(403).send("Not allowed to access this resource")
                 }
             }
-            var node = await db.collection("nodes").findOne({
-                _id: ObjectId(req.body.node.id)
-            })
+            let node;
+
             try {
-                var network = await db.collection("networks").insertOne({
-                    name: req.body.name,
-                    node: req.body.node.id,
-                    address: {
-                        ipv4: req.body.address.ipv4 ? req.body.address.ipv4 : null,
-                        ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
-                        ip_alias: req.body.address.ip_alias ? req.body.address.ip_alias : null
-                    },
-                    remote: {
-                        remote: req.body.remote.remote,
-                        primary: req.body.remote.primary,
-                        protocol: req.body.remote.protocol,
-                        primaryNetwork: req.body.remote.primaryNetwork
+                node = await prisma.node.findUnique({
+                    where: {
+                        id: req.body.node
                     }
-                })
-            } catch {
+                });
+            } catch (error) {
+                console.log(error);
+                return res.status(500).send("An error occured")
+            }
+            try {
+                var network = await prisma.network.create({
+                    data: {
+                        name: req.body.name,
+                        node: {
+                            connect: {
+                                id: req.body.node
+                            }
+                        },
+                        ipv4: req.body.ipv4,
+                        ipv6: req.body.ipv6,
+                        ipAlias: req.body.ipAlias,
+                        remote: req.body.remote,
+                        isPrimaryRemoteNetwork: req.body.isPrimaryRemoteNetwork,
+                        primaryRemoteNetworkId: req.body.primaryRemoteNetworkId,
+                        remoteNetworkProtocol: req.body.remoteNetworkProtocol,
+                    }
+                });
+            } catch (error) {
+                console.log(error)
                 return res.status(500).send("An error occured while creating the network")
             }
             console.log()
@@ -64,17 +78,17 @@ export default async function handler(req, res) {
 
             try {
                 if (req.body.remote.remote == true && req.body.remote.primary == true) {
-                    console.log(network.insertedId.toString())
+                    console.log(network.id)
                     await axios.post(`${node.address.ssl ? "https" : "http"}://${node.address.hostname}:${node.address.port}/api/v1/network`, {
-                        id: network.insertedId.toString(),
+                        id: network.id,
                         address: {
-                            ipv4: req.body.address.ipv4 ? req.body.address.ipv4 : null,
-                            ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
+                            ipv4: req.body.ipv4 ? req.body.ipv4 : null,
+                            ipv6: req.body.ipv6 ? req.body.ipv6 : null,
                         },
                         remote: {
-                            remote: req.body.remote.remote,
-                            primary: req.body.remote.primary,
-                            primaryNetwork: req.body.remote.primaryNetwork
+                            remote: req.body.remote,
+                            primary: req.body.isPrimaryRemoteNetwork,
+                            primaryNetwork: req.body.primaryRemoteNetworkId,
                         }
                     }, {
                         headers: {
@@ -82,21 +96,23 @@ export default async function handler(req, res) {
                         }
                     })
                 } else if (req.body.remote.remote == true && req.body.remote.primary == false) {
-                    let primaryNetwork = await db.collection("networks").findOne({
-                        _id: ObjectId(req.body.remote.primaryNetwork)
+                    let primaryNetwork = await prisma.network.findUnique({
+                        where: {
+                            id: req.body.primaryRemoteNetworkId
+                        }
                     })
                     await axios.post(`${node.address.ssl ? "https" : "http"}://${node.address.hostname}:${node.address.port}/api/v1/network`, {
-                        id: network.insertedId.toString(),
+                        id: network.id,
                         address: {
-                            ipv4: req.body.address.ipv4,
-                            ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
+                            ipv4: req.body.ipv4,
+                            ipv6: req.body.ipv6 ? req.body.ipv6 : null,
                         },
                         remote: {
-                            remote: req.body.remote.remote,
-                            primary: req.body.remote.primary,
-                            primaryNetwork: primaryNetwork["_id"].toString(),
+                            remote: req.body.remote,
+                            primary: req.body.isPrimaryRemoteNetwork,
+                            primaryNetwork: req.body.remote.primaryRemoteNetworkId,
                             address: {
-                                ipv4: primaryNetwork.address.ipv4
+                                ipv4: primaryNetwork.ipv4
                             }
                         }
                     }, {
@@ -104,21 +120,23 @@ export default async function handler(req, res) {
                             "Authorization": `Bearer ${access_token}`
                         }
                     });
-                    let primaryNetworkNode = await db.collection("nodes").findOne({
-                        _id: ObjectId(primaryNetwork.node)
+                    let primaryNetworkNode = await prisma.node.findUnique({
+                        where: {
+                            id: primaryNetwork.nodeId
+                        }
                     })
                     try {
-                        var decipher2 = crypto.createDecipheriv("aes-256-ctr", process.env.ENC_KEY, Buffer.from(primaryNetworkNode.access_token_iv, "hex"))
-                        var accessToken2 = Buffer.concat([decipher2.update(Buffer.from(primaryNetworkNode.access_token.split("::")[1], "hex")), decipher2.final()])
+                        var decipher2 = crypto.createDecipheriv("aes-256-ctr", process.env.ENC_KEY, Buffer.from(primaryNetworkNode.accessTokenIV, "hex"))
+                        var accessToken2 = Buffer.concat([decipher2.update(Buffer.from(primaryNetworkNode.accessToken.split("::")[1], "hex")), decipher2.final()])
                     } catch (error) {
                         console.log(error)
                     }
-                    await axios.post(`${primaryNetworkNode.address.ssl ? "https" : "http"}://${primaryNetworkNode.address.hostname}:${primaryNetworkNode.address.port}/api/v1/network/${req.body.remote.primaryNetwork}/remotes`, {
-                        remoteID: network.insertedId.toString(),
-                        localID: req.body.remote.primaryNetwork,
+                    await axios.post(`${primaryNetworkNode.ssl ? "https" : "http"}://${primaryNetworkNode.hostname}:${primaryNetworkNode.port}/api/v1/network/${req.body.primaryRemoteNetworkId}/remotes`, {
+                        remoteID: network.id,
+                        localID: req.body.primaryRemoteNetworkId,
                         protocol: "gre",
-                        local: primaryNetwork.address.ipv4,
-                        remote: req.body.address.ipv4
+                        local: primaryNetwork.ipv4,
+                        remote: req.body.ipv4
                     }, {
                         headers: {
                             "Authorization": `Bearer ${accessToken2}`
@@ -126,17 +144,17 @@ export default async function handler(req, res) {
                     });
 
                 } else {
-                    console.log(network.insertedId.toString())
+                    console.log(network.id)
                     await axios.post(`${node.address.ssl ? "https" : "http"}://${node.address.hostname}:${node.address.port}/api/v1/network`, {
-                        id: network.insertedId.toString(),
+                        id: network.id,
                         address: {
-                            ipv4: req.body.address.ipv4 ? req.body.address.ipv4 : null,
-                            ipv6: req.body.address.ipv6 ? req.body.address.ipv6 : null,
+                            ipv4: req.body.ipv4 ? req.body.ipv4 : null,
+                            ipv6: req.body.ipv6 ? req.body.ipv6 : null,
                         },
                         remote: {
-                            remote: req.body.remote.remote,
-                            primary: req.body.remote.primary,
-                            primaryNetwork: req.body.remote.primaryNetwork
+                            remote: req.body.remote,
+                            primary: req.body.isPrimaryRemoteNetwork,
+                            primaryNetwork: req.body.primaryRemoteNetworkId
                         }
                     }, {
                         headers: {
@@ -159,7 +177,7 @@ export default async function handler(req, res) {
                 } catch {
                     return res.status(403).send("Not allowed to access this resource")
                 }
-                if (!token_data.admin.networks.read) {
+                if (!token_data.permissions.includes("list-networks")) {
                     return res.status(403).send("Not allowed to access this resource")
                 }
             } else {
@@ -168,14 +186,14 @@ export default async function handler(req, res) {
                 } catch {
                     return res.status(403).send("Not allowed to access this resource")
                 }
-                if (!token_data.admin.networks.read) {
+                if (!token_data.permissions.includes("list-networks")) {
                     return res.status(403).send("Not allowed to access this resource")
                 }
             }
 
             let networks;
             try {
-                networks = await db.collection("networks").find({}).toArray();
+                networks = await prisma.network.findMany();
             } catch (error) {
                 return res.status(500).send("Internal Server Error");
             }

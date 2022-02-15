@@ -1,6 +1,6 @@
-import { connectToDatabase } from "../../../../../util/mongodb";
 import crypto from "crypto"
 const { sign } = require("jsonwebtoken");
+import { PrismaClient } from "@prisma/client";
 
 export default async function handler(req, res) {
 	const {
@@ -9,41 +9,29 @@ export default async function handler(req, res) {
 	} = req;
 	switch (method) {
 		case "POST": {
-			let { db } = await connectToDatabase();
+			const prisma = new PrismaClient();
 			try {
-				var node = {
-					name: req.body.name,
-					address: {
-						hostname: req.body.address.hostname,
-						port: req.body.address.port,
-						ssl: req.body.address.ssl
-					},
-					limits: {
-						memory: req.body.limits.memory,
-						cpu: req.body.limits.cpu,
-						disk: req.body.limits.disk,
-					},
-					access_token: access_token,
-				};
-			} catch {
-				return res
-					.status(400)
-					.send({ status: "error", data: "Invalid request" });
-			}
-			try {
-				var node_insert = await db.collection("nodes").insertOne(node);
+				var node_insert = await prisma.node.create({
+					data: {
+						name: req.body.name,
+						hostname: req.body.hostname,
+						port: req.body.port,
+						ssl: req.body.ssl,
+						memory: req.body.memory,
+						cpu: req.body.cpu,
+						disk: req.body.disk,
+						accessToken: "",
+						accessTokenIV: ""
+					}
+				})
 			} catch (error) {
 				console.log(error)
-				return res.status(500).send({
-					status: "error",
-					data: "An error occured while creating the node",
-				});
+				return res.status(500).send("An error occured while creating the node",);
 			}
-			node.id = node_insert.insertedId;
-			var access_token_jwt = sign(node, process.env.ENC_KEY, {
+			var access_token_jwt = sign(node_insert, process.env.ENC_KEY, {
 				algorithm: "HS256"
 			});
-			var access_token_identifier = access_token_jwt.substr(0, access_token_jwt.indexOf("."))
+			var access_token_identifier = access_token_jwt.substring(0, access_token_jwt.indexOf("."))
 			var access_token = access_token_identifier + "::" + access_token_jwt;
 			try {
 				var iv = crypto.randomBytes(16);
@@ -57,28 +45,23 @@ export default async function handler(req, res) {
 				});
 			}
 			try {
-				db.collection("nodes").updateOne({
-					_id: node_insert.insertedId,
-				}, {
-					$set: {
-						access_token: access_token_identifier + "::" + hashed_key.toString("hex"),
-						access_token_iv: iv.toString("hex")
+				await prisma.node.update({
+					where: {
+						id: node_insert.id
+					},
+					data: {
+						accessToken: access_token_identifier + "::" + hashed_key.toString("hex"),
+						accessTokenIV: iv.toString("hex")
 					}
 				})
 			} catch (error) {
 				console.log(error)
-				return res.status(500).send({
-					status: "error",
-					data: "An error occured while creating the node"
-				})
+				return res.status(500).send("An error occured while creating this node")
 			}
 			return res.json({
-				status: "success",
-				data: {
-					access_token: access_token,
-					id: node_insert.insertedId,
-					panel_url: process.env.URL
-				}
+				access_token: access_token,
+				id: node_insert.id,
+				panel_url: process.env.URL
 			})
 
 			break;
