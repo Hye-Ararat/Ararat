@@ -6,6 +6,7 @@ import Navigation from "../../../components/admin/Navigation";
 import Table from "../../../components/admin/Table";
 import Link from "next/link";
 import { LoadingButton } from "@mui/lab";
+import prisma from "../../../lib/prisma";
 
 export async function getServerSideProps({ req, res }) {
   if (!req.cookies.access_token) {
@@ -45,8 +46,8 @@ export async function getServerSideProps({ req, res }) {
 
   var user_data = decode(req.cookies.access_token);
   console.log(user_data);
-  if (user_data.admin && user_data.admin.instances && user_data.admin.instances.read) {
-    var instances = await db.collection("instances").find({}).toArray();
+  if (user_data.permissions.includes("list-instances")) {
+    var instances = await prisma.instance.findMany();
     console.log(instances);
   }
 
@@ -175,11 +176,11 @@ export default function Instances({ instances, user }) {
               <Typography variant="h5" align="center">
                 Edit Instance
               </Typography>
-              
+
             </Grid>
           </Box>
         </Modal>
-        {user.admin && user.admin.instances && user.admin.instances.write ? (
+        {user.permissions.includes("create-instance") ? (
           <>
             <Link href="/admin/instances/new">
               <Button variant="contained" color="primary" sx={{ ml: "auto", mt: "auto", mb: "auto" }}>
@@ -191,7 +192,7 @@ export default function Instances({ instances, user }) {
           ""
         )}
       </Grid>
-      {user.admin && user.admin.instances && user.admin.instances.read ? (
+      {user.permissions.includes("list-instances") ? (
         <>
           {instances.length > 0 ? (
             <Table cells={["Name", "Actions"]} rows={instanceRows} />

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import CreateMagmaCube from "../../../components/admin/magma_cubes/CreateMagmaCube";
 import Navigation from "../../../components/admin/Navigation";
 import Table from "../../../components/admin/Table";
+import prisma from "../../../lib/prisma";
 
 export async function getServerSideProps({ req, res }) {
   if (!req.cookies.access_token) {
@@ -18,9 +19,7 @@ export async function getServerSideProps({ req, res }) {
   res.setHeader("Cache-Control", "public, s-maxage=10, stale-while-revalidate=59");
 
   var { connectToDatabase } = require("../../../util/mongodb");
-  var { db } = await connectToDatabase();
   var { verify, decode } = require("jsonwebtoken");
-  var { ObjectId } = require("mongodb");
 
   try {
     var valid_session = verify(req.cookies.access_token, process.env.ENC_KEY);
@@ -43,8 +42,8 @@ export async function getServerSideProps({ req, res }) {
 
   var user_data = decode(req.cookies.access_token);
   console.log(user_data);
-  if (user_data.admin && user_data.admin.magma_cubes && user_data.admin.magma_cubes.read) {
-    var magma_cubes = await db.collection("magma_cubes").find({}).toArray();
+  if (user_data.permissions.includes("list-magmaCubes")) {
+    var magma_cubes = await prisma.magmaCube.findMany();
     console.log(magma_cubes);
   }
   return {
@@ -73,7 +72,7 @@ export default function MagmaCubes({ magma_cubes, user }) {
         <Typography variant="h4" sx={{ mb: 1 }}>
           Images
         </Typography>
-        {user.admin && user.admin.magma_cubes && user.admin.magma_cubes.write ? (
+        {user.permissions.includes("create-magmaCube") ? (
           <>
             <Button
               variant="contained"
@@ -108,7 +107,7 @@ export default function MagmaCubes({ magma_cubes, user }) {
           ""
         )}
       </Grid>
-      {!user.admin || !user.admin.magma_cubes || !user.admin.magma_cubes.read ? (
+      {!user.permissions.includes("list-magmaCubes") ? (
         <Typography variant="h6" sx={{ mb: 1 }}>
           You do not have permission to view this page.
         </Typography>
