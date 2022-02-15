@@ -5,7 +5,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Box } from "@mui/system";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../../../lib/prisma";
 export async function getServerSideProps({ req, res }) {
     if (!req.cookies.access_token) {
         return {
@@ -19,7 +19,6 @@ export async function getServerSideProps({ req, res }) {
         "Cache-Control",
         "public, s-maxage=10, stale-while-revalidate=59"
     );
-    const prisma = new PrismaClient();
     const { verify, decode } = require("jsonwebtoken");
     try {
         var valid_session = verify(req.cookies.access_token, process.env.ENC_KEY)

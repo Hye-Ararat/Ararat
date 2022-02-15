@@ -29,8 +29,7 @@ import {
 } from "@mui/icons-material";
 import Instance from "../components/instance";
 import signOut from "../scripts/lib/auth/signout";
-import { PrismaClient } from "@prisma/client";
-
+import prisma from "../lib/prisma"
 export async function getServerSideProps({ req, res }) {
   if (!req.cookies.access_token) {
     return {
@@ -45,7 +44,6 @@ export async function getServerSideProps({ req, res }) {
     "public, s-maxage=10, stale-while-revalidate=59"
   );
 
-  const prisma = new PrismaClient();
   var { decode } = require("jsonwebtoken");
   const user_data = decode(req.cookies.access_token)
   console.log(user_data)

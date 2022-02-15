@@ -2,14 +2,13 @@ import { decode, verify } from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 import axios from "axios";
 import crypto from "crypto";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../../../../../lib/prisma";
 
 export default async function handler(req, res) {
     const { method, query: { id, include } } = req;
     const { connectToDatabase } = require("../../../../../util/mongodb");
     const { db } = await connectToDatabase();
     console.log(req.headers)
-    const prisma = new PrismaClient();
     switch (method) {
         case "POST":
             if (req.headers["authorization"].split(" ")[1].includes("::")) {

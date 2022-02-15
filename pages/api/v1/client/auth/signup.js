@@ -1,11 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-
+import prisma from "../../../../../lib/prima";
 export default async function handler(req, res) {
   const { method } = req;
   switch (method) {
     case "POST":
-      const prisma = new PrismaClient();
       let salt;
       let hashedPassword;
       try {

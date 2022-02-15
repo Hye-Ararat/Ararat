@@ -1,10 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../../../../../lib/prisma";
 
 export default async function handler(req, res) {
   const { method } = req;
-  const prisma = new PrismaClient();
   switch (method) {
     case "POST":
       const user = await prisma.user.findUnique({

@@ -1,7 +1,6 @@
 import crypto from "crypto"
 const { sign } = require("jsonwebtoken");
-import { PrismaClient } from "@prisma/client";
-
+import prisma from "../../../../../lib/prisma";
 export default async function handler(req, res) {
 	const {
 		method,
@@ -9,7 +8,6 @@ export default async function handler(req, res) {
 	} = req;
 	switch (method) {
 		case "POST": {
-			const prisma = new PrismaClient();
 			try {
 				var node_insert = await prisma.node.create({
 					data: {

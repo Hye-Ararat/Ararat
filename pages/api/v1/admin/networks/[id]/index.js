@@ -2,12 +2,12 @@ import { decode, verify } from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 import axios from "axios"
 import { convertNetworkID } from "../../../../../../util/converter";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../../../../../../lib/prisma";
+
 export default async function handler(req, res) {
     const { method, query: { id, include } } = req;
     const { connectToDatabase } = require("../../../../../../util/mongodb");
     const { db } = await connectToDatabase();
-    const prisma = new PrismaClient();
     if (!req.headers["authorization"]) {
         return res.status(403).send("Not allowed to access this resource")
     }

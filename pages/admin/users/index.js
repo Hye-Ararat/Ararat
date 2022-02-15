@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import Navigation from "../../../components/admin/Navigation";
 import Table from "../../../components/admin/Table";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../../../lib/prisma";
 
 export async function getServerSideProps({ req, res }) {
   if (!req.cookies.access_token) {
@@ -15,7 +15,6 @@ export async function getServerSideProps({ req, res }) {
   }
 
   res.setHeader("Cache-Control", "public, s-maxage=10, stale-while-revalidate=59");
-  const prisma = new PrismaClient();
   const { verify, decode } = require("jsonwebtoken");
 
   try {

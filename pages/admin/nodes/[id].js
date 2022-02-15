@@ -9,7 +9,7 @@ import { Box } from "@mui/system";
 import { useState } from "react";
 import ResizeObserver from "react-resize-observer";
 import Network from "../../../components/admin/nodes/[id]/Network";
-import prisma, { PrismaClient } from "@prisma/client";
+import prisma from "../../../lib/prisma";
 export async function getServerSideProps({ req, res, query }) {
     if (!req.cookies.access_token) {
         return {
@@ -24,7 +24,6 @@ export async function getServerSideProps({ req, res, query }) {
         "public, s-maxage=10, stale-while-revalidate=59"
     );
     var { verify, decode } = require("jsonwebtoken");
-    const prisma = new PrismaClient();
     try {
         var valid_session = verify(req.cookies.access_token, process.env.ENC_KEY)
     } catch {
