@@ -1,24 +1,38 @@
-import { ObjectId } from "mongodb";
-
-const { connectToDatabase } = require("../../../../../util/mongodb");
 import bcrypt from "bcryptjs";
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
+import { PrismaClient } from "@prisma/client";
 
 export default async function handler(req, res) {
   const { method } = req;
+  const prisma = new PrismaClient();
   switch (method) {
-    case "POST": {
-      var { db } = await connectToDatabase();
-      let user_data = await db.collection("users").findOne({
-        email: req.body.email
+    case "POST":
+      const user = await prisma.user.findUnique({
+        where: {
+          email: req.body.email
+        },
+        include: {
+          permissions: {
+            select: {
+              permission: true
+            }
+          }
+        }
+      })
+      if (!user) return res.status(401).send("Incorrect email/username or password.");
+
+
+      const match = await bcrypt.compare(req.body.password, user.password);
+      if (!match) return res.status(401).send("Incorrect email/username or password.");
+      let permissions = [];
+      user.permissions.forEach(async permission => {
+        permissions.push(permission.permission);
       });
-      if (user_data == null) return res.status(401).json({ status: "error", data: "Incorrect email or password." });
-      const match = await bcrypt.compare(req.body.password, user_data.password);
-      if (!match) return res.status(401).json({ status: "error", data: "Incorrect email or password." });
-      let refresh_token = jwt.sign(
+
+      const refresh_token = jwt.sign(
         {
           type: "refresh",
-          user: ObjectId(user_data._id).toString()
+          user: user.id
         },
         process.env.ENC_KEY,
         {
@@ -26,29 +40,23 @@ export default async function handler(req, res) {
           expiresIn: "7d"
         }
       );
-      const user = {
-        id: user_data._id,
-        username: user_data.username,
-        first_name: user_data.firstname,
-        last_name: user_data.lastname,
-        admin: user_data.admin,
-        email: user_data.email,
-        preferences: user_data.preferences,
-        phone_number: user_data.phone_number
-      };
-      let access_token = jwt.sign(user, process.env.ENC_KEY, {
+      const access_token = jwt.sign({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        permissions: permissions
+      }, process.env.ENC_KEY, {
         algorithm: "HS256",
         expiresIn: "15m"
       });
-      res.json({
-        status: "success",
-        data: {
-          refresh_token: refresh_token,
-          access_token: access_token
-        }
+
+      return res.json({
+        refresh_token: refresh_token,
+        access_token: access_token
       });
       break;
-    }
     default: {
       res.status(400).send({
         status: "error",

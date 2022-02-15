@@ -7,7 +7,7 @@ import {
 	Button,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import {Check} from "@mui/icons-material"
+import { Check } from "@mui/icons-material"
 import logo from "../../public/logo.png";
 import Image from "next/image";
 import { Box } from "@mui/system";
@@ -21,20 +21,21 @@ import nprogress, { render } from "nprogress";
 export default function SignUp() {
 	const router = useRouter();
 	const [email, setEmail] = useState("");
-    const [name, setName] = useState("");
-    const [surname, setSurname] = useState("");
-    const [username, setUsername] = useState("");
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
+	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [signingUp, setSigningUp] = useState(false);
 	const SignUp = async () => {
 		try {
 			setSigningUp(true);
-			await signup(name, surname, username, email, password);
+			await signup(firstName, lastName, username, email, password);
 		} catch (error) {
+			return setSigningUp(false)
 		}
 		setSigningUp(false);
 		render(<Check color="success" />)
-		router.push("/auth/login");
+		return router.push("/auth/login");
 	}
 	return (
 		<>
@@ -60,32 +61,32 @@ export default function SignUp() {
 							Welcome to Ararat! Please Sign Up to continue.
 						</Typography>
 						<FormControl sx={{ m: 1, width: "40ch" }} variant="outlined">
-                            <TextField
-                                required
-                                onChange={e => setName(e.target.value)}
-                                margin="dense"
-                                placeholder="Name"
-                                variant="outlined"
-                                type="text"
-                            />
-                            <TextField 
-                                required
-                                onChange={e => setSurname(e.target.value)}
-                                margin="dense"
-                                placeholder="Surname"
-                                variant="outlined"
-                                type="text"
-                            />
-                            <TextField
-                                required
-                                onChange={e => setUsername(e.target.value)}
-                                margin="dense"
-                                placeholder="Username"
-                                variant="outlined"
-                                type="text"
-                            />
 							<TextField
-                                required
+								required
+								onChange={e => setFirstName(e.target.value)}
+								margin="dense"
+								placeholder="Name"
+								variant="outlined"
+								type="text"
+							/>
+							<TextField
+								required
+								onChange={e => setLastName(e.target.value)}
+								margin="dense"
+								placeholder="Last Name"
+								variant="outlined"
+								type="text"
+							/>
+							<TextField
+								required
+								onChange={e => setUsername(e.target.value)}
+								margin="dense"
+								placeholder="Username"
+								variant="outlined"
+								type="text"
+							/>
+							<TextField
+								required
 								onChange={(e) => setEmail(e.target.value)}
 								margin="dense"
 								placeholder="Email"
@@ -93,19 +94,19 @@ export default function SignUp() {
 								type="email"
 							/>
 							<TextField
-                                required
+								required
 								onChange={(e) => setPassword(e.target.value)}
 								margin="dense"
 								placeholder="Password"
 								variant="outlined"
 								type="password"
-                                
+
 							/>
 							<Box component="div" sx={{ mt: 1 }}>
-                                
+
 								<LoadingButton
 									loading={signingUp}
-                                    onClick={SignUp}
+									onClick={SignUp}
 									sx={{ width: "100%" }}
 									variant="contained"
 									color="primary"
@@ -115,7 +116,7 @@ export default function SignUp() {
 							</Box>
 						</FormControl>
 						<Link href="/auth/login">
-						<Button variant="text">Login</Button>
+							<Button variant="text">Login</Button>
 						</Link>
 					</Grid>
 				</Grid>

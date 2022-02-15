@@ -1,39 +1,35 @@
-const { connectToDatabase } = require("../../../../../util/mongodb");
-import axios from "axios";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 export default async function handler(req, res) {
   const { method } = req;
   switch (method) {
-    case "POST": {
-      var { db } = await connectToDatabase();
-      let user_data = await db.collection("users").findOne({
-        email: req.body.email
-      });
-      if (user_data) return res.json({ status: "error", data: "That email already exists" });
+    case "POST":
+      const prisma = new PrismaClient();
+      let salt;
+      let hashedPassword;
       try {
-        var salt = await bcrypt.genSalt(10);
-        var hashedPassword = await bcrypt.hash(req.body.password, salt);
+        salt = await bcrypt.genSalt(10);
+        hashedPassword = await bcrypt.hash(req.body.password, salt);
       } catch (error) {
         return res.status(500).json({ status: "error", data: "An error occured hile creating the user" });
       }
-
-      const user = {
-        username: req.body.username,
-        first_name: req.body.name,
-        last_name: req.body.surname,
-        admin: {},
-        email: req.body.email,
-        password: hashedPassword,
-        phone_number: null
-      };
-      await db.collection("users").insertOne(user);
-      return res.json({
-        status: "Success",
-        data: "User created successfully"
-      });
+      try {
+        await prisma.user.create({
+          data: {
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            username: req.body.username,
+            email: req.body.email,
+            password: hashedPassword
+          }
+        })
+      } catch (error) {
+        console.log(error)
+        return res.status(500).send("An error occured")
+      }
+      return res.send("Success");
       break;
-    }
     default: {
       res.status(400).send({
         status: "error"

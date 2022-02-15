@@ -29,6 +29,7 @@ import {
 } from "@mui/icons-material";
 import Instance from "../components/instance";
 import signOut from "../scripts/lib/auth/signout";
+import { PrismaClient } from "@prisma/client";
 
 export async function getServerSideProps({ req, res }) {
   if (!req.cookies.access_token) {
@@ -37,49 +38,55 @@ export async function getServerSideProps({ req, res }) {
         destination: "/auth/login",
         permanent: false,
       },
-      }
     }
+  }
   res.setHeader(
     "Cache-Control",
     "public, s-maxage=10, stale-while-revalidate=59"
   );
-  var {connectToDatabase} = require("../util/mongodb")
-  var {db} = await connectToDatabase();
-  var {decode} = require("jsonwebtoken");
-  var {ObjectId} = require("mongodb");
-  var user_data = decode(req.cookies.access_token)
-  const instance_data = await db
-    .collection("instances")
-    .find({ [`users.${user_data.id}`]: { $exists: true } })
-    .toArray();
-  var instances = [];
-  function awaitAllInstancesDone() {
-    return new Promise((resolve, reject) => {
-      if (instances.length == instance_data.length) {
-        return resolve()
-      }
-      var instanceCheck = setInterval(() => {
-        if (instances.length == instance_data.length) {
-          clearInterval(instanceCheck)
-          return resolve()
+
+  const prisma = new PrismaClient();
+  var { decode } = require("jsonwebtoken");
+  const user_data = decode(req.cookies.access_token)
+  console.log(user_data)
+
+  const instances = await prisma.instance.findMany({
+    where: {
+      users: {
+        some: {
+          userId: user_data.id
         }
-      }, 100)
-    });
-  }
-  instance_data.forEach(async instance => {
-    instance.relationships = {};
-    instance.relationships.magma_cube = await db.collection("magma_cubes").findOne({
-      _id: ObjectId(instance.magma_cube.id)
-    })
-    instance.relationships.node = await db.collection("nodes").findOne({
-      _id: ObjectId(instance.node)
-    })
-    instance.relationships.network = await db.collection("networks").findOne({
-      _id: ObjectId(instance.network)
-    })
-    instances.push(instance);
+      }
+    },
+    include: {
+      node: {
+        select: {
+          cpu: true,
+          disk: true,
+          hostname: true,
+          port: true,
+          id: true,
+          memory: true,
+          ssl: true,
+        }
+      },
+      image: {
+        select: {
+          id: true,
+          name: true,
+          stateless: true,
+          entrypoint: true,
+          magmaCube: {
+            select: {
+              id: true,
+              name: true
+            }
+          },
+          magmaCubeId: true
+        }
+      }
+    }
   })
-  await awaitAllInstancesDone()
   console.log(instances)
   let data = JSON.parse(JSON.stringify(instances));
   return { props: { data } };
@@ -151,12 +158,12 @@ export default function Dashboard({ data }) {
             <Divider />
             <List>
               <Link href="/admin">
-              <ListItem button>
-                <ListItemIcon>
-                  <AdminIcon />
-                </ListItemIcon>
-                <ListItemText primary="Admin" />
-              </ListItem>
+                <ListItem button>
+                  <ListItemIcon>
+                    <AdminIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Admin" />
+                </ListItem>
               </Link>
             </List>
           </Box>
@@ -171,7 +178,7 @@ export default function Dashboard({ data }) {
           </Typography>
           <Grid spacing={5} container direction="row">
             {data.map((instance) => {
-              return <Instance instance={instance} key={instance._id} />;
+              return <Instance instance={instance} key={instance.id} />;
             })}
           </Grid>
         </Box>
