@@ -35,20 +35,16 @@ export default function NewNode() {
     if (activeStep + 1 == 2) {
       var data = await axios.post("/api/v1/admin/nodes", {
         name: name,
-        address: {
-          hostname: hostname,
-          port: parseInt(port),
-          ssl: ssl
-        },
-        limits: {
-          cpu: parseInt(cpu),
-          memory: memory,
-          disk: disk
-        }
+        hostname: hostname,
+        port: parseInt(port),
+        ssl: ssl,
+        memory: memory,
+        cpu: parseInt(cpu),
+        disk: disk,
       })
-      setNodeKey(data.data.data.access_token);
-      setNodeID(data.data.data.id);
-      setPanelURL(data.data.data.panel_url);
+      setNodeKey(data.data.access_token);
+      setNodeID(data.data.id);
+      setPanelURL(data.data.panel_url);
     }
     if (activeStep + 1 == steps.length) {
       window.location.href == "/admin/nodes";
