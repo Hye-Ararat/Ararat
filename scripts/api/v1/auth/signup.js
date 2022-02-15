@@ -1,25 +1,18 @@
 import axios from 'axios';
 
-async function SignUp(name, surname, username, email, password) {
+export default async function SignUp(firstName, lastName, username, email, password) {
   return new Promise(async (resolve, reject) => {
     try {
-      var auth_response = await axios.post(`/api/v1/client/auth/signup`, {
-        name: name,
-        surname: surname,
+      await axios.post(`/api/v1/client/auth/signup`, {
+        firstName: firstName,
+        lastName: lastName,
         username: username,
         email: email,
-        password: password,
+        password: password
       });
     } catch (error) {
-      return reject(Error('An error occured while sending the request'));
-    }
-    
-      auth_response = auth_response.data;
-      if (auth_response.status === 'Success') {
-        return resolve('Success');
-      } else{
       return reject(Error('An error occured while creating the user'));
     }
-  });
+    return resolve("Success");
+  })
 }
-export default SignUp;
