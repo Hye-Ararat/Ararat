@@ -23,7 +23,7 @@ export default function Login() {
       await login(email, password);
     } catch (error) {
       setLoggingIn(false);
-      setLoginErr(error);
+      return setLoginErr(error);
     }
     setLoggingIn(false);
     render(<Check color="success" />);
