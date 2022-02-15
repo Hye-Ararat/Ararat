@@ -19,10 +19,10 @@ export default function Network({ user, node }) {
     }, [remoteNetworks])
     return (
 
-        user.admin && user.admin.networks && user.admin.networks.read ?
+        user.permissions.includes("list-networks") ?
             page == "networks" ?
                 <>
-                    {user.admin && user.admin.networks && user.admin.networks.write ?
+                    {user.permissions.includes("create-network") ?
                         <>
                             <Button variant="contained" color="primary" sx={{ mb: 1 }} onClick={() => setCreateNetworkOpen(true)}>Create Network</Button>
                             <Modal open={createNetworkOpen} onClose={() => setCreateNetworkOpen(false)}>
@@ -56,19 +56,21 @@ export default function Network({ user, node }) {
                                     <TableCell align="left">IP Alias</TableCell>
                                 </TableHead>
                                 <TableBody sx={{ borderRadius: 1.5 }}>
-                                    {node.relationships.networks.map((network, index) => {
+                                    {node.networks.map((network, index) => {
+                                        console.log(network)
                                         return (
                                             <TableRow key={index} sx={{ cursor: "pointer" }} onClick={async () => {
-                                                setSelectedNetwork(network._id)
-                                                var items = await axios.get(`/api/v1/admin/networks/${network._id}?include=["ports", "instances"]`)
-                                                setSetNetworkForwards(items.data.relationships.ports)
-                                                setInstances(items.data.relationships.instances)
+                                                setSelectedNetwork(network.id)
+                                                var items = await axios.get(`/api/v1/admin/networks/${network.id}?include=["ports", "instances"]`)
+                                                console.log(items.data)
+                                                setSetNetworkForwards(items.data.ports)
+                                                setInstances(items.data.instances)
                                                 setPage("ports")
                                             }}>
                                                 <TableCell>{network.name}</TableCell>
-                                                <TableCell>{network.address.ipv4}</TableCell>
-                                                <TableCell>{network.address.ipv6}</TableCell>
-                                                <TableCell>{network.address.ip_alias}</TableCell>
+                                                <TableCell>{network.ipv4}</TableCell>
+                                                <TableCell>{network.ipv6}</TableCell>
+                                                <TableCell>{network.ipAlias}</TableCell>
                                             </TableRow>
                                         )
                                     })}
@@ -79,7 +81,7 @@ export default function Network({ user, node }) {
                 </>
                 : page == "ports" ?
                     <>
-                        {user.admin && user.admin.networks && user.admin.networks.write ?
+                        {user.permissions.includes("forward-port") ?
                             <>
                                 <Button variant="contained" color="primary" sx={{ mb: 1 }} onClick={() => setForwardPortOpen(true)}>Forward Port</Button>
                                 <Modal open={forwardPortOpen} onClose={() => setForwardPortOpen(false)}>
