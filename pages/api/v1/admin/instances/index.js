@@ -5,7 +5,7 @@ import prisma from "../../../../../lib/prisma";
 
 export default async function handler(req, res) {
     const { method, query: { id, include } } = req;
-    const permissions = decodeToken(req.headers["authorization"].split(" ")).permissions
+    const permissions = decodeToken(req.headers["authorization"].split(" ")[1]).permissions
     switch (method) {
         case "GET":
 
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
             if (!permissions.includes("create-instance")) return res.status(403).send("Not allowed to access this resource");
 
             //Validate body
-            if (!req.body.name || !req.body.node || !req.body.devices || !req.body.memory || !req.body.images || !req.body.users) return res.status(400).send("Missing required fields");
+            if (!req.body.name || !req.body.node || !req.body.devices || !req.body.memory || !req.body.image || !req.body.users) return res.status(400).send("Missing required fields");
 
             //Insert instance into database
             let instance;
@@ -39,7 +39,12 @@ export default async function handler(req, res) {
                         }
                     },
                     include: {
-                        image: true
+                        image: {
+                            include: {
+                                imageServer: true
+                            }
+                        },
+                        node: true
                     }
                 })
             } catch (error) {
@@ -47,28 +52,39 @@ export default async function handler(req, res) {
             }
 
             //Add instance devices
-            let devices = {};
-            req.body.devices.forEach(async device => {
-                await prisma.instanceDevice.create({
-                    data: {
-                        instance: {
-                            connect: {
-                                id: instance.id
-                            }
-                        },
-                        name: device.name,
+
+            const devices = new Promise((resolve, reject) => {
+                let tempDevices = {};
+                req.body.devices.forEach(async device => {
+                    await prisma.instanceDevice.create({
+                        data: {
+                            instance: {
+                                connect: {
+                                    id: instance.id
+                                }
+                            },
+                            name: device.name,
+                            type: device.type,
+                            metadata: device.metadata
+                        }
+                    })
+                    tempDevices[device.name] = {
                         type: device.type,
-                        metadata: device.metadata
+                        ...device.metadata
                     }
+                    if (Object.keys(tempDevices).length == req.body.devices.length) resolve(tempDevices);
                 })
-                devices[device.name] = {
-                    type: device.type,
-                    ...device.metadata
-                }
             })
 
             //Add instance users
             req.body.users.forEach(async user => {
+                let permissions = [];
+                user.permissions.forEach(async permission => {
+                    permissions.push({
+                        permission: permission
+                    })
+                });
+
                 await prisma.instanceUser.create({
                     data: {
                         instance: {
@@ -80,27 +96,18 @@ export default async function handler(req, res) {
                             connect: {
                                 id: user.id
                             }
+                        },
+                        permissions: {
+                            create: permissions
                         }
                     }
-                })
-                user.permissions.forEach(async permission => {
-                    await prisma.instanceUserPermission.create({
-                        data: {
-                            permission: permission,
-                            instanceUser: {
-                                connect: {
-                                    id: user.id
-                                }
-                            }
-                        }
-                    })
                 })
             })
 
             //Create instance on node
             const config = {
                 id: instance.id,
-                devices: devices,
+                devices: await devices,
                 limits: {
                     cpu: {
                         limit: req.body.cpu,
@@ -114,18 +121,22 @@ export default async function handler(req, res) {
                         priority: req.body.diskPriority
                     }
                 },
-                type: instance.image.type
+                type: instance.image.type,
+                environment: null,
+                image: instance.image
+
             }
 
             try {
-                await post(node, "/api/v1/instances", config);
+                await post(instance.node, "/api/v1/instances", config);
             } catch (error) {
+                console.log(error)
                 await prisma.instance.delete({
                     where: {
                         id: instance.id
                     }
                 })
-                return res.status(500).send("An error occured while creating the instance");
+                return res.status(500).send(error);
             }
             return res.status(202).send("Success");
             break;
