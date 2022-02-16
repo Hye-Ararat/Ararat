@@ -45,7 +45,7 @@ model ImageServer {
 model Image {
   id            String      @id @default(cuid())
   name          String      @unique
-  types         String[]
+  type          String
   stateless     Boolean
   entrypoint    String?
   imageServer   ImageServer @relation(fields: [imageServerId], references: [id], onDelete: Cascade)
@@ -54,6 +54,7 @@ model Image {
   magmaCubeId   String
   amd64         String?
   arm64         String?
+  console       String?
   instances     Instance[]
 }
 
@@ -106,7 +107,6 @@ model Instance {
   nodeId        String
   image         Image              @relation(fields: [imageId], references: [id], onDelete: Cascade)
   imageId       String
-  type          String
   cpu           Int
   cpuPriority   Int?
   memory        String
@@ -121,7 +121,7 @@ model Instance {
 model InstanceUser {
   id          String                   @id @default(cuid())
   user        User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String                   @unique
+  userId      String
   instance    Instance                 @relation(fields: [instanceId], references: [id], onDelete: Cascade)
   instanceId  String
   permissions InstanceUserPermission[]
