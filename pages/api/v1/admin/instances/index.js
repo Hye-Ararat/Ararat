@@ -130,7 +130,6 @@ export default async function handler(req, res) {
             try {
                 await post(instance.node, "/api/v1/instances", config);
             } catch (error) {
-                console.log(error)
                 await prisma.instance.delete({
                     where: {
                         id: instance.id
