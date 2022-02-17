@@ -137,7 +137,10 @@ export default async function handler(req, res) {
                 })
                 return res.status(500).send(error);
             }
-            return res.status(202).send("Success");
+            if (!permissions.includes("view-node")) {
+                delete instance.node;
+            }
+            return res.status(202).send(instance);
             break;
         default:
             return res.status(405).send("Method not allowed");
