@@ -8,7 +8,34 @@ export default async function handler(req, res) {
     const permissions = decodeToken(req.headers["authorization"].split(" ")[1]).permissions
     switch (method) {
         case "GET":
+            if (!permissions.includes("list-instances")) return res.status(403).send("Not allowed to access this resource")
+            const instances = await prisma.instance.findMany({
+                include: {
+                    backups: permissions.includes("list-backups"),
+                    devices: permissions.includes("view-instance"),
+                    image: {
+                        select: {
+                            amd64: permissions.includes("view-instance"),
+                            arm64: permissions.includes("view-instance"),
+                            console: permissions.includes("view-instance"),
+                            entrypoint: permissions.includes("view-instance"),
+                            id: permissions.includes("view-instance"),
+                            magmaCube: {
+                                select: {
+                                    id: permissions.includes("view-instance"),
+                                    name: permissions.includes("view-instance")
+                                }
+                            },
+                            magmaCubeId: permissions.includes("view-instance"),
+                            name: permissions.includes("view-instance"),
+                            stateless: permissions.includes("view-instance"),
+                            type: permissions.includes("view-instance")
+                        }
+                    }
 
+                }
+            });
+            return res.status(200).send(instances);
             break;
         case "POST":
             //Validate permissions
