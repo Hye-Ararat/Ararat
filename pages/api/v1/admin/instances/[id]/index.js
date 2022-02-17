@@ -2,74 +2,46 @@ import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../../../../../../util/mongodb";
 import crypto from "crypto";
 import axios from "axios";
+import prisma from "../../../../../../lib/prisma";
 export default async function handler(req, res) {
   const {
     method,
     query: { id, include }
   } = req;
-  var { db } = await connectToDatabase();
-  var instance = await db.collection("instances").findOne({
-    _id: ObjectId(id)
-  });
-
+  const permissions = decodeToken(req.headers["authorization"].split(" ")[1]).permissions;
   switch (method) {
     case "GET":
-      if (instance && include) {
-        instance.relationships = {};
-        if (include.includes("magma_cube")) {
-          instance.relationships.magma_cube = await db.collection("magma_cubes").findOne({
-            _id: ObjectId(instance.magma_cube.id)
-          });
-        }
-        if (include.includes("node")) {
-          instance.relationships.node = await db.collection("nodes").findOne({
-            _id: ObjectId(instance.node)
-          });
-          instance.relationships.node.access_token = undefined;
-          instance.relationships.node.access_token_iv = undefined;
-        }
-        if (include.includes("network")) {
-            instance.relationships.network = {
-                id: null,
-                address: {
-                    ipv4: null,
-                    ipv6: null,
-                    ip_alias: null
-                },
-                relationships: {
-                    ports: []
+      if (!permissions.includes("view-instance")) return res.status(403).send("Not allowed to access this resource");
+      const instance = await prisma.instance.findUnique({
+        where: {
+          id: id
+        },
+        include: {
+          backups: permissions.includes("list-backups"),
+          snapshots: permissions.includes("list-snapshots"),
+          users: permissions.includes("list-users"),
+          node: permissions.includes("view-node"),
+          devices: true,
+          image: {
+            select: {
+              console: true,
+              entrypoint: true,
+              id: true,
+              name: true,
+              stateless: true,
+              type: true,
+              magmaCube: {
+                select: {
+                  id: true,
+                  name: true
                 }
+              }
             }
-            var network = await db.collection("network").findOne({
-                _id: ObjectId(instance.network)
-            })
-            if (network) {
-                instance.relationships.network.id = network._id
-                instance.relationships.network.address.ipv4 = network.address.ipv4
-                instance.relationships.network.address.ipv6 = network.address.ipv6
-                instance.relationships.network.address.ip_alias = network.address.ip_alias
-                var ports = await db.collection("ports").find({
-                    network: instance.network
-                })
-                instance.relationships.network.relationships.ports = await ports.toArray()
-            }
-          };
-          var network = await db.collection("network").findOne({
-            _id: ObjectId(instance.network)
-          });
-          if (network) {
-            instance.relationships.network.id = network._id;
-            instance.relationships.network.address.ipv4 = network.address.ipv4;
-            instance.relationships.network.address.ipv6 = network.address.ipv6;
-            instance.relationships.network.address.ip_alias = network.address.ip_alias;
-            var network_forwards = await db.collection("network_forwards").find({
-              network: instance.network
-            });
-            instance.relationships.network.relationships.network_forwards = await network_forwards.toArray();
           }
         }
-      return instance ? res.json(instance) : res.status(404).send("Instance Does Not Exist");
-
+      })
+      if (!instance) return res.status(404).send("Instance not found");
+      return res.status(200).send(instance);
       break;
     case "DELETE":
       if (!instance) {
@@ -134,7 +106,7 @@ export default async function handler(req, res) {
 
       try {
         var decipher = crypto.createDecipheriv(
-           "aes-256-ctr",
+          "aes-256-ctr",
           process.env.ENC_KEY,
           Buffer.from(node.access_token_iv, "hex")
         );
@@ -160,7 +132,7 @@ export default async function handler(req, res) {
         return res.status(500).send("An error occured while editing the instance");
       }
       break;
-    
+
     default:
       return res.status(400).send("Invalid Method");
       break;
