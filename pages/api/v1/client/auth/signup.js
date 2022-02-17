@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import prisma from "../../../../../lib/prima";
+import prisma from "../../../../../lib/prisma"
 export default async function handler(req, res) {
   const { method } = req;
   switch (method) {

@@ -59,7 +59,7 @@ export default async function handler(req, res) {
 			return res.json({
 				access_token: access_token,
 				id: node_insert.id,
-				panel_url: process.env.URL
+				panel_url: process.env.PANEL_URL
 			})
 
 			break;
