@@ -4,7 +4,7 @@ import { del } from "../../../../../../lib/requestNode";
 export default async function handler(req, res) {
   const {
     method,
-    query: { id, include }
+    query: { id }
   } = req;
   const permissions = decodeToken(req.headers["authorization"].split(" ")[1]).permissions;
   switch (method) {
