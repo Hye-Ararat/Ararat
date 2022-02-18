@@ -10,6 +10,5 @@ export async function middleware(req, res) {
 		if (!await jwt.verify(key, process.env.ENC_KEY)) return new Response("Unauthorized", { status: 401 });
 	} catch (error) {
 		return new Response("Unauthorized", { status: 401 });
-
 	}
 }
