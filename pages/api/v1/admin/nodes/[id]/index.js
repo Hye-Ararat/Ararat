@@ -1,21 +1,35 @@
-import { connectToDatabase } from "../../../../../../util/mongodb";
-import { ObjectId } from "mongodb";
+import decodeToken from "../../../../../../lib/decodeToken";
+import prisma from "../../../../../../lib/prisma";
 
 export default async function handler(req, res) {
-    var {db} = await connectToDatabase();
+    const { query: { id } } = req;
+    const permissions = decodeToken(req.headers["authorization"].split(" ")[1]).permissions;
+    if (!permissions.includes("view-node")) return res.status(403).send("Not allowed to access this resource");
+
+    let node;
     try {
-        var node = await db.collection("nodes").findOne({
-            _id: ObjectId(req.query.id)
-        });
-        node.access_token = undefined;
-        node.access_token_iv = undefined;
-        node.id = node._id;
-        node._id = undefined;   
-    } catch {
-        return res.status(500).send("An error occured while fetching the node information")
+        node = await prisma.node.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                cpu: true,
+                disk: true,
+                hostname: true,
+                id: true,
+                memory: true,
+                name: true,
+                port: true,
+                ssl: true,
+                instances: permissions.includes("list-instances"),
+                networks: permissions.includes("list-networks")
+            }
+        })
+    } catch (error) {
+        return res.status(500).send(error)
     }
-    if (!node) {
-        return res.status(404).send("Node does not exist");
-    }
-    return res.send(node);
+
+    if (!node) return res.status(404).send("Node does not exist");
+
+    return res.status(200).send(node);
 }
