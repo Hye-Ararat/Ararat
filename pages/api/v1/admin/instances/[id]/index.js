@@ -28,9 +28,9 @@ export default async function handler(req, res) {
                   firstName: permissions.includes("list-users"),
                   lastName: permissions.includes("list-users"),
                   email: permissions.includes("list-users"),
-                  id: permissions.includes("list-users"),
+                  id: true,
                   username: permissions.includes("list-users"),
-                  permissions: permissions.includes("view-user"),
+                  permissions: true,
                 }
               },
             }
