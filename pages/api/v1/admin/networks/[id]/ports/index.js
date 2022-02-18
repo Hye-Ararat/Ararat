@@ -1,125 +1,79 @@
-const { connectToDatabase } = require("../../../../../../../util/mongodb");
-const { ObjectId } = require("mongodb");
-import axios from "axios";
-import crypto from "crypto";
-import { decode, verify } from "jsonwebtoken";
+import decodeToken from "../../../../../../../lib/decodeToken";
+import prisma from "../../../../../../../lib/prisma";
+import { get, put } from "../../../../../../../lib/requestNode";
 
 export default async function handler(req, res) {
-    const { method, query: { forwardId: id, id: networkID } } = req;
+    const { method, query: { id } } = req;
+    const permissions = decodeToken(req.headers["authorization"].split(" ")[1]).permissions;
     switch (method) {
         case "GET":
-            var { db } = await connectToDatabase();
-            const port = await db.collection("port").findOne({ _id: ObjectId(id) })
-            port ? res.send(port) : res.status(404).send("Network Forward does not exist")
+            if (!permissions.includes("list-ports")) return res.status(403).send("Not allowed to access this resource");
+            return res.status(200).send(await prisma.port.findMany());
             break;
         case "POST":
-            if (req.headers["authorization"].split(" ")[1].includes("::")) {
-
-            } else if (req.headers["authorization"].split(" ")[1].includes(":")) {
-                try {
-                    var token_data = decode(req.headers["authorization"].split(" ")[1].split(":")[1]);
-                } catch {
-                    return res.status(403).send("Not allowed to access this resource")
+            if (!permissions.includes("forward-port")) return res.status(403).send("Not allowed to access this resource");
+            const port = await prisma.port.create({
+                data: {
+                    network: {
+                        connect: {
+                            id: id
+                        }
+                    },
+                    description: req.body.description,
+                    protocol: req.body.protocol,
+                    listenPort: req.body.listenPort,
+                    targetPort: req.body.targetPort,
+                    targetType: req.body.targetType,
+                    target: req.body.target
+                },
+                include: {
+                    network: {
+                        include: {
+                            node: true
+                        }
+                    }
                 }
-                if (!token_data.admin.networks.write) {
-                    return res.status(403).send("Not allowed to access this resource")
+            });
+
+            let ip;
+            if (port.targetType == "instance") {
+                try {
+                    ip = (await get(port.network.node, `/api/v1/instances/${port.target}/network`)).ipv4_address;
+                } catch {
+                    await prisma.port.delete({
+                        where: {
+                            id: port.id
+                        }
+                    })
+                    return res.status(500).send("An internal server error occured. This can happen if the instance has not obtained an IP address yet, or if the node running the instance is offline.");
                 }
             } else {
-                try {
-                    var token_data = decode(req.headers["authorization"].split(" ")[1]);
-                } catch {
-                    return res.status(403).send("Not allowed to access this resource")
-                }
-                if (!token_data.admin.networks.write) {
-                    return res.status(403).send("Not allowed to access this resource")
-                }
+                ip = port.target;
             }
-            var { db } = await connectToDatabase();
-            try {
-                var network = await db.collection("networks").findOne({
-                    _id: ObjectId(networkID)
-                })
-            } catch (error) {
-                console.log(error);
-                return res.status(500).send("An error occured while adding the port")
-            }
-            try {
-                var node = await db.collection("nodes").findOne({
-                    _id: ObjectId(network.node)
-                })
-            } catch (error) {
-                console.log(error);
-                return res.status(500).send("An error occured while adding the port")
-            }
-            try {
-                var decipher = crypto.createDecipheriv("aes-256-ctr", process.env.ENC_KEY, Buffer.from(node.access_token_iv, "hex"))
-                var access_token = Buffer.concat([decipher.update(Buffer.from(node.access_token.split("::")[1], "hex")), decipher.final()])
 
-            } catch (error) {
-                console.log(error);
-                return res.status(500).send("An error occured while adding the port")
-            }
             try {
-                console.log(req.body)
-                if (req.body.target_type == "instance") {
-                    console.log("yes please")
-                    let ip;
-                    try {
-                        ip = await axios.get(`${node.address.ssl ? "https://" : "http://"}${node.address.hostname}:${node.address.port}/api/v1/instances/${req.body.target}/network`, {
-                            headers: {
-                                "Authorization": `Bearer ${access_token.toString()}`
-                            }
-                        })
-                    } catch (error) {
-                        console.log("1 error");
-                        return res.status(400).send("The instance has never obtained an IP address. Try powering on the instance then trying again.");
-                    }
-                    console.log(ip.data)
-                    let tempPorts = []
-                    req.body.ports.forEach(async port => {
-                        console.log(ip.data)
-                        if (ip.data.ipv4_address) {
-                            port.target_address = ip.data.ipv4_address
-                        } else {
-                            port.target_address = ip.data.ipv6_address
+                await put(port.network.node, `/api/v1/network/${port.network.id}/ports`, {
+                    listen_address: port.network.ipv4,
+                    ports: [
+                        {
+                            description: port.description,
+                            listen_port: port.listenPort,
+                            protocol: port.protocol,
+                            target_address: ip,
+                            target_port: port.targetPort
                         }
-                        tempPorts.push(port);
-                    })
-                    console.log(tempPorts)
-                    req.body.ports = tempPorts;
-                }
-                await axios.put(`${node.address.ssl ? "https" : "http"}://${node.address.hostname}:${node.address.port}/api/v1/network/${networkID}/forwards/ports`, {
-                    ports: req.body.ports,
-                    listen_address: network.address.ipv4,
-                    network: networkID
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${access_token}`
+                    ]
+                })
+            } catch {
+                await prisma.port.delete({
+                    where: {
+                        id: port.id
                     }
                 })
-            } catch (error) {
-                console.log(error)
-                return res.status(500).send("An error occured")
-            }
-            try {
-                await db.collection("ports").insertOne({
-                    "network": networkID,
-                    "description": req.body.ports[0].description,
-                    "listen_port": req.body.ports[0].listen_port,
-                    "protocol": req.body.ports[0].protocol,
-                    "target_address": req.body.ports[0].target_address,
-                    "target_port": req.body.ports[0].target_port,
-                    "meta": {
-                        "target_type": req.body.target_type,
-                        "target": req.body.target
-                    }
-                }
-                )
-            } catch (error) {
-                console.log(error)
+                return res.status(500).send("Internal server error");
             }
 
-            return res.status(200).send("success")
+            return res.status(201).send(port);
             break;
         default:
             break;
