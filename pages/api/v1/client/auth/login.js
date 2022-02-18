@@ -20,7 +20,6 @@ export default async function handler(req, res) {
       })
       if (!user) return res.status(401).send("Incorrect email/username or password.");
 
-
       const match = await bcrypt.compare(req.body.password, user.password);
       if (!match) return res.status(401).send("Incorrect email/username or password.");
       let permissions = [];
@@ -57,10 +56,7 @@ export default async function handler(req, res) {
       });
       break;
     default: {
-      res.status(400).send({
-        status: "error",
-        data: "Method not allowed."
-      });
+      res.status(400).send("Method not allowed");
     }
   }
 }
