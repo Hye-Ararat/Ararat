@@ -4,12 +4,12 @@ import prisma from "../../../../../lib/prisma";
 export default async function handler(req, res) {
 	const {
 		method,
-		query: { id },
 	} = req;
 	switch (method) {
-		case "POST": {
+		case "POST":
+			let node;
 			try {
-				var node_insert = await prisma.node.create({
+				node = await prisma.node.create({
 					data: {
 						name: req.body.name,
 						hostname: req.body.hostname,
@@ -22,30 +22,34 @@ export default async function handler(req, res) {
 						accessTokenIV: ""
 					}
 				})
-			} catch (error) {
-				console.log(error)
-				return res.status(500).send("An error occured while creating the node",);
+			} catch {
+				return res.status(500).send("Internal Server Error");
 			}
-			var access_token_jwt = sign(node_insert, process.env.ENC_KEY, {
+
+			const access_token_jwt = sign(node_insert, process.env.ENC_KEY, {
 				algorithm: "HS256"
 			});
-			var access_token_identifier = access_token_jwt.substring(0, access_token_jwt.indexOf("."))
-			var access_token = access_token_identifier + "::" + access_token_jwt;
+			const access_token_identifier = access_token_jwt.substring(0, access_token_jwt.indexOf("."))
+			const access_token = access_token_identifier + "::" + access_token_jwt;
+
+			let hashed_key;
 			try {
-				var iv = crypto.randomBytes(16);
-				let cipher = crypto.createCipheriv("aes-256-ctr", process.env.ENC_KEY, iv)
-				var hashed_key = Buffer.concat([cipher.update(access_token), cipher.final()]);
+				const iv = crypto.randomBytes(16);
+				const cipher = crypto.createCipheriv("aes-256-ctr", process.env.ENC_KEY, iv)
+				hashed_key = Buffer.concat([cipher.update(access_token), cipher.final()]);
 			} catch (error) {
-				console.log(error)
-				return res.status(500).send({
-					status: "error",
-					data: "An error occured while creating the node",
-				});
+				await prisma.node.delete({
+					where: {
+						id: node.id
+					}
+				})
+				return res.status(500).send("Internal Server Error");
 			}
+
 			try {
 				await prisma.node.update({
 					where: {
-						id: node_insert.id
+						id: node.id
 					},
 					data: {
 						accessToken: access_token_identifier + "::" + hashed_key.toString("hex"),
@@ -53,22 +57,23 @@ export default async function handler(req, res) {
 					}
 				})
 			} catch (error) {
-				console.log(error)
-				return res.status(500).send("An error occured while creating this node")
+				await prisma.node.delete({
+					where: {
+						id: node.id
+					}
+				});
+				return res.status(500).send("Internal Server Error")
 			}
-			return res.json({
-				access_token: access_token,
-				id: node_insert.id,
-				panel_url: process.env.PANEL_URL
-			})
 
-			break;
-		}
-		default: {
-			res.status(400).send({
-				status: "error",
-				data: "Method not allowed",
+			return res.status(201).send({
+				access_token: access_token,
+				id: node.id,
+				panel_url: process.env.PANEL_URL,
+				node: node
 			});
+			break;
+		default: {
+			res.status(400).send("Method not allowed");
 		}
 	}
 }
