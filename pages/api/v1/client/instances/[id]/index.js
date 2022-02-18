@@ -1,55 +1,124 @@
-import { ObjectId } from "mongodb";
-import { connectToDatabase } from "../../../../../../util/mongodb";
-import { decode } from "jsonwebtoken";
+import prisma from "../../../../../../lib/prisma";
+import decodeToken from "../../../../../../lib/decodeToken";
+
 
 export default async function handler(req, res) {
-    const { method, query: { id, include } } = req;
-    var { db } = await connectToDatabase();
-    var user_info = decode(req.headers.authorization.split(" ")[1])
-    var instance = await db.collection("instances").findOne({
-        _id: ObjectId(id),
-        [`users.${user_info.id}`]: { $exists: true }
-    })
-    if (instance && include) {
-        instance.relationships = {}
-        if (include.includes("magma_cube")) {
-            instance.relationships.magma_cube = await db.collection("magma_cubes").findOne({
-                _id: ObjectId(instance.magma_cube.id)
-            })
-        }
-        if (include.includes("node")) {
-            instance.relationships.node = await db.collection("nodes").findOne({
-                _id: ObjectId(instance.node)
-            })
-            instance.relationships.node.access_token = undefined;
-            instance.relationships.node.access_token_iv = undefined;
-        }
-        if (include.includes("network")) {
-            instance.relationships.network = {
-                id: null,
-                address: {
-                    ipv4: null,
-                    ipv6: null,
-                    ip_alias: null
-                },
-                relationships: {
-                    ports: []
+    const { query: { id } } = req;
+
+    const user = decodeToken(req.headers["authorization"].split(" ")[1]);
+
+    const instance = await prisma.instance.findUnique({
+        where: {
+            id: id,
+        },
+        include: {
+            users: {
+                select: {
+                    id: true,
+                    permissions: true,
+                }
+            },
+            node: {
+                select: {
+                    id: true,
+                    hostname: true,
+                    ssl: true,
+                    port: true,
+                    name: true
                 }
             }
-            var network = await db.collection("network").findOne({
-                _id: ObjectId(instance.network)
-            })
-            if (network) {
-                instance.relationships.network.id = network._id
-                instance.relationships.network.address.ipv4 = network.address.ipv4
-                instance.relationships.network.address.ipv6 = network.address.ipv6
-                instance.relationships.network.address.ip_alias = network.address.ip_alias
-                var ports = await db.collection("ports").find({
-                    network: instance.network
-                })
-                instance.relationships.network.relationships.ports = await ports.toArray()
-            }
         }
+    })
+    if (!instance) return res.status(404).send("Instance not found");
+
+    if (!instance.users.some(user => user.user.id === user.id)) return res.status(403).send("Not allowed to access this resource");
+
+    let perms = [];
+    instance.users.forEach(user => {
+        user.permissions.forEach(permission => {
+            perms.push(permission.permission);
+        })
+    })
+
+    if (!perms.includes("view-resources")) {
+        instance.cpu = null;
+        instance.cpuPriority = null;
+        instance.diskPriority = null;
+        instance.memory = null;
+        instance.memoryEnforce = null;
     }
-    return instance ? res.json(instance) : res.status(404).send("Instance Does Not Exist")
+
+    if (perms.includes("list-backups")) {
+        instance.backups = await prisma.instanceBackup.findMany({
+            where: {
+                instanceId: instance.id
+            },
+        })
+    }
+
+    if (perms.includes("list-snapshots")) {
+        instance.snapshots = await prisma.instanceSnapshot.findMany({
+            where: {
+                instanceId: instance.id
+            }
+        })
+    }
+
+    if (perms.includes("list-users")) {
+        instance.users = await prisma.instanceUser.findMany({
+            where: {
+                instanceId: instance.id
+            },
+            select: {
+                id: true,
+                permissions: perms.includes("view-user"),
+                user: {
+                    select: {
+                        email: perms.includes("view-user"),
+                        id: true,
+                    }
+                },
+                userId: true,
+            }
+        })
+    }
+
+    if (perms.includes("list-devices")) {
+        instance.devices = await prisma.instanceDevice.findMany({
+            where: {
+                instanceId: instance.id
+            },
+            select: {
+                id: true,
+                metadata: perms.includes("view-device"),
+                name: true,
+                type: true,
+            }
+        })
+    }
+
+    if (perms.includes("view-image")) {
+        instance.image = await prisma.image.findUnique({
+            where: {
+                id: instance.imageId
+            },
+            select: {
+                id: true,
+                console: true,
+                magmaCube: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                stateless: true,
+                type: true
+            }
+        })
+    }
+
+    return res.status(200).send(instance);
+
+
+
 }
