@@ -50,7 +50,7 @@ export default async function handler(req, res) {
         expiresIn: "15m"
       });
 
-      return res.json({
+      return res.status(200).send({
         refresh_token: refresh_token,
         access_token: access_token
       });
