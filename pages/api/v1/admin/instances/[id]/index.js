@@ -1,6 +1,3 @@
-import { ObjectId } from "mongodb";
-import crypto from "crypto";
-import axios from "axios";
 import prisma from "../../../../../../lib/prisma";
 import decodeToken from "../../../../../../lib/decodeToken";
 import { del } from "../../../../../../lib/requestNode";
@@ -30,7 +27,7 @@ export default async function handler(req, res) {
                   email: permissions.includes("list-users"),
                   id: true,
                   username: permissions.includes("list-users"),
-                  permissions: true,
+                  permissions: permissions.includes("view-user"),
                 }
               },
             }
