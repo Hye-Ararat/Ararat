@@ -1,61 +1,38 @@
-import { decode, verify } from "jsonwebtoken";
-import { ObjectId } from "mongodb";
-import axios from "axios"
 import { convertNetworkID } from "../../../../../../util/converter";
 import prisma from "../../../../../../lib/prisma";
+import decodeToken from "../../../../../../lib/decodeToken";
 
 export default async function handler(req, res) {
-    const { method, query: { id, include } } = req;
-    const { connectToDatabase } = require("../../../../../../util/mongodb");
-    const { db } = await connectToDatabase();
-    if (!req.headers["authorization"]) {
-        return res.status(403).send("Not allowed to access this resource")
-    }
-    if (req.headers["authorization"].split(" ")[1].includes("::")) {
+    const { query: { id } } = req;
+    const permissions = decodeToken(req.headers["authorization"].split(" ")[1]).permissions;
 
-    } else if (req.headers["authorization"].split(" ")[1].includes(":")) {
-        try {
-            var token_data = decode(req.headers["authorization"].split(" ")[1].split(":")[1]);
-        } catch {
-            return res.status(403).send("Not allowed to access this resource")
-        }
-        if (!token_data.permissions.includes("view-network")) {
-            return res.status(403).send("Not allowed to access this resource")
-        }
-    } else {
-        try {
-            var token_data = decode(req.headers["authorization"].split(" ")[1]);
-        } catch {
-            return res.status(403).send("Not allowed to access this resource")
-        }
-        if (!token_data.permissions.includes("view-network")) {
-            return res.status(403).send("Not allowed to access this resource")
-        }
-    }
-    var network = await prisma.network.findUnique({
+    if (!permissions.includes("view-network")) return res.status(403).send("Not allowed to access this resource");
+
+    const network = await prisma.network.findUnique({
         where: {
             id: id
         },
         include: {
             node: {
                 select: {
-                    id: token_data.permissions.includes("list-nodes"),
-                    name: token_data.permissions.includes("list-nodes"),
-                    cpu: token_data.permissions.includes("list-nodes"),
-                    disk: token_data.permissions.includes("list-nodes"),
-                    hostname: token_data.permissions.includes("list-nodes"),
-                    memory: token_data.permissions.includes("list-nodes"),
-                    port: token_data.permissions.includes("list-nodes"),
-                    ssl: token_data.permissions.includes("list-nodes"),
+                    id: permissions.includes("list-nodes"),
+                    name: permissions.includes("list-nodes"),
+                    cpu: permissions.includes("list-nodes"),
+                    disk: permissions.includes("list-nodes"),
+                    hostname: permissions.includes("list-nodes"),
+                    memory: permissions.includes("list-nodes"),
+                    port: permissions.includes("list-nodes"),
+                    ssl: permissions.includes("list-nodes"),
                 }
             },
-            ports: token_data.permissions.includes("list-ports"),
+            ports: permissions.includes("list-ports"),
         }
     })
-    console.log(network)
+
     if (!network) return res.status(404).send("Network not found")
-    if (token_data.permissions.includes("list-instances")) {
-        let devices = await prisma.instanceDevice.findMany({
+
+    if (permissions.includes("list-instances")) {
+        const devices = await prisma.instanceDevice.findMany({
             where: {
                 type: "nic",
             }
@@ -66,5 +43,5 @@ export default async function handler(req, res) {
         })
         network.instances = instances;
     }
-    return res.send(network);
+    return res.status(200).send(network);
 }
