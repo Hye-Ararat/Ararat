@@ -7,7 +7,7 @@ export async function middleware(req, res) {
 	if (req.headers.get("authorization").split(" ")[1].includes(":")) key = req.headers.get("authorization").split(" ")[1].split(":")[1];
 	if (!key) key = req.headers.get("authorization").split(" ")[1];
 	try {
-		if (! await jwt.verify(key, process.env.ENC_KEY)) return new Response("Unauthorized", { status: 401 });
+		if (!await jwt.verify(key, process.env.ENC_KEY)) return new Response("Unauthorized", { status: 401 });
 	} catch (error) {
 		return new Response("Unauthorized", { status: 401 });
 
