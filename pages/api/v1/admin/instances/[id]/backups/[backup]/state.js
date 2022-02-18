@@ -1,7 +1,7 @@
 import prisma from "../../../../../../../../lib/prisma";
 
 export default async function handler(req, res) {
-    const { method, query: { id, backup } } = req;
+    const { query: { backup } } = req;
     if (!req.headers.authorization.includes("::")) return res.status(403).send("Not allowed to access this resource")
     const updatedBackup = await prisma.instanceBackup.update({
         where: {
