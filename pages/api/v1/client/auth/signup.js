@@ -10,7 +10,7 @@ export default async function handler(req, res) {
         salt = await bcrypt.genSalt(10);
         hashedPassword = await bcrypt.hash(req.body.password, salt);
       } catch (error) {
-        return res.status(500).json({ status: "error", data: "An error occured hile creating the user" });
+        return res.status(500).send("An error occured hile creating the user");
       }
       try {
         await prisma.user.create({
