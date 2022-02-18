@@ -21,7 +21,7 @@ export default async function handler(req, res) {
               arm64: permissions.includes("view-image"),
               console: permissions.includes("view-image"),
               entrypoint: permissions.includes("view-image"),
-              id: permissions.includes("list-images"),
+              id: true,
               name: permissions.includes("list-images"),
               stateless: permissions.includes("view-image"),
               type: permissions.includes("view-image"),
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
           }
         }
       })
-      if (!magmaCube) return res.status(403).send("Not allowed to access this resource");
+      if (!magmaCube) return res.status(404).send("Magma Cube does not exist");
       return res.status(200).send(magmaCube);
       break;
     default:
