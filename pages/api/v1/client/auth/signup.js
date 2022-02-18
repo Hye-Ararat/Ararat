@@ -12,8 +12,11 @@ export default async function handler(req, res) {
       } catch (error) {
         return res.status(500).send("An error occured hile creating the user");
       }
+
+
+      let user;
       try {
-        await prisma.user.create({
+        user = await prisma.user.create({
           data: {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
@@ -22,16 +25,14 @@ export default async function handler(req, res) {
             password: hashedPassword
           }
         })
-      } catch (error) {
-        console.log(error)
-        return res.status(500).send("An error occured")
+      } catch {
+        return res.status(500).send("Internal Server Error")
       }
-      return res.send("Success");
+
+      return res.status(200).send(user);
       break;
     default: {
-      res.status(400).send({
-        status: "error"
-      });
+      res.status(400).send("Method not allowed");
     }
   }
 }
