@@ -1,64 +1,72 @@
-import crypto from "crypto";
-import { connectToDatabase } from "../../../../../../../util/mongodb";
-import { ObjectId } from "mongodb";
-import { post } from "axios";
-import { decode } from "jsonwebtoken";
+import { post } from "../../../../../../../lib/requestNode";
+import prisma from "../../../../../../../lib/prisma";
+import decodeToken from "../../../../../../../lib/decodeToken";
+import getInstancePermissions from "../../../../../../../lib/client/getInstancePermissions";
 
 export default async function handler(req, res) {
     const { method, query: { id } } = req;
 
-    try {
-        var user = decode(req.headers.authorization.split(" ")[1]);
-    } catch (error) {
-        return res.status(401).send("Unauthorized");
-    }
+    const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
+
+    const instance = await prisma.instance.findUnique({
+        where: {
+            id: id
+        },
+        include: {
+            users: {
+                select: {
+                    id: true,
+                    permissions: true,
+                    user: {
+                        select: {
+                            id: true,
+                        }
+                    }
+                }
+            },
+            backups: true,
+            node: true
+        }
+    })
+    if (!instance) return res.status(404).send("Instance not found");
+
+    const permissions = getInstancePermissions(tokenData.id, instance);
 
     switch (method) {
         case "GET":
             console.log("Getting backups");
             break;
         case "POST":
+            if (!permissions.includes("create-backup")) return res.status(403).send("Not allowed to access this resource");
             if (!req.body.name) return res.status(400).send("Missing backup name");
 
-            const { db } = await connectToDatabase();
-            const instance = await db.collection("instances").findOne({
-                _id: ObjectId(id),
-                [`users.${user.id}`]: { $exists: true }
-            });
-            const node = await db.collection("nodes").findOne({
-                _id: ObjectId(instance.node)
-            });
-            try {
-                const decipher = crypto.createDecipheriv("aes-256-ctr", process.env.ENC_KEY, Buffer.from(node.access_token_iv, "hex"))
-                var access_token = Buffer.concat([decipher.update(Buffer.from(node.access_token.split("::")[1], "hex")), decipher.final()])
-            } catch (error) {
-                console.log(error);
-                return res.status(500).send(error);
-            }
-            try {
-                var backupDB = await db.collection("backups").insertOne({
+            const backup = await prisma.instanceBackup.create({
+                data: {
                     name: req.body.name,
-                    instance: instance._id.toHexString(),
+                    createdAt: new Date(),
                     pending: true,
-                    created_at: new Date()
-                });
-            } catch (error) {
-                return res.status(500).send(error);
-            }
-            try {
-                const backup = await post(`${node.address.ssl ? "https://" : "http://"}${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/backups`, {
-                    name: backupDB.insertedId.toString(),
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${access_token.toString()}`,
-                        "Content-Type": "application/json"
+                    instance: {
+                        connect: {
+                            id: id
+                        }
                     }
+                },
+            });
+
+            try {
+                await post(instance.node, `/api/v1/instances/${instance.id}/backups`, {
+                    name: backup.id
                 })
             } catch (error) {
-                console.log(error);
-                return res.status(500).send(error);
+                await prisma.instanceBackup.delete({
+                    where: {
+                        id: backup.id
+                    }
+                });
+                return res.status(500).send("Internal Server Error");
             }
-            return res.status(200).send("Success");
+
+            return res.status(201).send(backup);
             break;
         default:
             return res.status(400).send("Invalid method");
