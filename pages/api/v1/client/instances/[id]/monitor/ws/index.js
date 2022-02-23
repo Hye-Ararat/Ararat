@@ -1,49 +1,50 @@
-import { connectToDatabase } from "../../../../../../../../util/mongodb";
-import { sign, decode } from "jsonwebtoken";
-import { ObjectId } from "mongodb";
+import { sign } from "jsonwebtoken";
+import decodeToken from "../../../../../../../../lib/decodeToken";
+import prisma from "../../../../../../../../lib/prisma";
 export default async function handler(req, res) {
   const {
     query: { id },
   } = req;
-  let { db } = await connectToDatabase();
-  let user_data = await decode(req.headers.authorization.split(" ")[1]);
-  var access_token_jwt = sign(
-    {
-      instance_id: id,
-      type: "monitor_access_token",
-      user: user_data.id
+
+  const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
+
+  const instance = await prisma.instance.findUnique({
+    where: {
+      id: id
     },
-    process.env.ENC_KEY,
-    {
-      expiresIn: "15m",
-      algorithm: "HS256",
+    include: {
+      node: true,
+      users: {
+        select: {
+          permissions: true,
+          user: {
+            select: {
+              id: true
+            }
+          }
+        }
+      }
     }
-  );
-  var access_token_identifier = access_token_jwt.substr(
-    0,
-    access_token_jwt.indexOf(".")
-  );
-  var access_token = access_token_identifier + ":::" + access_token_jwt;
-  try {
-    var sessions = await db.collection("instances").findOne({
-      _id: ObjectId(id),
-      [`users.${user_data.id}`]: { $exists: true },
-    });
-  } catch (error) {
-    return res.status(500).send({
-      status: "error",
-      data: "An error occured while creating the access token credentials",
-    });
-  }
-  if (!sessions)
-    return res.status(403).send({
-      status: "error",
-      data: "You do not have permission to create an access token for this instance",
-    });
-  return res.json({
-    status: "success",
-    data: {
-      access_token: access_token,
-    },
-  });
+  })
+
+  if (!instance) return res.status(404).send("Instance not found");
+
+  const permissions = getInstancePermissions(tokenData.id, instance);
+
+  if (!permissions.includes("view-statistics")) return res.status(403).send("Not allowed to access this resource");
+
+  const accessToken = sign({
+    instance: id,
+    type: "monitor",
+    permissions: ["view-statistics"]
+  }, process.env.ENC_KEY, {
+    expiresIn: "15m",
+    algorithm: "HS256"
+  })
+
+  const identifier = accessToken.split(0, accessToken.indexOf("."))[0];
+
+  const token = identifier + ":::" + accessToken;
+
+  return res.status(200).send(token);
 }
