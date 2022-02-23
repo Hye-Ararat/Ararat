@@ -26,18 +26,23 @@ export default async function handler(req, res) {
 				return res.status(500).send("Internal Server Error");
 			}
 
-			const access_token_jwt = sign(node_insert, process.env.ENC_KEY, {
+			const access_token_jwt = sign({
+				id: node.id,
+				type: "node",
+				permissions: ["view-instance"]
+			}, process.env.ENC_KEY, {
 				algorithm: "HS256"
 			});
 			const access_token_identifier = access_token_jwt.substring(0, access_token_jwt.indexOf("."))
 			const access_token = access_token_identifier + "::" + access_token_jwt;
 
 			let hashed_key;
+			let iv;
 			try {
-				const iv = crypto.randomBytes(16);
+				iv = crypto.randomBytes(16);
 				const cipher = crypto.createCipheriv("aes-256-ctr", process.env.ENC_KEY, iv)
 				hashed_key = Buffer.concat([cipher.update(access_token), cipher.final()]);
-			} catch (error) {
+			} catch {
 				await prisma.node.delete({
 					where: {
 						id: node.id
@@ -56,7 +61,7 @@ export default async function handler(req, res) {
 						accessTokenIV: iv.toString("hex")
 					}
 				})
-			} catch (error) {
+			} catch {
 				await prisma.node.delete({
 					where: {
 						id: node.id
