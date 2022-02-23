@@ -1,11 +1,9 @@
-import { decode, verify } from "jsonwebtoken"
-import { connectToDatabase } from "../../../../../../../util/mongodb";
-import { ObjectId } from "mongodb";
-import crypto from "crypto"
 import decodeToken from "../../../../../../../lib/decodeToken";
 import prisma from "../../../../../../../lib/prisma";
 import getInstancePermissions from "../../../../../../../lib/client/getInstancePermissions";
 import { del, get, post } from "../../../../../../../lib/requestNode";
+
+
 export default async function handler(req, res) {
     const { query: { id, path }, method } = req;
     const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
