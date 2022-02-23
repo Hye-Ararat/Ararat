@@ -1,33 +1,52 @@
-import { decode, sign } from "jsonwebtoken";
-import { connectToDatabase } from "../../../../../../../../util/mongodb";
-import { ObjectId } from "mongodb";
+import { sign } from "jsonwebtoken";
+import getInstancePermissions from "../../../../../../../../lib/client/getInstancePermissions";
+import decodeToken from "../../../../../../../../lib/decodeToken";
+import prisma from "../../../../../../../../lib/prisma";
+
 export default async function handler(req, res) {
-    let user_data = await decode(req.headers.authorization.split(" ")[1]);
-    let { db } = await connectToDatabase();
-    var instance = db.collection("instances").findOne({
-        _id: ObjectId(req.query.id),
-        [`users.${user_data.id}`]: { $exists: true },
-    })
-    if (instance) {
-        var access_token_jwt = sign(
-            {
-                instance_id: req.query.id,
-                type: "console_access_token",
-                user: user_data.id
-            },
-            process.env.ENC_KEY,
-            {
-                expiresIn: "15m",
-                algorithm: "HS256",
+    const { query: { id } } = req;
+    const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
+
+    const instance = await prisma.instance.findUnique({
+        where: {
+            id: id
+        },
+        include: {
+            users: {
+                select: {
+                    user: {
+                        select: {
+                            id: true
+                        }
+                    },
+                    permissions: true
+                }
             }
-        );
-        var access_token_identifier = access_token_jwt.split(
-            0,
-            access_token_jwt.indexOf(".")
-        )[0];
-        var access_token = access_token_identifier + ":::" + access_token_jwt;
-        return res.send(access_token)
-    } else {
-        return res.status(403).send("You do not have permission to access the console for this instance")
-    }
+        }
+    })
+
+    if (!instance) return res.status(404).send("Instance not found");
+
+    const permissions = getInstancePermissions(tokenData.id, instance);
+
+    if (!permissions.includes("view-console")) return res.status(403).send("Not allowed to access this resource");
+
+    const consolePermissions = ["view-console"];
+
+    if (permissions.includes("input-console")) consolePermissions.push("input-console");
+
+    const accessToken = sign({
+        instance: instance.id,
+        type: "console",
+        permissions: consolePermissions
+    }, process.env.ENC_KEY, {
+        expiresIn: "15m",
+        algorithm: "HS256"
+    })
+
+    const tokenIdentifier = accessToken.split(0, accessToken.indexOf("."))[0];
+
+    const token = tokenIdentifier + ":::" + accessToken;
+
+    return res.status(200).send(token);
 }
