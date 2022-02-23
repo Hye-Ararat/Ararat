@@ -1,4 +1,3 @@
-import bcrypt from "bcryptjs";
 import decodeToken from "../../../../../../../lib/decodeToken";
 
 export default async function handler(req, res) {
