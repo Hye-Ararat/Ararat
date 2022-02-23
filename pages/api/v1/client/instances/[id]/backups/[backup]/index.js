@@ -1,71 +1,47 @@
-import { verify } from "jsonwebtoken";
-import { connectToDatabase } from "../../../../../../../../util/mongodb";
-import { ObjectId } from "mongodb";
-import crypto from "crypto";
-import axios from "axios";
+import getInstancePermissions from "../../../../../../../../lib/client/getInstancePermissions";
+import decodeToken from "../../../../../../../../lib/decodeToken";
+import prisma from "../../../../../../../../lib/prisma";
+import { del } from "../../../../../../../../lib/requestNode";
 
 export default async function handler(req, res) {
-    const { method, query: { id, backup } } = req;
+    const { query: { id, backup } } = req;
+    const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
 
-    let user;
-    try {
-        user = verify(req.headers.authorization.split(" ")[1], process.env.ENC_KEY);
-    } catch (error) {
-        return res.status(401).send("Unauthorized");
-    }
-    if (!user) return res.status(401).send("Unauthorized");
-
-    const { db } = await connectToDatabase();
-
-    let instance;
-    let node;
-
-    try {
-        instance = await db.collection("instances").findOne({
-            _id: ObjectId(id),
-            [`users.${user.id}`]: { $exists: true }
-        })
-    } catch (error) {
-        return res.status(500).send(error);
-    }
-
+    const instance = await prisma.instance.findUnique({
+        where: {
+            id: id
+        },
+        include: {
+            users: {
+                select: {
+                    id: true,
+                    permissions: true,
+                    user: {
+                        select: {
+                            id: true,
+                        }
+                    }
+                }
+            },
+            backups: true,
+            node: true
+        }
+    })
     if (!instance) return res.status(404).send("Instance not found");
+    if (!instance.backups.filter(b => b.id === backup).length) return res.status(404).send("Backup not found");
 
+    const permissions = getInstancePermissions(tokenData.id, instance);
+
+    if (!permissions.includes("delete-backup")) return res.status(403).send("Not allowed to access this resource");
     try {
-        node = await db.collection("nodes").findOne({
-            _id: ObjectId(instance.node)
-        })
-    } catch (error) {
-        return res.status(500).send(error);
+        await del(instance.node, `/api/v1/instances/${instance.id}/backups/${backup}`);
+    } catch {
+        return res.status(500).send("Internal Server Error");
     }
-
-    if (!node) return res.status(404).send("Node not found");
-
-    let access_token;
-
-    try {
-        const decipher = crypto.createDecipheriv("aes-256-ctr", process.env.ENC_KEY, Buffer.from(node.access_token_iv, "hex"));
-        access_token = Buffer.concat([decipher.update(Buffer.from(node.access_token.split("::")[1], "hex")), decipher.final()]);
-    } catch (error) {
-        return res.status(500).send(error);
-    }
-
-    try {
-        await axios.delete(`${node.address.ssl ? "https://" : "http://"}${node.address.hostname}:${node.address.port}/api/v1/instances/${id}/backups/${backup}`, {
-            headers: {
-                "Authorization": `Bearer ${access_token.toString()}`
-            }
-        })
-    } catch (error) {
-        return res.status(500).send(error);
-    }
-
-    try {
-        db.collection("backups").deleteOne({
-            _id: ObjectId(backup),
-        })
-    } catch (error) {
-        return res.status(500).send(error);
-    }
-    return res.status(200).send("Success")
+    await prisma.instanceBackup.delete({
+        where: {
+            id: backup
+        }
+    });
+    return res.status(204).send();
 }
