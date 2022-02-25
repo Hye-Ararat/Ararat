@@ -16,6 +16,11 @@ export default async function handler(req, res) {
                 select: {
                     id: true,
                     permissions: true,
+                    user: {
+                        select: {
+                            id: true
+                        }
+                    }
                 }
             },
             node: {
@@ -30,7 +35,6 @@ export default async function handler(req, res) {
         }
     })
     if (!instance) return res.status(404).send("Instance not found");
-
     if (!instance.users.some(user => user.user.id === userData.id)) return res.status(403).send("Not allowed to access this resource");
 
     let perms = [];
