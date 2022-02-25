@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
     const instance = await prisma.instance.findUnique({
         where: {
-            id: userData.id,
+            id: id,
         },
         include: {
             users: {
