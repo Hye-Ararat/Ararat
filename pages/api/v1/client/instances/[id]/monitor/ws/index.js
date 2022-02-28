@@ -1,6 +1,8 @@
 import { sign } from "jsonwebtoken";
 import decodeToken from "../../../../../../../../lib/decodeToken";
 import prisma from "../../../../../../../../lib/prisma";
+import getInstancePermissions from "../../../../../../../../lib/client/getInstancePermissions";
+
 export default async function handler(req, res) {
   const {
     query: { id },

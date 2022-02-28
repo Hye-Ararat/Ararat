@@ -7,7 +7,7 @@ import { get } from "../../../../../../../lib/requestNode";
 export default async function handler(req, res) {
     const { query: { id } } = req;
 
-    const tokenData = decodeToken(req.headers("authorization").split(" ")[1]);
+    const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
 
     const instance = await prisma.instance.findUnique({
         where: {
