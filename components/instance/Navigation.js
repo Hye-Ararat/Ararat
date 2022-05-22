@@ -13,7 +13,10 @@ import {
   Avatar,
   SvgIcon,
   Grid,
-  Button
+  Button,
+  useMediaQuery,
+  IconButton,
+  useTheme
 } from "@mui/material";
 import {
   Inbox as InboxIcon,
@@ -30,7 +33,9 @@ import {
   Schedule as SchedulesIcon,
   SettingsEthernet as NetworkIcon,
   Settings as SettingsIcon,
-  History as SnapshotsIcon
+  History as SnapshotsIcon,
+  Menu,
+  Storage
 } from "@mui/icons-material";
 import Link from "next/link";
 import useSWR from "swr";
@@ -38,7 +43,7 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as Icons from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import StateIndicator from "./StateIndicator";
 import { InstanceStore } from "../../states/instance";
@@ -46,6 +51,8 @@ import StopButton from "./StopButton";
 import StartButton from "./StartButton";
 
 export default function Navigation({ children, ...props }) {
+  const [open, setOpen] = useState(false);
+
   const fetcher = (url) => axios.get(url).then((res) => res.data);
   console.log(props.page);
   const router = useRouter();
@@ -70,14 +77,12 @@ export default function Navigation({ children, ...props }) {
     }
   }
 
-  var { data: instanceData } = useSWR(`/api/v1/client/instances/${id}?include=["magma_cube", "node", "network"]`, fetcher);
+  var { data: instanceData } = useSWR(`/api/v1/instances/${id}`, fetcher);
   useEffect(() => {
-    if (instance.data) {
-      console.log("exists");
-      console.log(instance.data);
-    } else {
-      console.log("doesnt");
-      instance.setData(instanceData);
+    if (!instance.data) {
+      if (instanceData) {
+        instance.setData(instanceData.metadata);
+      }
     }
   }, [instance.data, instanceData])
   useEffect(() => {
@@ -85,16 +90,17 @@ export default function Navigation({ children, ...props }) {
       console.log("yes");
       console.log("yes2");
       if (instance.sockets.monitor) {
+        /*
         instance.sockets.monitor.onopen = () => {
-          axios.get("/api/v1/client/instances/" + instance.data._id + "/monitor/ws").then((res) => {
-            instance.sockets.monitor.send(res.data.data.access_token);
+          axios.get("/api/v1/client/instances/" + instance.data.id + "/monitor/ws").then((res) => {
+            instance.sockets.monitor.send(res.data.access_token);
           });
         };
+        */
       } else {
         instance.sockets.setMonitor(
           new WebSocket(
-            `${instance.data.relationships.node.address.ssl ? "wss" : "ws"}://${instance.data.relationships.node.address.hostname
-            }:${instance.data.relationships.node.address.port}/api/v1/instances/${instance.data._id}/monitor`
+            `${"ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/state`
           )
         );
       }
@@ -111,18 +117,32 @@ export default function Navigation({ children, ...props }) {
         <CssBaseline />
         <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <Toolbar>
-            <Typography variant="h6" noWrap component="div">
-              {props.page ? instance.data ? instance.data.name : "Ararat" : "Ararat"}
-            </Typography>
-            {props.page ? instance.data ?
-              <Grid container sx={{ ml: "auto" }} xs={3}>
+            <Grid container direction="row">
+              {useMediaQuery(useTheme().breakpoints.up("sm"))
+                ?
+                ""
+                : <IconButton onClick={() => setOpen(!open)}>
+                  <Menu />
+                </IconButton>
+              }
+              {props.page ?
+                <Grid container xs={.5} sm={.8} md={.3} lg={.2} sx={{ mt: "auto", mb: "auto", mr: .5 }}>
+                  <StateIndicator />
+                </Grid> : ""}
+              <Typography sx={{ mt: "auto", mb: "auto" }} variant="h6" noWrap component="div">
+
+                {props.page ? instance.data ? instance.data.name : "Ararat" : "Ararat"}
+              </Typography>
+            </Grid>
+            {useMediaQuery(useTheme().breakpoints.up("sm")) ? props.page ? instance.data ?
+              <Grid container sx={{ ml: "auto" }} xs={3} sm={10} md={5} xl={3}>
                 <Box sx={{
                   mt: "auto", mb: "auto", height: "100%"
                 }} onClick={() => {
                   window.open("/instance/" + instance.data._id + "/console", 'popUpWindow', 'height=600,width=800,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes');
                 }} >
                   <ConsoleIcon sx={{
-                    mt: "auto", width: "30px", height: "30px"
+                    mt: "auto", width: "30px", height: "30px", mb: "auto"
                   }} />
                 </Box>
                 <StartButton instance={instance.data._id} />
@@ -134,40 +154,40 @@ export default function Navigation({ children, ...props }) {
                   Restart
                 </Button>
                 <StopButton instance={instance.data._id} />
-                <StateIndicator />
               </Grid>
-              : '' : ""}
+              : '' : "" : ""}
           </Toolbar>
         </AppBar>
-        <Drawer
-          variant="permanent"
+        <Drawer open={useMediaQuery(useTheme().breakpoints.up("sm")) ? true : open}
+          variant={useMediaQuery(useTheme().breakpoints.up("sm")) ? "persistent" : "temporary"}
           sx={{
             width: 240,
             flexShrink: 0,
             [`& .MuiDrawer-paper`]: {
               width: 240,
-              boxSizing: "border-box"
-            }
+              boxSizing: "border-box",
+              backgroundColor: "#101924",
+            },
           }}
         >
           <Toolbar />
           <Box sx={{ overflow: "auto" }}>
             <List>
-              <Link href="/">
-                <ListItem button>
+              <Link href="/" >
+                <ListItem button onClick={() => setOpen(false)}>
                   <ListItemIcon>
                     <InstanceIcon />
                   </ListItemIcon>
                   <ListItemText primary="Instances" />
                 </ListItem>
               </Link>
-              <ListItem button>
+              <ListItem button onClick={() => setOpen(false)}>
                 <ListItemIcon>
                   <AccountIcon />
                 </ListItemIcon>
                 <ListItemText primary="Account" />
               </ListItem>
-              <ListItem button>
+              <ListItem button onClick={() => setOpen(false)}>
                 <ListItemIcon>
                   <ApiIcon />
                 </ListItemIcon>
@@ -177,7 +197,7 @@ export default function Navigation({ children, ...props }) {
             <Divider />
             <List>
               <Link href={`/instance/${encodeURIComponent(id)}`}>
-                <ListItem button selected={props.page == null ? true : false}>
+                <ListItem onClick={() => setOpen(false)} button selected={props.page == null ? true : false}>
                   <ListItemIcon>
                     <ConsoleIcon />
                   </ListItemIcon>
@@ -185,45 +205,30 @@ export default function Navigation({ children, ...props }) {
                 </ListItem>
               </Link>
               <Link href={`/instance/${encodeURIComponent(id)}/files`}>
-                <ListItem button selected={props.page != null ? (props.page.includes("files") ? true : false) : false}>
+                <ListItem onClick={() => setOpen(false)} button selected={props.page != null ? (props.page.includes("files") ? true : false) : false}>
                   <ListItemIcon>
                     <FilesIcon />
                   </ListItemIcon>
                   <ListItemText primary="Files" />
                 </ListItem>
               </Link>
-              <Link href={`/instance/${encodeURIComponent(id)}/backups`}>
-                <ListItem button selected={props.page == "backups" ? true : false}>
-                  <ListItemIcon>
-                    <BackupIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Backups" />
-                </ListItem>
-              </Link>
               <Link href={`/instance/${encodeURIComponent(id)}/snapshots`}>
-                <ListItem button selected={props.page == "snapshots" ? true : false}>
+                <ListItem onClick={() => setOpen(false)} button selected={props.page == "snapshots" ? true : false}>
                   <ListItemIcon>
                     <SnapshotsIcon />
                   </ListItemIcon>
                   <ListItemText primary="Snapshots" />
                 </ListItem>
               </Link>
-              <Link href={`/instance/${encodeURIComponent(id)}`}>
-                <ListItem button selected={props.page == "databases" ? true : false}>
-                  <ListItemIcon>
-                    <DatabaseIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Databases" />
-                </ListItem>
-              </Link>
-              <Link href={`/instance/${encodeURIComponent(id)}`}>
-                <ListItem button selected={props.page == "users" ? true : false}>
+              <Link href={`/instance/${encodeURIComponent(id)}/users`}>
+                <ListItem onClick={() => setOpen(false)} button selected={props.page == "users" ? true : false}>
                   <ListItemIcon>
                     <UsersIcon />
                   </ListItemIcon>
                   <ListItemText primary="Users" />
                 </ListItem>
               </Link>
+              {/*
               <Link href={`/instance/${encodeURIComponent(id)}`}>
                 <ListItem button selected={props.page == "schedules" ? true : false}>
                   <ListItemIcon>
@@ -232,16 +237,25 @@ export default function Navigation({ children, ...props }) {
                   <ListItemText primary="Schedules" />
                 </ListItem>
               </Link>
-              <Link href={`/instance/${encodeURIComponent(id)}`}>
-                <ListItem button selected={props.page == "networking" ? true : false}>
+        */}
+              <Link href={`/instance/${encodeURIComponent(id)}/networks`}>
+                <ListItem onClick={() => setOpen(false)} button selected={props.page == "networks" ? true : false}>
                   <ListItemIcon>
                     <NetworkIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Networking" />
+                  <ListItemText primary="Networks" />
                 </ListItem>
               </Link>
-              <Link href={`/instance/${encodeURIComponent(id)}`}>
-                <ListItem button selected={props.page == "settings" ? true : false}>
+              <Link href={`/instance/${encodeURIComponent(id)}/disks`}>
+                <ListItem onClick={() => setOpen(false)} button selected={props.page == "disks" ? true : false}>
+                  <ListItemIcon>
+                    <Storage />
+                  </ListItemIcon>
+                  <ListItemText primary="Disks" />
+                </ListItem>
+              </Link>
+              <Link href={`/instance/${encodeURIComponent(id)}/settings`}>
+                <ListItem onClick={() => setOpen(false)} button selected={props.page == "settings" ? true : false}>
                   <ListItemIcon>
                     <SettingsIcon />
                   </ListItemIcon>
@@ -254,7 +268,7 @@ export default function Navigation({ children, ...props }) {
                     library.add();
                     return (
                       <Link href={`/instances/${encodeURIComponent(id)}${addon.route}`} key={addon._id}>
-                        <ListItem button>
+                        <ListItem button onClick={() => setOpen(false)}>
                           <ListItemIcon>
                             <SvgIcon sx={{ width: 24, height: 24, ml: 0.2 }}>
                               <FontAwesomeIcon icon={Icons[addon.icon]} />
@@ -267,17 +281,6 @@ export default function Navigation({ children, ...props }) {
                   })
                   : ""
                 : ""}
-            </List>
-            <Divider />
-            <List>
-              <Link href="/admin">
-                <ListItem button>
-                  <ListItemIcon>
-                    <AdminIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Admin" />
-                </ListItem>
-              </Link>
             </List>
           </Box>
         </Drawer>
