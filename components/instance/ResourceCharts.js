@@ -26,7 +26,7 @@ import {
   SubTitle
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import { Grid, Paper, Typography } from "@mui/material";
+import { Fade, Grid, Paper, Typography } from "@mui/material";
 import prettyBytes from "pretty-bytes";
 
 export default function ResourceCharts() {
@@ -88,7 +88,7 @@ export default function ResourceCharts() {
         console.log(instance.monitor);
         if (memChart) {
           var newMemory = memChart.data.datasets[0].data;
-          newMemory.push(parseInt(instance.monitor.memory.usage));
+          newMemory.push(instance.monitor.memory.usage);
           console.log(newMemory);
           if (newMemory.length >= 11) {
             newMemory.shift();
@@ -98,13 +98,13 @@ export default function ResourceCharts() {
           memChart.update();
         }
       }
-      if (instance.monitor.cpu != null) {
+      if (instance.monitor.cpu.usage != null) {
         console.log(instance.monitor);
         if (cpuChart) {
           console.log(cpuChart);
           var newCPU = cpuChart.data.datasets[0].data;
           console.log(newCPU);
-          newCPU.push(parseInt(instance.monitor.cpu));
+          newCPU.push(instance.monitor.cpu.usage);
           console.log(newCPU);
           if (newCPU.length >= 11) {
             newCPU.shift();
@@ -115,7 +115,7 @@ export default function ResourceCharts() {
         }
       }
     }
-  }, [memChart, instance.monitor.memory.usage, cpuChart]);
+  }, [memChart, instance.monitor.memory.usage, cpuChart, instance.monitor.cpu.usage]);
   useEffect(() => {
     console.log("a;lsdfj;adlsjf;laskdjf;lskdjf;laskdjfa");
     if (instance.data) {
@@ -165,16 +165,9 @@ export default function ResourceCharts() {
               align: "left",
               formatter: function (value) {
                 return (
-                  prettyBytes(value) +
+                  prettyBytes(parseInt(value)) +
                   "/" +
-                  prettyBytes(
-                    parseInt(
-                      instance.data.limits.memory.limit.includes("GB")
-                        ? parseInt(instance.data.limits.memory.limit) * 1073741824
-                        : parseInt(instance.data.limits.memory.limit) * 1048576
-                    ),
-                    { binary: true }
-                  )
+                  instance.data.config["limits.memory"]
                 );
               },
               font: {
@@ -213,7 +206,7 @@ export default function ResourceCharts() {
               color: "#fff",
               align: "left",
               formatter: function (value) {
-                return value + "%";
+                return parseInt(value) + "%";
               },
               font: {
                 size: 15,
@@ -326,34 +319,36 @@ export default function ResourceCharts() {
   }, [instance.data]);
   return (
     <>
-      <Grid container xs={12} direction="row" sx={{ mt: 2, minHeight: "250px", height: "100%" }}>
-        <Grid
-          conatiner
-          xs={5.8}
-          direction="column"
-          sx={{ mr: "auto", width: "100%", height: "100%", minHeight: "250px" }}
-        >
-          <Typography fontWeight="bold" sx={{ mb: 1 }}>
-            CPU
-          </Typography>
-          <Paper style={{ width: "100%", height: "100%", minHeight: "250px" }}>
-            <canvas id="cpuChart" />
-          </Paper>
+      <Fade in={true} appear={true}>
+        <Grid container xs={12} direction="row" sx={{ mt: 2, minHeight: "25vh", height: "100%" }}>
+          <Grid
+            conatiner
+            xs={5.8}
+            direction="column"
+            sx={{ mr: "auto", width: "100%", height: "100%", minHeight: "25vh" }}
+          >
+            <Typography fontWeight="bold" sx={{ mb: 1 }}>
+              CPU
+            </Typography>
+            <Paper style={{ width: "100%", height: "100%", minHeight: "25vh" }}>
+              <canvas id="cpuChart" />
+            </Paper>
+          </Grid>
+          <Grid
+            container
+            xs={5.8}
+            direction="column"
+            sx={{ ml: "auto", width: "100%", height: "100%", minHeight: "25vh" }}
+          >
+            <Typography fontWeight="bold" sx={{ mb: 1 }}>
+              Memory
+            </Typography>
+            <Paper style={{ width: "100%", minHeight: "25vh" }}>
+              <canvas id="memoryChart" />
+            </Paper>
+          </Grid>
         </Grid>
-        <Grid
-          container
-          xs={5.8}
-          direction="column"
-          sx={{ ml: "auto", width: "100%", height: "100%", minHeight: "250px" }}
-        >
-          <Typography fontWeight="bold" sx={{ mb: 1 }}>
-            Memory
-          </Typography>
-          <Paper style={{ width: "100%", minHeight: "250px" }}>
-            <canvas id="memoryChart" />
-          </Paper>
-        </Grid>
-      </Grid>
+      </Fade>
     </>
   );
 }
