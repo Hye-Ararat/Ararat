@@ -3,7 +3,7 @@ import axios from 'axios';
 export default async function SignUp(firstName, lastName, username, email, password) {
   return new Promise(async (resolve, reject) => {
     try {
-      await axios.post(`/api/v1/client/auth/signup`, {
+      await axios.post(`/api/v1/auth/signup`, {
         firstName: firstName,
         lastName: lastName,
         username: username,
