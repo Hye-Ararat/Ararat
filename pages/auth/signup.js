@@ -7,7 +7,6 @@ import {
 	Button,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import { Check } from "@mui/icons-material"
 import logo from "../../public/logo.png";
 import Image from "next/image";
 import { Box } from "@mui/system";
@@ -16,7 +15,6 @@ import Head from "next/head";
 import signup from "../../scripts/api/v1/auth/signup";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import nprogress, { render } from "nprogress";
 
 export default function SignUp() {
 	const router = useRouter();
@@ -34,7 +32,6 @@ export default function SignUp() {
 			return setSigningUp(false)
 		}
 		setSigningUp(false);
-		render(<Check color="success" />)
 		return router.push("/auth/login");
 	}
 	return (
@@ -65,7 +62,7 @@ export default function SignUp() {
 								required
 								onChange={e => setFirstName(e.target.value)}
 								margin="dense"
-								placeholder="Name"
+								placeholder="First Name"
 								variant="outlined"
 								type="text"
 							/>

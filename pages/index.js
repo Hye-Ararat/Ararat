@@ -4,32 +4,26 @@ import {
   Button,
   Typography,
   Grid,
-  Toolbar,
-  AppBar,
-  Drawer,
-  Box,
-  CssBaseline,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Snackbar,
-  Divider,
+  Dialog,
+  Grow,
+  DialogContent,
+  Fade,
+  Zoom,
+  Select,
+  MenuItem,
+  DialogTitle,
 } from "@mui/material";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { destroyCookie } from "nookies";
-import {
-  Inbox as InboxIcon,
-  Mail as MailIcon,
-  Storage as InstanceIcon,
-  SupervisorAccount as AdminIcon,
-  AccountCircle as AccountIcon,
-  Code as ApiIcon,
-} from "@mui/icons-material";
 import Instance from "../components/instance";
-import signOut from "../scripts/lib/auth/signout";
 import prisma from "../lib/prisma"
+import Footer from "../components/footer";
+import Navigation from "../components/navigation";
+import translate, { languages } from "../translations/translations";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import nookies from "nookies";
+import { useRouter } from "next/router";
+import CreateInstance from "../components/instances/CreateInstance";
 export async function getServerSideProps({ req, res }) {
   if (!req.cookies.access_token) {
     return {
@@ -46,8 +40,6 @@ export async function getServerSideProps({ req, res }) {
 
   var { decode } = require("jsonwebtoken");
   const user_data = decode(req.cookies.access_token)
-  console.log(user_data)
-
   const instances = await prisma.instance.findMany({
     where: {
       users: {
@@ -55,132 +47,125 @@ export async function getServerSideProps({ req, res }) {
           userId: user_data.id
         }
       }
-    },
-    include: {
-      node: {
-        select: {
-          cpu: true,
-          disk: true,
-          hostname: true,
-          port: true,
-          id: true,
-          memory: true,
-          ssl: true,
-        }
-      },
-      image: {
-        select: {
-          id: true,
-          name: true,
-          stateless: true,
-          entrypoint: true,
-          magmaCube: {
-            select: {
-              id: true,
-              name: true
-            }
-          },
-          magmaCubeId: true
+    }
+  })
+  let data = JSON.parse(JSON.stringify(instances));
+  return { props: { data, user: user_data } };
+}
+
+export default function Dashboard({ data, user }) {
+  const router = useRouter();
+  const [welcomeDialog, setWelcomeDialog] = useState(false);
+  const [change, setChange] = useState(false);
+  const [changeLangs, setChangeLangs] = useState(true);
+  const [language, setLanguage] = useState("en");
+  const [userLang, setUserLang] = useState(null);
+  const [view, setView] = useState("welcome");
+  const [creatingInstance, setCreatingInstance] = useState(false);
+  useEffect(() => {
+    if (!user.language) {
+      setTimeout(() => {
+        setWelcomeDialog(true);
+      }, 2000)
+    }
+  }, [user])
+  useEffect(() => {
+    if (!user.language) {
+      let lastLang = "en";
+      let interval;
+      if (changeLangs) {
+        interval = setInterval(() => {
+          const randomElement = languages[Math.floor(Math.random() * languages.length)];
+          if (randomElement.code != lastLang) {
+            setChange(true)
+            setTimeout(() => {
+              setLanguage(randomElement.code);
+              lastLang = randomElement.code;
+              setChange(false);
+            }, 300)
+          }
+        }, 5000)
+        return () => {
+          clearInterval(interval)
         }
       }
     }
-  })
-  console.log(instances)
-  let data = JSON.parse(JSON.stringify(instances));
-  return { props: { data } };
-}
-
-export default function Dashboard({ data }) {
-  const router = useRouter();
-  const signout = async () => {
-    await signOut();
-    window.location.reload();
-  };
+  }, [changeLangs, user])
   return (
     <>
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <AppBar
-          position="fixed"
-          sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        >
-          <Toolbar>
-            <Typography variant="h6" noWrap component="div">
-              Ararat
-            </Typography>
-
-            <Button
-              color="inherit"
-              sx={{
-                marginLeft: "auto",
-              }}
-              onClick={signout}
-            >
-              Sign Out
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          variant="permanent"
-          sx={{
-            width: 240,
-            flexShrink: 0,
-            [`& .MuiDrawer-paper`]: {
-              width: 240,
-              boxSizing: "border-box",
-            },
-          }}
-        >
-          <Toolbar />
-          <Box sx={{ overflow: "auto" }}>
-            <List>
-              <ListItem button selected={true}>
-                <ListItemIcon>
-                  <InstanceIcon />
-                </ListItemIcon>
-                <ListItemText primary="Instances" />
-              </ListItem>
-              <ListItem button>
-                <ListItemIcon>
-                  <AccountIcon />
-                </ListItemIcon>
-                <ListItemText primary="Account" />
-              </ListItem>
-              <ListItem button>
-                <ListItemIcon>
-                  <ApiIcon />
-                </ListItemIcon>
-                <ListItemText primary="API" />
-              </ListItem>
-            </List>
-            <Divider />
-            <List>
-              <Link href="/admin">
-                <ListItem button>
-                  <ListItemIcon>
-                    <AdminIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Admin" />
-                </ListItem>
-              </Link>
-            </List>
-          </Box>
-        </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Toolbar />
-          <Head>
-            <title>Dashboard | Ararat</title>
-          </Head>
-          <Typography variant="h4" sx={{ mb: 1 }}>
-            Your Instances
-          </Typography>
-          <Grid spacing={5} container direction="row">
-            {data.map((instance) => {
-              return <Instance instance={instance} key={instance.id} />;
-            })}
-          </Grid>
-        </Box>
-      </Box>
+      <Head>
+        <title>Dashboard | Ararat</title>
+      </Head>
+      <Grid container direction="row">
+        <Typography variant="h4" sx={{ mb: 1 }}>
+          {translate(user.language, "instances", "your_instances")}
+        </Typography>
+        <Button variant="contained" sx={{ ml: "auto", mt: "auto", mb: "auto" }} onClick={() => setCreatingInstance(true)}>{translate(user.language, "instances", "create_instance")}</Button>
+      </Grid>
+      {creatingInstance ?
+        <CreateInstance setCreatingInstance={setCreatingInstance} />
+        : ""}
+      <Grid spacing={1} container direction="column">
+        {data.map((instance) => {
+          return <Instance instance={instance} key={instance.id} />;
+        })}
+      </Grid>
+      <Dialog open={welcomeDialog} transitionDuration={{ appear: 0, enter: 1000, exit: 100 }} TransitionComponent={Grow} keepMounted>
+        {view == "welcome" ?
+          <DialogContent sx={{ minWidth: 430 }}>
+            <Fade in={!change} exit={change}>
+              <Typography align="center" variant="h2" sx={{ mr: "auto", mb: "auto", fontWeight: 600 }}>{translate(userLang ? userLang : language, "setup", "welcome")}</Typography>
+            </Fade>
+            <Fade in={true} style={{ transitionDelay: 2500 }}>
+              <Typography align="center" variant="body1">{translate(language, "setup", "select_language")}</Typography>
+            </Fade>
+            <Select sx={{ minWidth: "100%", background: "#2a3138", mt: 1 }} value={language} onChange={(e) => {
+              setUserLang(e.target.value);
+              setLanguage(e.target.value);
+              setChangeLangs(false);
+            }}>
+              {languages.map((lang) => {
+                return (
+                  <MenuItem key={lang.code} value={lang.code}>{lang.name}</MenuItem>
+                )
+              }
+              )}
+            </Select>
+            <Zoom in={true} style={{ transitionDelay: 3000, transitionDuration: 2000 }}>
+              <Grid container direction="row">
+                <Button onClick={async () => {
+                  setChangeLangs(false);
+                  await axios.patch(`/api/v1/users/${user.id}`, {
+                    language: userLang ? userLang : language
+                  })
+                  setView("reauth");
+                }} sx={{ mr: "auto", ml: "auto", mt: 2 }} variant="contained" color="primary">{translate(language, "setup", "continue")}</Button>
+              </Grid>
+            </Zoom>
+          </DialogContent>
+          : <>
+            <DialogTitle>{translate(userLang, "setup", "reauth")}</DialogTitle>
+            <DialogContent sx={{ minWidth: 430 }}>
+              <Grid container>
+                <Typography>{translate(userLang ? userLang : language, "setup", "reauth_desc")}</Typography>
+                <Button onClick={() => {
+                  nookies.destroy(null, "access_token");
+                  nookies.destroy(null, "refresh_token");
+                  router.replace("/auth/login");
+                }} sx={{ mr: "auto", ml: "auto", mt: 2 }} variant="contained">{translate(userLang ? userLang : language, "setup", "sign_out")}</Button>
+              </Grid>
+            </DialogContent>
+          </>}
+      </Dialog>
+      <Footer />
     </>
   );
+}
+
+Dashboard.getLayout = (page) => {
+  return (
+    <Navigation>
+      {page}
+    </Navigation>
+  )
 }
