@@ -11,31 +11,37 @@ export default function FileEditor({ file, path, instance }) {
   const [saving, setSaving] = useState(false);
   console.log(file)
   function language() {
-    switch (path.split(".").pop()) {
-      case "js":
-        return "javascript";
-      case "py":
-        return "python";
-      case "sh":
-        return "shell";
-      case "rb":
-        return "ruby";
-      case "php":
-        return "php";
-      case "html":
-        return "html";
-      case "css":
-        return "css";
-      case "json":
-        return "json";
-      case "md":
-        return "markdown";
-      case "java":
-        return "java";
-      case "yml":
-        return "yaml";
-      default:
-        return "plaintext";
+    if (path.includes(".")) {
+      switch (path.split(".").pop()) {
+        case "js":
+          return "javascript";
+        case "c":
+          return "c";
+        case "py":
+          return "python";
+        case "sh":
+          return "shell";
+        case "rb":
+          return "ruby";
+        case "php":
+          return "php";
+        case "html":
+          return "html";
+        case "css":
+          return "css";
+        case "json":
+          return "json";
+        case "md":
+          return "markdown";
+        case "java":
+          return "java";
+        case "yml":
+          return "yaml";
+        default:
+          return "plaintext";
+      }
+    } else {
+      return "plaintext"
     }
   }
   const monaco = useMonaco();
@@ -258,11 +264,12 @@ export default function FileEditor({ file, path, instance }) {
       <LoadingButton loading={saving} sx={{ mt: 1 }} variant="contained" color="success" onClick={async () => {
         console.log(data);
         setSaving(true);
-        await axios.post(`/api/v1/client/instances/${instance}/files?path=${path}`, typeof (data) == "object" ? JSON.stringify(JSON.parse(data)) : data, {
+        await axios.post(`/api/v1/instances/${instance}/files?path=${path}`, data, {
           headers: {
             'Content-Type': 'text/plain',
           }
         });
+        console.log(instance)
         setSaving(false);
       }}>Save</LoadingButton>
     </div >
