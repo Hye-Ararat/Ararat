@@ -7,7 +7,9 @@ export const InstanceStore = createContextStore({
     }),
     monitor: {
         state: null,
-        cpu: null,
+        cpu: {
+            usage: null,
+        },
         swap: {
             usage: null
         },
