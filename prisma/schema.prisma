@@ -17,6 +17,7 @@ model User {
   email       String         @unique
   username    String         @unique
   password    String
+  language    String?
   permissions Permission[]
   instances   InstanceUser[]
 }
@@ -28,94 +29,32 @@ model Permission {
   permission String
 }
 
-model MagmaCube {
-  id     String  @id @default(cuid())
-  name   String
-  images Image[]
-}
-
 model ImageServer {
-  id       String  @id @default(cuid())
-  name     String  @unique
-  address  String
-  protocol String  @default("simplestreams")
-  images   Image[]
-}
-
-model Image {
-  id            String      @id @default(cuid())
-  name          String      @unique
-  type          String
-  stateless     Boolean
-  entrypoint    String?
-  imageServer   ImageServer @relation(fields: [imageServerId], references: [id], onDelete: Cascade)
-  imageServerId String
-  magmaCube     MagmaCube   @relation(fields: [magmaCubeId], references: [id], onDelete: Cascade)
-  magmaCubeId   String
-  amd64         String?
-  arm64         String?
-  console       String?
-  instances     Instance[]
+  id       String @id @default(cuid())
+  name     String @unique
+  url      String
+  protocol String @default("simplestreams")
 }
 
 model Node {
-  id            String     @id @default(cuid())
-  name          String
-  hostname      String
-  port          Int
-  ssl           Boolean
-  memory        String
-  cpu           Int
-  disk          String
-  accessToken   String
-  accessTokenIV String
-  networks      Network[]
-  instances     Instance[]
-}
-
-model Network {
-  id                     String  @id @default(cuid())
-  name                   String
-  node                   Node    @relation(fields: [nodeId], references: [id], onDelete: Cascade)
-  nodeId                 String
-  ipv4                   String?
-  ipv6                   String?
-  ipAlias                String?
-  remote                 Boolean @default(false)
-  isPrimaryRemoteNetwork Boolean @default(false)
-  primaryRemoteNetworkId String?
-  remoteNetworkProtocol  String  @default("gre")
-  ports                  Port[]
-}
-
-model Port {
-  id          String  @id @default(cuid())
-  network     Network @relation(fields: [networkId], references: [id], onDelete: Cascade)
-  networkId   String
-  description String
-  listenPort  String
-  protocol    String  @default("tcp")
-  targetType  String  @default("instance")
-  target      String
-  targetPort  String
+  id          String     @id @default(cuid())
+  name        String
+  address     String
+  port        String
+  lxdPort     String
+  sftpPort    String
+  certificate String
+  key         String
+  encIV       String
+  instances   Instance[]
 }
 
 model Instance {
-  id            String             @id @default(cuid())
-  name          String
-  node          Node               @relation(fields: [nodeId], references: [id], onDelete: Cascade)
-  nodeId        String
-  image         Image              @relation(fields: [imageId], references: [id], onDelete: Cascade)
-  imageId       String
-  cpu           Int
-  cpuPriority   Int?
-  memory        String
-  memoryEnforce Boolean?
-  diskPriority  Int?
-  users         InstanceUser[]
-  devices       InstanceDevice[]
-  snapshots     InstanceSnapshot[]
-  backups       InstanceBackup[]
+  id     String         @id @default(cuid())
+  name   String
+  node   Node           @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  nodeId String
+  users  InstanceUser[]
 }
 
 model InstanceUser {
@@ -132,30 +71,4 @@ model InstanceUserPermission {
   instanceUser   InstanceUser @relation(fields: [instanceUserId], references: [id], onDelete: Cascade)
   instanceUserId String
   permission     String
-}
-
-model InstanceDevice {
-  id         String   @id @default(cuid())
-  instance   Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
-  instanceId String
-  name       String
-  type       String
-  metadata   Json
-}
-
-model InstanceSnapshot {
-  id         String   @id @default(cuid())
-  instance   Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
-  instanceId String
-  name       String
-  createdAt  DateTime
-}
-
-model InstanceBackup {
-  id         String   @id @default(cuid())
-  instance   Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
-  instanceId String
-  name       String
-  pending    Boolean  @default(true)
-  createdAt  DateTime
 }
