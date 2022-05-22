@@ -1,245 +1,77 @@
-import { Grid, CardActionArea, Typography, Avatar, Paper, Box, Dialog, DialogTitle, Alert } from "@mui/material";
-import useSWR, { mutate, SWRConfig } from "swr";
-import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMicrochip, faHardDrive, faMemory, faEthernet, faInfinity } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useState } from "react";
-import prettyBytes from "pretty-bytes";
-import Link from "next/link";
+import { Avatar, CardActionArea, Grid, Paper, Skeleton, Typography } from "@mui/material"
+import Link from "next/link"
+import { get } from "axios"
+import useSWR from "swr"
+import { useEffect, useState } from "react"
+import prettyBytes from "pretty-bytes"
+import { faMemory, faMicrochip } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+
 
 export default function Instance({ instance }) {
-  const fetcher = (url) => axios.get(url).then((res) => res.data);
-  const [monitor_error, setMonitorError] = useState(false);
-  const [monitorData, setMonitorData] = useState({
-    state: null,
+  const [statisticsWS, setStatisticsWS] = useState(null);
+  const [statistics, setStatistics] = useState({
     cpu: null,
     memory: {
-      usage: null,
-      percent: null
-    },
-    disk: {
       usage: null
     },
-    containerState: null
+    state: null
   });
-  function prefetch() {
-    mutate(`/api/v1/client/instances/${instance._id}?include=["magma_cube", "node", "network"]`, instance, true);
-  }
+
+  const fetcher = (url) => get(url).then((res) => res.data);
+  const { data: instanceData } = useSWR(`/api/v1/client/instances/${instance.id}`, fetcher);
+  console.log(statistics);
   useEffect(() => {
-    prefetch();
-  }, []);
-  useEffect(() => {
-    mutate(`/api/v1/client/nodes/${instance.node}`, axios.get(`/api/v1/client/nodes/${instance.node}`), false).then(
-      (res) => {
-        var node_data = res.data;
-        async function monitor() {
-          var getData = new Promise(async (resolve, reject) => {
-            try {
-              var getToken = axios.get(`/api/v1/client/instances/${instance._id}/monitor/ws`);
-              var getStats = axios.get(`/api/v1/client/instances/${instance._id}/monitor`);
-            } catch {
-              reject("An error occured");
-            }
-            await axios
-              .all([getToken, getStats])
-              .then(
-                axios.spread((...args) => {
-                  resolve({
-                    token: args[0].data.data.access_token,
-                    monitor_data: args[1].data.data
-                  });
-                })
-              )
-              .catch(() => {
-                reject("An error occured");
-              });
-          });
-          try {
-            var { token, monitor_data } = await getData;
-          } catch {
-            var monitor_data = {
-              state: null,
-              cpu: null,
-              memory: {
-                usage: null,
-                percent: null
-              },
-              disk: {
-                usage: null
-              },
-              containerState: null
-            };
-          }
-          // websocket headers
-          setMonitorData(monitor_data);
-          const ws = new WebSocket(
-            `wss://${node_data.data.address.hostname}:${node_data.data.address.port}/api/v1/instances/${instance._id}/monitor`
-          );
-          ws.onopen = () => {
-            ws.send(
-              JSON.stringify({
-                event: "authenticate",
-                data: { monitor_token: token }
-              })
-            );
-          };
-          ws.onerror = (error) => {
-            setMonitorError(true);
-          };
-          ws.onmessage = (e) => {
-            if (e.data != "Unauthorized") {
-              if (monitor_error) {
-                setMonitorError(false);
-              }
-              setMonitorData(JSON.parse(e.data));
-            }
-          };
-        }
-        monitor();
-      }
-    );
-  }, []);
+    if (!statisticsWS && instanceData) {
+      get(`/api/v1/client/instances/${instanceData.id}/monitor/ws`).then((res) => {
+        const token = res.data;
+
+        const ws = new WebSocket(`${instanceData.node.ssl ? "wss" : "ws"}://${instanceData.node.hostname}:${instanceData.node.port}/api/v1/instances/${instanceData.id}/monitor`)
+        ws.onopen = () => ws.send(token)
+
+        setStatisticsWS(ws);
+      }).catch(() => { });
+    } else if (instanceData && statisticsWS) {
+      statisticsWS.onmessage = (data) => setStatistics(JSON.parse(data.data));
+    }
+    return () => {
+      if (statisticsWS) statisticsWS.close();
+    }
+  }, [statisticsWS, instanceData]);
+
   return (
-    <Grid container item md={12} xs={12} direction="row">
-      <Link href={`/instance/${instance._id}`}>
-        <CardActionArea sx={{ borderRadius: "10px" }}>
-          <Paper sx={{ width: "100%", height: "100px", borderRadius: "10px", background: monitor_error ? "red" : "background.paper" }}>
-            {monitor_error ? (
-              <Alert severity="error" sx={{ width: "100%", position: "absolute", height: "40%", opacity: 0.5 }}>
-                An error occured while connecting to this instance.
-              </Alert>
-            ) : (
-              ""
-            )}
-            <Grid container direction="row" sx={{ width: "100%", height: "100%" }}>
-              <Grid
-                item
-                container
-                md={1}
-                xs={0}
-                lg={1}
-                xl={1}
-                sx={{ height: "100%", display: { xs: "none", md: "flex" } }}
-              >
-                <Avatar
-                  sx={{
-                    padding: "10px",
-                    bgcolor:
-                      monitor_error != true ?
-                        monitorData.state ?
-                          monitorData.state.toLocaleLowerCase() == "online" ||
-                            monitorData.state.toLocaleLowerCase() == "online"
-                            ? "#163a3a"
-                            : monitorData.state.toLocaleLowerCase() == "offline" ||
-                              monitorData.state.toLocaleLowerCase() === "stopped"
-                              ? "#34242b"
-                              : monitorData.state.toLocaleLowerCase() == "stopping" ||
-                                monitorData.state.toLocaleLowerCase() == "starting"
-                                ? "#363422"
-                                : "#34242b" : "#34242b" : "",
-                    width: 50,
-                    height: 50,
-                    margin: "auto"
-                  }}
-                  src={
-                    instance.relationships
-                      ? instance.type == "n-vps"
-                        ? "https://upload.wikimedia.org/wikipedia/commons/d/dd/Linux_Containers_logo.svg"
-                        : instance.type == "kvm"
-                          ? "https://tuchacloud.com/wp-content/uploads/2016/03/KVM-tucha.png"
-                          : ""
-                      : ""
-                  }
-                />
+    <Grid container item xs={12}>
+      <Link href={`/instance/${instance.id}`} passHref>
+        <CardActionArea>
+          <Paper sx={{ width: "100%", p: 2 }}>
+            <Grid container direction="row" xs={12}>
+              <Grid container direction="row" xs={5}>
+                {instanceData || statistics.state ?
+                  <Avatar sx={{ mr: 1, border: statistics.state ? 4 : "", borderColor: statistics.state ? statistics.state == "Online" ? "#1d5434" : "#592525" : "transparent" }} src={instanceData.image ? instanceData.image.type == "n-vps" ? "/hye.png" : instanceData.image.type == "kvm" ? "/images/kvm.png" : "" : "/hye.png"} />
+                  : <Skeleton variant="circular" sx={{ height: "40px", width: "40px", mr: 1 }} />}
+                <Typography variant="h6" sx={{ mt: "auto", mb: "auto" }}>{instance.name}</Typography>
               </Grid>
-              <Grid container item xs={10} md={4.8} xl={5} sx={{ height: "100%" }} direction="row">
-                <Typography
-                  variant="h6"
-                  noWrap
-                  sx={{
-                    color: "#fff",
-                    fontWeight: "bold",
-                    marginTop: "auto",
-                    marginBottom: "auto"
-                  }}
-                >
-                  {instance.name ? instance.name : ""}
-                </Typography>
-              </Grid>
-              <Grid
-                container
-                item
-                xs={0}
-                md={5}
-                lg={5}
-                xl={4}
-                sx={{
-                  height: "100%",
-                  display: { xs: "none", md: "flex" },
-                  marginLeft: "auto"
-                }}
-                direction="row"
-              >
-                <Box
-                  sx={{
-                    margin: "auto",
-                    display: "flex"
-                  }}
-                >
-                  <FontAwesomeIcon
-                    icon={faMicrochip}
-                    style={{
-                      marginRight: 10,
-                      marginTop: "auto",
-                      marginBottom: "auto"
-                    }}
-                  />
-                  <Typography variant="body1" noWrap>
-                    {monitorData.cpu != undefined && monitorData.cpu != null
-                      ? parseFloat(monitorData.cpu).toFixed(2) + "%"
-                      : ""}
-                  </Typography>
-                </Box>
-                <Box display="flex" sx={{ margin: "auto" }}>
-                  <FontAwesomeIcon
-                    icon={faMemory}
-                    style={{
-                      marginRight: 10,
-                      marginTop: "auto",
-                      marginBottom: "auto"
-                    }}
-                  />
-                  <Typography variant="body1" noWrap>
-                    {monitorData.memory.usage != undefined && monitorData.memory.usage != null
-                      ? prettyBytes(parseFloat(monitorData.memory.usage), { binary: true })
-                      : ""}
-                    /
-                    {prettyBytes(parseInt(instance.limits.memory.limit) * 1048576, {
-                      binary: true
-                    })}
-                  </Typography>
-                </Box>
-                <Box display="flex" sx={{ margin: "auto" }}>
-                  <FontAwesomeIcon
-                    icon={faHardDrive}
-                    style={{
-                      marginRight: 10,
-                      marginTop: "auto",
-                      marginBottom: "auto"
-                    }}
-                  />
-                  <Typography variant="body1" noWrap>
-                    {monitorData.disk.usage != undefined && monitorData.disk.usage != null
-                      ? parseFloat(monitorData.disk.usage)
-                      : ""}
-                    /{instance.devices.root.size ? prettyBytes(parseInt(instance.devices.root.size) * 1000000) : <FontAwesomeIcon icon={faInfinity} />}
-                  </Typography>
-                </Box>{" "}
-              </Grid>
+              {instanceData ?
+                <>
+                  {instanceData.cpu ?
+                    <Grid container direction="row" xs={2} sx={{ mt: "auto", mb: "auto", ml: "auto" }}>
+                      <Typography>
+                        <FontAwesomeIcon icon={faMicrochip} style={{ marginRight: 5, marginTop: "auto", marginBottom: "auto" }} />
+                        {statistics.cpu != null ? statistics.cpu.toFixed(2) + "%" : instanceData.cpu + " Cores"}
+                      </Typography>
+                    </Grid>
+                    : ""}
+                  {instanceData.memory ?
+                    <Grid container direction="row" xs={2} sx={{ mt: "auto", mb: "auto", ml: "auto" }}>
+                      <Typography><FontAwesomeIcon icon={faMemory} style={{ marginRight: 5, marginTop: "auto", marginBottom: "auto" }} /> {statistics.memory.usage != null ? prettyBytes(statistics.memory.usage, { binary: true }).replace(" ", "") + " / " : ""} {instanceData.memory}</Typography>
+                    </Grid>
+                    : ""}
+                </>
+                : ""}
             </Grid>
           </Paper>
         </CardActionArea>
       </Link>
     </Grid>
-  );
+  )
 }
