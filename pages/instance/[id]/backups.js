@@ -6,6 +6,7 @@ import { useState } from "react";
 import axios, { post } from "axios";
 import { useRouter } from "next/router";
 import nookies from "nookies";
+import Footer from "../../../components/footer";
 
 export async function getServerSideProps({ req, res, query }) {
     if (!req.cookies.access_token) {
@@ -129,6 +130,7 @@ Backups.getLayout = (page) => {
         <InstanceStore.Provider>
             <Navigation page="backups">
                 {page}
+                <Footer />
             </Navigation>
         </InstanceStore.Provider>
     )
