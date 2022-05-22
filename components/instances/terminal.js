@@ -22,13 +22,13 @@ function TermComponent(props) {
         }
     }
     useEffect(() => {
-        if (props.instance.relationships.magma_cube != null) {
-            if (props.instance.relationships.magma_cube.console == "xterm") {
+        if (props.instance.image != null) {
+            if (props.instance.image.console == "xterm") {
                 console.log("THIS IS GOING")
                 if (!instance.sockets.console) {
-                    instance.sockets.setConsole(new WebSocket(`${props.instance.relationships.node.address.ssl ? "wss" : "ws"}://${props.instance.relationships.node.address.hostname}:${props.instance.relationships.node.address.port}/api/v1/instances/${props.instance._id}/console`));
+                    instance.sockets.setConsole(new WebSocket(`${props.instance.node.ssl ? "wss" : "ws"}://${props.instance.node.hostname}:${props.instance.node.port}/api/v1/instances/${props.instance.id}/console`));
                 } else if (!instance.sockets.control) {
-                    instance.sockets.setControl(new WebSocket(`${props.instance.relationships.node.address.ssl ? "wss" : "ws"}://${props.instance.relationships.node.address.hostname}:${props.instance.relationships.node.address.port}/api/v1/instances/${props.instance._id}/control`))
+                    instance.sockets.setControl(new WebSocket(`${props.instance.node.ssl ? "wss" : "ws"}://${props.instance.node.hostname}:${props.instance.node.port}/api/v1/instances/${props.instance.id}/control`))
                 } else {
                     console.log("THIS IS GOING 2")
                     if (!instance.sockets.consoleReady) {
@@ -100,15 +100,15 @@ function TermComponent(props) {
     return (
         <>
             <link rel="stylesheet" type="text/css" href="/xterm.css" />
-            {props.instance.relationships.magma_cube != null ?
-                props.instance.relationships.magma_cube.console == "vga" ?
+            {/*props.instance.image != null ?
+                props.instance.image.console == "vga" ?
                     <Spice instance={props.instance} />
                     :
                     <>
                         <Fade in={instance.sockets.console} style={{ height: "100%", minHeight: props.external ? "100vh" : "500px", width: "100%" }}>
                             <Paper sx={{ p: 1, background: "#141c26", minHeight: props.external ? "100vh" : "" }}>
                                 <ResizeObserver onResize={rect => {
-                                    if (props.instance.relationships.magma_cube.console == "xterm") {
+                                    if (props.instance.image.console == "xterm") {
                                         var yes = document.getElementsByClassName("xterm-viewport");
                                         yes = yes[0];
                                         console.log(rect.width)
@@ -135,7 +135,7 @@ function TermComponent(props) {
                     </>
                 :
                 ""
-            }
+                                    */}
         </>
     )
 }
