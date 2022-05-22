@@ -1,0 +1,14 @@
+{
+    "setup": {
+        "welcome": "Welcome",
+        "select_language": "Please select your language",
+        "continue": "Continue",
+        "reauth": "Re-Authenticate",
+        "reauth_desc": "In order to update your settings, you need to re-authenticate your session.",
+        "sign_out": "Sign Out"
+    },
+    "instances": {
+        "your_instances": "Your Instances",
+        "create_instance": "Create Instance"
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "setup": {
+        "welcome": "Bienvenidos",
+        "select_language": "Por favor seleccione su idioma",
+        "continue": "Continuar",
+        "lets_setup": "Consigamos la configuración de Ararat"
+    }
+}

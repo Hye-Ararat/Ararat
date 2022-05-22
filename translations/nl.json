@@ -1,0 +1,14 @@
+{
+    "setup": {
+        "welcome": "Welkom",
+        "select_language": "Selecteer uw taal a.u.b.",
+        "continue": "Doorgaan",
+        "reauth": "Opnieuw verifiëren",
+        "reauth_desc": "Om uw instellingen bij te werken, moet u uw sessie opnieuw verifiëren.",
+        "sign_out": "Afmelden"
+    },
+    "instances": {
+        "your_instances": "Uw instanties",
+        "create_instance": "Instantie maken"
+    }
+}
