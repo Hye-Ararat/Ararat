@@ -58,6 +58,7 @@ const theme = createTheme({
       styleOverrides: {
         paper: {
           backgroundColor: "#101924",
+          backgroundImage: "linear-gradient(to bottom, #101924, #101924)",
         }
       }
     },
@@ -66,6 +67,15 @@ const theme = createTheme({
         root: {
           backgroundColor: "#28374b",
         }
+      }
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: "#141c26",
+          backgroundImage: "linear-gradient(to bottom, #141c26, #141c26)",
+          borderRadius: 10
+        },
       }
     },
     MuiListSubheader: {
@@ -100,7 +110,13 @@ const theme = createTheme({
     MuiInput: {
       styleOverrides: {
         root: {
-          borderRadius: 6
+          borderRadius: 6,
+          ":before": {
+            borderBottom: 0,
+          },
+          ":hover:not(.Mui-disabled)::before": {
+            borderBottom: 0,
+          }
         }
       }
     },
