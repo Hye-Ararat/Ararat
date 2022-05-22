@@ -11,9 +11,8 @@ import { SWRConfig } from "swr";
 import nookies from "nookies";
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import { useEffect, useState } from "react";
-import Navigation from "../components/instance/Navigation";
-import AdminNav from "../components/admin/Navigation";
+process.title = "Hye Ararat";
+import "../styles/globals.css"
 config.autoAddCss = false;
 
 NProgress.configure({ showSpinner: false });
@@ -72,18 +71,18 @@ function localStorageProvider() {
 }
 function MyApp({ Component, pageProps }) {
 	Router.onRouteChangeError = () => NProgress.done();
-		Router.onRouteChangeStart = () => {
-			NProgress.start();
-		};
-		Router.onRouteChangeComplete = () => {
-			NProgress.done()
-		}
-		const getLayout = Component.getLayout || ((page) => page)
+	Router.onRouteChangeStart = () => {
+		NProgress.start();
+	};
+	Router.onRouteChangeComplete = () => {
+		NProgress.done()
+	}
+	const getLayout = Component.getLayout || ((page) => page)
 	return (
 		<SWRConfig value={{ provider: localStorageProvider }}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
-					{getLayout(<Component {...pageProps} />)}
+				{getLayout(<Component {...pageProps} />)}
 			</ThemeProvider>
 		</SWRConfig>
 	);
