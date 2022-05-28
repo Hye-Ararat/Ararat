@@ -37,7 +37,7 @@
     "jsonwebtoken": "^8.5.1",
     "language-detect": "^1.1.0",
     "md5": "^2.3.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "mongodb": "^4.4.1",
     "next": "^12.1.4",
     "next-transpile-modules": "^9.0.0",
