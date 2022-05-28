@@ -34,9 +34,9 @@ export default function Install({ nodePort, setPage, sslCertPath, sslKeyPath, lx
         certif.sign(keypair.privateKey);
         const cert = forge.pki.certificateToPem(certif)
         const leKey = forge.pki.privateKeyToPem(keypair.privateKey)
-        //{Buffer(cert).toString("base64")
-        setCertificate(Buffer(cert).toString("base64"));
-        setKey(Buffer(leKey).toString("base64"));
+        //{Buffer.from(cert).toString("base64")
+        setCertificate(Buffer.from(cert).toString("base64"));
+        setKey(Buffer.from(leKey).toString("base64"));
 
         setCommand(`source <(curl -s \"${location.origin}/api/v1/nodes/install?port=${nodePort}&ssl=${location.origin.protocol == "https:" ? `true&ssl_cert_path=${sslCertPath}&ssl_key_path=${sslKeyPath}` : "false"}\")`)
     }, [])

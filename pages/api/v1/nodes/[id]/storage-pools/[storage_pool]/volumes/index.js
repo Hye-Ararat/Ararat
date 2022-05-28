@@ -15,8 +15,8 @@ export default async function handler(req, res) {
         type: 'error'
     })
     const lxd = new Client("https://" + node.address + ":" + node.lxdPort, {
-        certificate: Buffer.from(Buffer(getNodeEnc(node.encIV, node.certificate)).toString(), "base64").toString("ascii"),
-        key: Buffer.from(Buffer(getNodeEnc(node.encIV, node.key)).toString(), "base64").toString("ascii")
+        certificate: Buffer.from(Buffer.from(getNodeEnc(node.encIV, node.certificate)).toString(), "base64").toString("ascii"),
+        key: Buffer.from(Buffer.from(getNodeEnc(node.encIV, node.key)).toString(), "base64").toString("ascii")
     });
     switch (method) {
         case "GET":

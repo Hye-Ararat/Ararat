@@ -31,8 +31,8 @@ export async function getServerSideProps({ req, res, query }) {
     })
     let networks;
     const client = new hyexd("https://" + instance.node.address + ":" + instance.node.lxdPort, {
-        certificate: Buffer.from(Buffer(getNodeEnc(instance.node.encIV, instance.node.certificate)).toString(), "base64").toString("ascii"),
-        key: Buffer.from(Buffer(getNodeEnc(instance.node.encIV, instance.node.key)).toString(), "base64").toString("ascii")
+        certificate: Buffer.from(Buffer.from(getNodeEnc(instance.node.encIV, instance.node.certificate)).toString(), "base64").toString("ascii"),
+        key: Buffer.from(Buffer.from(getNodeEnc(instance.node.encIV, instance.node.key)).toString(), "base64").toString("ascii")
     })
     networks = await client.instance(query.id).data;
     networks = Object.keys(networks.metadata.devices).filter(device => networks.metadata.devices[device].type === "nic");

@@ -30,8 +30,8 @@ export default async function handler(req, res) {
             })
 
             const lxd = new Client("https://" + nodeData.address + ":" + nodeData.lxdPort, {
-                certificate: Buffer.from(Buffer(getNodeEnc(nodeData.encIV, nodeData.certificate)).toString(), "base64").toString("ascii"),
-                key: Buffer.from(Buffer(getNodeEnc(nodeData.encIV, nodeData.key)).toString(), "base64").toString("ascii")
+                certificate: Buffer.from(Buffer.from(getNodeEnc(nodeData.encIV, nodeData.certificate)).toString(), "base64").toString("ascii"),
+                key: Buffer.from(Buffer.from(getNodeEnc(nodeData.encIV, nodeData.key)).toString(), "base64").toString("ascii")
             })
 
             let operation;
@@ -128,5 +128,30 @@ export default async function handler(req, res) {
                 operation.metadata.resources.instances[index] = instance.replace("/1.0", "/api/v1")
             });
             return res.status(202).send(operation);
+        case "GET":
+            const dbInstances = await prisma.instance.findMany({
+                include: {
+                    users: {
+                        where: {
+                            userId: tokenData.id
+                        }
+                    }
+                }
+            })
+            let instances = [];
+            dbInstances.forEach(instance => {
+                if (instance.users.length > 0) {
+                    instances.push(instance)
+                }
+            })
+            res.send({
+                type: "sync",
+                status: "Success",
+                status_code: 200,
+                operation: "",
+                error_code: 0,
+                error: "",
+                metadata: instances
+            })
     }
 }

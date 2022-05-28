@@ -34,8 +34,8 @@ export async function getServerSideProps({ req, res, query }) {
     })
     let disks;
     const client = new hyexd("https://" + instance.node.address + ":" + instance.node.lxdPort, {
-        certificate: Buffer.from(Buffer(getNodeEnc(instance.node.encIV, instance.node.certificate)).toString(), "base64").toString("ascii"),
-        key: Buffer.from(Buffer(getNodeEnc(instance.node.encIV, instance.node.key)).toString(), "base64").toString("ascii")
+        certificate: Buffer.from(Buffer.from(getNodeEnc(instance.node.encIV, instance.node.certificate)).toString(), "base64").toString("ascii"),
+        key: Buffer.from(Buffer.from(getNodeEnc(instance.node.encIV, instance.node.key)).toString(), "base64").toString("ascii")
     })
     let instState = await client.instance(instance.id).state;
     instState = instState.metadata;
