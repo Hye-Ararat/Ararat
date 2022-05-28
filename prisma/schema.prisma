@@ -11,15 +11,16 @@ datasource db {
 }
 
 model User {
-  id          String         @id @default(cuid())
-  firstName   String
-  lastName    String
-  email       String         @unique
-  username    String         @unique
-  password    String
-  language    String?
-  permissions Permission[]
-  instances   InstanceUser[]
+  id              String            @id @default(cuid())
+  firstName       String
+  lastName        String
+  email           String            @unique
+  username        String            @unique
+  password        String
+  language        String?
+  permissions     Permission[]
+  instances       InstanceUser[]
+  ImageServerUser ImageServerUser[]
 }
 
 model Permission {
@@ -29,11 +30,28 @@ model Permission {
   permission String
 }
 
+model ImageServerUser {
+  id            String                  @id @default(cuid())
+  user          User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  imageServer   ImageServer             @relation(fields: [imageServerId], references: [id], onDelete: Cascade)
+  imageServerId String
+  permissions   ImageServerPermission[]
+}
+
+model ImageServerPermission {
+  id         String          @id @default(cuid())
+  user       ImageServerUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  permission String
+}
+
 model ImageServer {
-  id       String @id @default(cuid())
-  name     String @unique
-  url      String
-  protocol String @default("simplestreams")
+  id              String            @id @default(cuid())
+  name            String            @unique
+  url             String
+  protocol        String            @default("simplestreams")
+  ImageServerUser ImageServerUser[]
 }
 
 model Node {
