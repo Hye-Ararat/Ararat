@@ -1,17 +1,32 @@
 import decodeToken from "../../../../lib/decodeToken";
 import axios from "axios";
 import prisma from "../../../../lib/prisma"
+import { getUserPermissions } from "../../../../lib/getUserPermissions";
 export default async function handler(req, res) {
     const { query: { id }, method } = req;
-    //const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
-
-    /*if (!tokenData.permissions.includes("list-images")) return res.status(403).send({
-        "code": 403,
-        error: "not allowed to access this resource",
-        type: "error"
-    })*/
-
-    let image_servers = await prisma.imageServer.findMany({});
+    const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
+    let image_servers = []
+    console.log(await getUserPermissions(tokenData.id))
+    if ((await getUserPermissions(tokenData.id)).includes("list-images")) {
+        image_servers = await prisma.imageServer.findMany({})
+    } else {
+        image_servers = await prisma.imageServer.findMany({
+            where: {
+                ImageServerUser: {
+                    some: {
+                        userId: tokenData.id,
+                        AND: {
+                            permissions: {
+                                some: {
+                                    permission: "list-images"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     const responses = await axios.all(image_servers.map(server => axios.get(server.url + "/streams/v1/index.json"))).then(axios.spread((...responses) => responses));
     let images = [];
