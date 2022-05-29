@@ -8,7 +8,13 @@
         "sign_out": "Afmelden"
     },
     "instances": {
-        "your_instances": "Uw instanties",
-        "create_instance": "Instantie maken"
+        "your_instances": "Uw Instances",
+        "create_instance": "Instance maken"
+    },
+    "sidebar": {
+        "instances": "Servers",
+        "networks": "Netwerken",
+        "users": "Gebruikers",
+        "ranks": "Rangen"
     }
 }

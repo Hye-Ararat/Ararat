@@ -4,5 +4,17 @@
         "select_language": "Por favor seleccione su idioma",
         "continue": "Continuar",
         "lets_setup": "Consigamos la configuración de Ararat"
+    },
+    "instances": {
+        "your_instances": "Tus instancias",
+        "create_instance": "Crear instancia"
+    },
+    "sidebar": {
+        "instances": "Instancias",
+        "nodes": "Nodos",
+        "images": "Imágenes",
+        "networks": "Redes",
+        "users": "Usuarios",
+        "ranks": "Rangos"
     }
 }

@@ -10,5 +10,13 @@
     "instances": {
         "your_instances": "Your Instances",
         "create_instance": "Create Instance"
+    },
+    "sidebar": {
+        "instances": "Instances",
+        "nodes": "Nodes",
+        "networks": "Networks",
+        "images": "Images",
+        "users": "Users",
+        "ranks": "Ranks"
     }
 }

@@ -13,6 +13,9 @@ import {
 } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import translate from "../translations/translations";
+import decodeToken from "../lib/decodeToken";
+import nookies from "nookies";
 
 export default function Navigation({ children, ...props }) {
     const router = useRouter();
@@ -72,7 +75,7 @@ export default function Navigation({ children, ...props }) {
                                 <ListItemIcon>
                                     <InstanceIcon />
                                 </ListItemIcon>
-                                <ListItemText primary="Instances" />
+                                <ListItemText primary={translate(nookies.get(null).access_token ? decodeToken(nookies.get(null).access_token).language : "en", "sidebar", "instances")} />
                             </ListItem>
                         </Link>
                         <Link href="/nodes">
@@ -80,7 +83,7 @@ export default function Navigation({ children, ...props }) {
                                 <ListItemIcon>
                                     <NodesIcon />
                                 </ListItemIcon>
-                                <ListItemText primary="Nodes" />
+                                <ListItemText primary={translate(nookies.get(null).access_token ? decodeToken(nookies.get(null).access_token).language : "en", "sidebar", "nodes")} />
                             </ListItem>
                         </Link>
                         <Link onClick={() => setOpen(false)} href="/networks">
@@ -88,7 +91,7 @@ export default function Navigation({ children, ...props }) {
                                 <ListItemIcon>
                                     <NetworkIcon />
                                 </ListItemIcon>
-                                <ListItemText primary="Networks" />
+                                <ListItemText primary={translate(nookies.get(null).access_token ? decodeToken(nookies.get(null).access_token).language : "en", "sidebar", "networks")} />
                             </ListItem>
                         </Link>
                         <Link onClick={() => setOpen(false)} href="/">
@@ -96,7 +99,7 @@ export default function Navigation({ children, ...props }) {
                                 <ListItemIcon>
                                     <ImagesIcon />
                                 </ListItemIcon>
-                                <ListItemText primary="Images" />
+                                <ListItemText primary={translate(nookies.get(null).access_token ? decodeToken(nookies.get(null).access_token).language : "en", "sidebar", "images")} />
                             </ListItem>
                         </Link>
                     </List>
@@ -107,7 +110,7 @@ export default function Navigation({ children, ...props }) {
                                 <ListItemIcon>
                                     <UsersIcon />
                                 </ListItemIcon>
-                                <ListItemText primary="Users" />
+                                <ListItemText primary={translate(nookies.get(null).access_token ? decodeToken(nookies.get(null).access_token).language : "en", "sidebar", "users")} />
                             </ListItem>
                         </Link>
                         <Link onClick={() => setOpen(false)} href="/">
@@ -115,7 +118,7 @@ export default function Navigation({ children, ...props }) {
                                 <ListItemIcon>
                                     <RanksIcon />
                                 </ListItemIcon>
-                                <ListItemText primary="Ranks" />
+                                <ListItemText primary={translate(nookies.get(null).access_token ? decodeToken(nookies.get(null).access_token).language : "en", "sidebar", "ranks")} />
                             </ListItem>
                         </Link>
                     </List>

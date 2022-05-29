@@ -10,5 +10,13 @@
     "instances": {
         "your_instances": "Ձեր օրինակները",
         "create_instance": "Ստեղծել օրինակ"
+    },
+    "sidebar": {
+        "instances": "Օրինակներ",
+        "nodes": "Հանգույցներ",
+        "networks": "Ցանցեր",
+        "images": "Պատկերներ",
+        "users": "Օգտատերեր",
+        "ranks": "Շարքեր"
     }
 }
