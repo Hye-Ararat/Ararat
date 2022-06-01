@@ -2,27 +2,45 @@ import decodeToken from "../../../../lib/decodeToken";
 import Client from "hyexd";
 import prisma from "../../../../lib/prisma";
 import getNodeEnc from "../../../../lib/getNodeEnc";
+import { getUserPermissions } from "../../../../lib/getUserPermissions"
+import convertPermissionsToArray from "../../../../lib/convertPermissionsToArray";
+import getLXDUserPermissions from "../../../../lib/getLXDUserPermissions";
 
 export default async function handler(req, res) {
     const { method } = req;
 
     const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
-
+    const permissions = await getUserPermissions(tokenData.id)
     switch (method) {
         case "POST":
-            if (!tokenData.permissions.includes("create-instance")) return res.status(403).send({
-                "code": 403,
-                "error": "not allowed to perform this operation",
-                "type": "error"
-            });
-
             const { name, node, type, config, devices, source, users } = req.body;
-
             const nodeData = await prisma.node.findUnique({
                 where: {
                     id: node
+                },
+                include: {
+                    users: {
+                        where: {
+                            userId: tokenData.id
+                        },
+                        include: {
+                            permissions: true
+                        }
+                    }
                 }
             })
+
+            let userPerms = convertPermissionsToArray(nodeData.users[0].permissions)
+            if (!userPerms.includes("create-instance")) {
+                if (!permissions.includes("create-instance")) {
+                    return res.status(403).send({
+                        "code": 403,
+                        "error": "not allowed to perform this operation",
+                        "type": "error"
+                    });
+                }
+            }
+
             if (!nodeData) return res.status(400).send({
                 "code": 400,
                 "error": "bad request: node does not exist",
@@ -33,6 +51,86 @@ export default async function handler(req, res) {
                 certificate: Buffer.from(Buffer.from(getNodeEnc(nodeData.encIV, nodeData.certificate)).toString(), "base64").toString("ascii"),
                 key: Buffer.from(Buffer.from(getNodeEnc(nodeData.encIV, nodeData.key)).toString(), "base64").toString("ascii")
             })
+
+            let error = null;
+            const perms = new Promise((resolve, reject) => {
+                let count = 0;
+                Object.keys(devices).forEach(async device => {
+                    if (device != "root") {
+                        if (devices[device].type == "disk") {
+                            if (!permissions.includes("attach-volume")) {
+                                if (!userPerms.includes("attach-volume")) {
+                                    let volumes = (await lxd.storagePool(devices[device].pool).volumes).metadata
+                                    let volume = volumes.find(volume => volume.name == devices[device].source)
+                                    if (!volume) {
+                                        return reject({
+                                            "code": 400,
+                                            "error": "bad request: volume does not exist",
+                                            "type": "error"
+                                        });
+                                    }
+                                    if (!volume.config["user.permissions"]) {
+                                        return reject({
+                                            "code": 400,
+                                            "error": "bad request: volume does not have user.permissions",
+                                            "type": "error"
+                                        });
+                                    }
+                                    if (!getLXDUserPermissions(tokenData.id, JSON.parse(volume.config["user.permissions"])).includes("attach")) {
+                                        return reject({
+                                            "code": 400,
+                                            "error": "bad request: user does not have permissions to attach volume",
+                                            "type": "error"
+                                        })
+                                    }
+
+                                }
+                            }
+                        }
+                        if (devices[device].type == "nic") {
+                            if (!permissions.includes("attach-network")) {
+                                if (!userPerms.includes("attach-network")) {
+                                    let network = (await lxd.network(devices[device].network).data).metadata
+                                    if (!network) {
+                                        return reject({
+                                            "code": 400,
+                                            "error": "bad request: network does not exit",
+                                            "type": "error"
+                                        })
+                                    }
+
+                                    if (!network.config["user.permissions"]) {
+                                        return reject({
+                                            "code": 400,
+                                            "error": "bad request: user does not have permissions to attach network",
+                                            "type": "error"
+                                        })
+                                    }
+
+                                    if (!getLXDUserPermissions(tokenData.id, JSON.parse(network.config["user.permissions"])).includes("attach")) {
+                                        return reject({
+                                            "code": 400,
+                                            "error": "bad request: user does not have permissions to attach network",
+                                            "type": "error"
+                                        })
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    count++;
+                    if (count == Object.keys(devices).length) {
+                        resolve();
+                    }
+                })
+
+            })
+            try {
+
+                await perms;
+            } catch (error) {
+                return res.status(400).send(error);
+            }
 
             let operation;
 
@@ -73,34 +171,19 @@ export default async function handler(req, res) {
                         }
                     }
                 })
-                let fileCount = 0;
-                function files() {
-                    return new Promise((resolve, reject) => {
-                        const interval = setInterval(() => {
-                            let fc = 0;
-                            Object.keys(user.permissions.files).forEach(file => {
-                                if (user.permissions.files[file] == true) fc++;
-                            });
-                            if (fileCount == fc) {
-                                clearInterval(interval);
-                                resolve();
-                            }
-                        }, 10);
-                    })
-                }
-                Object.keys(user.permissions.files).forEach(async perm => {
+                await Promise.all([user.permissions.forEach(async permission => {
                     await prisma.instanceUserPermission.create({
                         data: {
                             instanceUser: {
                                 connect: {
-                                    id: u.id,
+                                    id: u.id
                                 }
                             },
-                            permission: perm.charAt(0).toUpperCase() + perm.slice(1) + "-files",
+                            permission: permission
                         }
                     })
-                })
-                await files();
+                })])
+
                 count++;
             })
             await done();

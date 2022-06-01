@@ -27,6 +27,16 @@ export default async function handler(req, res) {
                 return res.status(500).send(error);
             }
             return res.status(volumes.status_code).send(volumes);
+        case "POST":
+            let volume;
+            try {
+                volume = await lxd.storagePool(storage_pool).createVolume(req.body.name,
+                    { ...req.body, type: "custom" });
+
+            } catch (error) {
+                console.log(error)
+            }
+            return res.status(200).send(volume);
         default:
             return res.status(405).send({
                 code: 405,
