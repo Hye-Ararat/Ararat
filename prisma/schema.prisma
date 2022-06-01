@@ -21,6 +21,7 @@ model User {
   permissions     Permission[]
   instances       InstanceUser[]
   ImageServerUser ImageServerUser[]
+  NodeUser        NodeUser[]
 }
 
 model Permission {
@@ -47,11 +48,27 @@ model ImageServerPermission {
 }
 
 model ImageServer {
-  id              String            @id @default(cuid())
-  name            String            @unique
-  url             String
-  protocol        String            @default("simplestreams")
-  ImageServerUser ImageServerUser[]
+  id       String            @id @default(cuid())
+  name     String            @unique
+  url      String
+  protocol String            @default("simplestreams")
+  users    ImageServerUser[]
+}
+
+model NodePermission {
+  id         String   @id @default(cuid())
+  user       NodeUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  permission String
+}
+
+model NodeUser {
+  id          String           @id @default(cuid())
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  node        Node             @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  nodeId      String
+  permissions NodePermission[]
 }
 
 model Node {
@@ -65,6 +82,7 @@ model Node {
   key         String
   encIV       String
   instances   Instance[]
+  users       NodeUser[]
 }
 
 model Instance {

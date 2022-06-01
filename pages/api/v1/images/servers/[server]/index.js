@@ -18,7 +18,7 @@ export default async function handler(req, res) {
                 id: server,
             },
             include: {
-                ImageServerUser: {
+                users: {
                     select: {
                         userId: true
                     }
@@ -27,8 +27,8 @@ export default async function handler(req, res) {
         })
         let found = false;
         let iterations = 0;
-        while (!found && iterations < tempImageServer.ImageServerUser.length) {
-            if (tempImageServer.ImageServerUser[iterations].userId == tokenData.id) {
+        while (!found && iterations < tempImageServer.users.length) {
+            if (tempImageServer.users[iterations].userId == tokenData.id) {
                 found = true;
             }
             iterations += 1;
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
             "error": "You are not allowed to access this resource"
         })
     }
-    delete image_server.ImageServerUser;
+    delete image_server.users;
 
     return res.status(200).send({
         status_code: 200,

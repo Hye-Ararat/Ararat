@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     } else {
         image_servers = await prisma.imageServer.findMany({
             where: {
-                ImageServerUser: {
+                users: {
                     some: {
                         userId: tokenData.id
                     }
