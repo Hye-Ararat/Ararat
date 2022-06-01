@@ -2,6 +2,7 @@ import { ExpandMore } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControlLabel, Grid, Paper, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import permissions from "../../../lib/permissions.json";
 
 export default function Users({ setPage, setUsers, users }) {
     const [acUsers, setacUsers] = useState(null);
@@ -43,17 +44,7 @@ export default function Users({ setPage, setUsers, users }) {
                                         firstName: fullUsers[e.target.value].firstName,
                                         lastName: fullUsers[e.target.value].lastName,
                                         email: fullUsers[e.target.value].email,
-                                        permissions: {
-                                            all: true,
-                                            files: {
-                                                view: false,
-                                                download: false,
-                                                create: false,
-                                                delete: false,
-                                                edit: false,
-                                                upload: false
-                                            },
-                                        }
+                                        permissions: []
                                     })
                                 } else {
                                     setTempUser({})
@@ -67,33 +58,61 @@ export default function Users({ setPage, setUsers, users }) {
                                 <Typography align="center" fontFamily="Poppins" variant="h6" sx={{ mb: 1 }}>Permissions</Typography>
                                 <Grid container>
                                     <FormControlLabel control={<Checkbox checked={tempUser.permissions.all} onChange={(e) => {
-                                        setTempUser({ ...tempUser, permissions: { ...tempUser.permissions, all: e.target.checked } })
+                                        let perms = []
+                                        if (e.target.checked) {
+                                            Object.keys(permissions.instance).forEach(key => {
+                                                Object.keys(permissions.instance[key]).forEach(key2 => {
+                                                    permissions.instance[key][key2].forEach(permission => {
+                                                        perms.push(permission)
+                                                    })
+                                                })
+                                            })
+                                        }
+                                        setTempUser({ ...tempUser, permissions: perms })
                                     }} />} label="All Permissions" />
                                 </Grid>
-                                <Accordion sx={{ mt: 1 }} expanded={userPanel == "files"} onChange={() => userPanel == "files" ? setUserPanel("") : setUserPanel("files")}>
-                                    <AccordionSummary expandIcon={<ExpandMore />}>
-                                        <Typography sx={{ mt: "auto", mb: "auto" }} variant="h6" fontFamily="Poppins">Files</Typography>
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        <Grid container direction="column">
-                                            <Typography fontWeight={600}>Read Permissions</Typography>
-                                            <Grid container>
-                                                <FormControlLabel control={<Checkbox checked={tempUser.permissions.files.view || tempUser.permissions.all} onChange={(e) => setTempUser({ ...tempUser, permissions: { ...tempUser.permissions, files: { ...tempUser.permissions.files, view: e.target.checked } } })} />} label="View Files" />
-                                                <FormControlLabel control={<Checkbox checked={tempUser.permissions.files.download || tempUser.permissions.all} onChange={(e) => setTempUser({ ...tempUser, permissions: { ...tempUser.permissions, files: { ...tempUser.permissions.files, download: e.target.checked } } })} />} label="Download Files" />
-                                            </Grid>
-                                            <Typography fontWeight={600}>Write Permissions</Typography>
-                                            <Grid container>
-                                                <FormControlLabel control={<Checkbox checked={tempUser.permissions.files.create || tempUser.permissions.all} onChange={(e) => setTempUser({ ...tempUser, permissions: { ...tempUser.permissions, files: { ...tempUser.permissions.files, create: e.target.checked } } })} />} label="Create Files" />
-                                                <FormControlLabel control={<Checkbox checked={tempUser.permissions.files.delete || tempUser.permissions.all} onChange={(e) => setTempUser({ ...tempUser, permissions: { ...tempUser.permissions, files: { ...tempUser.permissions.files, delete: e.target.checked } } })} />} label="Delete Files" />
-                                                <FormControlLabel control={<Checkbox checked={tempUser.permissions.files.edit || tempUser.permissions.all} onChange={(e) => setTempUser({ ...tempUser, permissions: { ...tempUser.permissions, files: { ...tempUser.permissions.files, edit: e.target.checked } } })} />} label="Edit Files" />
-                                                <FormControlLabel control={<Checkbox checked={tempUser.permissions.files.upload || tempUser.permissions.all} onChange={(e) => setTempUser({ ...tempUser, permissions: { ...tempUser.permissions, files: { ...tempUser.permissions.files, upload: e.target.checked } } })} />} label="Upload Files" />
-                                            </Grid>
+                                {Object.keys(permissions.instance).map(key => {
+                                    return (
+                                        <Accordion key={key} sx={{ mt: 1 }} expanded={userPanel == key} onChange={() => userPanel == key ? setUserPanel("") : setUserPanel(key)}>
+                                            <AccordionSummary expandIcon={<ExpandMore />}>
+                                                <Typography sx={{ mt: "auto", mb: "auto" }} variant="h6" fontFamily="Poppins">{key[0].toUpperCase() + key.slice(1, key.length)}</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <Grid container direction="column">
+                                                    {Object.keys(permissions.instance[key]).map(key2 => {
+                                                        return (
+                                                            <>
+                                                                <Typography fontWeight={600}>{key2[0].toUpperCase() + key2.slice(1, key2.length)}</Typography>
+                                                                <Grid container>
+                                                                    {permissions.instance[key][key2].map(yes => {
+                                                                        return (
+                                                                            <>
+                                                                                <FormControlLabel control={<Checkbox checked={tempUser.permissions.includes(yes)} onChange={(e) => {
+                                                                                    let perms = tempUser.permissions;
+                                                                                    if (e.target.checked) {
+                                                                                        perms.push(yes)
+                                                                                    } else {
+                                                                                        perms.splice(perms.indexOf(yes), 1)
+                                                                                    }
+                                                                                    setTempUser({ ...tempUser, permissions: perms })
+                                                                                }} />} label={yes.split("-")[0].toUpperCase()[0] + yes.split("-")[0].slice(1, yes.split("-")[0].length) + " " + yes.split("-")[1].toUpperCase()[0] + yes.split("-")[1].slice(1, yes.split("-")[1].length)} />
+                                                                            </>
+                                                                        )
+                                                                    })}
 
-                                        </Grid>
+                                                                </Grid>
+                                                            </>
+                                                        )
+                                                    })}
 
-                                    </AccordionDetails>
 
-                                </Accordion>
+                                                </Grid>
+
+                                            </AccordionDetails>
+
+                                        </Accordion>
+                                    )
+                                })}
                             </>
                             : ""}
                     </DialogContent>

@@ -1,0 +1,39 @@
+{
+    "node": {
+        "instance": [
+            "create-instance"
+        ],
+        "volumes": [
+            "attach-volume"
+        ],
+        "networks": [
+            "attach-network"
+        ]
+    },
+    "instance": {
+        "files": {
+            "read": [
+                "view-files",
+                "download-files"
+            ],
+            "write": [
+                "create-files",
+                "delete-files",
+                "edit-files",
+                "upload-files"
+            ]
+        },
+        "networks": {
+            "device": [
+                "attach-network"
+            ]
+        },
+        "state": {
+            "power": [
+                "start-instance",
+                "stop-instance",
+                "restart-instance"
+            ]
+        }
+    }
+}
