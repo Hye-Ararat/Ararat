@@ -6,6 +6,7 @@ import { getUserPermissions } from "../../../../lib/getUserPermissions"
 import convertPermissionsToArray from "../../../../lib/convertPermissionsToArray";
 import getLXDUserPermissions from "../../../../lib/getLXDUserPermissions";
 import Permissions from "../../../../lib/permissions/index";
+import { errorResponse } from "../../../../lib/responses";
 export default async function handler(req, res) {
     const { method } = req;
 
@@ -32,18 +33,10 @@ export default async function handler(req, res) {
             })
 
             if (!await permInstance.createInstance) {
-                return res.status(403).send({
-                    "code": 403,
-                    "error": "not allowed to perform this operation",
-                    "type": "error"
-                });
+                return res.status(403).send(errorResponse("You are not allowed to create instances on this node", 403));
             }
 
-            if (!nodeData) return res.status(400).send({
-                "code": 400,
-                "error": "bad request: node does not exist",
-                "type": "error"
-            })
+            if (!nodeData) return res.status(404).send(errorResponse("Node does not exist", 404))
 
             const lxd = new Client("https://" + nodeData.address + ":" + nodeData.lxdPort, {
                 certificate: Buffer.from(Buffer.from(getNodeEnc(nodeData.encIV, nodeData.certificate)).toString(), "base64").toString("ascii"),
@@ -57,20 +50,12 @@ export default async function handler(req, res) {
                     if (device != "root") {
                         if (devices[device].type == "disk") {
                             if (!await permInstance.storagePool(devices[device].pool).volume(devices[device].source).attach) {
-                                return reject({
-                                    "code": 400,
-                                    "error": "bad request: user does not have permissions to attach volume",
-                                    "type": "error"
-                                })
+                                return reject(errorResponse("You do not have permissions to attach the volume(s) specified", 403))
                             }
                         }
                         if (devices[device].type == "nic") {
                             if (!await permInstance.network(devices[device].network).attach) {
-                                return reject({
-                                    "code": 400,
-                                    "error": "bad request: user does not have permissions to attach volume",
-                                    "type": "error"
-                                })
+                                return reject(errorResponse("You do not have permission to attach the network(s) specified", 403))
                             }
                         }
                     }
@@ -84,7 +69,7 @@ export default async function handler(req, res) {
             try {
                 await perms;
             } catch (error) {
-                return res.status(400).send(error);
+                return res.status(error.error_code).send(error);
             }
 
             let operation;
