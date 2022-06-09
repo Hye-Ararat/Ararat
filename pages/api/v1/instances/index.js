@@ -5,7 +5,7 @@ import getNodeEnc from "../../../../lib/getNodeEnc";
 import { getUserPermissions } from "../../../../lib/getUserPermissions"
 import convertPermissionsToArray from "../../../../lib/convertPermissionsToArray";
 import getLXDUserPermissions from "../../../../lib/getLXDUserPermissions";
-
+import Permissions from "../../../../lib/permissions/index";
 export default async function handler(req, res) {
     const { method } = req;
 
@@ -14,6 +14,7 @@ export default async function handler(req, res) {
     switch (method) {
         case "POST":
             const { name, node, type, config, devices, source, users } = req.body;
+            let permInstance = new Permissions(tokenData.id).node(node)
             const nodeData = await prisma.node.findUnique({
                 where: {
                     id: node
@@ -30,15 +31,12 @@ export default async function handler(req, res) {
                 }
             })
 
-            let userPerms = convertPermissionsToArray(nodeData.users[0].permissions)
-            if (!userPerms.includes("create-instance")) {
-                if (!permissions.includes("create-instance")) {
-                    return res.status(403).send({
-                        "code": 403,
-                        "error": "not allowed to perform this operation",
-                        "type": "error"
-                    });
-                }
+            if (!await permInstance.createInstance) {
+                return res.status(403).send({
+                    "code": 403,
+                    "error": "not allowed to perform this operation",
+                    "type": "error"
+                });
             }
 
             if (!nodeData) return res.status(400).send({
@@ -58,63 +56,21 @@ export default async function handler(req, res) {
                 Object.keys(devices).forEach(async device => {
                     if (device != "root") {
                         if (devices[device].type == "disk") {
-                            if (!permissions.includes("attach-volume")) {
-                                if (!userPerms.includes("attach-volume")) {
-                                    let volumes = (await lxd.storagePool(devices[device].pool).volumes).metadata
-                                    let volume = volumes.find(volume => volume.name == devices[device].source)
-                                    if (!volume) {
-                                        return reject({
-                                            "code": 400,
-                                            "error": "bad request: volume does not exist",
-                                            "type": "error"
-                                        });
-                                    }
-                                    if (!volume.config["user.permissions"]) {
-                                        return reject({
-                                            "code": 400,
-                                            "error": "bad request: volume does not have user.permissions",
-                                            "type": "error"
-                                        });
-                                    }
-                                    if (!getLXDUserPermissions(tokenData.id, JSON.parse(volume.config["user.permissions"])).includes("attach")) {
-                                        return reject({
-                                            "code": 400,
-                                            "error": "bad request: user does not have permissions to attach volume",
-                                            "type": "error"
-                                        })
-                                    }
-
-                                }
+                            if (!await permInstance.storagePool(devices[device].pool).volume(devices[device].source).attach) {
+                                return reject({
+                                    "code": 400,
+                                    "error": "bad request: user does not have permissions to attach volume",
+                                    "type": "error"
+                                })
                             }
                         }
                         if (devices[device].type == "nic") {
-                            if (!permissions.includes("attach-network")) {
-                                if (!userPerms.includes("attach-network")) {
-                                    let network = (await lxd.network(devices[device].network).data).metadata
-                                    if (!network) {
-                                        return reject({
-                                            "code": 400,
-                                            "error": "bad request: network does not exit",
-                                            "type": "error"
-                                        })
-                                    }
-
-                                    if (!network.config["user.permissions"]) {
-                                        return reject({
-                                            "code": 400,
-                                            "error": "bad request: user does not have permissions to attach network",
-                                            "type": "error"
-                                        })
-                                    }
-
-                                    if (!getLXDUserPermissions(tokenData.id, JSON.parse(network.config["user.permissions"])).includes("attach")) {
-                                        return reject({
-                                            "code": 400,
-                                            "error": "bad request: user does not have permissions to attach network",
-                                            "type": "error"
-                                        })
-                                    }
-                                }
+                            if (!await permInstance.network(devices[device].network).attach) {
+                                return reject({
+                                    "code": 400,
+                                    "error": "bad request: user does not have permissions to attach volume",
+                                    "type": "error"
+                                })
                             }
                         }
                     }
@@ -126,7 +82,6 @@ export default async function handler(req, res) {
 
             })
             try {
-
                 await perms;
             } catch (error) {
                 return res.status(400).send(error);
@@ -194,7 +149,6 @@ export default async function handler(req, res) {
                     source: {
                         ...source
                     }
-
                 })
             } catch (error) {
                 await prisma.instance.delete({
