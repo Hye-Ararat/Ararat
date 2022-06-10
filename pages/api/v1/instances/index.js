@@ -6,7 +6,7 @@ import { getUserPermissions } from "../../../../lib/getUserPermissions"
 import convertPermissionsToArray from "../../../../lib/convertPermissionsToArray";
 import getLXDUserPermissions from "../../../../lib/getLXDUserPermissions";
 import Permissions from "../../../../lib/permissions/index";
-import { errorResponse } from "../../../../lib/responses";
+import { backgroundResponse, errorResponse } from "../../../../lib/responses";
 export default async function handler(req, res) {
     const { method } = req;
 
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
                     if (device != "root") {
                         if (devices[device].type == "disk") {
                             if (!await permInstance.storagePool(devices[device].pool).volume(devices[device].source).attach) {
-                                return reject(errorResponse("You do not have permissions to attach the volume(s) specified", 403))
+                                return reject(errorResponse("You do not have permission to attach the volume(s) specified", 403))
                             }
                         }
                         if (devices[device].type == "nic") {
@@ -149,7 +149,7 @@ export default async function handler(req, res) {
             operation.metadata.resources.instances.forEach((instance, index) => {
                 operation.metadata.resources.instances[index] = instance.replace("/1.0", "/api/v1")
             });
-            return res.status(202).send(operation);
+            return res.status(202).send(backgroundResponse(100, operation.operation, operation.metadata));
         case "GET":
             const dbInstances = await prisma.instance.findMany({
                 include: {
