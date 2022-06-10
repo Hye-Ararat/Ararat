@@ -54,7 +54,7 @@ export default function SideLayout({ listItems, thirdItemFormatter, FarAction, F
                 {sections.map((section, index) => {
                     return (
                         <>
-                            <Grid container direction="row" sx={{ mb: 1, mt: index == 0 ? 0 : 1 }}>
+                            <Grid container direction="row" sx={{ mb: 1, mt: index == 0 ? 0 : 2 }}>
                                 <Typography variant="h6" key={index}>{section.title}</Typography>
                                 {section.action ? section.action(listItems[selected].id) : ""}
                             </Grid>
