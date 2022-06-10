@@ -1,14 +1,28 @@
 {
     "node": {
-        "instance": [
-            "create-instance"
-        ],
-        "volumes": [
-            "attach-volume"
-        ],
-        "networks": [
-            "attach-network"
-        ]
+        "instance": {
+            "manage": [
+                "create-instance"
+            ]
+        },
+        "volumes": {
+            "manage": [
+                "attach-volume"
+            ]
+        },
+        "networks": {
+            "manage": [
+                "attach-network"
+            ]
+        }
+    },
+    "network": {
+        "access": {
+            "devices": [
+                "attach",
+                "detach"
+            ]
+        }
     },
     "instance": {
         "files": {
