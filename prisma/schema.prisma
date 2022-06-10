@@ -50,7 +50,7 @@ model ImageServerPermission {
 model ImageServer {
   id       String            @id @default(cuid())
   name     String            @unique
-  url      String
+  url      String            @unique
   protocol String            @default("simplestreams")
   users    ImageServerUser[]
 }
