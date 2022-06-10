@@ -42,8 +42,6 @@ export default async function handler(req, res) {
                 certificate: Buffer.from(Buffer.from(getNodeEnc(nodeData.encIV, nodeData.certificate)).toString(), "base64").toString("ascii"),
                 key: Buffer.from(Buffer.from(getNodeEnc(nodeData.encIV, nodeData.key)).toString(), "base64").toString("ascii")
             })
-
-            let error = null;
             const perms = new Promise((resolve, reject) => {
                 let count = 0;
                 Object.keys(devices).forEach(async device => {
@@ -61,15 +59,20 @@ export default async function handler(req, res) {
                     }
                     count++;
                     if (count == Object.keys(devices).length) {
-                        resolve();
+                        return resolve();
                     }
                 })
 
             })
+
             try {
                 await perms;
             } catch (error) {
                 return res.status(error.error_code).send(error);
+            }
+            let imagePerms = new Permissions(tokenData.id).imageServer(source.server);
+            if (!await imagePerms.useImages) {
+                return res.status(403).send(errorResponse("You do not have permission to use this image", 403));
             }
 
             let operation;
