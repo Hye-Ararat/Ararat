@@ -3,9 +3,11 @@
     "instance": {
         "scopes": {
             "node": {
-                "manage": [
-                    "create_instance"
-                ]
+                "manage": {
+                    "manage": [
+                        "create_instance"
+                    ]
+                }
             }
         },
         "files": {
