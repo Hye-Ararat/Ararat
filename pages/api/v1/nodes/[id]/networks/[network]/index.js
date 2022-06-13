@@ -39,7 +39,6 @@ export default async function handler(req, res) {
           } else {
             let newPerms = JSON.parse(req.body.config["user.permissions"]);
             let users = Object.keys(newPerms);
-            console.log(users);
             let currentPerms = JSON.parse(currentNetwork.metadata.config["user.permissions"]);
             let canAdd = await perms.addUsers;
             let canEdit = await perms.editUsers;
