@@ -33,20 +33,16 @@ export default function AddUserDialog({ open, permSection, userState }) {
             if (permissions[section].scopes) {
                 if (permissions[section].scopes[permSection]) {
                     if (Object.keys(permissions[section].scopes[permSection]).length > 0) {
-                        Object.keys(permissions[section].scopes[permSection]).forEach(permS => {
-                            perms = {
-                                ...perms,
-                                [permSection]: {
-                                    ...perms[permSection],
-                                    [section]: {
-                                        ...perms[permSection][permSection],
-                                        [permS]: {
-                                            ...permissions[section].scopes[permSection][permS],
-                                        }
-                                    }
+                        perms = {
+                            ...perms,
+                            [permSection]: {
+                                ...perms[permSection],
+                                [section]: {
+                                    ...permissions[section].scopes[permSection]
                                 }
                             }
-                        })
+                        }
+
 
                     }
                     let sec = permissions[section]
@@ -56,7 +52,8 @@ export default function AddUserDialog({ open, permSection, userState }) {
                         [permSection]: {
                             ...perms[permSection],
                             [section]: {
-                                ...sec
+                                ...sec,
+                                ...permissions[section].scopes[permSection]
                             }
                         }
                     }
@@ -69,31 +66,37 @@ export default function AddUserDialog({ open, permSection, userState }) {
             }
         });
     }, [])
-    const [allPermissions, setAllPermissions] = useState(() => {
-        let perms = [];
-        Object.keys(permissions).forEach(section => {
-            if (permissions[section].scopes) {
-                if (permissions[section].scopes[permSection]) {
-                    if (Object.keys(permissions[section].scopes[permSection]).length > 0) {
-                        Object.keys(permissions[section].scopes[permSection]).forEach(permS => {
-                            permissions[section].scopes[permSection][permS].forEach(perm => {
-                                perms.push(perm);
-                            })
+    const [allPermissions, setAllPermissions] = useState([])
+    useEffect(() => {
+        console.log(fullPerms)
+        if (Object.keys(fullPerms).length > 0) {
+            console.log("EEE")
+            let perms = [];
+            Object.keys(fullPerms[permSection]).filter((perm) => perm != "scopes").forEach(perm => {
+                Object.keys(fullPerms[permSection][perm]).forEach(permS => {
+                    console.log(permS)
+                    if (fullPerms[permSection][perm][permS][0]) {
+                        fullPerms[permSection][perm][permS].forEach(perm => {
+                            perms.push(perm);
                         })
+                    } else {
+                        Object.keys(fullPerms[permSection][perm][permS]).forEach(permis => {
+                            if (fullPerms[permSection][perm][permS][permis][0]) {
+                                fullPerms[permSection][perm][permS][permis].forEach(perm => {
+                                    perms.push(perm);
+                                })
+                            }
+
+                        }
+                        )
                     }
-                }
-            }
-        })
-        Object.keys(permissions[permSection]).filter((perm) => perm != "scopes").forEach(perm => {
-            Object.keys(permissions[permSection][perm]).forEach(permS => {
-                permissions[permSection][perm][permS].forEach(perm => {
-                    perms.push(perm);
+
                 })
             })
-        })
-        console.log(perms)
-        return perms;
-    })
+            setAllPermissions(perms)
+
+        }
+    }, [fullPerms])
 
     useEffect(() => {
         axios.get("/api/v1/users").then((res) => {
@@ -150,7 +153,21 @@ export default function AddUserDialog({ open, permSection, userState }) {
                         <Typography align="center" fontFamily="Poppins" variant="h6" sx={{ mb: 1 }}>
                             Permissions
                         </Typography>
-                        <FormControlLabel control={<Checkbox checked={true} />} label="All Permissions" />
+                        <FormControlLabel control={<Checkbox checked={user.permissions.length == allPermissions.length} onClick={(e) => {
+                            console.log(allPermissions)
+                            console.log(user.permissions)
+                            if (e.target.checked) {
+                                setUser({
+                                    ...user,
+                                    permissions: allPermissions
+                                })
+                            } else {
+                                setUser({
+                                    ...user,
+                                    permissions: []
+                                })
+                            }
+                        }} />} label="All Permissions" />
                         {Object.keys(fullPerms[permSection]).filter((value) => value != "scopes").map((permissionHead, index) => {
                             return (
                                 <Accordion key={permissionHead} expanded={viewedPane == index} onClick={() => setViewedPane(index)}>
