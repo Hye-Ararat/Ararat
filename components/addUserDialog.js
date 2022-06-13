@@ -25,6 +25,76 @@ export default function AddUserDialog({ open, permSection, userState }) {
     const [fullUsers, setFullUsers] = useState(null);
     const [user, setUser] = useState({});
     const [viewedPane, setViewedPane] = useState(0);
+    const [fullPerms, setFullPerms] = useState({});
+    useEffect(() => {
+        let perms = permissions;
+        let count = 0;
+        Object.keys(permissions).forEach(section => {
+            if (permissions[section].scopes) {
+                if (permissions[section].scopes[permSection]) {
+                    if (Object.keys(permissions[section].scopes[permSection]).length > 0) {
+                        Object.keys(permissions[section].scopes[permSection]).forEach(permS => {
+                            perms = {
+                                ...perms,
+                                [permSection]: {
+                                    ...perms[permSection],
+                                    [section]: {
+                                        ...perms[permSection][permSection],
+                                        [permS]: {
+                                            ...permissions[section].scopes[permSection][permS],
+                                        }
+                                    }
+                                }
+                            }
+                        })
+
+                    }
+                    let sec = permissions[section]
+                    //delete sec.scopes
+                    perms = {
+                        ...perms,
+                        [permSection]: {
+                            ...perms[permSection],
+                            [section]: {
+                                ...sec
+                            }
+                        }
+                    }
+                }
+            }
+            count++;
+            if (count == Object.keys(permissions).length) {
+                console.log(perms)
+                setFullPerms(perms);
+            }
+        });
+    }, [])
+    const [allPermissions, setAllPermissions] = useState(() => {
+        let perms = [];
+        Object.keys(permissions).forEach(section => {
+            if (permissions[section].scopes) {
+                if (permissions[section].scopes[permSection]) {
+                    if (Object.keys(permissions[section].scopes[permSection]).length > 0) {
+                        Object.keys(permissions[section].scopes[permSection]).forEach(permS => {
+                            permissions[section].scopes[permSection][permS].forEach(perm => {
+                                perms.push(perm);
+                            })
+                        })
+                    }
+                }
+            }
+        })
+        Object.keys(permissions[permSection]).filter((perm) => perm != "scopes").forEach(perm => {
+            Object.keys(permissions[permSection][perm]).forEach(permS => {
+                permissions[permSection][perm][permS].forEach(perm => {
+                    perms.push(perm);
+                })
+            })
+        })
+        console.log(perms)
+        return perms;
+    })
+
     useEffect(() => {
         axios.get("/api/v1/users").then((res) => {
             setFullUsers(res.data.metadata);
@@ -81,7 +151,7 @@ export default function AddUserDialog({ open, permSection, userState }) {
                             Permissions
                         </Typography>
                         <FormControlLabel control={<Checkbox checked={true} />} label="All Permissions" />
-                        {Object.keys(permissions[permSection]).filter((value) => value != "scopes").map((permissionHead, index) => {
+                        {Object.keys(fullPerms[permSection]).filter((value) => value != "scopes").map((permissionHead, index) => {
                             return (
                                 <Accordion key={permissionHead} expanded={viewedPane == index} onClick={() => setViewedPane(index)}>
                                     <AccordionSummary expandIcon={<ExpandMore />}>
@@ -91,14 +161,14 @@ export default function AddUserDialog({ open, permSection, userState }) {
                                     </AccordionSummary>
                                     <AccordionDetails>
                                         <Grid container direction="column">
-                                            {Object.keys(permissions[permSection][permissionHead]).map((permSec) => {
+                                            {Object.keys(fullPerms[permSection][permissionHead]).filter(value => value != "scopes").map((permSec) => {
                                                 return (
                                                     <>
-                                                        <Typography key={permSec} fontWeight="600">
+                                                        <Typography key={permSec} variant="h6" fontSize="large" fontWeight="700">
                                                             {permSec[0].toUpperCase() + permSec.substring(1, permSec.length)}
                                                         </Typography>
                                                         <Grid container direction="row">
-                                                            {permissions[permSection][permissionHead][permSec].map((perm) => {
+                                                            {fullPerms[permSection][permissionHead][permSec][0] ? fullPerms[permSection][permissionHead][permSec].map((perm) => {
                                                                 return (
                                                                     <FormControlLabel
                                                                         key={perm}
@@ -130,6 +200,49 @@ export default function AddUserDialog({ open, permSection, userState }) {
                                                                         }
                                                                     />
                                                                 );
+                                                            }) : Object.keys(fullPerms[permSection][permissionHead][permSec]).map((perm) => {
+                                                                return (
+                                                                    <Grid key={perm} container direction="column">
+                                                                        <Typography fontWeight={500} sx={{ mt: .5 }} color="lightgray">
+                                                                            {perm[0].toUpperCase() + perm.substring(1, perm.length)}
+                                                                        </Typography>
+                                                                        <Grid container direction="row">
+                                                                            {fullPerms[permSection][permissionHead][permSec][perm].map((perm) => {
+                                                                                return (
+                                                                                    <FormControlLabel
+                                                                                        key={perm}
+                                                                                        label={
+                                                                                            perm.split("-").length > 1 ? perm.split("-").join(" ").split("_")[0].split(" ").map((word) => {
+                                                                                                return (
+                                                                                                    word.charAt(0).toUpperCase() + word.substring(1, word.length) + " "
+                                                                                                )
+                                                                                            }) : perm.split("_").join(" ").split("-").join(" ").split(" ").map(word => {
+                                                                                                return (
+                                                                                                    word.charAt(0).toUpperCase() + word.substring(1, word.length) + " "
+                                                                                                )
+
+                                                                                            })
+                                                                                        }
+                                                                                        control={
+                                                                                            <Checkbox
+                                                                                                checked={user.permissions.includes(perm)}
+                                                                                                onChange={(e) => {
+                                                                                                    let perms = user.permissions;
+                                                                                                    if (e.target.checked) {
+                                                                                                        perms.push(perm);
+                                                                                                    } else {
+                                                                                                        perms.splice(perms.indexOf(perm), 1);
+                                                                                                    }
+                                                                                                    setUser({ ...user, permissions: perms });
+                                                                                                }}
+                                                                                            />
+                                                                                        }
+                                                                                    />
+                                                                                )
+                                                                            })}
+                                                                        </Grid>
+                                                                    </Grid>
+                                                                )
                                                             })}
                                                         </Grid>
                                                     </>
@@ -140,6 +253,7 @@ export default function AddUserDialog({ open, permSection, userState }) {
                                 </Accordion>
                             );
                         })}
+                        {Object.keys(fullPerms[permSection]).filter(value => value != "scopes").length == 0 ? <p>e</p> : ""}
                     </>
                 ) : (
                     ""
