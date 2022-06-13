@@ -63,6 +63,14 @@ export default async function handler(req, res) {
               return res.status(403).send(errorResponse(error, 403));
             }
           }
+        } else {
+          if (!(await perms.edit)) {
+            return res.status(403).send(errorResponse("You do not have permission to edit this network", 403));
+          }
+        }
+      } else {
+        if (!(await perms.edit)) {
+          return res.status(403).send(errorResponse("You do not have permission to edit this network", 403));
         }
       }
       let response = await lxd.network(network).partialUpdate(req.body);
