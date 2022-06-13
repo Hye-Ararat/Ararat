@@ -1,52 +1,61 @@
 {
-    "node": {
-        "instance": {
-            "manage": [
-                "create-instance"
+    "node": {},
+    "instance": {
+        "scopes": {
+            "node": {
+                "manage": [
+                    "create_instance"
+                ]
+            }
+        },
+        "files": {
+            "read": [
+                "read-files_instance"
+            ],
+            "write": [
+                "create-files_instance",
+                "delete-files_instance",
+                "edit-files_instance"
             ]
         },
-        "volumes": {
-            "manage": [
-                "attach-volume"
+        "devices": {
+            "networks": [
+                "attach-networks_instance"
             ]
         },
-        "networks": {
-            "manage": [
-                "attach-network"
+        "power": {
+            "power-actions": [
+                "start_instance",
+                "stop_instance"
             ]
         }
     },
     "network": {
+        "scopes": {
+            "node": {}
+        },
         "access": {
-            "devices": [
-                "attach",
-                "detach"
+            "attachment": [
+                "attach_network"
+            ],
+            "users": [
+                "edit-users_network",
+                "add-users_network"
+            ]
+        },
+        "configuration": {
+            "configuration": [
+                "edit_network"
             ]
         }
     },
-    "instance": {
-        "files": {
-            "read": [
-                "view-files",
-                "download-files"
-            ],
-            "write": [
-                "create-files",
-                "delete-files",
-                "edit-files",
-                "upload-files"
-            ]
+    "volume": {
+        "scopes": {
+            "node": {}
         },
-        "networks": {
-            "device": [
-                "attach-network"
-            ]
-        },
-        "state": {
-            "power": [
-                "start-instance",
-                "stop-instance",
-                "restart-instance"
+        "access": {
+            "attachment": [
+                "attach_volume"
             ]
         }
     }
