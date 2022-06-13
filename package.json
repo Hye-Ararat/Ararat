@@ -33,7 +33,7 @@
     "copy-to-clipboard": "^3.3.1",
     "easy-peasy": "^5.0.4",
     "html2canvas": "^1.3.2",
-    "hyexd": "^0.0.43",
+    "hyexd": "^0.0.44",
     "jsonwebtoken": "^8.5.1",
     "language-detect": "^1.1.0",
     "md5": "^2.3.0",
