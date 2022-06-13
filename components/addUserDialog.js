@@ -80,6 +80,7 @@ export default function AddUserDialog({ open, permSection, userState }) {
                         <Typography align="center" fontFamily="Poppins" variant="h6" sx={{ mb: 1 }}>
                             Permissions
                         </Typography>
+                        <FormControlLabel control={<Checkbox checked={true} />} label="All Permissions" />
                         {Object.keys(permissions[permSection]).filter((value) => value != "scopes").map((permissionHead, index) => {
                             return (
                                 <Accordion key={permissionHead} expanded={viewedPane == index} onClick={() => setViewedPane(index)}>
@@ -102,7 +103,11 @@ export default function AddUserDialog({ open, permSection, userState }) {
                                                                     <FormControlLabel
                                                                         key={perm}
                                                                         label={
-                                                                            perm.split("-").join(" ").split("_")[0].split(" ").map((word) => {
+                                                                            perm.split("-").length > 1 ? perm.split("-").join(" ").split("_")[0].split(" ").map((word) => {
+                                                                                return (
+                                                                                    word.charAt(0).toUpperCase() + word.substring(1, word.length) + " "
+                                                                                )
+                                                                            }) : perm.split("_").join(" ").split("-").join(" ").split(" ").map(word => {
                                                                                 return (
                                                                                     word.charAt(0).toUpperCase() + word.substring(1, word.length) + " "
                                                                                 )
