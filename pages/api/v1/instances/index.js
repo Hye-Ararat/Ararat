@@ -36,7 +36,7 @@ export default async function handler(req, res) {
                 return res.status(403).send(errorResponse("You are not allowed to create instances on this node", 403));
             }
 
-            if (!nodeData) return res.status(404).send(errorResponse("Node does not exist", 404))
+            if (!nodeData) return res.status(400).send(errorResponse("Node does not exist", 400))
 
             const lxd = new Client("https://" + nodeData.address + ":" + nodeData.lxdPort, {
                 certificate: Buffer.from(Buffer.from(getNodeEnc(nodeData.encIV, nodeData.certificate)).toString(), "base64").toString("ascii"),
