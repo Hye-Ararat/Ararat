@@ -22,7 +22,7 @@ export default async function handler(req, res) {
             console.log(path, "THE PATH")
             let files;
             try {
-                files = await axios.get(`http://${instance.node.address}:${instance.node.port}/v1/instances/${instance.id}/files?path=${path}`);
+                files = await axios.get(`http${instance.node.ssl ? "s" : ""}://${instance.node.address}:${instance.node.port}/v1/instances/${instance.id}/files?path=${path}`);
             } catch (error) {
                 console.log(error)
             }
