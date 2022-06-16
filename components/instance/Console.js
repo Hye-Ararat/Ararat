@@ -18,7 +18,7 @@ export default function Console() {
     const [fitAddon, setFitAddon] = useState(new FitAddon())
     useEffect(() => {
         if (!instance.sockets.console) {
-            instance.sockets.setConsole(new WebSocket(`ws://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/console`))
+            instance.sockets.setConsole(new WebSocket(`${instance.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/console`))
         } else {
             let has = false;
             instance.sockets.console.addEventListener("open", () => {
