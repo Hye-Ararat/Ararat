@@ -117,7 +117,7 @@ export default function Install({ nodePort, setPage, sslCertPath, sslKeyPath, lx
                                 <Typography sx={{ mt: "auto", mb: "auto", mr: 2 }}> After running the command, just press continue</Typography>
                                 <Button variant="contained" color="primary" sx={{ mt: "auto", mb: "auto", ml: "auto" }} onClick={() => {
                                     setConnecting(true);
-                                    const ws = new WebSocket(`ws://${nodeAddress}:${nodePort}`);
+                                    const ws = new WebSocket(`${location.origin.protocol == "https:" ? "wss" : "ws"}://${nodeAddress}:${nodePort}`);
                                     ws.onopen = () => {
                                         setConnected(true);
                                         setTimeout(() => {
