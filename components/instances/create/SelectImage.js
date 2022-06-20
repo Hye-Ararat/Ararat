@@ -4,61 +4,65 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
-export default function SelectImage({ setPage, setImageData }) {
+export default function SelectImage({ setPage, setImageData, node }) {
     const [images, setImages] = useState(null);
     const [formattedImages, setFormattedImages] = useState(null);
     useEffect(() => {
-        axios.get("/api/v1/images").then(res => {
-            setImages(res.data)
-            console.log(res.data)
-            let sorted = [];
-            res.data.forEach(imageServer => {
-                Object.keys(imageServer.images).forEach(image => {
-                    let kvm = false;
-                    let container = false;
-                    let stateless = false;
-                    Object.keys(imageServer.images[image].versions).forEach(version => {
-                        Object.keys(imageServer.images[image].versions[version].items).forEach(item => {
-                            if (!kvm) {
-                                if (imageServer.images[image].versions[version].items[item].ftype == "disk-kvm.img" || imageServer.images[image].versions[version].items[item].ftype == "disk1.img" || imageServer.images[image].versions[version].items[item].ftype == "uefi1.img") {
-                                    kvm = true;
+        axios.get("/api/v1/nodes/" + node + "/system").then(res => {
+            let arch = res.data.metadata.arch
+            axios.get("/api/v1/images?arch=" + arch).then(res => {
+                setImages(res.data)
+                console.log(res.data)
+                let sorted = [];
+                res.data.forEach(imageServer => {
+                    Object.keys(imageServer.images).forEach(image => {
+                        let kvm = false;
+                        let container = false;
+                        let stateless = false;
+                        Object.keys(imageServer.images[image].versions).forEach(version => {
+                            Object.keys(imageServer.images[image].versions[version].items).forEach(item => {
+                                if (!kvm) {
+                                    if (imageServer.images[image].versions[version].items[item].ftype == "disk-kvm.img" || imageServer.images[image].versions[version].items[item].ftype == "disk1.img" || imageServer.images[image].versions[version].items[item].ftype == "uefi1.img") {
+                                        kvm = true;
+                                    }
                                 }
-                            }
-                            if (!container) {
-                                if (imageServer.images[image].versions[version].items[item].ftype == "root.tar.xz" || imageServer.images[image].versions[version].items[item].ftype == "root.tar.gz") {
-                                    container = true;
+                                if (!container) {
+                                    if (imageServer.images[image].versions[version].items[item].ftype == "root.tar.xz" || imageServer.images[image].versions[version].items[item].ftype == "root.tar.gz") {
+                                        container = true;
+                                    }
                                 }
-                            }
-                            if (!stateless) {
-                                if (imageServer.images[image].variant == "stateless") {
-                                    stateless = true;
+                                if (!stateless) {
+                                    if (imageServer.images[image].variant == "stateless") {
+                                        stateless = true;
+                                    }
                                 }
-                            }
+                            })
+                        })
+                        let type;
+                        if (kvm && container) {
+                            type = "Virtual Machine and N-VPS";
+                        } else if (container && !kvm) {
+                            type = "N-VPS";
+                        } else if (kvm) {
+                            type = "Virtual Machine";
+                        }
+                        if (stateless) {
+                            type = "Stateless N-VPS";
+                        }
+                        sorted.push({
+                            id: image,
+                            server: imageServer.server.name,
+                            serverId: imageServer.server.id,
+                            name: imageServer.images[image].os + " " + imageServer.images[image].release_title,
+                            type: type,
+                            imageDat: imageServer.images[image]
                         })
                     })
-                    let type;
-                    if (kvm && container) {
-                        type = "Virtual Machine and N-VPS";
-                    } else if (container && !kvm) {
-                        type = "N-VPS";
-                    } else if (kvm) {
-                        type = "Virtual Machine";
-                    }
-                    if (stateless) {
-                        type = "Stateless N-VPS";
-                    }
-                    sorted.push({
-                        id: image,
-                        server: imageServer.server.name,
-                        serverId: imageServer.server.id,
-                        name: imageServer.images[image].os + " " + imageServer.images[image].release_title,
-                        type: type,
-                        imageDat: imageServer.images[image]
-                    })
                 })
+                setFormattedImages(sorted)
             })
-            setFormattedImages(sorted)
         })
+
     }, [])
     return (
         <Dialog open={true}>

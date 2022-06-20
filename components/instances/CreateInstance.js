@@ -33,7 +33,7 @@ export default function CreateInstance({ setCreatingInstance }) {
                 <SelectNode setCreatingInstance={setCreatingInstance} setPage={setPage} setNode={setNode} />
                 : ""}
             {page == "selectImage" ?
-                <SelectImage setPage={setPage} setImageData={setImageData} />
+                <SelectImage setPage={setPage} setImageData={setImageData} node={node} />
                 : ""}
             {page == "imageType" ?
                 <SelectType setType={setType} setPage={setPage} imageData={imageData} />

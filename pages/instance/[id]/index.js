@@ -40,7 +40,7 @@ export async function getServerSideProps({ req, res, query }) {
             id: query.id,
         },
         include: {
-            users: true
+            users: true,
         }
     })
     if (instance.users.some(user => user.userId === user_data.id)) {

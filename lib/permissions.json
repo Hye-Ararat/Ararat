@@ -30,6 +30,11 @@
                 "start_instance",
                 "stop_instance"
             ]
+        },
+        "users": {
+            "read": [
+                "list-users_instance"
+            ]
         }
     },
     "network": {
@@ -58,6 +63,13 @@
         "access": {
             "attachment": [
                 "attach_volume"
+            ]
+        }
+    },
+    "image-server": {
+        "access": {
+            "usage": [
+                "use-images_image-server"
             ]
         }
     }

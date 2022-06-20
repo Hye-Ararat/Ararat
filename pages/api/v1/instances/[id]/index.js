@@ -3,6 +3,7 @@ import decodeToken from "../../../../../lib/decodeToken";
 import Client from "hyexd";
 import prisma from "../../../../../lib/prisma";
 import getNodeEnc from "../../../../../lib/getNodeEnc";
+import Permissions from "../../../../../lib/permissions/index";
 
 export default async function handler(req, res) {
     const { query: { id }, method } = req;
@@ -33,14 +34,7 @@ export default async function handler(req, res) {
     switch (method) {
         case "GET":
             let permissions;
-            if (!tokenData.permissions.includes("view-instance")) {
-                permissions = getInstancePermissions(tokenData, instance);
-                if (!(permissions.length > 0)) return res.status(403).send({
-                    code: 403,
-                    error: "not allowed to access this resource",
-                    type: "error"
-                })
-            }
+
 
             let instanceData = await (lxd.instance(id)).data;
             instanceData = instanceData.metadata;
@@ -61,31 +55,23 @@ export default async function handler(req, res) {
                 config: instanceData.config,
             };
             console.log(tokenData)
-            if (tokenData.permissions.includes("view-instance")) {
-                response.devices = instanceData.expanded_devices
-                response.status = instanceData.status
-                response.status_code = instanceData.status_code
-                if (tokenData.permissions.includes("view-node")) {
-                    response.node = instance.node
-                }
-                if (tokenData.permissions.includes("list-users")) {
-                    response.users = instance.users
-                }
-            } else {
-                if (permissions.includes("list-devices")) {
-                    response.devices = instanceData.expanded_devices
-                }
-                if (permissions.includes("view-status")) {
-                    response.status = instanceData.status
-                    response.status_code = instanceData.status_code
-                }
-                if (permissions.includes("list-users")) {
-                    response.users = instance.users
-                }
-                if (permissions.includes("view-node")) {
-                    response.node = instance.node
-                }
+            response.status = instanceData.status
+            response.status_code = instanceData.status_code
+            let permsInstance = new Permissions(tokenData.id).instance(id)
+
+            if (await permsInstance.listUsers) {
+                response.users = instance.users
             }
+            //if (permissions.includes("list-devices")) {
+            response.devices = instanceData.expanded_devices
+            //}
+            //if (permissions.includes("view-status")) {
+            response.status = instanceData.status
+            response.status_code = instanceData.status_code
+            //}
+
+            response.node = instance.node
+
 
             return res.status(200).send({
                 type: "sync",

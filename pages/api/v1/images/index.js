@@ -3,7 +3,7 @@ import axios from "axios";
 import prisma from "../../../../lib/prisma"
 import { getUserPermissions } from "../../../../lib/getUserPermissions";
 export default async function handler(req, res) {
-    const { query: { id }, method } = req;
+    const { query: { id, arch }, method } = req;
     const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
     let image_servers = []
     console.log(await getUserPermissions(tokenData.id))
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
         let index = await recursiveFindIndex(array, id, 0, array.length - 1);
 
         const img = await axios.get(image_servers[i].url + "/" + response.data.index[array[index]].path);
-        let filtered = Object.keys(img.data.products)//.filter(key => (img.data.products[key].arch == "arm64" || img.data.products[key].arch == "amd64"));
+        let filtered = Object.keys(img.data.products).filter(key => (arch ? img.data.products[key].arch == arch : img.data.products[key].arch == "amd64"));
 
         let filtered_imgs = {};
         filtered.forEach(key => {
