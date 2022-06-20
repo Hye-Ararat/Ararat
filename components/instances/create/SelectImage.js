@@ -30,10 +30,8 @@ export default function SelectImage({ setPage, setImageData }) {
                                 }
                             }
                             if (!stateless) {
-                                if (imageServer.images[image].properties) {
-                                    if (imageServer.images[image].properties.stateless == "true") {
-                                        stateless = true;
-                                    }
+                                if (imageServer.images[image].variant == "stateless") {
+                                    stateless = true;
                                 }
                             }
                         })
