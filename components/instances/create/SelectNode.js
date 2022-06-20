@@ -26,9 +26,9 @@ export default function SelectNode({ setPage, setNode, setCreatingInstance }) {
             <DialogContent>
                 {nodes ?
                     <Grid container>
-                        <Autocomplete onChange={(e) => {
-                            console.log(nodes[e.target.value].id)
-                            setNode(nodes[e.target.value].id)
+                        <Autocomplete onChange={(e, value) => {
+                            console.log(value.id)
+                            setNode(value.id)
                             setPage("selectImage")
                         }} sx={{ mr: "auto", ml: "auto" }} options={nodes} renderInput={(params) => <TextField placeholder="Select Node" {...params} sx={{ minWidth: "300px" }} />} />
                     </Grid>
