@@ -45,7 +45,7 @@ export default async function handler(req, res) {
         let index = await recursiveFindIndex(array, id, 0, array.length - 1);
 
         const img = await axios.get(image_servers[i].url + "/" + response.data.index[array[index]].path);
-        let filtered = Object.keys(img.data.products).filter(key => (arch ? img.data.products[key].arch == arch : img.data.products[key].arch == "amd64"));
+        let filtered = Object.keys(img.data.products).filter(key => (arch == "x64" ? img.data.products[key].arch == "amd64" : img.data.products[key].arch == "amd64"));
 
         let filtered_imgs = {};
         filtered.forEach(key => {
