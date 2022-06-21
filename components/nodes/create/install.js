@@ -38,7 +38,7 @@ export default function Install({ nodePort, setPage, sslCertPath, sslKeyPath, lx
         setCertificate(Buffer.from(cert).toString("base64"));
         setKey(Buffer.from(leKey).toString("base64"));
 
-        setCommand(`source <(curl -s \"${location.origin}/api/v1/nodes/install?port=${nodePort}&ssl=${location.origin.protocol == "https:" ? `true&ssl_cert_path=${sslCertPath}&ssl_key_path=${sslKeyPath}` : "false"}\")`)
+        setCommand(`source <(curl -s \"${location.origin}/api/v1/nodes/install?port=${nodePort}&ssl=${location.protocol == "https:" ? `true&ssl_cert_path=${sslCertPath}&ssl_key_path=${sslKeyPath}` : "false"}\")`)
     }, [])
 
     return (
@@ -117,7 +117,7 @@ export default function Install({ nodePort, setPage, sslCertPath, sslKeyPath, lx
                                 <Typography sx={{ mt: "auto", mb: "auto", mr: 2 }}> After running the command, just press continue</Typography>
                                 <Button variant="contained" color="primary" sx={{ mt: "auto", mb: "auto", ml: "auto" }} onClick={() => {
                                     setConnecting(true);
-                                    const ws = new WebSocket(`${location.origin.protocol == "https:" ? "wss" : "ws"}://${nodeAddress}:${nodePort}`);
+                                    const ws = new WebSocket(`${location.protocol == "https:" ? "wss" : "ws"}://${nodeAddress}:${nodePort}`);
                                     ws.onopen = () => {
                                         setConnected(true);
                                         setTimeout(() => {
