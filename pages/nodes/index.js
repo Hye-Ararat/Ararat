@@ -6,6 +6,7 @@ import Footer from "../../components/footer"
 import Create from "../../components/nodes/CreateNode"
 import prisma from "../../lib/prisma"
 import Node from "../../components/nodes/node"
+import { Box } from "@mui/system"
 
 
 export async function getServerSideProps({ req, res }) {
@@ -76,7 +77,11 @@ export default function Nodes({ nodes, user }) {
             </Grid>
             {nodes.map((node) => {
                 return (
-                    <Node key={node.id} {...node} />
+                    <Link passHref={true} key={node.id} href={`/node/${node.id}`}>
+                        <Box sx={{ cursor: "pointer" }}>
+                            <Node {...node} />
+                        </Box>
+                    </Link>
                 )
             })}
             {creatingNode ?
