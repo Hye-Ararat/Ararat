@@ -1,5 +1,6 @@
 import axios from "axios"
 import { errorResponse, standardResponse } from "../../../../../lib/responses"
+import prisma from "../../../../../lib/prisma"
 
 export default async function handler(req, res) {
     let node = await prisma.node.findUnique({
