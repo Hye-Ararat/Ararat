@@ -126,12 +126,14 @@ export default function AddUserDialog({ open, permSection, userState }) {
                 {acUsers ? (
                     <Autocomplete
                         onChange={(e, value) => {
+                            console.log(value)
                             if (value) {
+                                let usr = fullUsers.find((full) => full.id == value.id)
                                 setUser({
-                                    id: fullUsers[e.target.value].id,
-                                    firstName: fullUsers[e.target.value].firstName,
-                                    lastName: fullUsers[e.target.value].lastName,
-                                    email: fullUsers[e.target.value].email,
+                                    id: usr.id,
+                                    firstName: usr.firstName,
+                                    lastName: usr.lastName,
+                                    email: usr.email,
                                     permissions: []
                                 });
                             } else {
