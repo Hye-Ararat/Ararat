@@ -94,10 +94,15 @@ export async function getServerSideProps({ req, res, query }) {
                             instance.name = inst.name;
                             let total_in = 0;
                             let total_out = 0;
-                            Object.keys(instance.state.network).forEach((key) => {
-                                total_in += instance.state.network[key].counters.bytes_received;
-                                total_out += instance.state.network[key].counters.bytes_sent;
-                            });
+                            console.log("e")
+                            console.log(instance.state.network)
+                            if (instance.state.network) {
+                                Object.keys(instance.state.network).forEach((key) => {
+                                    total_in += instance.state.network[key].counters.bytes_received;
+                                    total_out += instance.state.network[key].counters.bytes_sent;
+                                });
+                            }
+
                             instance.state.total_in = total_in;
                             instance.state.total_out = total_out;
                             newLeases.filter((l) => l.hostname === lease.hostname)[0].instance = instance;
@@ -269,13 +274,17 @@ function AddNetworkUser({ open, setOpen, node, selectedNetwork }) {
                 let data = res.data;
                 console.log(data)
                 let users;
-                if (data.metadata["user.permissions"]) {
-                    users = JSON.parse(data.metadata["user.permissions"]);
+                console.log(data.metadata)
+                if (data.metadata.config["user.permissions"]) {
+                    users = JSON.parse(data.metadata.config["user.permissions"]);
                 }
+                console.log(users)
+                console.log(user.permissions)
                 users = {
                     ...users,
                     [user.id]: user.permissions
                 }
+                console.log(users)
                 axios.patch(`/api/v1/nodes/${node.id}/networks/${selectedNetwork.name}`, {
                     "config": {
                         "user.permissions": JSON.stringify(users)
@@ -582,7 +591,7 @@ export default function Networks({ node, networks }) {
                                                                         <Typography fontWeight={500} sx={{ mr: 0.5 }}>
                                                                             Interface
                                                                         </Typography>
-                                                                        {Object.keys(lease.instance.state.network).map((key, index) => {
+                                                                        {lease.instance.state.network ? Object.keys(lease.instance.state.network).map((key, index) => {
                                                                             return lease.instance.state.network[key].addresses.map((address, index) => {
                                                                                 return lease.instance.state.network[key].addresses[index].address ==
                                                                                     lease.address ||
@@ -595,7 +604,7 @@ export default function Networks({ node, networks }) {
                                                                                     ""
                                                                                 );
                                                                             });
-                                                                        })}
+                                                                        }) : ""}
                                                                     </Grid>
                                                                     <Grid container direction="column" xs={4} sx={{ ml: "auto" }}>
                                                                         <Typography align="center" fontWeight={500} sx={{ mr: 0.5 }}>
