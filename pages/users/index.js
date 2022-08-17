@@ -1,5 +1,6 @@
-import { Button, Grid, Typography } from "@mui/material";
+import { Button, Grid, Paper, Typography } from "@mui/material";
 import Navigation from "../../components/navigation";
+import PermissionsSelector from "../../components/permissionsSelector";
 import SideLayout, { reformatItemList } from "../../components/sideLayout";
 import prisma from "../../lib/prisma";
 
@@ -65,6 +66,10 @@ export default function Users({ users }) {
                     formatter: (item => {
                         return (
                             <>
+                                <Paper sx={{ backgroundColor: "#0d141d", p: 2 }}>
+                                    <PermissionsSelector permSection="network" currentPerms={["attach_network"]} />
+                                </Paper>
+
                             </>
                         )
                     })
