@@ -78,5 +78,15 @@
                 "use-images_image-server"
             ]
         }
+    },
+    "user": {
+        "scopes": {
+            "global": {}
+        },
+        "access": {
+            "users": [
+                "edit-users_user"
+            ]
+        }
     }
 }
