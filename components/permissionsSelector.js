@@ -5,10 +5,9 @@ import permissions from "../lib/permissions.json";
 
 
 
-export default function PermissionsSelector({ permSection, currentPerms }) {
+export default function PermissionsSelector({ permSection, currentPermissions, permissionsState }) {
     const [viewedPane, setViewedPane] = useState(0);
     const [fullPerms, setFullPerms] = useState({});
-    const [selectedPermissions, setSelectedPermissions] = useState(currentPerms)
     useEffect(() => {
         console.log(permissions)
         let perms = permissions;
@@ -84,13 +83,13 @@ export default function PermissionsSelector({ permSection, currentPerms }) {
 
     return (
         <>
-            <FormControlLabel control={<Checkbox checked={selectedPermissions.length == allPermissions.length} onClick={(e) => {
+            <FormControlLabel control={<Checkbox checked={currentPermissions.length == allPermissions.length} onClick={(e) => {
                 console.log(allPermissions)
-                console.log(selectedPermissions)
+                console.log(currentPermissions)
                 if (e.target.checked) {
-                    setSelectedPermissions(allPermissions)
+                    permissionsState(allPermissions)
                 } else {
-                    setSelectedPermissions([]);
+                    permissionsState([]);
                 }
             }} />} label="All Permissions" />
             {fullPerms[permSection] ? <>
@@ -129,7 +128,7 @@ export default function PermissionsSelector({ permSection, currentPerms }) {
                                                                 }
                                                                 control={
                                                                     <Checkbox
-                                                                        checked={selectedPermissions.includes(perm)}
+                                                                        checked={currentPermissions.includes(perm)}
                                                                         onChange={(e) => {
                                                                             let perms = user.permissions;
                                                                             if (e.target.checked) {
@@ -137,7 +136,7 @@ export default function PermissionsSelector({ permSection, currentPerms }) {
                                                                             } else {
                                                                                 perms.splice(perms.indexOf(perm), 1);
                                                                             }
-                                                                            setSelectedPermissions(perms);
+                                                                            permissionsState(perms);
                                                                         }}
                                                                     />
                                                                 }
@@ -168,15 +167,15 @@ export default function PermissionsSelector({ permSection, currentPerms }) {
                                                                                 }
                                                                                 control={
                                                                                     <Checkbox
-                                                                                        checked={selectedPermissions.includes(perm)}
+                                                                                        checked={currentPermissions.includes(perm)}
                                                                                         onChange={(e) => {
-                                                                                            let perms = selectedPermissions;
+                                                                                            let perms = currentPermissions;
                                                                                             if (e.target.checked) {
                                                                                                 perms.push(perm);
                                                                                             } else {
                                                                                                 perms.splice(perms.indexOf(perm), 1);
                                                                                             }
-                                                                                            setSelectedPermissions(perms)
+                                                                                            permissionsState(perms)
                                                                                         }}
                                                                                     />
                                                                                 }
