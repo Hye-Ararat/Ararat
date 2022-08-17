@@ -105,8 +105,8 @@ export default function Navigation({ children, ...props }) {
                     </List>
                     <Divider />
                     <List>
-                        <Link onClick={() => setOpen(false)} href="/">
-                            <ListItem button>
+                        <Link onClick={() => setOpen(false)} href="/users">
+                            <ListItem button selected={props.page == "users"}>
                                 <ListItemIcon>
                                     <UsersIcon />
                                 </ListItemIcon>
