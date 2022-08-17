@@ -1,4 +1,5 @@
 import { Button, Grid, Paper, Typography } from "@mui/material";
+import { useState } from "react";
 import Navigation from "../../components/navigation";
 import PermissionsSelector from "../../components/permissionsSelector";
 import SideLayout, { reformatItemList } from "../../components/sideLayout";
@@ -27,7 +28,7 @@ export async function getServerSideProps({ req, res, query }) {
 
 
 export default function Users({ users }) {
-    console.log(users)
+    const [currentPermissions, currentPermissionsState] = useState([]);
     return (
         <>
             <Grid container direction="row" sx={{ mb: 2 }}>
@@ -67,7 +68,10 @@ export default function Users({ users }) {
                         return (
                             <>
                                 <Paper sx={{ backgroundColor: "#0d141d", p: 2 }}>
-                                    <PermissionsSelector permSection="network" currentPerms={["attach_network"]} />
+                                    <PermissionsSelector currentPermissions={currentPermissions} permissionsState={currentPermissionsState} permSection="global" currentPerms={[]} />
+                                    <Grid container>
+                                        <Button variant="contained" color="success" sx={{ mt: 2, ml: "auto" }}>Save Changes</Button>
+                                    </Grid>
                                 </Paper>
 
                             </>
