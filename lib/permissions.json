@@ -8,7 +8,8 @@
                         "create_instance"
                     ]
                 }
-            }
+            },
+            "global": {}
         },
         "files": {
             "read": [
@@ -39,7 +40,8 @@
     },
     "network": {
         "scopes": {
-            "node": {}
+            "node": {},
+            "global": {}
         },
         "access": {
             "attachment": [
@@ -58,7 +60,8 @@
     },
     "volume": {
         "scopes": {
-            "node": {}
+            "node": {},
+            "global": {}
         },
         "access": {
             "attachment": [
@@ -67,6 +70,9 @@
         }
     },
     "image-server": {
+        "scopes": {
+            "global": {}
+        },
         "access": {
             "usage": [
                 "use-images_image-server"
