@@ -1,4 +1,5 @@
 import { Button, Grid, Paper, Typography } from "@mui/material";
+import axios from "axios";
 import { useState } from "react";
 import Navigation from "../../components/navigation";
 import PermissionsSelector from "../../components/permissionsSelector";
@@ -70,7 +71,11 @@ export default function Users({ users }) {
                                 <Paper sx={{ backgroundColor: "#0d141d", p: 2 }}>
                                     <PermissionsSelector currentPermissions={currentPermissions} permissionsState={currentPermissionsState} permSection="global" currentPerms={[]} />
                                     <Grid container>
-                                        <Button variant="contained" color="success" sx={{ mt: 2, ml: "auto" }}>Save Changes</Button>
+                                        <Button variant="contained" color="success" sx={{ mt: 2, ml: "auto" }} onClick={() => {
+                                            axios.patch("/api/v1/users/" + item + "/permissions", {
+                                                permissions: currentPermissions
+                                            })
+                                        }}>Save Changes</Button>
                                     </Grid>
                                 </Paper>
 
