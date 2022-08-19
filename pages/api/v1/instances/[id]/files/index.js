@@ -49,6 +49,7 @@ export default async function handler(req, res) {
             const cOp = await lxd.instance(instance.id).file(path).create(req.body);
             return res.status(200).send(cOp)
         case "DELETE":
+            if (!(await perms.deleteFiles)) return res.status(403).send(errorResponse("You are not allowed to delete files on this instance", 403));
             const delOp = await lxd.instance(instance.id).file(path).delete();
             return res.status(200).send(delOp)
         default:
