@@ -45,6 +45,7 @@ export default async function handler(req, res) {
                 metadata: files.data
             })
         case "POST":
+            if (!(await perms.writeFiles)) return res.status(403).send(errorResponse("You are not allowed to write files on this instance", 403));
             const cOp = await lxd.instance(instance.id).file(path).create(req.body);
             return res.status(200).send(cOp)
         case "DELETE":

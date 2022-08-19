@@ -16,9 +16,8 @@
                 "read-files_instance"
             ],
             "write": [
-                "create-files_instance",
-                "delete-files_instance",
-                "edit-files_instance"
+                "write-files_instance",
+                "delete-files_instance"
             ]
         },
         "devices": {
