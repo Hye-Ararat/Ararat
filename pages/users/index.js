@@ -1,6 +1,6 @@
 import { Button, Grid, Paper, Typography } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navigation from "../../components/navigation";
 import PermissionsSelector from "../../components/permissionsSelector";
 import SideLayout, { reformatItemList } from "../../components/sideLayout";
@@ -18,7 +18,11 @@ export async function getServerSideProps({ req, res, query }) {
         };
     }
     res.setHeader("Cache-Control", "public, s-maxage=10, stale-while-revalidate=59");
-    let users = await prisma.user.findMany();
+    let users = await prisma.user.findMany({
+        include: {
+            permissions: true
+        }
+    });
     let newUsers = [];
     users.forEach(user => {
         user.fullName = user.firstName + " " + user.lastName;
@@ -30,6 +34,17 @@ export async function getServerSideProps({ req, res, query }) {
 
 export default function Users({ users }) {
     const [currentPermissions, currentPermissionsState] = useState([]);
+    const [selectedUser, setSelectedUser] = useState(null);
+    useEffect(() => {
+        if (selectedUser) {
+            let existingPerms = [];
+            users.find(user => user.id == selectedUser).permissions.forEach(perm => {
+                existingPerms.push(perm.permission);
+            })
+            console.log(existingPerms)
+            currentPermissionsState(existingPerms);
+        }
+    }, [selectedUser])
     return (
         <>
             <Grid container direction="row" sx={{ mb: 2 }}>
@@ -66,6 +81,7 @@ export default function Users({ users }) {
                         )
                     },
                     formatter: (item => {
+                        setSelectedUser(item);
                         return (
                             <>
                                 <Paper sx={{ backgroundColor: "#0d141d", p: 2 }}>

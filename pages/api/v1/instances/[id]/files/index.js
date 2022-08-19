@@ -2,9 +2,14 @@ import axios from "axios";
 import prisma from "../../../../../../lib/prisma";
 import Client from "hyexd";
 import getNodeEnc from "../../../../../../lib/getNodeEnc";
+import decodeToken from "../../../../../../lib/decodeToken";
+import Permissions from "../../../../../../lib/permissions";
+import { errorResponse } from "../../../../../../lib/responses";
 
 export default async function handler(req, res) {
     let { query: { id, path }, method } = req;
+    const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
+    let perms = new Permissions(tokenData.id).instance(id);
     const instance = await prisma.instance.findUnique({
         where: {
             id: id
@@ -19,7 +24,7 @@ export default async function handler(req, res) {
     });
     switch (method) {
         case "GET":
-            console.log(path, "THE PATH")
+            if (!(await perms.readFiles)) return res.status(403).send(errorResponse("You are not allowed to read files on this instance", 403));
             let files;
             try {
                 files = await axios.get(`http${instance.node.ssl ? "s" : ""}://${instance.node.address}:${instance.node.port}/v1/instances/${instance.id}/files?path=${path}`);
