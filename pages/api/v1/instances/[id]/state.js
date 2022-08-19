@@ -2,6 +2,7 @@ import Client from "hyexd";
 import getInstancePermissions from "../../../../../lib/client/getInstancePermissions";
 import decodeToken from "../../../../../lib/decodeToken";
 import getNodeEnc from "../../../../../lib/getNodeEnc";
+import Permissions from "../../../../../lib/permissions";
 import prisma from "../../../../../lib/prisma";
 
 export default async function handler(req, res) {
@@ -31,6 +32,7 @@ export default async function handler(req, res) {
     if (!instance) return res.status(404).send("Instance not found");
 
     const permissions = getInstancePermissions(tokenData, instance);
+    let perms = new Permissions(tokenData.id).instance(id);
     switch (method) {
         case "PUT":
             const { state, force } = req.body;
@@ -45,9 +47,9 @@ export default async function handler(req, res) {
                 "error": "not allowed to perform this operation",
                 "type": "error"
             };
-            if (state == "start" && !permissions.includes("start-instance")) return res.status(403).send(notAllowedError);
-            if (state == "stop" && !permissions.includes("stop-instance")) return res.status(403).send(notAllowedError);
-            if (state == "restart" && !permissions.includes("restart-instance")) return res.status(403).send(notAllowedError);
+            if (state == "start" && !(await perms.start)) return res.status(403).send(notAllowedError);
+            if (state == "stop" && !(await perms.stop)) return res.status(403).send(notAllowedError);
+            if (state == "restart" && (!(await perms.start) || !(await perms.stop))) return res.status(403).send(notAllowedError);
 
             const lxd = new Client("https://" + instance.node.address + ":" + instance.node.lxdPort, {
                 certificate: Buffer.from(Buffer.from(getNodeEnc(instance.node.encIV, instance.node.certificate)).toString(), "base64").toString("ascii"),
