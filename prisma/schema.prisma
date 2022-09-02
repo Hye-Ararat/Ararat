@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "cockroachdb"
   url      = env("DATABASE_URL")
 }
 
@@ -101,6 +101,7 @@ model InstanceUser {
   instance    Instance                 @relation(fields: [instanceId], references: [id], onDelete: Cascade)
   instanceId  String
   permissions InstanceUserPermission[]
+  widgetGrids InstanceUserWidgetGrid[]
 }
 
 model InstanceUserPermission {
@@ -108,4 +109,25 @@ model InstanceUserPermission {
   instanceUser   InstanceUser @relation(fields: [instanceUserId], references: [id], onDelete: Cascade)
   instanceUserId String
   permission     String
+}
+
+model InstanceUserWidgetGrid {
+  id             String               @id @default(cuid())
+  direction      String
+  //If using a database other than CockroachDB, change sequence() to autoincrement()
+  index          Int                  @default(sequence())
+  size           String
+  instanceUser   InstanceUser         @relation(fields: [instanceUserId], references: [id], onDelete: Cascade)
+  instanceUserId String
+  widgets        InstanceUserWidget[]
+}
+
+model InstanceUserWidget {
+  id           String                 @id @default(cuid())
+  //If using a database other than CockroachDB, change sequence() to autoincrement()
+  index        Int                    @default(sequence())
+  widget       String
+  widgetGridId String
+  size         String
+  widgetGrid   InstanceUserWidgetGrid @relation(fields: [widgetGridId], references: [id], onDelete: Cascade)
 }
