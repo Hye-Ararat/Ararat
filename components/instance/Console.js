@@ -46,7 +46,9 @@ export default function Console() {
                 }
             }
             terminal.loadAddon(fitAddon);
-            fitAddon.fit();
+            try {
+                fitAddon.fit();
+            } catch { }
             const attachAddon = new AttachAddon(instance.sockets.console);
             terminal.loadAddon(attachAddon);
             //get dom rect
@@ -64,7 +66,9 @@ export default function Console() {
                     xtermel.style.width = el.getBoundingClientRect().width - 5 + 'px';
                     xtermel.style.height = el.getBoundingClientRect().height + 'px';
                 }
-                fitAddon.fit();
+                try {
+                    fitAddon.fit();
+                } catch { }
             }, 0.00000000000000000001)
         }
     }, [instance.sockets.console])
@@ -88,7 +92,9 @@ export default function Console() {
                             lastRect = el.getBoundingClientRect();
                             xtermel.style.width = el.getBoundingClientRect().width - 5 + 'px';
                             xtermel.style.height = el.getBoundingClientRect().height + 'px';
-                            fitAddon.fit();
+                            try {
+                                fitAddon.fit();
+                            } catch { }
                             console.log("e")
                         }, 0.00000000000000000001)
                     }} />
