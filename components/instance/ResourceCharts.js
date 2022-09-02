@@ -330,7 +330,7 @@ export default function ResourceCharts() {
             <Typography fontWeight="bold" sx={{ mb: 1 }}>
               CPU
             </Typography>
-            <Paper style={{ width: "100%", height: "100%", minHeight: "25vh" }}>
+            <Paper style={{ width: "100%", minHeight: "25vh" }}>
               <canvas id="cpuChart" />
             </Paper>
           </Grid>
