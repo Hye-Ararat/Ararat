@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
-import { Grid, Paper, Typography, Chip, Button, useMediaQuery, useTheme } from "@mui/material";
+import { Grid, Paper, Typography, Chip, Button, useMediaQuery, useTheme, Container } from "@mui/material";
 import useSWR from "swr";
 import { InstanceStore } from "../../../states/instance";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import StartButton from "../../../components/instance/StartButton";
 import StopButton from "../../../components/instance/StopButton";
 import Navigation from "../../../components/instance/Navigation";
@@ -13,12 +13,16 @@ import decodeToken from "../../../lib/decodeToken";
 import prisma from "../../../lib/prisma";
 import Footer from "../../../components/footer";
 import { Box } from "@mui/system";
-const ResourceCharts = dynamic(() => import("../../../components/instance/ResourceCharts"), {
-    ssr: false
-});
-const Console = dynamic(() => import("../../../components/instance/Console"), {
-    ssr: false
-});
+import { Responsive, WidthProvider } from "react-grid-layout";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import styled from "@emotion/styled";
+import { WidgetsArea } from "../../../components/widgets";
+import WidgetDrawer from "../../../components/widgetDrawer";
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
+
+
+
 
 export async function getServerSideProps({ req, res, query }) {
     if (!req.cookies.access_token) {
@@ -39,12 +43,46 @@ export async function getServerSideProps({ req, res, query }) {
         where: {
             id: query.id,
         },
-        include: {
-            users: true,
+        select: {
+            id: true,
+            name: true,
+            node: true,
+            nodeId: true,
+            users: {
+                select: {
+                    id: true,
+                    instance: true,
+                    instanceId: true,
+                    permissions: true,
+                    user: true,
+                    userId: true,
+                    widgetGrids: {
+                        select: {
+                            direction: true,
+                            id: true,
+                            instanceUser: true,
+                            instanceUserId: true,
+                            size: true,
+                            index: true,
+                            widgets: {
+                                select: {
+                                    id: true,
+                                    widget: true,
+                                    widgetGrid: true,
+                                    widgetGridId: true,
+                                    index: true,
+                                    size: true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     })
     if (instance.users.some(user => user.userId === user_data.id)) {
-        return { props: { instance } }
+        let instance_user = instance.users.find(user => user.userId === user_data.id)
+        return { props: { instance, user_data, instance_user } }
     } else {
         return {
             redirect: {
@@ -54,11 +92,12 @@ export async function getServerSideProps({ req, res, query }) {
         }
     }
 }
-export default function Instance({ instance }) {
+export default function Instance({ instance, instance_user }) {
     const router = useRouter();
     const { id } = router.query;
     console.log(id);
     const fetcher = (url) => axios.get(url).then((res) => res.data);
+    const [dragging, setDragging] = useState(false);
     const instanceState = {
         data: InstanceStore.useStoreState((state) => state.data),
         setData: InstanceStore.useStoreActions((state) => state.setData),
@@ -69,7 +108,6 @@ export default function Instance({ instance }) {
         },
         monitor: InstanceStore.useStoreState((state) => state.monitor)
     };
-
     var { data: instanceData } = useSWR(
         `/api/v1/instances/${id}`,
         fetcher
@@ -96,10 +134,45 @@ export default function Instance({ instance }) {
             }
         }
     }, [instanceState.data, instanceState.sockets.monitor]);
+    const grid = 8;
 
+
+    const [areas, setAreas] = useState(
+        [
+            {
+                direction: "column",
+                size: {
+                    xs: 2,
+                },
+                widgets: ["e", "it_works"]
+            },
+            {
+                direction: "row",
+                size: {
+                    xs: 8,
+                },
+                widgets: ["console"]
+            },
+            {
+                direction: "column",
+                widgets: ["ee"],
+                size: {
+                    xs: 2
+                }
+            },
+            {
+                direction: "row",
+                widgets: ["cpu_chart", "memory_chart"],
+                size: {
+                    xs: 12
+                }
+            }
+        ],
+    );
+    const [editingWidgets, setEditingWidgets] = useState(true)
     return (
         <>
-            <Paper>
+            <Paper sx={{ mb: 1 }}>
                 <Grid container direction="row" sx={{ p: 2 }}>
                     <Grid item xs={12} sm={12} md={5} container direction="row">
                         {useMediaQuery(useTheme().breakpoints.up("md")) ?
@@ -147,20 +220,17 @@ export default function Instance({ instance }) {
                     </Grid>}
                 </Grid>
             </Paper>
-            <Grid container xs={12} sx={{ mt: 2 }}>
-                <Grid item xs={12} sx={{ minHeight: "400px" }} container>
-                    {instanceState.data && instanceState.monitor ?
-                        <Console />
-                        :
-                        ""
-                    }
-                </Grid>
-            </Grid>
-            <Grid container xs={12}>
-                {instanceState.monitor.status ?
-                    <ResourceCharts />
-                    : ""}
-            </Grid>
+            <div>
+                {instanceState.data && instanceState.monitor ?
+                    <WidgetsArea setAreas={setAreas} editMode={editingWidgets} areas={instance_user.widgetGrids} type="instance">
+                        {/*editingWidgets ? <WidgetDrawer type="instance" existingWidgets={areas} /> : ""*/}
+                    </WidgetsArea>
+                    :
+                    ""
+                }
+                {editingWidgets ? <Button onClick={() => setAreas({ ...areas, [(Object.keys(areas).length + 1).toString()]: [] })} variant="contained" color="success">Add Area</Button> : ""}
+            </div>
+
         </>
     );
 }
