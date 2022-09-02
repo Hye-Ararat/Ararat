@@ -1,8 +1,5 @@
-import { Grid, Paper } from "@mui/material";
+import { Grid } from "@mui/material";
 import dynamic from "next/dynamic";
-import { closestCenter, DndContext, DragOverlay, KeyboardSensor, PointerSensor, rectIntersection, useDraggable, useDroppable, useSensor, useSensors } from '@dnd-kit/core';
-import { rectSortingStrategy, rectSwappingStrategy, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 
 const Console = dynamic(() => import("./instance/Console"), {
     ssr: false
@@ -11,22 +8,6 @@ const ResourceCharts = dynamic(() => import("../components/instance/ResourceChar
     ssr: false
 });
 
-const grid = 8;
-const getItemStyle = (isDragging, draggableStyle) => ({
-    userSelect: 'none',
-    padding: isDragging ? grid * 2 : "",
-    background: isDragging ? 'lightgreen' : '',
-    borderRadius: isDragging ? "5px" : "",
-    ...draggableStyle,
-});
-
-const getListStyle = isDraggingOver => ({
-    display: 'flex',
-    padding: isDraggingOver ? grid : "",
-    overflow: 'auto',
-    borderRadius: isDraggingOver ? "5px" : "",
-    backgroundColor: isDraggingOver ? 'grey' : '',
-});
 
 
 export function Widget({ type, widget, size, id, index, dragDisabled, widgetObject }) {

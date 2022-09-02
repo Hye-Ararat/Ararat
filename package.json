@@ -24,7 +24,7 @@
     "@mui/material": "^5.5.0",
     "@mui/system": "^5.5.0",
     "@mui/x-data-grid": "^5.6.0",
-    "@prisma/client": "^3.10.0",
+    "@prisma/client": "^4.3.1",
     "@tsndr/cloudflare-worker-jwt": "^1.1.6",
     "axios": "^0.24.0",
     "bcryptjs": "^2.4.3",
@@ -64,6 +64,7 @@
   },
   "devDependencies": {
     "eslint": "7.32.0",
-    "eslint-config-next": "12.0.1"
+    "eslint-config-next": "12.0.1",
+    "prisma": "^4.3.1"
   }
 }
