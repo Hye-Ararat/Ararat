@@ -13,8 +13,6 @@ import decodeToken from "../../../lib/decodeToken";
 import prisma from "../../../lib/prisma";
 import Footer from "../../../components/footer";
 import { Box } from "@mui/system";
-import { Responsive, WidthProvider } from "react-grid-layout";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import styled from "@emotion/styled";
 import { WidgetsArea } from "../../../components/widgets";
 import WidgetDrawer from "../../../components/widgetDrawer";
