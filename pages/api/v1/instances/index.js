@@ -114,6 +114,50 @@ export default async function handler(req, res) {
                         }
                     }
                 })
+                let grid1 = await prisma.instanceUserWidgetGrid.create({
+                    data: {
+                        instanceUser: {
+                            connect: {
+                                id: u.id
+                            }
+                        },
+                        direction: "row",
+                        size: `{"xs": 12}`,
+                    }
+                })
+                let userWidgetConsole = await prisma.instanceUserWidget.create({
+                    data: {
+                        widgetGrid: {
+                            connect: {
+                                id: grid1.id
+                            }
+                        },
+                        widget: "console",
+                        size: `{"xs": 12}`,
+                    }
+                })
+                let grid2 = await prisma.instanceUserWidgetGrid.create({
+                    data: {
+                        instanceUser: {
+                            connect: {
+                                id: u.id
+                            }
+                        },
+                        direction: "row",
+                        size: `{"xs": 12}`,
+                    }
+                })
+                let resourceCharts = await prisma.instanceUserWidget.create({
+                    data: {
+                        widgetGrid: {
+                            connect: {
+                                id: grid2.id
+                            }
+                        },
+                        widget: "resourceCharts",
+                        size: `{"xs": 12}`,
+                    }
+                })
                 await Promise.all([user.permissions.forEach(async permission => {
                     await prisma.instanceUserPermission.create({
                         data: {
