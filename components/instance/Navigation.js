@@ -140,7 +140,7 @@ export default function Navigation({ children, ...props }) {
                 <Box sx={{
                   mt: "auto", mb: "auto", height: "100%"
                 }} onClick={() => {
-                  window.open("/instance/" + instance.data._id + "/console", 'popUpWindow', 'height=600,width=800,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes');
+                  window.open("/instance/" + encodeURIComponent(id) + "/consolePopout", 'popUpWindow', 'height=600,width=800,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes');
                 }} >
                   <ConsoleIcon sx={{
                     mt: "auto", width: "30px", height: "30px", mb: "auto"
