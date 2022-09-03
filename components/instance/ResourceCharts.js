@@ -28,6 +28,7 @@ import {
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { Fade, Grid, Paper, Typography } from "@mui/material";
 import prettyBytes from "pretty-bytes";
+import convert from "convert-units"
 
 export default function ResourceCharts() {
   const instance = {
@@ -163,11 +164,13 @@ export default function ResourceCharts() {
               },
               color: "#fff",
               align: "left",
+              backgroundColor: "rgba(13, 20, 29, 0.7)",
+              borderRadius: 5,
               formatter: function (value) {
                 return (
-                  prettyBytes(parseInt(value)) +
+                  prettyBytes(parseInt(value), { binary: true }) +
                   "/" +
-                  instance.data.config["limits.memory"]
+                  prettyBytes(convert(parseInt(instance.data.config["limits.memory"])).from(instance.data.config["limits.memory"].replace(/[^a-zA-Z]/g, "")).to("B"), { binary: true })
                 );
               },
               font: {
@@ -205,13 +208,16 @@ export default function ResourceCharts() {
               },
               color: "#fff",
               align: "left",
+              backgroundColor: "rgba(13, 20, 29, 0.7)",
+              borderRadius: 5,
               formatter: function (value) {
                 return parseInt(value) + "%";
               },
               font: {
                 size: 15,
                 weight: 600,
-                family: "Inter"
+                family: "Inter",
+
               }
             },
             elements: {
@@ -244,14 +250,27 @@ export default function ResourceCharts() {
           },
           y: {
             grid: {
-              display: false,
-              drawBorder: false
+              display: true,
+              drawBorder: false,
+              color: "rgba(255, 255, 255, 0.1)",
+
             },
             ticks: {
-              display: false
+              display: true,
+              callback: function (val, index) {
+                //only display first last and middle ticks (index only goes to 9)
+                if (index == 0 || index == 3 || index == 6 || index == 9) {
+                  return prettyBytes(val, { binary: true });
+                }
+              },
+              font: {
+                size: 10,
+                weight: 600,
+                family: "Inter"
+              }
             },
             beginAtZero: true,
-            max: 4294967296
+            max: convert(parseInt(instance.data.config["limits.memory"])).from(instance.data.config["limits.memory"].replace(/[^a-zA-Z]/g, "")).to("B")
           }
         },
         elements: {
@@ -283,14 +302,28 @@ export default function ResourceCharts() {
           },
           y: {
             grid: {
-              display: false,
-              drawBorder: false
+              display: true,
+              drawBorder: false,
+              color: "rgba(255, 255, 255, 0.1)",
+
             },
             ticks: {
-              display: false
+              display: true,
+              callback: function (val, index) {
+                //only display first last and middle ticks
+                if (index === 0 || index === 10 || index === 5) {
+                  return val + "%";
+                }
+              },
+              font: {
+                size: 10,
+                weight: 600,
+                family: "Inter"
+              }
             },
             beginAtZero: true,
-            max: 100
+            max: 100,
+
           }
         },
         elements: {
