@@ -2,8 +2,10 @@ import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
 import theme from "../components/theme";
 import "../styles/globals.css";
+import "../public/components.css";
 import "../public/css/progress.css";
 import "nprogress/nprogress.css";
+import "../public/drag.css"
 import Router from "next/router";
 import NProgress from "nprogress";
 import axios from "axios";
@@ -13,6 +15,7 @@ import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 process.title = "Hye Ararat";
 import "../styles/globals.css"
+import "xterm/css/xterm.css"
 config.autoAddCss = false;
 
 NProgress.configure({ showSpinner: false });
