@@ -4,6 +4,7 @@ import { AttachAddon } from "xterm-addon-attach"
 import { FitAddon } from "xterm-addon-fit"
 import { InstanceStore } from "../../states/instance"
 import ResizeObserver from "react-resize-observer"
+import { Fade } from "@mui/material"
 
 export default function Console() {
     let terminal = useRef(null);
@@ -55,15 +56,16 @@ export default function Console() {
     }, [instance.sockets.console])
     return (
         <>
+            <Fade in={true}>
+                <div id="cont" style={{ width: "100%", height: "100%", padding: 10, borderRadius: 5, backgroundColor: "#141c26" }}>
 
-            <div id="cont" style={{ width: "100%", height: "100%", padding: 10, borderRadius: 5, backgroundColor: "#141c26" }}>
+                    <div id="xterm" style={{ width: "100%", height: "100%" }} />
 
-                <div id="xterm" style={{ width: "100%", height: "100%" }} />
-
-                <ResizeObserver onResize={(rec) => {
-                    fitAddon.current.fit()
-                }} />
-            </div>
+                    <ResizeObserver onResize={(rec) => {
+                        fitAddon.current.fit()
+                    }} />
+                </div>
+            </Fade>
 
         </>
     )

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { Grid, Paper, Typography, Chip, Button, useMediaQuery, useTheme, Container } from "@mui/material";
+import { Typography } from "@mui/material";
 import useSWR from "swr";
 import { InstanceStore } from "../../../states/instance";
 import axios from "axios";
