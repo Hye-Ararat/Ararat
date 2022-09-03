@@ -201,7 +201,7 @@ export default function Navigation({ children, ...props }) {
                   <ListItemIcon>
                     <ConsoleIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Console" />
+                  <ListItemText primary="Dashboard" />
                 </ListItem>
               </Link>
               <Link href={`/instance/${encodeURIComponent(id)}/files`}>
