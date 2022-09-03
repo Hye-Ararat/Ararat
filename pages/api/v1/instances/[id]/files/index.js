@@ -3,7 +3,7 @@ import prisma from "../../../../../../lib/prisma";
 import Client from "hyexd";
 import getNodeEnc from "../../../../../../lib/getNodeEnc";
 import decodeToken from "../../../../../../lib/decodeToken";
-import Permissions from "../../../../../../lib/permissions";
+import Permissions from "../../../../../../lib/permissions/index.js";
 import { errorResponse } from "../../../../../../lib/responses";
 
 export default async function handler(req, res) {

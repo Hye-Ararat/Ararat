@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Terminal } from "xterm"
-import "xterm/css/xterm.css"
 import { AttachAddon } from "xterm-addon-attach"
 import { FitAddon } from "xterm-addon-fit"
 import { InstanceStore } from "../../states/instance"
 import ResizeObserver from "react-resize-observer"
-import { Fade, Paper } from "@mui/material"
 
 export default function Console() {
+    let terminal = useRef(null);
+    let fitAddon = useRef(new FitAddon());
     const instance = {
         data: InstanceStore.useStoreState((state) => state.data),
         sockets: {
@@ -15,7 +15,6 @@ export default function Console() {
             setConsole: InstanceStore.useStoreActions((state) => state.sockets.setConsole)
         }
     }
-    const [fitAddon, setFitAddon] = useState(new FitAddon())
     useEffect(() => {
         if (!instance.sockets.console) {
             instance.sockets.setConsole(new WebSocket(`${instance.data.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/console`))
@@ -29,77 +28,42 @@ export default function Console() {
                     }
                 })
             })
-            let terminal = new Terminal({
+            terminal.current = new Terminal({
                 fontSize: 12,
                 theme: {
-                    background: "#141c26"
-                }
+                    background: "#141c26",
+                },
             });
-            terminal.open(document.getElementById("terminal"));
+            terminal.current.loadAddon(fitAddon.current);
+            terminal.current.open(document.getElementById("xterm"));
+            terminal.current.onResize((size) => {
+                fitAddon.current.fit()
+            })
             if (window["sessionStorage"]) {
                 if (sessionStorage.getItem(`console-${instance.data.id}`)) {
                     setTimeout(() => {
                         if (!has) {
-                            terminal.write(sessionStorage.getItem(`console-${instance.data.id}`).replace("null", ""));
+                            terminal.current.write(sessionStorage.getItem(`console-${instance.data.id}`).replace("null", ""));
                         }
                     }, 30)
                 }
             }
-            terminal.loadAddon(fitAddon);
-            try {
-                fitAddon.fit();
-            } catch { }
             const attachAddon = new AttachAddon(instance.sockets.console);
-            terminal.loadAddon(attachAddon);
-            //get dom rect
-            let lastRect = null;
-            const inter = setInterval(() => {
-                let el = document.getElementById("cont")
-                let xtermel = document.getElementsByClassName("xterm-viewport")[0];
-                if (lastRect) {
-                    if (lastRect.width == el.getBoundingClientRect().width) {
-                        clearInterval(inter);
-                    }
-                }
-                lastRect = el.getBoundingClientRect();
-                if (xtermel) {
-                    xtermel.style.width = el.getBoundingClientRect().width - 5 + 'px';
-                    xtermel.style.height = el.getBoundingClientRect().height + 'px';
-                }
-                try {
-                    fitAddon.fit();
-                } catch { }
-            }, 0.00000000000000000001)
+            terminal.current.loadAddon(attachAddon);
+            fitAddon.current.fit();
         }
     }, [instance.sockets.console])
     return (
         <>
-            <Fade in={true} appear={true}>
 
-                <Paper id="cont" sx={{ width: "100%", background: "#141c26", minHeight: "45vh" }}>
-                    <div id="terminal" style={{ width: "100%", height: "100%", borderRadius: "5px", overflow: "hidden", padding: 5 }} />
+            <div id="cont" style={{ width: "100%", height: "100%", padding: 10, borderRadius: 5, backgroundColor: "#141c26" }}>
 
-                    <ResizeObserver onResize={(rec) => {
-                        let lastRect = null;
-                        const inter = setInterval(() => {
-                            let el = document.getElementById("cont")
-                            let xtermel = document.getElementsByClassName("xterm-viewport")[0];
-                            if (lastRect) {
-                                if (lastRect.width == el.getBoundingClientRect().width) {
-                                    clearInterval(inter);
-                                }
-                            }
-                            lastRect = el.getBoundingClientRect();
-                            xtermel.style.width = el.getBoundingClientRect().width - 5 + 'px';
-                            xtermel.style.height = el.getBoundingClientRect().height + 'px';
-                            try {
-                                fitAddon.fit();
-                            } catch { }
-                            console.log("e")
-                        }, 0.00000000000000000001)
-                    }} />
-                </Paper>
-            </Fade>
+                <div id="xterm" style={{ width: "100%", height: "100%" }} />
+
+                <ResizeObserver onResize={(rec) => {
+                    fitAddon.current.fit()
+                }} />
+            </div>
 
         </>
     )

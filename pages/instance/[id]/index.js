@@ -13,11 +13,8 @@ import decodeToken from "../../../lib/decodeToken";
 import prisma from "../../../lib/prisma";
 import Footer from "../../../components/footer";
 import { Box } from "@mui/system";
-import styled from "@emotion/styled";
 import { WidgetsArea } from "../../../components/widgets";
-import WidgetDrawer from "../../../components/widgetDrawer";
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
 
 
 
@@ -120,18 +117,7 @@ export default function Instance({ instance, instance_user }) {
         }
     }, [instance, instanceData, id]);
 
-    useEffect(() => {
-        console.log(instanceState.data)
-        if (instanceState.data) {
-            if (!instanceState.sockets.monitor) {
-                instanceState.sockets.setMonitor(
-                    new WebSocket(
-                        `${"ws"}://${instanceState.data.node.address}:${instanceState.data.node.port}/v1/instances/${instanceState.data.id}/state`
-                    )
-                );
-            }
-        }
-    }, [instanceState.data, instanceState.sockets.monitor]);
+
     const grid = 8;
 
 
@@ -220,13 +206,10 @@ export default function Instance({ instance, instance_user }) {
             </Paper>
             <div>
                 {instanceState.data && instanceState.monitor ?
-                    <WidgetsArea setAreas={setAreas} editMode={editingWidgets} areas={instance_user.widgetGrids} type="instance">
-                        {/*editingWidgets ? <WidgetDrawer type="instance" existingWidgets={areas} /> : ""*/}
-                    </WidgetsArea>
+                    <WidgetsArea setAreas={setAreas} editMode={editingWidgets} areas={instance_user.widgetGrids} type="instance" />
                     :
                     ""
                 }
-                {editingWidgets ? <Button onClick={() => setAreas({ ...areas, [(Object.keys(areas).length + 1).toString()]: [] })} variant="contained" color="success">Add Area</Button> : ""}
             </div>
 
         </>
