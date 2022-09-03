@@ -35,7 +35,8 @@ import {
   Settings as SettingsIcon,
   History as SnapshotsIcon,
   Menu,
-  Storage
+  Storage,
+  Dashboard
 } from "@mui/icons-material";
 import Link from "next/link";
 import useSWR from "swr";
@@ -199,9 +200,17 @@ export default function Navigation({ children, ...props }) {
               <Link href={`/instance/${encodeURIComponent(id)}`}>
                 <ListItem onClick={() => setOpen(false)} button selected={props.page == null ? true : false}>
                   <ListItemIcon>
-                    <ConsoleIcon />
+                    <Dashboard />
                   </ListItemIcon>
                   <ListItemText primary="Dashboard" />
+                </ListItem>
+              </Link>
+              <Link href={`/instance/${encodeURIComponent(id)}/console`}>
+                <ListItem onClick={() => setOpen(false)} button selected={props.page != null ? (props.page.includes("console") ? true : false) : false}>
+                  <ListItemIcon>
+                    <ConsoleIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Console" />
                 </ListItem>
               </Link>
               <Link href={`/instance/${encodeURIComponent(id)}/files`}>

@@ -1,91 +1,104 @@
-import { InstanceStore } from "../../../states/instance";
-import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import axios from "axios"
+import { Grid, Paper, Typography, Chip, Button, useMediaQuery, useTheme, Container } from "@mui/material";
 import useSWR from "swr";
-import { useEffect } from "react";
+import { InstanceStore } from "../../../states/instance";
+import axios from "axios";
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
+import StartButton from "../../../components/instance/StartButton";
+import StopButton from "../../../components/instance/StopButton";
+import Navigation from "../../../components/instance/Navigation";
 import StateIndicator from "../../../components/instance/StateIndicator";
-const Terminal = dynamic(() => import("../../../components/instances/terminal"), {
+import decodeToken from "../../../lib/decodeToken";
+import prisma from "../../../lib/prisma";
+import Footer from "../../../components/footer";
+import { Box } from "@mui/system";
+import { WidgetsArea } from "../../../components/widgets";
+
+const Console = dynamic(() => import("../../../components/instance/Console"), {
     ssr: false
 });
 
-export default function Console({ data }) {
+
+
+export async function getServerSideProps({ req, res, query }) {
+    if (!req.cookies.access_token) {
+        return {
+            redirect: {
+                destination: "/auth/login",
+                permanent: false,
+            },
+        }
+    }
+    res.setHeader(
+        "Cache-Control",
+        "public, s-maxage=10, stale-while-revalidate=59"
+    );
+
+    const user_data = decodeToken(req.cookies.access_token);
+    const instance = await prisma.instance.findUnique({
+        where: {
+            id: query.id,
+        },
+        include: {
+            users: true
+
+        }
+    })
+    if (instance.users.some(user => user.userId === user_data.id)) {
+        let instance_user = instance.users.find(user => user.userId === user_data.id)
+        return { props: { instance, user_data, instance_user } }
+    } else {
+        return {
+            redirect: {
+                destination: "/",
+                permanent: false,
+            },
+        }
+    }
+}
+export default function ConsolePage({ instance, instance_user }) {
     const router = useRouter();
     const { id } = router.query;
-    const instance = {
+    console.log(id);
+    const fetcher = (url) => axios.get(url).then((res) => res.data);
+    const instanceState = {
         data: InstanceStore.useStoreState((state) => state.data),
         setData: InstanceStore.useStoreActions((state) => state.setData),
         containerState: InstanceStore.useStoreState((state) => state.containerState),
-        setContainerState: InstanceStore.useStoreActions((state) => state.setContainerState),
-        monitor: InstanceStore.useStoreState((state) => state.monitor),
-        setMonitor: InstanceStore.useStoreActions((state) => state.setMonitor),
-        sockets: {
-            monitor: InstanceStore.useStoreState((state) => state.sockets.monitor),
-            setMonitor: InstanceStore.useStoreActions((state) => state.sockets.setMonitor)
-        },
-    }
-    const fetcher = (url) => axios.get(url).then((res) => res.data);
-    const { data: instanceData } = useSWR(`/api/v1/client/instances/${id}?include=["magma_cube", "node", "network"]`, fetcher);
-    useEffect(() => {
-        if (instance.data) {
-            console.log("yes");
-            console.log("yes2");
-            if (instance.sockets.monitor) {
-                instance.sockets.monitor.onopen = () => {
-                    axios.get("/api/v1/client/instances/" + instance.data._id + "/monitor/ws").then((res) => {
-                        instance.sockets.monitor.send(res.data.data.access_token);
-                    });
-                };
-            } else {
-                instance.sockets.setMonitor(
-                    new WebSocket(
-                        `${instance.data.relationships.node.address.ssl ? "wss" : "ws"}://${instance.data.relationships.node.address.hostname
-                        }:${instance.data.relationships.node.address.port}/api/v1/instances/${instance.data._id}/monitor`
-                    )
-                );
-            }
-        } else {
-            console.log("no");
-        }
-    }, [instance.data, instance.sockets.monitor]);
-    useEffect(() => {
-        if (instance.data) {
+    };
+    var { data: instanceData } = useSWR(
+        `/api/v1/instances/${id}`,
+        fetcher
+    );
 
-        } else {
-            instance.setData(instanceData);
-        }
-    }, [instance.data, instanceData])
     useEffect(() => {
-        if (instance.sockets.monitor) {
-            instance.sockets.monitor.onmessage = (data) => {
-                console.log(JSON.parse(JSON.stringify(data.data)));
-                var e = JSON.parse(data.data);
-                instance.setMonitor(e);
-                instance.setContainerState(e.containerState);
-            };
+        if (id && !instanceState.data) {
+            if (instanceData) {
+                console.log(instanceData)
+                instanceState.setData(instanceData.metadata);
+            }
         }
-    }, [instance.sockets.monitor]);
+    }, [instance, instanceData, id]);
+
+
+
     return (
         <>
-            <link
-                rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css"
-                integrity="sha512-iLYuqv+v/P4u9erpk+KM83Ioe/l7SEmr7wB6g+Kg1qmEit8EShDKnKtLHlv2QXUp7GGJhmqDI+1PhJYLTsfb8w=="
-                crossOrigin="anonymous"
-                referrerpolicy="no-referrer"
-            />
-            <div style={{ height: "100%" }}>
-                {instance.data ? instance.containerState ?
-                    <Terminal instance={instance.data} state={instance.containerState} instanceId={id} external={true} />
-                    : "" : ""}
-            </div>
+            <Typography variant="h4" sx={{ mb: 1 }}>Console</Typography>
+            {instanceState.data ?
+                <div style={{ height: "70vh" }}>
+                    <Console />
+                </div>
+                : ""}
         </>
-    )
+    );
 }
-Console.getLayout = function getLayout(page) {
+
+ConsolePage.getLayout = function getLayout(page) {
     return (
         <InstanceStore.Provider>
-            {page}
+            <Navigation page="console">{page}<Footer /></Navigation>
         </InstanceStore.Provider>
-    )
-}
+    );
+};
