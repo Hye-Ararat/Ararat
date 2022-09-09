@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { InstanceStore } from "../../states/instance";
 import {
   ArcElement,
@@ -37,6 +37,8 @@ export default function ResourceCharts() {
   };
   const [memChart, setMemChart] = useState(null);
   const [cpuChart, setCpuChart] = useState(null);
+  const cpuRef = useRef(null);
+  const memRef = useRef(null);
   useEffect(() => {
     if (cpuChart && memChart) {
       if (memChart) {
@@ -145,8 +147,8 @@ export default function ResourceCharts() {
         SubTitle,
         ChartDataLabels
       );
-      const memoryChart = document.getElementById("memoryChart").getContext("2d");
-      const cpuChart = document.getElementById("cpuChart").getContext("2d");
+      const memoryChart = memRef.current.getContext("2d");
+      const cpuChart = cpuRef.current.getContext("2d");
 
       const memoryChartData = {
         labels: Array(10).fill(""),
@@ -364,7 +366,7 @@ export default function ResourceCharts() {
               CPU
             </Typography>
             <Paper style={{ width: "100%", minHeight: "25vh" }}>
-              <canvas id="cpuChart" />
+              <canvas ref={cpuRef} />
             </Paper>
           </Grid>
           <Grid
@@ -377,7 +379,7 @@ export default function ResourceCharts() {
               Memory
             </Typography>
             <Paper style={{ width: "100%", minHeight: "25vh" }}>
-              <canvas id="memoryChart" />
+              <canvas ref={memRef} />
             </Paper>
           </Grid>
         </Grid>
