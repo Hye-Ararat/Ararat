@@ -34,7 +34,7 @@ export async function getServerSideProps({ req, res, query }) {
     );
 
     const user_data = decodeToken(req.cookies.access_token);
-    const instance = await prisma.instance.findUnique({
+    /*const instance = await prisma.instance.findUnique({
         where: {
             id: query.id,
         },
@@ -74,6 +74,25 @@ export async function getServerSideProps({ req, res, query }) {
                 }
             }
         }
+    })*/
+    const instance = await prisma.instance.findUnique({
+        where: {
+            id: query.id
+        },
+        include: {
+            users: {
+                include: {
+                    widgetGrids: {
+                        include: {
+                            widgets: true
+                        }
+                    },
+                    user: true,
+                    permissions: true
+                }
+            },
+            node: true
+        }
     })
     if (instance.users.some(user => user.userId === user_data.id)) {
         let instance_user = instance.users.find(user => user.userId === user_data.id)
@@ -90,19 +109,16 @@ export async function getServerSideProps({ req, res, query }) {
 export default function Instance({ instance, instance_user }) {
     const router = useRouter();
     const { id } = router.query;
-    console.log(id);
     const fetcher = (url) => axios.get(url).then((res) => res.data);
-    const [dragging, setDragging] = useState(false);
     const instanceState = {
         data: InstanceStore.useStoreState((state) => state.data),
         setData: InstanceStore.useStoreActions((state) => state.setData),
-        containerState: InstanceStore.useStoreState((state) => state.containerState),
-        sockets: {
+   /*      sockets: {
             monitor: InstanceStore.useStoreState((state) => state.sockets.monitor),
             setMonitor: InstanceStore.useStoreActions((state) => state.sockets.setMonitor)
-        },
-        monitor: InstanceStore.useStoreState((state) => state.monitor)
-    };
+        }, */
+/*         monitor: InstanceStore.useStoreState((state) => state.monitor)
+ */    };
     var { data: instanceData } = useSWR(
         `/api/v1/instances/${id}`,
         fetcher
@@ -117,46 +133,9 @@ export default function Instance({ instance, instance_user }) {
         }
     }, [instance, instanceData, id]);
 
-
-    const grid = 8;
-
-
-    const [areas, setAreas] = useState(
-        [
-            {
-                direction: "column",
-                size: {
-                    xs: 2,
-                },
-                widgets: ["e", "it_works"]
-            },
-            {
-                direction: "row",
-                size: {
-                    xs: 8,
-                },
-                widgets: ["console"]
-            },
-            {
-                direction: "column",
-                widgets: ["ee"],
-                size: {
-                    xs: 2
-                }
-            },
-            {
-                direction: "row",
-                widgets: ["cpu_chart", "memory_chart"],
-                size: {
-                    xs: 12
-                }
-            }
-        ],
-    );
-    const [editingWidgets, setEditingWidgets] = useState(true)
     return (
         <>
-            <Paper sx={{ mb: 1 }}>
+            {/*             <Paper sx={{ mb: 1 }}>
                 <Grid container direction="row" sx={{ p: 2 }}>
                     <Grid item xs={12} sm={12} md={5} container direction="row">
                         {useMediaQuery(useTheme().breakpoints.up("md")) ?
@@ -203,10 +182,10 @@ export default function Instance({ instance, instance_user }) {
                         </Button>
                     </Grid>}
                 </Grid>
-            </Paper>
+            </Paper> */}
             <div>
-                {instanceState.data && instanceState.monitor ?
-                    <WidgetsArea setAreas={setAreas} editMode={editingWidgets} areas={instance_user.widgetGrids} type="instance" />
+                {true ?
+                    <WidgetsArea editMode={true} areas={instance_user.widgetGrids} type="instance" resourceId={instance.id} userId={instance_user.id} />
                     :
                     ""
                 }
