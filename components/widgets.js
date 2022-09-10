@@ -6,6 +6,8 @@ import { useState } from "react";
 import AddGridPopover from "./addGridDialog";
 import AddWidgetDialog from "./addWidgetDialog";
 import InstanceInfoTop from "./InstanceInfoTop";
+import widgetsList from "../lib/widgets.json"
+import ExtensionWidget from "./instance/ExtensionWidget";
 
 const Console = dynamic(() => import("./instance/Console"), {
     ssr: false
@@ -28,6 +30,7 @@ export function Widget({ type, widget, editMode, widgets, resourceId, userId }) 
                         {widget.widget == "console" ? <Console /> : ""}
                         {widget.widget == "instanceInfoBar" ? <InstanceInfoTop /> : ""}
                         {widget.widget == "resourceCharts" ? <ResourceCharts /> : ""}
+                        {!widgetsList[type].includes(widget.widget) ? <ExtensionWidget /> : ""}
                     </Grid>
                     {editMode ? <Button onClick={async () => {
                         console.log("DELETE")
