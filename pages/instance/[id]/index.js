@@ -185,7 +185,7 @@ export default function Instance({ instance, instance_user }) {
             </Paper> */}
             <div>
                 {true ?
-                    <WidgetsArea editMode={true} areas={instance_user.widgetGrids} type="instance" resourceId={instance.id} userId={instance_user.id} />
+                    <WidgetsArea editMode={true} areas={instance_user.widgetGrids} type="instance" resourceId={instance.id} resourceData={instanceData} userId={instance_user.id} />
                     :
                     ""
                 }
