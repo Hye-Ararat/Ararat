@@ -6,7 +6,7 @@ import "../public/components.css";
 import "../public/css/progress.css";
 import "nprogress/nprogress.css";
 import "../public/drag.css"
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import NProgress from "nprogress";
 import axios from "axios";
 import { SWRConfig } from "swr";
@@ -80,12 +80,13 @@ function MyApp({ Component, pageProps }) {
 	Router.onRouteChangeComplete = () => {
 		NProgress.done()
 	}
+	const router = useRouter()
 	const getLayout = Component.getLayout || ((page) => page)
 	return (
 		<SWRConfig value={{ provider: localStorageProvider }}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
-				{getLayout(<Component {...pageProps} />)}
+				{getLayout(<Component {...pageProps} />, router.query)}
 			</ThemeProvider>
 		</SWRConfig>
 	);
