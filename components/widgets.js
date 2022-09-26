@@ -18,7 +18,7 @@ const ResourceCharts = dynamic(() => import("../components/instance/ResourceChar
 
 
 
-export function Widget({ type, widget, editMode, widgets, resourceId, userId }) {
+export function Widget({ type, widget, editMode, widgets, resourceId, userId, resourceData }) {
     const router = useRouter();
 
 
@@ -30,7 +30,7 @@ export function Widget({ type, widget, editMode, widgets, resourceId, userId }) 
                         {widget.widget == "console" ? <Console /> : ""}
                         {widget.widget == "instanceInfoBar" ? <InstanceInfoTop /> : ""}
                         {widget.widget == "resourceCharts" ? <ResourceCharts /> : ""}
-                        {!widgetsList[type].includes(widget.widget) ? <ExtensionWidget /> : ""}
+                        {!widgetsList[type].includes(widget.widget) ? resourceData ? <ExtensionWidget widget={widget.widget} image={resourceData.metadata.config} /> : "" : ""}
                     </Grid>
                     {editMode ? <Button onClick={async () => {
                         console.log("DELETE")
@@ -54,7 +54,7 @@ export function Widget({ type, widget, editMode, widgets, resourceId, userId }) 
 
 
 
-export function WidgetsArea({ areas, type, editMode, setAreas, children, resourceId, userId }) {
+export function WidgetsArea({ areas, type, editMode, setAreas, children, resourceId, userId, resourceData }) {
     console.log(areas, "areas")
     const router = useRouter()
     console.log("editMode", editMode)
@@ -64,6 +64,7 @@ export function WidgetsArea({ areas, type, editMode, setAreas, children, resourc
     const [openId, setOpenId] = useState(null)
     const [addOpen, setAddOpen] = useState(false)
     const [addGridOpen, setAddGridOpen] = useState(false)
+    console.log(resourceData, "resourceData")
     return (
         <Grid container>
             {ordered_grids.map((area, index) => {
@@ -75,7 +76,7 @@ export function WidgetsArea({ areas, type, editMode, setAreas, children, resourc
                     <Grid key={index} container direction={area.direction} xs={JSON.parse(area.size).xs} sx={{ border: editMode ? "dashed #133542" : "", mb: 1 }}>
                         {area.widgets.map((widget, index) => {
                             return (
-                                <Widget userId={userId} resourceId={resourceId} editMode={editMode} key={index} type={type} widget={widget} widgets={area.widgets} />
+                                <Widget resourceData={resourceData} userId={userId} resourceId={resourceId} editMode={editMode} key={index} type={type} widget={widget} widgets={area.widgets} />
                             )
                         })}
                         {editMode ?
