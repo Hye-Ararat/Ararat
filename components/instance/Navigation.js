@@ -16,7 +16,9 @@ import {
   Button,
   useMediaQuery,
   IconButton,
-  useTheme
+  useTheme,
+  Icon,
+  Fade
 } from "@mui/material";
 import {
   Inbox as InboxIcon,
@@ -50,10 +52,11 @@ import StateIndicator from "./StateIndicator";
 import { InstanceStore } from "../../states/instance";
 import StopButton from "./StopButton";
 import StartButton from "./StartButton";
+import nookies from "nookies";
 
 export default function Navigation({ children, ...props }) {
   const [open, setOpen] = useState(false);
-
+  const [extensionPages, setExtensionPages] = useState([]);
   const fetcher = (url) => axios.get(url).then((res) => res.data);
   console.log(props.page);
   const router = useRouter();
@@ -105,6 +108,54 @@ export default function Navigation({ children, ...props }) {
           )
         );
       }
+      let cookies = nookies.get();
+      let image = instance.data.config
+      let imageData = {
+        architecture: image["image.architecture"],
+        os: image["image.os"],
+        release: image["image.release"],
+        variant: image["image.variant"],
+      }
+      async function img() {
+        let img = await axios.get(`https://images.ararat.hye.gg/findImageId?os=${imageData.os}&release=${imageData.release}&architecture=${imageData.architecture}&variant=${imageData.variant}`)
+        let imageId = img.data.id
+        const url = `http://localhost:4000/image/${imageId}/extensions?key=${cookies.access_token}&type=ararat`;
+        const extensions = await axios.get(url);
+        let fullExtensions = [];
+        let done = false;
+        function waitDone() {
+          return new Promise((resolve, reject) => {
+            function checkDone() {
+              if (done) {
+                resolve()
+              } else {
+                setTimeout(checkDone, 100)
+              }
+            }
+            checkDone()
+          })
+        }
+        extensions.data.extensions.map(async (ext) => {
+          const url2 = `http://localhost:4000/image/${imageId}/extensionInfo/${ext.name}?key=${cookies.access_token}&type=ararat`;
+          let extensionInfo = {
+            ...ext,
+            data: (await axios.get(url2)).data
+          }
+          fullExtensions.push(extensionInfo);
+          if (fullExtensions.length == extensions.data.extensions.length) {
+            fullExtensions.map((ext) => {
+              if (ext.type != "ararat") {
+                fullExtensions.splice(fullExtensions.indexOf(ext), 1)
+              }
+            })
+            done = true;
+          }
+        })
+        await waitDone()
+        console.log(fullExtensions, "extin")
+        setExtensionPages(fullExtensions);
+      }
+      img()
     } else {
       console.log("no");
     }
@@ -271,25 +322,22 @@ export default function Navigation({ children, ...props }) {
                   <ListItemText primary="Settings" />
                 </ListItem>
               </Link>
-              {Addons()
-                ? Addons() != "Loading"
-                  ? Addons().map((addon) => {
-                    library.add();
-                    return (
-                      <Link href={`/instances/${encodeURIComponent(id)}${addon.route}`} key={addon._id}>
-                        <ListItem button onClick={() => setOpen(false)}>
+              {extensionPages ? extensionPages.length > 0 ?
+                extensionPages.map((ext) => {
+                  return (
+                    <Link key={ext.name} href={`/instance/${encodeURIComponent(id)}/extension/${ext.name}`}>
+                      <Fade in={true}>
+                        <ListItem onClick={() => setOpen(false)} button selected={props.page == `extension-${ext.name}` ? true : false}>
                           <ListItemIcon>
-                            <SvgIcon sx={{ width: 24, height: 24, ml: 0.2 }}>
-                              <FontAwesomeIcon icon={Icons[addon.icon]} />
-                            </SvgIcon>
+                            <Icon>{ext.data.icon}</Icon>
                           </ListItemIcon>
-                          <ListItemText primary={addon.name} />
+                          <ListItemText primary={ext.data.title} />
                         </ListItem>
-                      </Link>
-                    );
-                  })
-                  : ""
-                : ""}
+                      </Fade>
+                    </Link>
+                  )
+                })
+                : "" : ""}
             </List>
           </Box>
         </Drawer>
