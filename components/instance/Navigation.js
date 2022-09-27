@@ -314,14 +314,6 @@ export default function Navigation({ children, ...props }) {
                   <ListItemText primary="Disks" />
                 </ListItem>
               </Link>
-              <Link href={`/instance/${encodeURIComponent(id)}/settings`}>
-                <ListItem onClick={() => setOpen(false)} button selected={props.page == "settings" ? true : false}>
-                  <ListItemIcon>
-                    <SettingsIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Settings" />
-                </ListItem>
-              </Link>
               {extensionPages ? extensionPages.length > 0 ?
                 extensionPages.map((ext) => {
                   return (
@@ -338,6 +330,14 @@ export default function Navigation({ children, ...props }) {
                   )
                 })
                 : "" : ""}
+              <Link href={`/instance/${encodeURIComponent(id)}/settings`}>
+                <ListItem onClick={() => setOpen(false)} button selected={props.page == "settings" ? true : false}>
+                  <ListItemIcon>
+                    <SettingsIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Settings" />
+                </ListItem>
+              </Link>
             </List>
           </Box>
         </Drawer>
