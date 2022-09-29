@@ -119,7 +119,7 @@ export default function Navigation({ children, ...props }) {
       async function img() {
         let img = await axios.get(`https://images.ararat.hye.gg/findImageId?os=${imageData.os}&release=${imageData.release}&architecture=${imageData.architecture}&variant=${imageData.variant}`)
         let imageId = img.data.id
-        const url = `http://localhost:4000/image/${imageId}/extensions?key=${cookies.access_token}&type=ararat`;
+        const url = `https://images.ararat.hye.gg/accountServices/image/${imageId}/extensions?key=${cookies.access_token}&type=ararat`;
         const extensions = await axios.get(url);
         let fullExtensions = [];
         let done = false;
@@ -136,7 +136,7 @@ export default function Navigation({ children, ...props }) {
           })
         }
         extensions.data.extensions.map(async (ext) => {
-          const url2 = `http://localhost:4000/image/${imageId}/extensionInfo/${ext.name}?key=${cookies.access_token}&type=ararat`;
+          const url2 = `https://images.ararat.hye.gg/accountServices/image/${imageId}/extensionInfo/${ext.name}?key=${cookies.access_token}&type=ararat`;
           let extensionInfo = {
             ...ext,
             data: (await axios.get(url2)).data
