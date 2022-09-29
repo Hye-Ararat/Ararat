@@ -120,7 +120,16 @@ export default function Navigation({ children, ...props }) {
         let img = await axios.get(`https://images.ararat.hye.gg/findImageId?os=${imageData.os}&release=${imageData.release}&architecture=${imageData.architecture}&variant=${imageData.variant}`)
         let imageId = img.data.id
         const url = `https://images.ararat.hye.gg/accountServices/image/${imageId}/extensions?key=${cookies.access_token}&type=ararat`;
-        const extensions = await axios.get(url);
+        let extensions;
+        try {
+          extensions = await axios.get(url);
+        } catch (error) {
+          extensions = {
+            data: {
+              extensions: []
+            }
+          }
+        }
         let fullExtensions = [];
         let done = false;
         function waitDone() {
