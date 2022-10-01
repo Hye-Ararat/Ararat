@@ -104,7 +104,7 @@ export default function Navigation({ children, ...props }) {
       } else {
         instance.sockets.setMonitor(
           new WebSocket(
-            `${"ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/state`
+            `${instance.data.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/state`
           )
         );
       }
