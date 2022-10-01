@@ -147,9 +147,7 @@ export default function Devices({ devices, setDevices, node, setPage }) {
                                             let tempDevices = devices;
                                             setDevices({});
                                             setTimeout(() => {
-                                                //find index of network
-                                                let index = Object.keys(networks).indexOf(value.value);
-                                                setDevices({ ...tempDevices, ["eth" + index]: { type: "nic", network: value.value } });
+                                                setDevices({ ...tempDevices, ["eth" + netIndex]: { type: "nic", network: value.value } });
                                                 setNetIndex(netIndex + 1);
                                                 setCreatingNetwork(false);
                                             }, 30)
