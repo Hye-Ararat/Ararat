@@ -1,5 +1,8 @@
 {
     "node": {
+        "scopes": {
+            "global": {}
+        },
         "manage": {
             "create": [
                 "create_node"
