@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import decodeToken from "../../../../lib/decodeToken";
+import Permissions from "../../../../lib/permissions/index.js";
 import prisma from "../../../../lib/prisma";
 
 export default async function handler(req, res) {
@@ -8,7 +9,8 @@ export default async function handler(req, res) {
     const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
     switch (method) {
         case "POST":
-            if (!tokenData.permissions.includes("create-node")) return res.status(403).send({
+            const permissions = new Permissions(tokenData.id)
+            if (!await permissions.createNode()) return res.status(403).send({
                 "code": 403,
                 "error": "not allowed to perform this operation",
                 "type": "error"
