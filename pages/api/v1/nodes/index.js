@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     switch (method) {
         case "POST":
             const permissions = new Permissions(tokenData.id)
-            if (!await permissions.createNode()) return res.status(403).send({
+            if (!await permissions.createNode) return res.status(403).send({
                 "code": 403,
                 "error": "not allowed to perform this operation",
                 "type": "error"
