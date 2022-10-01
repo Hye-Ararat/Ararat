@@ -15,7 +15,9 @@ export default async function handler(req, res) {
     switch (method) {
         case "POST":
             const { name, node, type, config, devices, source, users } = req.body;
+            console.log("line1")
             let permInstance = new Permissions(tokenData.id).node(node)
+            console.log("line2")
             const nodeData = await prisma.node.findUnique({
                 where: {
                     id: node
@@ -31,49 +33,63 @@ export default async function handler(req, res) {
                     }
                 }
             })
+            console.log("line3")
 
             if (!await permInstance.createInstance) {
                 return res.status(403).send(errorResponse("You are not allowed to create instances on this node", 403));
             }
+            console.log("line4")
 
             if (!nodeData) return res.status(400).send(errorResponse("Node does not exist", 400))
-
+            console.log("line5")
             const lxd = new Client("https://" + nodeData.address + ":" + nodeData.lxdPort, {
                 certificate: Buffer.from(Buffer.from(getNodeEnc(nodeData.encIV, nodeData.certificate)).toString(), "base64").toString("ascii"),
                 key: Buffer.from(Buffer.from(getNodeEnc(nodeData.encIV, nodeData.key)).toString(), "base64").toString("ascii")
             })
+            console.log("line6")
             const perms = new Promise((resolve, reject) => {
+                console.log("line7")
                 let count = 0;
                 Object.keys(devices).forEach(async device => {
+                    console.log("line8")
                     if (device != "root") {
+                        console.log("line9")
                         if (devices[device].type == "disk") {
+                            console.log("line10")
                             if (!await permInstance.storagePool(devices[device].pool).volume(devices[device].source).attach) {
+                                console.log("line11")
                                 return reject(errorResponse("You do not have permission to attach the volume(s) specified", 403))
                             }
                         }
                         if (devices[device].type == "nic") {
                             if (!await permInstance.network(devices[device].network).attach) {
+                                console.log("line12")
                                 return reject(errorResponse("You do not have permission to attach the network(s) specified", 403))
                             }
                         }
                     }
+                    console.log("line13")
                     count++;
                     if (count == Object.keys(devices).length) {
+                        console.log("line14")
                         return resolve();
                     }
                 })
 
             })
-
+            console.log("line15")
             try {
                 await perms;
             } catch (error) {
                 return res.status(error.error_code).send(error);
             }
+            console.log("line16")
             let imagePerms = new Permissions(tokenData.id).imageServer(source.server);
+            console.log("line17")
             if (!await imagePerms.useImages) {
                 return res.status(403).send(errorResponse("You do not have permission to use this image", 403));
             }
+            console.log("line18")
 
             let operation;
 
@@ -87,6 +103,7 @@ export default async function handler(req, res) {
                     },
                 }
             })
+            console.log("line19")
             let count = 0;
             function done() {
                 return new Promise((resolve, reject) => {
@@ -98,8 +115,10 @@ export default async function handler(req, res) {
                     }, 10);
                 })
             }
+            console.log("line20")
 
             users.forEach(async user => {
+                console.log("line21")
                 let u = await prisma.instanceUser.create({
                     data: {
                         instance: {
@@ -114,50 +133,6 @@ export default async function handler(req, res) {
                         }
                     }
                 })
-                let grid1 = await prisma.instanceUserWidgetGrid.create({
-                    data: {
-                        instanceUser: {
-                            connect: {
-                                id: u.id
-                            }
-                        },
-                        direction: "row",
-                        size: `{"xs": 12}`,
-                    }
-                })
-                let userWidgetConsole = await prisma.instanceUserWidget.create({
-                    data: {
-                        widgetGrid: {
-                            connect: {
-                                id: grid1.id
-                            }
-                        },
-                        widget: "console",
-                        size: `{"xs": 12}`,
-                    }
-                })
-                let grid2 = await prisma.instanceUserWidgetGrid.create({
-                    data: {
-                        instanceUser: {
-                            connect: {
-                                id: u.id
-                            }
-                        },
-                        direction: "row",
-                        size: `{"xs": 12}`,
-                    }
-                })
-                let resourceCharts = await prisma.instanceUserWidget.create({
-                    data: {
-                        widgetGrid: {
-                            connect: {
-                                id: grid2.id
-                            }
-                        },
-                        widget: "resourceCharts",
-                        size: `{"xs": 12}`,
-                    }
-                })
                 await Promise.all([user.permissions.forEach(async permission => {
                     await prisma.instanceUserPermission.create({
                         data: {
@@ -170,10 +145,11 @@ export default async function handler(req, res) {
                         }
                     })
                 })])
-
+                console.log("line22")
                 count++;
             })
             await done();
+            console.log("line23")
             try {
                 operation = await lxd.createInstance(instance.id, type, {
                     config: config,
@@ -190,12 +166,14 @@ export default async function handler(req, res) {
                 });
                 return res.status(error.error_code).send(error);
             }
+            console.log("line24")
             operation.operation = operation.operation.replace("/1.0", `/api/v1/nodes/${node}`);
 
             delete operation.metadata.resources.containers;
             operation.metadata.resources.instances.forEach((instance, index) => {
                 operation.metadata.resources.instances[index] = instance.replace("/1.0", "/api/v1")
             });
+            console.log("line25")
             return res.status(202).send(backgroundResponse(100, operation.operation, operation.metadata));
         case "GET":
             const dbInstances = await prisma.instance.findMany({
