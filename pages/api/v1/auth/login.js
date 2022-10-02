@@ -47,7 +47,7 @@ export default async function handler(req, res) {
         permissions: permissions
     }, process.env.ENC_KEY, {
         algorithm: "HS256",
-        expiresIn: "15m"
+        expiresIn: "7d"
     });
 
     return res.status(200).send({

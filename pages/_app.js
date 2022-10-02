@@ -30,7 +30,7 @@ axios.interceptors.request.use(async (config) => {
 			!running
 		) {
 			running = true;
-			await fetch("/api/v1/client/auth/refresh_access_token", {
+			await fetch("/api/v1/auth/refresh_access_token", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -41,7 +41,7 @@ axios.interceptors.request.use(async (config) => {
 			})
 				.then((res) => res.json())
 				.then((data) => {
-					nookies.set(null, "access_token", data.data.access_token, {
+					nookies.set(null, "access_token", data.access_token, {
 						expires: new Date(new Date().getTime() + 15 * 60000),
 						path: "/",
 					});
