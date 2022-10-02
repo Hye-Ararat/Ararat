@@ -16,6 +16,7 @@ import { useState } from "react";
 import translate from "../translations/translations";
 import decodeToken from "../lib/decodeToken";
 import nookies from "nookies";
+import signOut from "../scripts/lib/auth/signout"
 
 export default function Navigation({ children, ...props }) {
     const router = useRouter();

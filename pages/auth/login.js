@@ -7,7 +7,7 @@ import { Box } from "@mui/system";
 import Link from "next/link";
 import Head from "next/head";
 import login from "../../scripts/api/v1/auth/login";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import nprogress, { render } from "nprogress";
 
@@ -29,6 +29,17 @@ export default function Login() {
     render(<Check color="success" />);
     router.push("/");
   };
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      loginUser();
+    }
+  };
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, []);
   return (
     <>
       <Head>
