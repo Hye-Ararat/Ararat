@@ -44,6 +44,11 @@
             "read": [
                 "list-users_instance"
             ]
+        },
+        "networks": {
+            "attach": [
+                "attach-network_instance"
+            ]
         }
     },
     "network": {
