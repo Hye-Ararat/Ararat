@@ -17,7 +17,7 @@ export default async function handler(req, res) {
                 "type": "error"
             })
 
-            const { name, port, lxdPort, sftpPort, certificate, address, key } = req.body;
+            const { name, port, lxdPort, sftpPort, certificate, address, key, ssl } = req.body;
             const iv = crypto.randomBytes(16);
             const cipherCert = crypto.createCipheriv("aes-256-ctr", process.env.ENC_KEY, iv);
             const cipherKey = crypto.createCipheriv("aes-256-ctr", process.env.ENC_KEY, iv);
@@ -32,7 +32,8 @@ export default async function handler(req, res) {
                     key: keyEnc.toString("hex"),
                     port: port.toString(),
                     lxdPort: lxdPort.toString(),
-                    sftpPort: sftpPort.toString()
+                    sftpPort: sftpPort.toString(),
+                    ssl: ssl
                 }
             })
 

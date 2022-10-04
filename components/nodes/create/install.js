@@ -80,7 +80,8 @@ export default function Install({ nodePort, setPage, sslCertPath, sslKeyPath, lx
                                             sftpPort: sftpPort,
                                             certificate: certificate,
                                             key: key,
-                                            address: nodeAddress
+                                            address: nodeAddress,
+                                            ssl: location.protocol == "https:" ? true : false,
                                         })
                                         setPage("");
                                     }}>Continue</Button> : ""}
