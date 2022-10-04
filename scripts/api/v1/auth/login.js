@@ -13,7 +13,7 @@ function login(email, password) {
     }
     auth_response = auth_response.data;
     nookies.set(null, "access_token", auth_response.metadata.accessToken, {
-      expires: new Date(new Date().getTime() + 15 * 60 * 1000),
+      expires: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
       path: "/"
     });
     nookies.set(null, "refresh_token", auth_response.metadata.refreshToken, {

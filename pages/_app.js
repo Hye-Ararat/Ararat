@@ -42,7 +42,7 @@ axios.interceptors.request.use(async (config) => {
 				.then((res) => res.json())
 				.then((data) => {
 					nookies.set(null, "access_token", data.access_token, {
-						expires: new Date(new Date().getTime() + 15 * 60000),
+						expires: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
 						path: "/",
 					});
 					running = false;
