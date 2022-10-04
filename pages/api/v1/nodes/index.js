@@ -2,6 +2,7 @@ import crypto from "crypto";
 import decodeToken from "../../../../lib/decodeToken";
 import Permissions from "../../../../lib/permissions/index.js";
 import prisma from "../../../../lib/prisma";
+import { errorResponse } from "../../../../lib/responses"
 
 export default async function handler(req, res) {
     const { method } = req;
@@ -42,14 +43,26 @@ export default async function handler(req, res) {
                 metadata: node
             })
         case "GET":
-            if (!tokenData.permissions.includes("list-nodes")) {
-                return res.status(403).send({
-                    "code": 403,
-                    "error": "not allowed to perform this operation",
-                    "type": "error"
+            let purpose = req.query.purpose;
+            if (!purpose) return res.status(400).send(errorResponse(400, "purpose not specified"));
+            const nodes = await prisma.node.findMany({});
+            let count = 0;
+            let length = nodes.length;
+            function awaitDone() {
+                return new Promise(async (resolve, reject) => {
+                    setInterval(() => {
+                        if (count == length) return resolve(true);
+                    }, 10)
                 })
             }
-            const nodes = await prisma.node.findMany({});
+            if (purpose == "create_instance") {
+                nodes.forEach(async (node, index) => {
+                    const permissions = new Permissions(tokenData.id).node(node.id)
+                    if (!await permissions.createInstance) nodes.splice(index, 1);
+                    count++;
+                })
+            }
+            await awaitDone();
             return res.status(200).json({
                 status: "success",
                 status_code: 200,
