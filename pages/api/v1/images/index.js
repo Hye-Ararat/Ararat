@@ -1,32 +1,26 @@
 import decodeToken from "../../../../lib/decodeToken";
 import axios from "axios";
 import prisma from "../../../../lib/prisma"
-import { getUserPermissions } from "../../../../lib/getUserPermissions";
+import Permissions from "../../../../lib/permissions/index.js";
 export default async function handler(req, res) {
     const { query: { id, arch }, method } = req;
     const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
-    let image_servers = []
-    console.log(await getUserPermissions(tokenData.id))
-    if ((await getUserPermissions(tokenData.id)).includes("list-images")) {
-        image_servers = await prisma.imageServer.findMany({})
-    } else {
-        image_servers = await prisma.imageServer.findMany({
-            where: {
-                users: {
-                    some: {
-                        userId: tokenData.id,
-                        AND: {
-                            permissions: {
-                                some: {
-                                    permission: "list-images"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        });
+    let permissions = new Permissions(tokenData.id);
+    let image_servers = await prisma.imageServer.findMany({});
+    let count = 0;
+    let total = image_servers.length;
+    function awaitDone() {
+        return new Promise(async (resolve, reject) => {
+            setInterval(() => {
+                if (count == total) return resolve(true);
+            }, 10)
+        })
     }
+    image_servers.forEach(async (server, index) => {
+        if (!await permissions.imageServer(server.id).useImages) image_servers.splice(index, 1);
+        count++;
+    })
+    await awaitDone();
 
     const responses = await axios.all(image_servers.map(server => axios.get(server.url + "/streams/v1/index.json"))).then(axios.spread((...responses) => responses));
     let images = [];
