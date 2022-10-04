@@ -1,6 +1,7 @@
 import decodeToken from "../../../../../../lib/decodeToken";
 import Permissions from "../../../../../../lib/permissions/index.js";
 import { errorResponse } from "../../../../../../lib/responses.js";
+import prisma from "../../../../../../lib/prisma.js";
 
 export default async function handler(req, res) {
     const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
