@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export default function SelectNode({ setPage, setNode, setCreatingInstance }) {
     const [nodes, setNodes] = useState(null);
     useEffect(() => {
-        axios.get("/api/v1/nodes").then(res => {
+        axios.get("/api/v1/nodes?purpose=create_instance").then(res => {
             let tempNodes = [];
             res.data.metadata.forEach(node => {
                 tempNodes.push({
