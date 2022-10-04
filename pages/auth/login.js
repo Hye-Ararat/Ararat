@@ -29,17 +29,14 @@ export default function Login() {
     render(<Check color="success" />);
     router.push("/");
   };
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      loginUser();
-    }
-  };
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    }
-  }, []);
+
+  if (typeof window !== "undefined") {
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        loginUser();
+      }
+    })
+  }
   return (
     <>
       <Head>
