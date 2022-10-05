@@ -33,7 +33,9 @@ export default function Login() {
   if (typeof window !== "undefined") {
     window.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
-        loginUser();
+        if (email != "" && password != "") {
+          loginUser();
+        }
       }
     })
   }
