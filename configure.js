@@ -1,127 +1,166 @@
-const readline = require('readline');
+const prompts = require("prompts");
+const { exec, execSync } = require("child_process");
+const { genSalt, hash } = require("bcryptjs");
 const fs = require("fs");
-const crypto = require("crypto");
-const MongoClient = require("mongodb").MongoClient;
-const bcrypt = require("bcryptjs");
-
+const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
 (async function setup() {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-    let mongodb_uri;
-    let mongodb_db;
-    let panel_url;
-
-    console.log("Let's get your Ararat instance configured.");
-
-    rl.question("What is this Ararat installation's panel URL? (example: https://araratdev.hye.gg) ", (answer) => {
-        panel_url = answer;
-        rl.question("What is your MongoDB URI? (Example: mongodb+srv://Example:Password@example.com)", (answer) => {
-            mongodb_uri = answer;
-
-            rl.question("Have you already setup your MongoDB database? (y/n)", (answer) => {
-                if (answer.includes("n")) {
-                    rl.question("What would you like your database to be named? (Example: Ararat) ", (answer) => {
-                        mongodb_db = answer;
-                        MongoClient.connect(mongodb_uri + "/" + mongodb_db, async (err, db) => {
-                            if (err) throw err;
-                            console.log("Database Created!");
-                            let database = db.db(mongodb_db);
-
-                            console.log("Creating Collections");
-                            let collections = ["users", "instances", "magma_cubes", "networks", "ports", "nodes", "backups", "snapshots"];
-                            collections.forEach(async (collection) => {
-                                try {
-                                    await database.createCollection(collection);
-                                } catch (error) {
-                                    throw new Error(error);
-                                }
-                            });
-                            console.log("Collections Created!");
-
-
-                            console.log("In order to use Ararat, you must create an administrative user. This user will have ALL administrative privileges.");
-
-                            let username;
-                            let email;
-                            let password = crypto.randomBytes(20).toString("hex");
-                            let first_name;
-                            let last_name;
-                            rl.question("What would you like your username to be? (Example: admin)", (answer) => {
-                                username = answer;
-                                rl.question("What would you like this user's email to be? (example: example@hye.gg) ", (answer) => {
-                                    email = answer;
-                                    rl.question("What is this user's first name?", (answer) => {
-                                        first_name = answer;
-                                        rl.question("What is this user's last name?", async (answer) => {
-                                            last_name = answer;
-                                            console.log("Creating User");
-                                            const salt = await bcrypt.genSalt(10);
-                                            const hashedPassword = await bcrypt.hash(password, salt);
-                                            try {
-                                                await database.collection("users").insertOne({
-                                                    username: username,
-                                                    first_name: first_name,
-                                                    last_name: last_name,
-                                                    admin: {
-                                                        nodes: {
-                                                            read: true,
-                                                            write: true
-                                                        },
-                                                        networks: {
-                                                            read: true,
-                                                            write: true
-                                                        },
-                                                        magma_cubes: {
-                                                            read: true,
-                                                            write: true
-                                                        },
-                                                        instances: {
-                                                            read: true,
-                                                            write: true
-                                                        },
-                                                        users: {
-                                                            read: true,
-                                                            write: true
-                                                        }
-                                                    },
-                                                    email: email,
-                                                    password: hashedPassword
-                                                })
-                                            } catch (error) {
-                                                throw new Error(error);
-                                            }
-                                            console.log("User Created");
-                                            console.log("This user's password is " + password + " it can be changed later in the panel, however, for the time being, DO NOT FORGET THIS PASSWORD!");
-                                            rl.close();
-                                            console.log("Saving panel configuration");
-                                            fs.writeFileSync(".env.local", `MONGODB_URI=${mongodb_uri}\nMONGODB_DB=${mongodb_db}\nENC_KEY=${crypto.randomBytes(16).toString("hex")}\nURL=${panel_url}`);
-                                            console.log("Saved.");
-                                            console.log("Setup Complete!");
-                                            process.exit(0);
-                                        })
-                                    })
-                                })
-
-                            });
-
-                        });
-                    })
-                } else {
-                    rl.question("What is your MongoDB DB name?", (answer) => {
-                        mongodb_db = answer;
-                        rl.close();
-                        console.log("Saving panel configuration");
-                        fs.writeFileSync(".env.local", `MONGODB_URI=${mongodb_uri}\nMONGODB_DB=${mongodb_db}\nENC_KEY=${crypto.randomBytes(16).toString("hex")}\nURL=${panel_url}`);
-                        console.log("Saved.");
-                        console.log("Setup Complete!");
-                        process.exit(0);
-                    })
-                }
-            })
+    const log = async (s) => {
+        return new Promise(async (resolve, reject) => {
+            for (const c of s) {
+                process.stdout.write(c);
+                await sleep(20);
+            }
+            await sleep(1000);
+            process.stdout.write('\n');
+            resolve();
         });
+    }
+    await log("Hello! Welcome to Ararat!");
+    await log("This is the setup wizard for Ararat. It will help you configure your Ararat instance.");
+    await log("Before we begin, please make sure you have either a PostgreSQL or CockroachDB database ready to use.");
+    const dbReady = await prompts({
+        type: "confirm",
+        name: "value",
+        message: "Do you have a database ready for Ararat to seed?"
+    })
+    if (!dbReady.value) {
+        await log("Please setup a database and then run this setup wizard again.");
+        process.exit(1);
+    }
+    await log("Let's get started!");
+    await log("First, we need to configure your database.");
+    const dbType = await prompts({
+        type: "select",
+        name: "value",
+        message: "What database type do you want to use?",
+        choices: [
+            { title: "PostgreSQL", value: "postgresql" },
+            { title: "CockroachDB", value: "cockroachdb" },
+        ]
     });
-
-})();
+    let env = "";
+    if (dbType.value == "postgresql") {
+        let schema = fs.readFileSync("./prisma/schema.prisma", "utf8");
+        schema = schema.replaceAll("sequence()", "autoincrement()");
+        schema = schema.replaceAll("cockroachdb", "postgresql");
+        fs.writeFileSync("./prisma/schema.prisma", schema);
+    }
+    await log("✅ Great! Now let's get connected to your database.");
+    const connectionString = await prompts({
+        type: "text",
+        name: "value",
+        message: "Please enter your database connection string (postgresql://user:password@host:port/database)"
+    });
+    env += `DATABASE_URL=${connectionString.value}\n`;
+    await log("One moment while I seed your database...");
+    fs.writeFileSync("./.env", env);
+    execSync("npx prisma db push", { stdio: "inherit" });
+    await log("✅ Great! Your database is now seeded.");
+    const randomString = () => {
+        const length = 32;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let result = "";
+        for (let i = 0; i < length; i++) {
+            result += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+        return result;
+    }
+    let envLocal = "";
+    envLocal += `ENC_KEY=${randomString()}\n`;
+    const ssl = await prompts({
+        type: "confirm",
+        name: "value",
+        message: "Are you going to be using SSL?"
+    });
+    if (ssl.value) {
+        await log("Cool! It should be noted that Ararat does not setup SSL for you. You will need to setup SSL yourself.");
+        await log("It is reccomended that you use a reverse proxy system such as Nginx to handle SSL. You can also use Ararat's own domain-based routing system with automatic Lets Encrypt SSL configuration if you would like.")
+    }
+    const url = await prompts({
+        type: "text",
+        name: "value",
+        message: "What url is this Ararat instance going to be running on? (e.g. https://ararat.hye.gg)"
+    });
+    envLocal += `PANEL_URL=${url.value}\n`;
+    fs.writeFileSync("./.env.local", envLocal);
+    await log("✅ Great! Your Ararat instance is now configured.");
+    await log("One last thing before we finish up.");
+    const userAccount = await prompts({
+        type: "confirm",
+        name: "value",
+        message: "Would you like to create a user account with permission to assign permissions to themselves now?"
+    });
+    if (userAccount.value) {
+        await log("Great! Let's get started.");
+        const firstName = await prompts({
+            type: "text",
+            name: "value",
+            message: "What is the first name of this account holder?",
+        });
+        const lastName = await prompts({
+            type: "text",
+            name: "value",
+            message: "What is the last name of this account holder?",
+        });
+        const email = await prompts({
+            type: "text",
+            name: "value",
+            message: "What is the email of this account holder?",
+        });
+        const username = await prompts({
+            type: "text",
+            name: "value",
+            message: "What username would you like to use?"
+        });
+        async function askPass() {
+            return new Promise(async (resolve, reject) => {
+                password = await prompts({
+                    type: "password",
+                    name: "value",
+                    message: "What password would you like to use?"
+                });
+                passwordConfirm = await prompts({
+                    type: "password",
+                    name: "value",
+                    message: "Please confirm your password."
+                });
+                if (password.value != passwordConfirm.value) {
+                    await log("Passwords do not match. Please try again.");
+                    askPass();
+                }
+                if (password.value == passwordConfirm.value) {
+                    resolve(password.value);
+                }
+            });
+        }
+        await askPass();
+        await log("One moment while I create your account...");
+        const { PrismaClient } = require("@prisma/client");
+        const prisma = new PrismaClient();
+        let salt = await genSalt(10);
+        let hashedPassword = await hash(password.value, salt);
+        let user = await prisma.user.create({
+            data: {
+                firstName: firstName.value,
+                lastName: lastName.value,
+                email: email.value,
+                username: username.value,
+                password: hashedPassword,
+            }
+        })
+        let permission = await prisma.permission.create({
+            data: {
+                permission: "edit-users_user",
+                user: {
+                    connect: {
+                        id: user.id
+                    }
+                }
+            }
+        })
+        await log("✅ Great! Your account has been created.");
+    }
+    await log("✅ Great! That's it. Your Ararat instance is now configured. You can get started by running npm run build and then npm run start.");
+}());
