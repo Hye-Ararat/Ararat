@@ -101,10 +101,15 @@ const theme = createTheme({
     },
     MuiTextField: {
       styleOverrides: {
-        root: {
+        root: ({ ownerState }) => ({
           backgroundColor: "#28374b",
           borderRadius: 6,
-        }
+          ...(ownerState.variant == "standard" ? {
+            input: {
+              paddingLeft: 8
+            }
+          } : {}),
+        }),
       }
     },
     MuiInput: {
