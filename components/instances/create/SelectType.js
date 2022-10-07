@@ -14,7 +14,7 @@ export default function SelectType({ imageData, setType, setPage }) {
         }
         if (imageData.type == "Stateless N-VPS") {
             setType("Stateless N-VPS");
-            setPage("resources");
+            setPage("statelessConf")
         }
     }, [])
     return (

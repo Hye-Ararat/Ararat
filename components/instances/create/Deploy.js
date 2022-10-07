@@ -3,7 +3,7 @@ import { Avatar, CircularProgress, Dialog, Grid, Typography } from "@mui/materia
 import axios from "axios"
 import { useEffect, useState } from "react"
 
-export default function Deploy({ image, users, node, cpu, memory, type, name, devices }) {
+export default function Deploy({ image, users, node, cpu, memory, type, name, devices, instanceConfig }) {
     const [created, setCreated] = useState(false)
     const [opId, setOpId] = useState(null)
     const [currentOpStatus, setCurrentOpStatus] = useState(null)
@@ -24,7 +24,8 @@ export default function Deploy({ image, users, node, cpu, memory, type, name, de
                 },
                 config: {
                     "limits.cpu": cpu,
-                    "limits.memory": memory
+                    "limits.memory": memory,
+                    ...instanceConfig
                 },
                 users: users
 

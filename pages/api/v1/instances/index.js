@@ -150,6 +150,7 @@ export default async function handler(req, res) {
             })
             await done();
             console.log("line23")
+            console.log(config)
             try {
                 operation = await lxd.createInstance(instance.id, type, {
                     config: config,

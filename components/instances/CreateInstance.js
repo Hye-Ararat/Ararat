@@ -6,6 +6,7 @@ import SelectImage from "./create/SelectImage";
 import SelectNode from "./create/SelectNode";
 import SelectType from "./create/SelectType";
 import SetResources from "./create/SetResources";
+import StatelessConf from "./create/StatelessConf";
 import Users from "./create/Users";
 
 
@@ -17,6 +18,7 @@ export default function CreateInstance({ setCreatingInstance }) {
     const [cpu, setCpu] = useState(null);
     const [memory, setMemory] = useState(null);
     const [users, setUsers] = useState([]);
+    const [config, setConfig] = useState({})
 
     const [devices, setDevices] = useState({
         "root": {
@@ -35,6 +37,9 @@ export default function CreateInstance({ setCreatingInstance }) {
             {page == "selectImage" ?
                 <SelectImage setPage={setPage} setImageData={setImageData} node={node} />
                 : ""}
+            {page == "statelessConf" ?
+                <StatelessConf setConfig={setConfig} config={config} setPage={setPage} imageData={imageData} /> :
+                ""}
             {page == "imageType" ?
                 <SelectType setType={setType} setPage={setPage} imageData={imageData} />
                 : ""}
@@ -51,7 +56,7 @@ export default function CreateInstance({ setCreatingInstance }) {
                 <Users setPage={setPage} setUsers={setUsers} users={users} />
                 : ""}
             {page == "deploy" ?
-                <Deploy name={name} image={imageData} users={users} node={node} cpu={cpu} memory={memory} type={type} devices={devices} /> : ""}
+                <Deploy name={name} image={imageData} users={users} node={node} cpu={cpu} memory={memory} type={type} devices={devices} instanceConfig={config} /> : ""}
         </>
     )
 }
