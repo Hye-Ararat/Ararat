@@ -2,7 +2,7 @@ import Client from "hyexd";
 import getInstancePermissions from "../../../../../lib/client/getInstancePermissions";
 import decodeToken from "../../../../../lib/decodeToken";
 import getNodeEnc from "../../../../../lib/getNodeEnc";
-import Permissions from "../../../../../lib/permissions";
+import Permissions from "../../../../../lib/permissions/index.js";
 import prisma from "../../../../../lib/prisma";
 
 export default async function handler(req, res) {
