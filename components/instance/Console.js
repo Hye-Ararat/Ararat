@@ -76,7 +76,7 @@ export default function Console() {
             <Fade in={true}>
                 <div id="cont" style={{ width: "100%", height: "100%", padding: 10, borderRadius: 5, backgroundColor: "#141c26" }}>
 
-                    <div ref={termRef} />
+                    <div ref={termRef} style={{ height: "100%" }} />
 
                     <ResizeObserver onResize={(rec) => {
                         fitAddon.current.fit()
