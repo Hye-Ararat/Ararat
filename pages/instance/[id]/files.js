@@ -130,7 +130,7 @@ export default function Files(props) {
                                 </label>
                                 <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", mr: "auto", ml: "auto" }} onClick={() => setCreatingFile(true)}>New File</Button>
                             </>
-                            : <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Open In Visual Studio Code</Button> : ""}
+                            : <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Download</Button> : ""}
                     </Grid>
                     : ""}
                 <Grid xs={12} container direction="row">
@@ -199,7 +199,7 @@ export default function Files(props) {
                                     </label>
                                     <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }} onClick={() => setCreatingFile(true)}>New File</Button>
                                 </>
-                                : <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto", mr: "auto" }}>Open In Visual Studio Code</Button> : ""}
+                                : <Button variant="contained" color="info" sx={{ mt: "auto", mb: "auto", ml: "auto" }}>Download</Button> : ""}
                         </Grid>
                         : ""}
                 </Grid>
