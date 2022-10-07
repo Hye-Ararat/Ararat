@@ -206,7 +206,7 @@ export default function Navigation({ children, ...props }) {
                     mt: "auto", width: "30px", height: "30px", mb: "auto"
                   }} />
                 </Box>
-                <StartButton instance={instance.data._id} />
+                <StartButton instance={instance.data.id} />
                 <Button
                   color="warning"
                   variant="contained"
@@ -214,7 +214,7 @@ export default function Navigation({ children, ...props }) {
                 >
                   Restart
                 </Button>
-                <StopButton instance={instance.data._id} />
+                <StopButton instance={instance.data.id} />
               </Grid>
               : '' : "" : ""}
           </Toolbar>
