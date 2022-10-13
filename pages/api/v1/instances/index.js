@@ -7,6 +7,7 @@ import convertPermissionsToArray from "../../../../lib/convertPermissionsToArray
 import getLXDUserPermissions from "../../../../lib/getLXDUserPermissions";
 import Permissions from "../../../../lib/permissions/index";
 import { backgroundResponse, errorResponse } from "../../../../lib/responses";
+import axios from "axios";
 export default async function handler(req, res) {
     const { method } = req;
 
@@ -149,6 +150,56 @@ export default async function handler(req, res) {
                 count++;
             })
             await done();
+            if (source.server == "https://images.ararat.hye.gg") {
+                let images = await axios.get("https://images.ararat.hye.gg/streams/v1/images.json");
+                images = JSON.parse(images.data);
+                let image = images.find(image => image.aliases.includes(source.alias));
+                if (image) {
+                    if (image.properties) {
+                        if (image.properties["widget_grids"]) {
+                            let users = await prisma.instanceUser.findMany({
+                                where: {
+                                    instanceId: instance.id
+                                },
+                                include: {
+                                    user: true
+                                }
+                            })
+                            image.properties["widget_grids"].forEach(async grid => {
+                                users.forEach(async user => {
+                                    let widgetGrid = await prisma.instanceUserWidgetGrid.create({
+                                        data: {
+                                            instanceUser: {
+                                                connect: {
+                                                    id: user.id
+                                                }
+                                            },
+                                            direction: grid.direction,
+                                            size: grid.size,
+                                            index: grid.index,
+                                        }
+                                    })
+                                    grid.widgets.forEach(async widget => {
+                                        let widget = await prisma.instanceUserWidget.create({
+                                            data: {
+                                                instanceUserWidgetGrid: {
+                                                    connect: {
+                                                        id: widgetGrid.id
+                                                    }
+                                                },
+                                                size: widget.size,
+                                                index: widget.index,
+                                                widget: widget.widget
+                                            }
+                                        })
+                                    })
+                                })
+
+                            })
+                        }
+                    }
+                }
+            }
             console.log("line23")
             console.log(config)
             try {
