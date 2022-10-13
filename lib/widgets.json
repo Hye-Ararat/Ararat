@@ -1,7 +1,7 @@
 {
     "instance": [
         "console",
-        "resourceCharts",
-        "instanceInfoBar"
+        "cpu-chart",
+        "memory-chart"
     ]
 }
