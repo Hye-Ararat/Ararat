@@ -1,4 +1,4 @@
-import { Button, Grid, Popover } from "@mui/material";
+import { Button, Grid, Popover, Typography } from "@mui/material";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
@@ -12,7 +12,10 @@ import ExtensionWidget from "./instance/ExtensionWidget";
 const Console = dynamic(() => import("./instance/Console"), {
     ssr: false
 });
-const ResourceCharts = dynamic(() => import("../components/instance/ResourceCharts"), {
+const CpuChart = dynamic(() => import("../components/instance/CpuChart"), {
+    ssr: false
+});
+const MemoryChart = dynamic(() => import("../components/instance/MemoryChart"), {
     ssr: false
 });
 
@@ -26,10 +29,10 @@ export function Widget({ type, widget, editMode, widgets, resourceId, userId, re
         <>
             {type == "instance" ?
                 <Grid direction="column" container xs={JSON.parse(widget.size).xs} sx={{ border: editMode ? "dashed gray" : "" }}>
-                    <Grid container>
+                    <Grid container sx={{ padding: 1 }}>
                         {widget.widget == "console" ? <Console /> : ""}
-                        {widget.widget == "instanceInfoBar" ? <InstanceInfoTop /> : ""}
-                        {widget.widget == "resourceCharts" ? <ResourceCharts /> : ""}
+                        {widget.widget == "memory-chart" ? <MemoryChart /> : ""}
+                        {widget.widget == "cpu-chart" ? <CpuChart /> : ""}
                         {!widgetsList[type].includes(widget.widget) ? resourceData ? <ExtensionWidget widget={widget.widget} image={resourceData.metadata.config} /> : "" : ""}
                     </Grid>
                     {editMode ? <Button onClick={async () => {
@@ -38,6 +41,9 @@ export function Widget({ type, widget, editMode, widgets, resourceId, userId, re
                         let newWidgets = widgets.filter((w) => w.id != widget.id)
                         console.log(newWidgets, "new")
                         await axios.patch(`/api/v1/${type}s/${resourceId}/users/${userId}/widgetGrids/${widget.widgetGridId}/widgets`, newWidgets)
+                        let path = router.asPath
+                        if (!router.query.edit) path = path + "?edit=true"
+                        router.replace(path, path, { shallow: false })
                         router.reload()
                     }} sx={{ ml: "auto" }} variant="contained" color="error">Delete Widget</Button> : ""}
 
@@ -67,6 +73,14 @@ export function WidgetsArea({ areas, type, editMode, setAreas, children, resourc
     console.log(resourceData, "resourceData")
     return (
         <Grid container>
+            {ordered_grids.length == 0 ? <Grid container direction="column">
+                <Typography sx={{ mr: "auto", ml: "auto" }} variant="h5">You do not have any widget grids</Typography>
+                <Button color="success" variant="contained" sx={{ mr: "auto", ml: "auto" }} onClick={(e) => {
+                    setAnchorEl(e.currentTarget)
+                    setAddGridOpen(true)
+                }}>Add One</Button>
+
+            </Grid> : ""}
             {ordered_grids.map((area, index) => {
                 console.log(area, "le area")
                 let area_id = area.id;
@@ -74,6 +88,14 @@ export function WidgetsArea({ areas, type, editMode, setAreas, children, resourc
                 console.log("THE AREA", area)
                 return (
                     <Grid key={index} container direction={area.direction} xs={JSON.parse(area.size).xs} sx={{ border: editMode ? "dashed #133542" : "", mb: 1 }}>
+                        {area.widgets.length == 0 && editMode ? <Grid container direction="column">
+                            <Typography sx={{ mr: "auto", ml: "auto" }} variant="h5">You do not have any widgets in this grid</Typography>
+                            <Button color="success" variant="contained" sx={{ mr: "auto", ml: "auto" }} onClick={(e) => {
+                                setAnchorEl(e.currentTarget)
+                                setOpenId(area_id)
+                                setAddOpen(true)
+                            }}>Add One</Button>
+                        </Grid> : ""}
                         {area.widgets.map((widget, index) => {
                             return (
                                 <Widget resourceData={resourceData} userId={userId} resourceId={resourceId} editMode={editMode} key={index} type={type} widget={widget} widgets={area.widgets} />
@@ -83,6 +105,9 @@ export function WidgetsArea({ areas, type, editMode, setAreas, children, resourc
                             <Grid container>
                                 {editMode ? <Button onClick={async () => {
                                     await axios.delete(`/api/v1/${type}s/${resourceId}/users/${userId}/widgetGrids/${area_id}`)
+                                    let path = router.asPath
+                                    if (!router.query.edit) path = path + "?edit=true"
+                                    router.replace(path, path, { shallow: false })
                                     router.reload()
                                 }} sx={{ ml: "auto" }} variant="contained" color="error">Delete Grid</Button> : ""}
                                 {editMode ? <Button onClick={(e) => {

@@ -73,6 +73,9 @@ export default function AddGridPopover({ type, resourceId, userId }) {
                     size: JSON.stringify(size)
                 }
                 await axios.post(`/api/v1/${type}s/${resourceId}/users/${userId}/widgetGrids`, data)
+                let path = router.asPath
+                if (!router.query.edit) path = path + "?edit=true"
+                router.replace(path, path, { shallow: false })
                 router.reload()
             }} variant="contained" color="success" sx={{ width: "100%" }}>Add Grid</Button>
         </Paper>

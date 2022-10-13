@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { Grid, Paper, Typography, Chip, Button, useMediaQuery, useTheme, Container } from "@mui/material";
+import { Grid, Paper, Typography, Chip, Button, useMediaQuery, useTheme, Container, IconButton, Tooltip } from "@mui/material";
 import useSWR from "swr";
 import { InstanceStore } from "../../../states/instance";
 import axios from "axios";
@@ -14,6 +14,8 @@ import prisma from "../../../lib/prisma";
 import Footer from "../../../components/footer";
 import { Box } from "@mui/system";
 import { WidgetsArea } from "../../../components/widgets";
+import InstanceInfoTop from "../../../components/InstanceInfoTop";
+import { Edit } from "@mui/icons-material";
 
 
 
@@ -132,64 +134,32 @@ export default function Instance({ instance, instance_user }) {
             }
         }
     }, [instance, instanceData, id]);
-
+    const [editMode, setEditMode] = useState(false);
+    useEffect(() => {
+        if (router.query.edit) {
+            if (router.query.edit === "true") setEditMode(true);
+            else setEditMode(false);
+        }
+    }, [router.query.edit])
     return (
         <>
-            {/*             <Paper sx={{ mb: 1 }}>
-                <Grid container direction="row" sx={{ p: 2 }}>
-                    <Grid item xs={12} sm={12} md={5} container direction="row">
-                        {useMediaQuery(useTheme().breakpoints.up("md")) ?
-                            <Grid container xs={.5} sm={.8} md={.3} lg={.2} sx={{ mt: "auto", mb: "auto", mr: 1.5 }}>
-                                <StateIndicator />
-                            </Grid> :
-                            <Grid container xs={8} sx={{ mr: "auto", ml: "auto" }}>
-                                <Box sx={{ mr: "auto", ml: "auto" }}>
-                                    <Grid container>
-                                        <Grid container xs={.5} sm={.8} md={.3} lg={.2} sx={{ mt: "auto", mb: "auto", mr: 1 }}>
-                                            <StateIndicator />
-                                        </Grid>
-                                        <Typography align="center" variant="h6" sx={{ mt: "auto", mb: "auto" }}>{instance.name}</Typography>
-                                    </Grid>
-                                </Box>
-                            </Grid>}
-
-                        {useMediaQuery(useTheme().breakpoints.up("md")) ?
-
-                            <Typography variant="h6" sx={{ mt: "auto", mb: "auto" }}>{instance.name}</Typography>
-                            : ""}
-                    </Grid>
-                    {useMediaQuery(useTheme().breakpoints.up("md")) ? <Grid container item xs={12} sm={12} md={4.5} lg={3} xl={2.5} sx={{ marginLeft: "auto" }}>
-                        <StartButton instance={id} />
-                        <StopButton instance={id} />
-                        <Button
-                            disabled={instanceState.monitor.status ? instanceState.monitor.status != "Running" : true}
-                            color="warning"
-                            variant="contained"
-                            sx={{ marginLeft: "auto", marginTop: "auto", marginBottom: "auto" }}
-                        >
-                            Restart
-                        </Button>
-                    </Grid> : <Grid container item xs={12} sm={12} md={4.5} lg={3} xl={2.5} sx={{ marginLeft: "auto" }}>
-                        <StartButton center instance={id} />
-                        <StopButton center instance={id} />
-                        <Button
-                            disabled={instanceState.monitor.status ? instanceState.monitor.status != "Running" : true}
-                            color="warning"
-                            variant="contained"
-                            sx={{ marginLeft: "auto", marginTop: "auto", marginBottom: "auto", marginRight: "auto" }}
-                        >
-                            Restart
-                        </Button>
-                    </Grid>}
-                </Grid>
-            </Paper> */}
-            <div>
+            <InstanceInfoTop />
+            <div style={{ marginTop: 10 }}>
                 {true ?
-                    <WidgetsArea editMode={true} areas={instance_user.widgetGrids} type="instance" resourceId={instance.id} resourceData={instanceData} userId={instance_user.id} />
+                    <WidgetsArea editMode={editMode} areas={instance_user.widgetGrids} type="instance" resourceId={instance.id} resourceData={instanceData} userId={instance_user.id} />
                     :
                     ""
                 }
             </div>
+            <Grid container>
+                <Tooltip title="Edit Layout">
+                    <IconButton onClick={() => {
+                        router.replace(`/instance/${instance.id}?edit=${!editMode}`)
+                    }} sx={{ ml: "auto" }} size="small">
+                        <Edit />
+                    </IconButton>
+                </Tooltip>
+            </Grid>
 
         </>
     );
