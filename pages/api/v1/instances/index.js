@@ -150,6 +150,79 @@ export default async function handler(req, res) {
                 count++;
             })
             await done();
+            function applyLayout(layout) {
+                return new Promise(async (resolve, reject) => {
+                    let users = await prisma.instanceUser.findMany({
+                        where: {
+                            instanceId: instance.id
+                        },
+                        include: {
+                            user: true
+                        }
+                    })
+                    layout.forEach(async grid => {
+                        users.forEach(async user => {
+                            let widgetGrid = await prisma.instanceUserWidgetGrid.create({
+                                data: {
+                                    instanceUser: {
+                                        connect: {
+                                            id: user.id
+                                        }
+                                    },
+                                    direction: grid.direction,
+                                    size: grid.size,
+                                    index: grid.index,
+                                }
+                            })
+                            grid.widgets.forEach(async widget => {
+                                let widget = await prisma.instanceUserWidget.create({
+                                    data: {
+                                        instanceUserWidgetGrid: {
+                                            connect: {
+                                                id: widgetGrid.id
+                                            }
+                                        },
+                                        size: widget.size,
+                                        index: widget.index,
+                                        widget: widget.widget
+                                    }
+                                })
+                            })
+                        })
+
+                    })
+                    resolve();
+                })
+            }
+            let defaultLayout = [{
+                direction: "row",
+                index: 0,
+                size: JSON.stringify({ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }),
+                widgets: [
+                    {
+                        index: 0,
+                        size: JSON.stringify({ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }),
+                        widget: "console",
+                    },
+                    {
+                        direction: "row",
+                        index: 1,
+                        size: JSON.stringify({ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }),
+                        widgets: [
+                            {
+                                index: 0,
+                                size: JSON.stringify({ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }),
+                                widget: "cpu-chart",
+                            },
+                            {
+                                index: 1,
+                                size: JSON.stringify({ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }),
+                                widget: "memory-chart",
+                            }
+                        ]
+                    }
+                ]
+            }]
             if (source.server == "https://images.ararat.hye.gg") {
                 let images = await axios.get("https://images.ararat.hye.gg/streams/v1/images.json");
                 images = JSON.parse(images.data);
@@ -157,49 +230,12 @@ export default async function handler(req, res) {
                 if (image) {
                     if (image.properties) {
                         if (image.properties["widget_grids"]) {
-                            let users = await prisma.instanceUser.findMany({
-                                where: {
-                                    instanceId: instance.id
-                                },
-                                include: {
-                                    user: true
-                                }
-                            })
-                            image.properties["widget_grids"].forEach(async grid => {
-                                users.forEach(async user => {
-                                    let widgetGrid = await prisma.instanceUserWidgetGrid.create({
-                                        data: {
-                                            instanceUser: {
-                                                connect: {
-                                                    id: user.id
-                                                }
-                                            },
-                                            direction: grid.direction,
-                                            size: grid.size,
-                                            index: grid.index,
-                                        }
-                                    })
-                                    grid.widgets.forEach(async widget => {
-                                        let widget = await prisma.instanceUserWidget.create({
-                                            data: {
-                                                instanceUserWidgetGrid: {
-                                                    connect: {
-                                                        id: widgetGrid.id
-                                                    }
-                                                },
-                                                size: widget.size,
-                                                index: widget.index,
-                                                widget: widget.widget
-                                            }
-                                        })
-                                    })
-                                })
-
-                            })
+                            defaultLayout = image.properties["widget_grids"]
                         }
                     }
                 }
             }
+            await applyLayout(defaultLayout);
             console.log("line23")
             console.log(config)
             try {
