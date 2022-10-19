@@ -175,7 +175,7 @@ export default async function handler(req, res) {
                                 }
                             })
                             grid.widgets.forEach(async widget => {
-                                let widget = await prisma.instanceUserWidget.create({
+                                let widg = await prisma.instanceUserWidget.create({
                                     data: {
                                         instanceUserWidgetGrid: {
                                             connect: {
@@ -194,35 +194,37 @@ export default async function handler(req, res) {
                     resolve();
                 })
             }
-            let defaultLayout = [{
-                direction: "row",
-                index: 0,
-                size: JSON.stringify({ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }),
-                widgets: [
-                    {
-                        index: 0,
-                        size: JSON.stringify({ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }),
-                        widget: "console",
-                    },
-                    {
-                        direction: "row",
-                        index: 1,
-                        size: JSON.stringify({ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }),
-                        widgets: [
-                            {
-                                index: 0,
-                                size: JSON.stringify({ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }),
-                                widget: "cpu-chart",
-                            },
-                            {
-                                index: 1,
-                                size: JSON.stringify({ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }),
-                                widget: "memory-chart",
-                            }
-                        ]
-                    }
-                ]
-            }]
+            let defaultLayout = [
+                {
+                    direction: "row",
+                    index: 0,
+                    size: JSON.stringify({ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }),
+                    widgets: [
+                        {
+                            index: 0,
+                            size: JSON.stringify({ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }),
+                            widget: "console",
+                        }
+                    ],
+                },
+                {
+                    direction: "row",
+                    index: 1,
+                    size: JSON.stringify({ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }),
+                    widgets: [
+                        {
+                            index: 0,
+                            size: JSON.stringify({ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }),
+                            widget: "cpu-chart",
+                        },
+                        {
+                            index: 1,
+                            size: JSON.stringify({ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }),
+                            widget: "memory-chart",
+                        }
+                    ]
+                }]
+            console.log(defaultLayout)
             if (source.server == "https://images.ararat.hye.gg") {
                 let images = await axios.get("https://images.ararat.hye.gg/streams/v1/images.json");
                 images = JSON.parse(images.data);
