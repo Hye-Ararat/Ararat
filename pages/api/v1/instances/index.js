@@ -226,8 +226,10 @@ export default async function handler(req, res) {
                 }]
             console.log(defaultLayout)
             if (source.server == "https://images.ararat.hye.gg") {
-                let images = await axios.get("https://images.ararat.hye.gg/streams/v1/images.json");
-                images = JSON.parse(images.data);
+                let res = await axios.get("https://images.ararat.hye.gg/streams/v1/images.json");
+              
+                var images = Object.keys(res.data.products)
+                images = images.map(s => res.data.products[s])
                 let image = images.find(image => image.aliases.includes(source.alias));
                 if (image) {
                     if (image.properties) {
