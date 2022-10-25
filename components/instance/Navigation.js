@@ -102,9 +102,10 @@ export default function Navigation({ children, ...props }) {
         };
         */
       } else {
+        let cookies = nookies.get();
         instance.sockets.setMonitor(
           new WebSocket(
-            `${instance.data.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/state`
+            `${instance.data.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/state?authorization=${cookies["access_token"]}`
           )
         );
       }

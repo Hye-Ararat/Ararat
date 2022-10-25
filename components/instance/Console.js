@@ -7,6 +7,7 @@ import ResizeObserver from "react-resize-observer"
 import { Fade } from "@mui/material"
 import useEventListener from "../../lib/useEventListener"
 import { debounce } from "debounce"
+import nookies from "nookies";
 
 export default function Console() {
     const termRef = useRef(null);
@@ -23,7 +24,8 @@ export default function Console() {
     useEffect(() => {
         if (instance.data) {
             if (!instance.sockets.console) {
-                instance.sockets.setConsole(new WebSocket(`${instance.data.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/console`))
+                let cookies = nookies.get();
+                instance.sockets.setConsole(new WebSocket(`${instance.data.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/console?authorization=${cookies.access_token}`));
             } else {
                 let has = false;
                 instance.sockets.console.addEventListener("open", () => {
