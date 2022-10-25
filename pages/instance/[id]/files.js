@@ -39,9 +39,24 @@ export default function Files(props) {
         setShowOptions(false)
     }
     var { id, path } = router.query;
+    const [lePath, setPath] = useState(path)
     if (path == undefined) {
-        path = "/";
+        path = "/"
     }
+    useEffect(() => {
+        if (instance.data) {
+            if (instance.data.config) {
+                if (instance.data.config["user.working_dir"]) {
+                    if (lePath == undefined) {
+                        path = instance.data.config["user.working_dir"];
+                        router.replace(`/instance/${id}/files?path=${path}`)
+                        return;
+                    }
+                }
+            }
+        }
+    }, [instance.data])
+    console.log(instance.data)
     const fetcher = (url) => axios.get(url).then((res) => res.data);
     const { data: files, error } = useSWR(() => id ? `/api/v1/instances/${id}/files?path=${path.replace("//", "/")}` : null, fetcher)
     function HandleClicked(e) {
