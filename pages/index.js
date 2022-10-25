@@ -24,6 +24,7 @@ import axios from "axios";
 import nookies from "nookies";
 import { useRouter } from "next/router";
 import CreateInstance from "../components/instances/CreateInstance";
+import Permissions from "../lib/permissions/index.js";
 export async function getServerSideProps({ req, res }) {
   if (!req.cookies.access_token) {
     return {
@@ -40,6 +41,8 @@ export async function getServerSideProps({ req, res }) {
 
   var { decode } = require("jsonwebtoken");
   const user_data = decode(req.cookies.access_token)
+  let createPerm = await new Permissions(user_data.id).createInstance;
+
   const instances = await prisma.instance.findMany({
     where: {
       users: {
@@ -50,10 +53,10 @@ export async function getServerSideProps({ req, res }) {
     }
   })
   let data = JSON.parse(JSON.stringify(instances));
-  return { props: { data, user: user_data } };
+  return { props: { data, user: user_data, canCreate: createPerm } };
 }
 
-export default function Dashboard({ data, user }) {
+export default function Dashboard({ data, user, canCreate }) {
   const router = useRouter();
   const [welcomeDialog, setWelcomeDialog] = useState(false);
   const [change, setChange] = useState(false);
@@ -100,7 +103,9 @@ export default function Dashboard({ data, user }) {
         <Typography variant="h4" sx={{ mb: 1 }}>
           {translate(user.language, "instances", "your_instances")}
         </Typography>
-        <Button variant="contained" sx={{ ml: "auto", mt: "auto", mb: "auto" }} onClick={() => setCreatingInstance(true)}>{translate(user.language, "instances", "create_instance")}</Button>
+        {canCreate ?
+          <Button variant="contained" sx={{ ml: "auto", mt: "auto", mb: "auto" }} onClick={() => setCreatingInstance(true)}>{translate(user.language, "instances", "create_instance")}</Button>
+          : ""}
       </Grid>
       {creatingInstance ?
         <CreateInstance setCreatingInstance={setCreatingInstance} />
