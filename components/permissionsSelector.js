@@ -1,4 +1,4 @@
-import { ExpandMore } from "@mui/icons-material";
+import { ExpandMore, SecurityRounded } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Checkbox, FormControlLabel, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import permissions from "../lib/permissions.json";
@@ -14,8 +14,36 @@ export default function PermissionsSelector({ permSection, currentPermissions, p
         let count = 0;
         Object.keys(permissions).forEach(section => {
             if (permissions[section].scopes) {
+                console.log(permissions[section].scopes)
+                if (permSection == "global") {
+                    Object.keys(permissions[section].scopes).filter(scope => scope != "global").forEach(scope => {
+                        console.log(perms)
+                        Object.keys(permissions[section].scopes[scope]).forEach(area => {
+                            Object.keys(permissions[section].scopes[scope][area]).forEach(sec => {
+                                console.log(perms[section].scopes[scope][area][sec])
+                                console.log(perms[section][area])
+                                perms = {
+                                    ...perms,
+                                    [section]: {
+                                        ...perms[section],
+                                        [area]: {
+                                            ...perms[section][area] ? perms[section][area] : {},
+                                            [sec]: [
+                                                ...perms[section].scopes[scope][area][sec]
+                                            ]
+                                        }
+                                    }
+                                }
+                                console.log(perms)
+                            })
+                        })
+
+                    });
+                }
                 if (permissions[section].scopes[permSection]) {
+                    console.log(permissions[section].scopes[permSection])
                     if (Object.keys(permissions[section].scopes[permSection]).length > 0) {
+                        console.log("EEEEE")
                         perms = {
                             ...perms,
                             [permSection]: {
@@ -55,6 +83,7 @@ export default function PermissionsSelector({ permSection, currentPermissions, p
         if (Object.keys(fullPerms).length > 0) {
             console.log("EEE")
             let perms = [];
+
             Object.keys(fullPerms[permSection]).filter((perm) => perm != "scopes").forEach(perm => {
                 Object.keys(fullPerms[permSection][perm]).forEach(permS => {
                     console.log(permS)
@@ -103,6 +132,7 @@ export default function PermissionsSelector({ permSection, currentPermissions, p
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Grid container direction="column">
+
                                     {Object.keys(fullPerms[permSection][permissionHead]).filter(value => value != "scopes").map((permSec) => {
                                         return (
                                             <>

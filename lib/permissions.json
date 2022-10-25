@@ -20,6 +20,11 @@
             },
             "global": {}
         },
+        "create": {
+            "create": [
+                "create_instance"
+            ]
+        },
         "console": {
             "view": [
                 "view-console_instance"
