@@ -9,6 +9,6 @@ export default function handler(req, res) {
             command += " --ssl_key_path " + req.query.ssl_key_path;
         }
     }
-    command += " --port " + req.query.lavaPort;
+    command += " --port " + req.query.port;
     return res.status(200).send(command)
 }
