@@ -78,8 +78,6 @@ export default function Install({ nodePort, setPage, lxdPort, nodeName, sftpPort
                                             port: nodePort,
                                             lxdPort: lxdPort,
                                             sftpPort: sftpPort,
-                                            certificate: certificate,
-                                            key: key,
                                             address: nodeAddress,
                                             ssl: location.protocol == "https:" ? true : false,
                                         })
@@ -123,9 +121,8 @@ export default function Install({ nodePort, setPage, lxdPort, nodeName, sftpPort
                                         setConnected(true);
                                         setTimeout(() => {
                                             ws.send(JSON.stringify({
-                                                cert: certificate,
                                                 panel_url: location.origin,
-                                                key: key,
+                                                node_address: nodeAddress,
                                                 lxd_port: lxdPort
                                             }));
                                         }, 1000);
