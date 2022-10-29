@@ -2,7 +2,6 @@ const prompts = require("prompts");
 const { exec, execSync } = require("child_process");
 const { genSalt, hash } = require("bcryptjs");
 const fs = require("fs");
-const cron = require("node-cron");
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 };
