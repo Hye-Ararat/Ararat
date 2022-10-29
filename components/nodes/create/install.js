@@ -38,7 +38,7 @@ export default function Install({ nodePort, setPage, lxdPort, nodeName, sftpPort
         setCertificate(Buffer.from(cert).toString("base64"));
         setKey(Buffer.from(leKey).toString("base64"));
 
-        setCommand(`source <(curl -s \"${location.origin}/api/v1/nodes/install?port=${nodePort}&ssl=${location.protocol == "https:" ? `true` : "false"}\")`)
+        setCommand(`source <(curl -s \"${location.origin}/api/v1/nodes/install?port=${nodePort}&nodeAddress=${nodeAddress}&ssl=${location.protocol == "https:" ? `true` : "false"}\")`)
     }, [])
 
     return (
