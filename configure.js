@@ -2,6 +2,7 @@ const prompts = require("prompts");
 const { exec, execSync } = require("child_process");
 const { genSalt, hash } = require("bcryptjs");
 const fs = require("fs");
+const cron = require("node-cron");
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 };
@@ -81,8 +82,25 @@ const sleep = (ms) => {
     if (ssl.value == "true") {
         envLocal += `ssl=true\n`;
         fs.writeFileSync("./.env.local", envLocal);
-        await log("Cool! It should be noted that Ararat does not setup SSL for you. You will need to setup SSL yourself.");
-        await log("It is reccomended that you use a reverse proxy system such as Nginx to handle SSL. You can also use Ararat's own domain-based routing system with automatic Lets Encrypt SSL configuration if you would like.")
+        await log("Cool! It should be noted that Ararat does setup SSL for you. You will not need to setup SSL yourself.");
+        const domain = await prompts({
+            type: "text",
+            name: "value",
+            message: "What domain is this Ararat instance going to be running on? (e.g. ararat.hye.gg)"
+        });
+        envLocal += `PANEL_DOMAIN=${domain.value}\n`;
+        fs.writeFileSync("./.env.local", envLocal);
+        exec('wget -O /etc/nginx/sites-available/ararat.conf https://raw.githubusercontent.com/Hye-Ararat/Ararat/master/ararat.conf');
+        let conf = fs.readFileSync("/etc/nginx/sites-available/ararat.conf", "utf8");
+        conf = conf.replaceAll("example.com", `${domain.value}`);
+        fs.writeFileSync("/etc/nginx/sites-available/ararat.conf", conf);
+        exec(`certbot --nginx -d ${domain.value}`);
+        exec('sudo ln -s /etc/nginx/sites-available/ararat.conf /etc/nginx/sites-enabled/ararat.conf')
+        exec('systemctl restart nginx');
+        cron.schedule('0 23 * * *', () => {
+            exec("certbot renew --quiet")
+            exec("systemctl restart nginx")
+        })
     }
     const url = await prompts({
         type: "text",
