@@ -20,7 +20,7 @@ export default function CreateNode() {
                 <NodeInfo setPage={setPage} nodeName={nodeName} setNodeName={setNodeName} nodeAddress={nodeAddress} setNodeAddress={setNodeAddress} nodePort={nodePort} setNodePort={setNodePort} lxdPort={lxdPort} setLxdPort={setLxdPort} sftpPort={sftpPort} setSftpPort={setSftpPort} />
                 : ""}
             {page == "install" ?
-                <Install sftpPort={sftpPort} nodeAddress={nodeAddress} lxdPort={lxdPort} nodePort={nodePort} setPage={setPage} ssl={sslEnabled} nodeName={nodeName} />
+                <Install sftpPort={sftpPort} nodeAddress={nodeAddress} lxdPort={lxdPort} nodePort={nodePort} setPage={setPage} nodeName={nodeName} />
                 : ""}
         </>
     )
