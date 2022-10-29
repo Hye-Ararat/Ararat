@@ -16,7 +16,7 @@ export default function NodeInfo({ setPage, nodeName, setNodeName, nodeAddress, 
                         <IconButton size="small" sx={{ ml: "auto", backgroundColor: "#133542", borderRadius: 2 }} variant="contained">
                             <ArrowForward sx={{ color: "#09c2de" }} onClick={() => {
                                 if (location.protocol == "https:") {
-                                    setPage("SSL");
+                                    setPage("install");
                                 } else {
                                     setPage("install")
 
