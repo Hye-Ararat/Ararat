@@ -122,7 +122,6 @@ export default function Install({ nodePort, setPage, lxdPort, nodeName, sftpPort
                                         setTimeout(() => {
                                             ws.send(JSON.stringify({
                                                 panel_url: location.origin,
-                                                node_address: nodeAddress,
                                                 lxd_port: lxdPort
                                             }));
                                         }, 1000);
