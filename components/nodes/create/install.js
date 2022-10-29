@@ -5,7 +5,7 @@ import copy from "copy-to-clipboard"
 import axios from "axios";
 import { Check, Error } from "@mui/icons-material";
 
-export default function Install({ nodePort, setPage, sslCertPath, sslKeyPath, lxdPort, nodeName, sftpPort, nodeAddress }) {
+export default function Install({ nodePort, setPage, lxdPort, nodeName, sftpPort, nodeAddress }) {
     const [copied, setCopied] = useState(false);
     const [command, setCommand] = useState("");
     const [connecting, setConnecting] = useState(false);
@@ -38,7 +38,7 @@ export default function Install({ nodePort, setPage, sslCertPath, sslKeyPath, lx
         setCertificate(Buffer.from(cert).toString("base64"));
         setKey(Buffer.from(leKey).toString("base64"));
 
-        setCommand(`source <(curl -s \"${location.origin}/api/v1/nodes/install?port=${nodePort}&ssl=${location.protocol == "https:" ? `true&ssl_cert_path=${sslCertPath}&ssl_key_path=${sslKeyPath}` : "false"}\")`)
+        setCommand(`source <(curl -s \"${location.origin}/api/v1/nodes/install?port=${nodePort}&ssl=${location.protocol == "https:" ? `true` : "false"}\")`)
     }, [])
 
     return (
