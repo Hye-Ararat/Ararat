@@ -96,7 +96,7 @@ const sleep = (ms) => {
         let conf = fs.readFileSync("/etc/nginx/sites-available/ararat.conf", "utf8");
         conf = conf.replaceAll("example.com", `${domain.value}`);
         fs.writeFileSync("/etc/nginx/sites-available/ararat.conf", conf);
-        execSync('sudo ln -s /etc/nginx/sites-available/ararat.conf /etc/nginx/sites-enabled/ararat.conf');
+        execSync('sudo ln -s --force /etc/nginx/sites-available/ararat.conf /etc/nginx/sites-enabled/ararat.conf');
         execSync(`sudo certbot --nginx -d ${domain.value} --agree-tos --no-redirect --register-unsafely-without-email -n`);
         execSync('systemctl restart nginx');
     }
