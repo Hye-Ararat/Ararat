@@ -70,13 +70,35 @@ const sleep = (ms) => {
     let envLocal = "";
     envLocal += `ENC_KEY=${randomString()}\n`;
     const ssl = await prompts({
-        type: "confirm",
+        type: "select",
         name: "value",
-        message: "Are you going to be using SSL?"
+        message: "Are you going to be using SSL?",
+        choices: [
+            { title: "True", value: "true" },
+            { title: "False", value: "false" },
+        ]
     });
-    if (ssl.value) {
-        await log("Cool! It should be noted that Ararat does not setup SSL for you. You will need to setup SSL yourself.");
-        await log("It is reccomended that you use a reverse proxy system such as Nginx to handle SSL. You can also use Ararat's own domain-based routing system with automatic Lets Encrypt SSL configuration if you would like.")
+    if (ssl.value == "true") {
+        envLocal += `ssl=true\n`;
+        fs.writeFileSync("./.env.local", envLocal);
+        await log("Cool! It should be noted that Ararat does setup SSL for you. You will not need to setup SSL yourself.");
+        const domain = await prompts({
+            type: "text",
+            name: "value",
+            message: "What domain is this Ararat instance going to be running on? (e.g. ararat.hye.gg)"
+        });
+        envLocal += `PANEL_DOMAIN=${domain.value}\n`;
+        fs.writeFileSync("./.env.local", envLocal);
+        exec('sudo apt-get install -y nginx')
+        exec('rm /etc/nginx/sites-enabled/default')
+        exec('sudo apt-get install -y certbot python3-certbot-nginx')
+        execSync('wget -O /etc/nginx/sites-available/ararat.conf https://raw.githubusercontent.com/Hye-Ararat/Ararat/master/ararat.conf', { stdio: [0, 1, 2] });
+        let conf = fs.readFileSync("/etc/nginx/sites-available/ararat.conf", "utf8");
+        conf = conf.replaceAll("example.com", `${domain.value}`);
+        fs.writeFileSync("/etc/nginx/sites-available/ararat.conf", conf);
+        execSync('sudo ln -s /etc/nginx/sites-available/ararat.conf /etc/nginx/sites-enabled/ararat.conf');
+        execSync(`sudo certbot --nginx -d ${domain.value} --agree-tos --no-redirect --register-unsafely-without-email -n`);
+        execSync('systemctl restart nginx');
     }
     const url = await prompts({
         type: "text",
