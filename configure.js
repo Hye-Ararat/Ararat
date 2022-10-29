@@ -70,11 +70,17 @@ const sleep = (ms) => {
     let envLocal = "";
     envLocal += `ENC_KEY=${randomString()}\n`;
     const ssl = await prompts({
-        type: "confirm",
+        type: "select",
         name: "value",
-        message: "Are you going to be using SSL?"
+        message: "Are you going to be using SSL?",
+        choices: [
+            { title: "True", value: "true" },
+            { title: "False", value: "false" },
+        ]
     });
-    if (ssl.value) {
+    if (ssl.value == "true") {
+        envLocal += `ssl=true\n`;
+        fs.writeFileSync("./.env.local", envLocal);
         await log("Cool! It should be noted that Ararat does not setup SSL for you. You will need to setup SSL yourself.");
         await log("It is reccomended that you use a reverse proxy system such as Nginx to handle SSL. You can also use Ararat's own domain-based routing system with automatic Lets Encrypt SSL configuration if you would like.")
     }
