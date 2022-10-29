@@ -24,11 +24,11 @@ export default function CreateNode() {
                 : ""}
             {page == "SSL" ?
                 <>
-                    <SSL setPage={setPage} sslKeyPath={sslKeyPath} setSslKeyPath={setSslKeyPath} sslCertPath={sslCertPath} setSslCertPath={setSslCertPath} />
+                    <SSL setPage={setPage} ssl={sslEnabled} setSsl={sslEnabled} />
                 </>
                 : ""}
             {page == "install" ?
-                <Install sftpPort={sftpPort} nodeAddress={nodeAddress} lxdPort={lxdPort} nodePort={nodePort} setPage={setPage} sslCertPath={sslCertPath} sslKeyPath={sslKeyPath} nodeName={nodeName} />
+                <Install sftpPort={sftpPort} nodeAddress={nodeAddress} lxdPort={lxdPort} nodePort={nodePort} setPage={setPage} ssl={sslEnabled} nodeName={nodeName} />
                 : ""}
         </>
     )
