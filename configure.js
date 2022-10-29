@@ -90,7 +90,10 @@ const sleep = (ms) => {
         });
         envLocal += `PANEL_DOMAIN=${domain.value}\n`;
         fs.writeFileSync("./.env.local", envLocal);
-        exec('wget -O /etc/nginx/sites-available/ararat.conf https://raw.githubusercontent.com/Hye-Ararat/Ararat/master/ararat.conf');
+        exec('sudo apt-get install -y nginx')
+        exec('rm /etc/nginx/sites-enabled/default')
+        exec('sudo apt-get install -y certbot python3-certbot-nginx')
+        execSync('wget -O /etc/nginx/sites-available/ararat.conf https://raw.githubusercontent.com/OxyZachary/Ararat/master/ararat.conf', { stdio: [0, 1, 2] });
         let conf = fs.readFileSync("/etc/nginx/sites-available/ararat.conf", "utf8");
         conf = conf.replaceAll("example.com", `${domain.value}`);
         fs.writeFileSync("/etc/nginx/sites-available/ararat.conf", conf);
@@ -187,4 +190,5 @@ const sleep = (ms) => {
         await log("✅ Great! Your account has been created.");
     }
     await log("✅ Great! That's it. Your Ararat instance is now configured. You can get started by running npm run build and then npm run start.");
+    process.exit()
 }());
