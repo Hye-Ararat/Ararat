@@ -93,7 +93,7 @@ const sleep = (ms) => {
         exec('sudo apt-get install -y nginx')
         exec('rm /etc/nginx/sites-enabled/default')
         exec('sudo apt-get install -y certbot python3-certbot-nginx')
-        execSync('wget -O /etc/nginx/sites-available/ararat.conf https://raw.githubusercontent.com/OxyZachary/Ararat/master/ararat.conf', { stdio: [0, 1, 2] });
+        execSync('wget -O /etc/nginx/sites-available/ararat.conf https://raw.githubusercontent.com/Hye-Ararat/Ararat/master/ararat.conf', { stdio: [0, 1, 2] });
         let conf = fs.readFileSync("/etc/nginx/sites-available/ararat.conf", "utf8");
         conf = conf.replaceAll("example.com", `${domain.value}`);
         fs.writeFileSync("/etc/nginx/sites-available/ararat.conf", conf);
