@@ -97,13 +97,9 @@ const sleep = (ms) => {
         let conf = fs.readFileSync("/etc/nginx/sites-available/ararat.conf", "utf8");
         conf = conf.replaceAll("example.com", `${domain.value}`);
         fs.writeFileSync("/etc/nginx/sites-available/ararat.conf", conf);
-        exec(`certbot --nginx -d ${domain.value}`);
-        exec('sudo ln -s /etc/nginx/sites-available/ararat.conf /etc/nginx/sites-enabled/ararat.conf')
-        exec('systemctl restart nginx');
-        cron.schedule('0 23 * * *', () => {
-            exec("certbot renew --quiet")
-            exec("systemctl restart nginx")
-        })
+        execSync('sudo ln -s /etc/nginx/sites-available/ararat.conf /etc/nginx/sites-enabled/ararat.conf');
+        execSync(`sudo certbot --nginx -d ${domain.value} --agree-tos --no-redirect --register-unsafely-without-email -n`);
+        execSync('systemctl restart nginx');
     }
     const url = await prompts({
         type: "text",
@@ -190,5 +186,4 @@ const sleep = (ms) => {
         await log("✅ Great! Your account has been created.");
     }
     await log("✅ Great! That's it. Your Ararat instance is now configured. You can get started by running npm run build and then npm run start.");
-    process.exit()
 }());
