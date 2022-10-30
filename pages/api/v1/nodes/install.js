@@ -5,7 +5,7 @@ export default function handler(req, res) {
     if (req.query.ssl) {
         if (req.query.ssl == "true") {
             command += " --ssl";
-            command += " --address " + req.query.address;
+            command += " --address " + req.query.nodeAddress;
         }
     }
     command += " --port " + req.query.port;
