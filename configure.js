@@ -90,7 +90,7 @@ const sleep = (ms) => {
         envLocal += `PANEL_DOMAIN=${domain.value}\n`;
         fs.writeFileSync("./.env.local", envLocal);
         execSync('sudo apt-get install -y nginx', { stdio: [0, 1, 2] })
-        execSync('rm /etc/nginx/sites-enabled/default', { stdio: [0, 1, 2] })
+        execSync('rm -f /etc/nginx/sites-enabled/default', { stdio: [0, 1, 2] })
         execSync('sudo apt-get install -y certbot python3-certbot-nginx', { stdio: [0, 1, 2] })
         execSync('wget -O /etc/nginx/sites-enabled/ararat.conf https://raw.githubusercontent.com/Hye-Ararat/Ararat/master/ararat.conf', { stdio: [0, 1, 2] });
         let conf = fs.readFileSync("/etc/nginx/sites-enabled/ararat.conf", "utf8");
