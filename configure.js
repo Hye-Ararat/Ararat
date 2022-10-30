@@ -85,20 +85,19 @@ const sleep = (ms) => {
         const domain = await prompts({
             type: "text",
             name: "value",
-            message: "What domain is this Ararat instance going to be running on? (e.g. ararat.hye.gg)"
+            message: "What domain is ssl going to be running on? (e.g. ararat.hye.gg)"
         });
         envLocal += `PANEL_DOMAIN=${domain.value}\n`;
         fs.writeFileSync("./.env.local", envLocal);
-        exec('sudo apt-get install -y nginx')
-        exec('rm /etc/nginx/sites-enabled/default')
-        exec('sudo apt-get install -y certbot python3-certbot-nginx')
-        execSync('wget -O /etc/nginx/sites-available/ararat.conf https://raw.githubusercontent.com/Hye-Ararat/Ararat/master/ararat.conf', { stdio: [0, 1, 2] });
-        let conf = fs.readFileSync("/etc/nginx/sites-available/ararat.conf", "utf8");
+        execSync('sudo apt-get install -y nginx', { stdio: [0, 1, 2] })
+        execSync('rm -f /etc/nginx/sites-enabled/default', { stdio: [0, 1, 2] })
+        execSync('sudo apt-get install -y certbot python3-certbot-nginx', { stdio: [0, 1, 2] })
+        execSync('wget -O /etc/nginx/sites-enabled/ararat.conf https://raw.githubusercontent.com/Hye-Ararat/Ararat/master/ararat.conf', { stdio: [0, 1, 2] });
+        let conf = fs.readFileSync("/etc/nginx/sites-enabled/ararat.conf", "utf8");
         conf = conf.replaceAll("example.com", `${domain.value}`);
-        fs.writeFileSync("/etc/nginx/sites-available/ararat.conf", conf);
-        execSync('sudo ln -s /etc/nginx/sites-available/ararat.conf /etc/nginx/sites-enabled/ararat.conf');
-        execSync(`sudo certbot --nginx -d ${domain.value} --agree-tos --no-redirect --register-unsafely-without-email -n`);
-        execSync('systemctl restart nginx');
+        fs.writeFileSync("/etc/nginx/sites-enabled/ararat.conf", conf);
+        execSync(`sudo certbot --nginx -d ${domain.value} --agree-tos --no-redirect --register-unsafely-without-email -n`, { stdio: [0, 1, 2] });
+        execSync('systemctl restart nginx', { stdio: [0, 1, 2] });
     }
     const url = await prompts({
         type: "text",
