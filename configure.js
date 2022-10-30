@@ -89,15 +89,15 @@ const sleep = (ms) => {
         });
         envLocal += `PANEL_DOMAIN=${domain.value}\n`;
         fs.writeFileSync("./.env.local", envLocal);
-        exec('sudo apt-get install -y nginx')
-        exec('rm /etc/nginx/sites-enabled/default')
-        exec('sudo apt-get install -y certbot python3-certbot-nginx')
+        execSync('sudo apt-get install -y nginx', { stdio: [0, 1, 2] })
+        execSync('rm /etc/nginx/sites-enabled/default', { stdio: [0, 1, 2] })
+        execSync('sudo apt-get install -y certbot python3-certbot-nginx', { stdio: [0, 1, 2] })
+        execSync(`sudo certbot --standalone -d ${domain.value} --agree-tos --register-unsafely-without-email -n`, { stdio: [0, 1, 2] });
         execSync('wget -O /etc/nginx/sites-enabled/ararat.conf https://raw.githubusercontent.com/Hye-Ararat/Ararat/master/ararat.conf', { stdio: [0, 1, 2] });
         let conf = fs.readFileSync("/etc/nginx/sites-enabled/ararat.conf", "utf8");
         conf = conf.replaceAll("example.com", `${domain.value}`);
         fs.writeFileSync("/etc/nginx/sites-enabled/ararat.conf", conf);
-        execSync(`sudo certbot --nginx -d ${domain.value} --agree-tos --no-redirect --register-unsafely-without-email -n`);
-        execSync('systemctl restart nginx');
+        execSync('systemctl restart nginx', { stdio: [0, 1, 2] });
     }
     const url = await prompts({
         type: "text",
