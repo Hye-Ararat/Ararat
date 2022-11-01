@@ -87,8 +87,8 @@ export default function ConsolePage({ instance, instance_user }) {
         <>
             <Typography variant="h4" sx={{ mb: 1 }}>Console</Typography>
             {instanceState.data ?
-                <div style={{ height: "70vh" }}>
-                    <Console />
+                <div style={{ height: "70vh", minHeight: "70vh" }}>
+                    <Console minHeight="70vh" />
                 </div>
                 : ""}
         </>
