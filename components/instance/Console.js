@@ -44,7 +44,7 @@ export function VgaConsole({ minHeight }) {
         if (instance.data && url.length < 1) {
             let cookies = nookies.get();
             let token = cookies["access_token"];
-            setUrl("wss://development.hye.gg:3002/v1/instances/" + instance.data.id + "/console?authorization=" + token)
+            setUrl(`${instance.data.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/console?authorization=${token}`)
         }
     }, [instance.data])
     useEffect(() => {
