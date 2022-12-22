@@ -37,7 +37,7 @@
     "easy-peasy": "^5.0.4",
     "html2canvas": "^1.3.2",
     "hyexd": "^0.0.47",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "language-detect": "^1.1.0",
     "md5": "^2.3.0",
     "moment": "^2.29.2",
