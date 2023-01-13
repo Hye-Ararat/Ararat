@@ -1,0 +1,34 @@
+{
+    "apps": {
+      "http": {
+        "servers": {
+          "ararat": {
+            "listen": [":443"],
+            "routes": [
+              {
+                "match": [
+                  {
+                    "host": [
+                      "development.hye.gg"
+                    ]
+                  }
+                ],
+                "handle": [
+                  {
+                   
+                            "handler": "reverse_proxy",
+                            "upstreams": [
+                              {
+                                "dial": "localhost:3000"
+                              }
+                            ]
+                       
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  }

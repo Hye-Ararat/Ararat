@@ -1,187 +1,307 @@
+const { execSync, spawn, exec } = require("child_process");
 const prompts = require("prompts");
-const { exec, execSync } = require("child_process");
+const axios = require("axios");
+const { mkdirSync, rmSync, cpSync, rmdirSync, writeFileSync } = require("fs");
 const { genSalt, hash } = require("bcryptjs");
-const fs = require("fs");
-const sleep = (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
-(async function setup() {
-    const log = async (s) => {
-        return new Promise(async (resolve, reject) => {
-            for (const c of s) {
-                process.stdout.write(c);
-                await sleep(20);
-            }
-            await sleep(1000);
-            process.stdout.write('\n');
-            resolve();
-        });
-    }
-    await log("Hello! Welcome to Ararat!");
-    await log("This is the setup wizard for Ararat. It will help you configure your Ararat instance.");
-    await log("Before we begin, please make sure you have either a PostgreSQL or CockroachDB database ready to use.");
-    const dbReady = await prompts({
-        type: "confirm",
-        name: "value",
-        message: "Do you have a database ready for Ararat to seed?"
-    })
-    if (!dbReady.value) {
-        await log("Please setup a database and then run this setup wizard again.");
-        process.exit(1);
-    }
-    await log("Let's get started!");
-    await log("First, we need to configure your database.");
-    const dbType = await prompts({
-        type: "select",
-        name: "value",
-        message: "What database type do you want to use?",
-        choices: [
-            { title: "PostgreSQL", value: "postgresql" },
-            { title: "CockroachDB", value: "cockroachdb" },
-        ]
-    });
-    let env = "";
-    if (dbType.value == "postgresql") {
-        let schema = fs.readFileSync("./prisma/schema.prisma", "utf8");
-        schema = schema.replaceAll("sequence()", "autoincrement()");
-        schema = schema.replaceAll("cockroachdb", "postgresql");
-        fs.writeFileSync("./prisma/schema.prisma", schema);
-    }
-    await log("✅ Great! Now let's get connected to your database.");
-    const connectionString = await prompts({
-        type: "text",
-        name: "value",
-        message: "Please enter your database connection string (postgresql://user:password@host:port/database)"
-    });
-    env += `DATABASE_URL=${connectionString.value}\n`;
-    await log("One moment while I seed your database...");
-    fs.writeFileSync("./.env", env);
-    execSync("npx prisma db push", { stdio: "inherit" });
-    await log("✅ Great! Your database is now seeded.");
-    const randomString = () => {
-        const length = 32;
-        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        let result = "";
-        for (let i = 0; i < length; i++) {
-            result += charset.charAt(Math.floor(Math.random() * charset.length));
+
+(async function setup(){
+console.log("Installing Dependency: caddy...");
+execSync("apt-get install -y debian-keyring debian-archive-keyring apt-transport-https wget");
+execSync("curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --batch --yes --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg");
+execSync("curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list");
+execSync("apt-get update -y")
+execSync("apt-get install caddy -y")
+console.log("✅ Dependency caddy successfully installed")
+let useDomain = await prompts({
+    type: "confirm",
+    name: "value",
+    message: "Is this Ararat install going to use a domain? If so, please point your domain to this install before proceeding."
+});
+let address = await prompts({
+    type: "text",
+    name: "value",
+    message: `Enter the ${useDomain.value ? "domain" : "ip address"} of this node ${useDomain.value ? "(ex: us-dal-1.hye.gg)" : "(ex: 8.8.8.8)"}`
+});
+let port = await prompts({
+    type: "number",
+    name: "value",
+    message: `Enter the port you would like this node to listen on. (443 is reccomended)`
+})
+console.log("Setting up web server...")
+let caddyConfig = {
+    "apps": {
+      "http": {
+        "servers": {
+          "ararat": {
+            "listen": [`:${port.value}`],
+            "routes": [
+              {
+                "match": [
+                  {
+                    "host": [
+                      address.value
+                    ]
+                  }
+                ],
+                "handle": [
+                  {
+                   
+                            "handler": "reverse_proxy",
+                            "upstreams": [
+                              {
+                                "dial": "localhost:3000"
+                              }
+                            ]
+                       
+                  }
+                ]
+              }
+            ]
+          }
         }
-        return result;
+      },
     }
-    let envLocal = "";
-    envLocal += `ENC_KEY=${randomString()}\n`;
-    const ssl = await prompts({
-        type: "select",
-        name: "value",
-        message: "Are you going to be using SSL?",
-        choices: [
-            { title: "True", value: "true" },
-            { title: "False", value: "false" },
-        ]
-    });
-    if (ssl.value == "true") {
-        envLocal += `ssl=true\n`;
-        fs.writeFileSync("./.env.local", envLocal);
-        await log("Cool! It should be noted that Ararat does setup SSL for you. You will not need to setup SSL yourself.");
-        const domain = await prompts({
-            type: "text",
-            name: "value",
-            message: "What domain is ssl going to be running on? (e.g. ararat.hye.gg)"
-        });
-        envLocal += `PANEL_DOMAIN=${domain.value}\n`;
-        fs.writeFileSync("./.env.local", envLocal);
-        execSync('sudo apt-get install -y nginx', { stdio: [0, 1, 2] })
-        execSync('rm -f /etc/nginx/sites-enabled/default', { stdio: [0, 1, 2] })
-        execSync('sudo apt-get install -y certbot python3-certbot-nginx', { stdio: [0, 1, 2] })
-        execSync('wget -O /etc/nginx/sites-enabled/ararat.conf https://raw.githubusercontent.com/Hye-Ararat/Ararat/master/ararat.conf', { stdio: [0, 1, 2] });
-        let conf = fs.readFileSync("/etc/nginx/sites-enabled/ararat.conf", "utf8");
-        conf = conf.replaceAll("example.com", `${domain.value}`);
-        fs.writeFileSync("/etc/nginx/sites-enabled/ararat.conf", conf);
-        execSync(`sudo certbot --nginx -d ${domain.value} --agree-tos --no-redirect --register-unsafely-without-email -n`, { stdio: [0, 1, 2] });
-        execSync('systemctl restart nginx', { stdio: [0, 1, 2] });
-    }
-    const url = await prompts({
-        type: "text",
-        name: "value",
-        message: "What url is this Ararat instance going to be running on? (e.g. https://ararat.hye.gg)"
-    });
-    envLocal += `PANEL_URL=${url.value}\n`;
-    fs.writeFileSync("./.env.local", envLocal);
-    await log("✅ Great! Your Ararat instance is now configured.");
-    await log("One last thing before we finish up.");
-    const userAccount = await prompts({
-        type: "confirm",
-        name: "value",
-        message: "Would you like to create a user account with permission to assign permissions to themselves now?"
-    });
-    if (userAccount.value) {
-        await log("Great! Let's get started.");
-        const firstName = await prompts({
-            type: "text",
-            name: "value",
-            message: "What is the first name of this account holder?",
-        });
-        const lastName = await prompts({
-            type: "text",
-            name: "value",
-            message: "What is the last name of this account holder?",
-        });
-        const email = await prompts({
-            type: "text",
-            name: "value",
-            message: "What is the email of this account holder?",
-        });
-        const username = await prompts({
-            type: "text",
-            name: "value",
-            message: "What username would you like to use?"
-        });
-        async function askPass() {
-            return new Promise(async (resolve, reject) => {
-                password = await prompts({
-                    type: "password",
-                    name: "value",
-                    message: "What password would you like to use?"
-                });
-                passwordConfirm = await prompts({
-                    type: "password",
-                    name: "value",
-                    message: "Please confirm your password."
-                });
-                if (password.value != passwordConfirm.value) {
-                    await log("Passwords do not match. Please try again.");
-                    askPass();
-                }
-                if (password.value == passwordConfirm.value) {
-                    resolve(password.value);
-                }
-            });
-        }
-        await askPass();
-        await log("One moment while I create your account...");
-        const { PrismaClient } = require("@prisma/client");
-        const prisma = new PrismaClient();
-        let salt = await genSalt(10);
-        let hashedPassword = await hash(password.value, salt);
-        let user = await prisma.user.create({
-            data: {
-                firstName: firstName.value,
-                lastName: lastName.value,
-                email: email.value,
-                username: username.value,
-                password: hashedPassword,
-            }
-        })
-        let permission = await prisma.permission.create({
-            data: {
-                permission: "edit-users_user",
-                user: {
-                    connect: {
-                        id: user.id
-                    }
-                }
-            }
-        })
-        await log("✅ Great! Your account has been created.");
-    }
-    await log("✅ Great! That's it. Your Ararat instance is now configured. You can get started by running npm run build and then npm run start.");
-}());
+  }
+  writeFileSync(caddyConfig, "./caddyConfig.json")
+let newConf = await axios.post("http://localhost:2019/load", caddyConfig)
+console.log("✅ Web Server Setup Successful")
+console.log("Installing dependency: cockroachdb")
+try {
+    mkdirSync("./cockroach")
+} catch {
+    
+}
+execSync("curl https://binaries.cockroachdb.com/cockroach-v22.2.2.linux-amd64.tgz -o cockroach/cockroach.tgz")
+execSync("tar -xf cockroach.tgz", {cwd: "./cockroach"})
+try {
+    rmSync("/usr/local/lib/cockroach");
+    execSync("mkdir -p /usr/local/lib/cockroach")
+    cpSync("./cockroach/cockroach-v22.2.2.linux-amd64/lib/libgeos.so /usr/local/lib/cockroach/libgeos.so")
+    cpSync("./cockroach/cockroach-v22.2.2.linux-amd64/lib/libgeos_c.so /usr/local/lib/cockroach/libgeos_c.so")
+} catch {
+    
+}
+rmSync("./cockroach", {recursive: true, force: true})
+console.log("✅ Dependency cockroachdb successfully installed")
+try {
+    rmSync("./ca", {recursive: true});
+    rmSync("./certs", {recursive: true});
+} catch (error) {
+    
+}
+try {
+    mkdirSync("./certs");
+    mkdirSync("./ca")   
+} catch {
+    
+}
+
+console.log("Generating Ararat CA");
+execSync(`cockroach cert create-ca --certs-dir=certs --ca-key=ca/ca.key`)
+console.log("✅ CA Generated");
+let publicIp = await prompts({
+    type: "text",
+    message: "What is this node's accessible IP address?",
+    name: "value"
+});
+console.log("Generating Certificates...");
+let hosts = "localhost 127.0.0.1";
+hosts += " " + address.value;
+if (publicIp.value != address.value) hosts+=` ${publicIp.value}`
+execSync(`cockroach cert create-node ${hosts} --certs-dir=certs --ca-key=ca/ca.key`);
+execSync(`cockroach cert create-client root --certs-dir=certs --ca-key=ca/ca.key`);
+console.log("✅ Certificates Generated");
+console.log("Preparing Database for Cluster...")
+try {
+    rmSync("/var/lib/cockroach", {recursive: true})
+} catch {
+    
+}
+execSync("mkdir /var/lib/cockroach");
+execSync("mv certs /var/lib/cockroach");
+try {
+    execSync("useradd cockroach");
+} catch {
+    
+}
+execSync("chown -R cockroach /var/lib/cockroach")
+let cockroachSystemd = `
+[Unit]
+Description=Cockroach Database cluster node
+Requires=network.target
+[Service]
+Type=notify
+WorkingDirectory=/var/lib/cockroach
+ExecStart=/usr/local/bin/cockroach start --certs-dir=certs --advertise-addr=${address.value} --join=${address.value} --http-addr=127.0.0.1:8081 --cache=.25 --max-sql-memory=.25
+TimeoutStopSec=300
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=cockroach
+User=cockroach
+[Install]
+WantedBy=default.target
+`
+writeFileSync("/etc/systemd/system/cockroachdb.service", cockroachSystemd);
+console.log("Initializing Cluster...")
+execSync("systemctl daemon-reload");
+try {
+execSync("systemctl stop cockroachdb")
+} catch {
+
+}
+execSync("systemctl start cockroachdb");
+execSync(`cockroach init --certs-dir=/var/lib/cockroach/certs --host=${address.value}`)
+execSync("systemctl enable cockroachdb");
+console.log("✅ Cluster Initialized");
+let dbUsername = await prompts({
+type: "text",
+name: "value",
+message: "What would you like your database account's username to be?"
+})
+let dbPassword = await prompts({
+type: "password",
+name: "value",
+message: "What should the password to this database account be?"
+})
+console.log("Creating Database User...");
+execSync(`cockroach sql --certs-dir=/var/lib/cockroach/certs --host=development.hye.gg --execute="CREATE USER ${dbUsername.value} WITH PASSWORD '${dbPassword.value}'";`);
+console.log("✅ Database User Created")
+console.log("Granting Administrative Privileges...");
+execSync(`cockroach sql --certs-dir=/var/lib/cockroach/certs --host=development.hye.gg --execute="GRANT admin TO ${dbUsername.value}";`);
+console.log("✅ Administrative Privileges Granted")
+console.log("Creating Database...");
+execSync(`cockroach sql --certs-dir=/var/lib/cockroach/certs --host=development.hye.gg --execute="CREATE DATABASE ararat";`);
+console.log("✅ Database Created")
+console.log("Saving Database Configuration...");
+let envConfig = "";
+envConfig += `DATABASE_URL="postgresql://${dbUsername.value}:${dbPassword.value}@127.0.0.1:26257/ararat"`
+writeFileSync(".env", envConfig);
+console.log("✅ Database Configuration Saved");
+console.log("Seeding Database...")
+execSync("npx prisma db push");
+console.log("✅ Database Seeded")
+console.log("Installing dependency: snapd...");
+execSync("apt-get install -y snapd")
+console.log("✅ Installed dependency snapd")
+console.log("Installing dependency: LXD...")
+execSync("snap install lxd");
+console.log("✅ Installed dependency LXD")
+console.log("Patching LXD...");
+try {
+execSync("rm lib/lxd_amd64.snap")
+} catch {
+
+}
+execSync("wget https://github.com/Hye-Ararat/lxd-pkg-snap/releases/download/5.9_amd64/lxd_5.9_amd64.snap -O lib/lxd_amd64.snap")
+execSync("snap install lib/lxd_amd64.snap --dangerous");
+execSync("rm lib/lxd_amd64.snap");
+console.log("✅ Patched LXD")
+console.log("Generating Encryption Key...");
+const randomString = () => {
+const length = 32;
+const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+let result = "";
+for (let i = 0; i < length; i++) {
+    result += charset.charAt(Math.floor(Math.random() * charset.length));
+}
+return result;
+}
+let envLocal = "";
+envLocal += `ENC_KEY=${randomString()}\n`;
+console.log("✅ Encryption Key Generated")
+console.log("Generating Communication Key...")
+envLocal += `COMMUNICATION_KEY=${randomString()}\n`;
+console.log("✅ Communication Key Generated")
+console.log("Saving Configuration...");
+writeFileSync(".env.local", envLocal);
+console.log("✅ Configuration Saved!")
+console.log("Building Ararat...");
+execSync("npm run build");
+console.log("✅ Build Successful")
+console.log("Adjusting Permissions...")
+execSync("chmod +x start.sh");
+console.log("✅ Permissions Adjusted")
+console.log("Creating System Service...")
+try {
+execSync("systemctl stop ararat");
+execSync("rm /etc/systemd/system/ararat.service");
+} catch (error) {
+
+}
+let araratSystemd = `
+[Unit]
+After=network.target
+Description=Hye Ararat
+
+[Service]
+WorkingDirectory=/usr/lib/ararat/
+Environment="NODE_ENV=production"
+ExecStart=/usr/lib/ararat/start.sh
+Restart=on-failure
+User=root
+
+[Install]
+WantedBy=multi-user.target
+`
+writeFileSync("/etc/systemd/system/ararat.service", araratSystemd);
+console.log("✅ System Service Created")
+console.log("Enabling and Starting System Service...");
+execSync("systemctl enable ararat");
+execSync("systemctl start ararat");
+console.log("✅ Ararat enabled at startup and now running")
+console.log("Now let's make a Hye Ararat account");
+const username = await prompts({
+message: "What would you like your username to be",
+name: "value",
+type: "text"
+})
+const password = await prompts({
+message: "What would you like your password to be",
+name: "value",
+type: "password"
+})
+const email = await prompts({
+message: "What is your email address",
+name: "value",
+type: "text"
+})
+const firstName = await prompts({
+type: "text",
+name: "value",
+message: "What is your first name"
+})
+const lastName = await prompts({
+type: "text",
+name: "value",
+message: "What is your last name"
+})
+console.log("Creating user...");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+let salt = await genSalt(10);
+let hashedPassword = await hash(password.value, salt);
+let user = await prisma.user.create({
+  data: {
+      firstName: firstName.value,
+      lastName: lastName.value,
+      email: email.value,
+      username: username.value,
+      password: hashedPassword,
+  }
+})
+let permission = await prisma.permission.create({
+  data: {
+      permission: "edit-users_user",
+      user: {
+          connect: {
+              id: user.id
+          }
+      }
+  }
+})
+
+console.log("✅ Account created")
+console.log("You're node has been setup! You can now navigate to it using the URL you specified earlier in your web browser.")
+})()
