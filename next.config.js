@@ -15,6 +15,9 @@ module.exports = {
     },
     "@mui/lab": {
       transform: "@mui/lab/{{member}}"
+    },
+    "@mui/system": {
+      transform: "@mui/system/{{member}}"
     }
   },
   async rewrites() {
