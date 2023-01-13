@@ -112,6 +112,21 @@ async (ws, req) => {
             })
         }
 
+        //node module installation handler
+        let npmIDone1 = false;
+        let npmIDone = false;
+        function npmReady() {
+            return new Promise((resolve, reject) => {
+                let interval = setInterval(() => {
+                    if (npmIDone) {
+                        clearInterval(interval);
+                        return resolve(true)
+                    }
+                }, 100)
+            })
+        }
+
+
         channel.on("data", async(d) => {
            ws.send(JSON.stringify({event: "log", metadata: d.toString()}))
             //Superuser Escelation
@@ -152,6 +167,15 @@ async (ws, req) => {
                 }
             }
 
+            //node module installation handling
+            if (d.toString().includes("npmDone")) {
+                if (!npmIDone1) {
+                    npmIDone1 = true;
+                } else {
+                    npmIDone = true;
+                }
+            }
+
         })
         
         //Escelate to Superuser
@@ -180,6 +204,10 @@ async (ws, req) => {
         channel.write("mkdir /usr/lib/ararat\n");
         channel.write(`cd /usr/lib/ararat && git clone https://github.com/Hye-Ararat/Ararat.git . && echo araratCloned\n`);
         await araratReady()
+        ws.send(JSON.stringify({event: "status", metadata: "Installing node modules...."}));
+        channel.write(`npm install && npm link && echo npmDone\n`)
+        await npmReady();
+
     }
 
 
