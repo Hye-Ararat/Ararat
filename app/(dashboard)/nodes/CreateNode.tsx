@@ -1,8 +1,11 @@
 "use client";
-import { useState } from "react";
-import {Dialog, DialogContent, DialogTitle, Divider, Typography, Stepper, Step, StepLabel, DialogActions, Button, Grid, TextField} from "../../../components/base";
+import { useEffect, useState } from "react";
+import {Dialog, DialogContent, DialogTitle, Divider, Typography, Stepper, Step, StepLabel, DialogActions, Button, Grid, TextField, CircularProgress} from "../../../components/base";
+import cookie from "cookie";
+import { Error } from "@mui/icons-material";
 
 export default function CreateNode() {
+
     let steps = ["Prerequisites", "SSH", "Installation", "Configuration"]
     const [currentStep, setCurrentStep] = useState(0);
     const [sshUsername, setSSHUsername] = useState("root")
@@ -10,8 +13,51 @@ export default function CreateNode() {
     const [sshAddress, setSSHAddress] = useState("")
     const [sshPort, setSSHPort] = useState("22");
 
+    const [status, setStatus] = useState("Connecting");
+    const [error, setError] = useState(null)
+    const [currentLog, setCurrentLog] = useState("");
+
+    async function installNode() {
+        const websocket = new WebSocket("wss://" + window.location.host + "/api/v1/nodes/new");
+        websocket.onopen = () => {
+            websocket.send(JSON.stringify({
+                event: "sendCredentials",
+                metadata: {
+                sshUsername,
+                sshPassword, 
+                sshAddress,
+                sshPort
+                }
+            }))
+        }
+        websocket.addEventListener("message", (event) => {
+            console.log(event.data)
+            let data = JSON.parse(event.data);
+            if (data.event == "status") setStatus(data.metadata);
+            if (data.event == "error"){
+                 setError(data.metadata); 
+                 websocket.close()
+            }
+            if (data.event == "log") setCurrentLog(data.metadata);
+        })
+    }
+
+    useEffect(() => {
+        if (currentStep == 2) {
+            installNode();
+        }
+    }, [currentStep])
+
+    useEffect(() => {
+        if (error) {
+           setTimeout(() => {
+            setError(null);
+            setCurrentStep(currentStep - 1);
+           }, 6000)
+        }
+    }, [error])
     return (
-        <Dialog open={true}>
+        <Dialog open={true} fullWidth={true}>
             <DialogTitle>
                 <Typography variant="h6" align="center" fontFamily="Poppins" fontWeight="bold">Create Node</Typography>
             </DialogTitle>
@@ -42,31 +88,48 @@ export default function CreateNode() {
                 {
                     currentStep == 1? 
                     <>
-                    <Typography fontWeight="bold" fontSize={18} align="center" sx={{mb: 2}}>SSH Connection</Typography>
+                    <Typography fontWeight="bold" fontSize={18} align="center">SSH Connection</Typography>
                     <Grid container direction="row">
                         <Typography sx={{m: "auto"}} variant="h6">ssh</Typography>
-                         <TextField spellCheck={false} sx={{m: "auto", maxWidth: "150px"}} variant="standard" placeholder="Username" />  
+                         <TextField value={sshUsername} onChange={(e) => setSSHUsername(e.target.value)} spellCheck={false} sx={{m: "auto", maxWidth: "150px"}} variant="standard" placeholder="Username" />  
                          <Typography sx={{m: "auto"}} variant="h6">@</Typography>
-                         <TextField spellCheck={false} sx={{m: "auto", maxWidth: "150px"}} variant="standard" placeholder="Address" />
+                         <TextField value={sshAddress} onChange={(e) => setSSHAddress(e.target.value)} spellCheck={false} sx={{m: "auto", maxWidth: "150px"}} variant="standard" placeholder="Address" />
                          <Typography sx={{m: "auto"}} variant="h6">-p</Typography>
                          <TextField onChange={(e) => setSSHPort(e.target.value)} value={sshPort} spellCheck={false} sx={{m: "auto", maxWidth: "80px"}} variant="standard" placeholder="Port" />
                     </Grid>
                     <Typography fontWeight="bold" fontSize={18} align="center" sx={{ mt: 2}}>Authentication</Typography>
                     <Typography fontWeight={600} sx={{ mb: 1}}>Password</Typography>
                     <Grid container>
-                    <TextField variant="standard" placeholder="Password" />
+                    <TextField type="password" onChange={(e) => setSSHPassword(e.target.value)} variant="standard" placeholder="Password" />
                     </Grid>
                     </>
                     : ""
                 }
+                {currentStep == 2 ? 
+                <>
+                {!error ?
+                <Grid container direction="column">
+                <CircularProgress sx={{mr: "auto", ml: "auto"}} />
+                <Typography fontWeight="bold" textAlign={"center"} sx={{mr: "auto", ml: "auto", mt: 1}}>{status}</Typography>
+                {currentLog.length > 1 ?
+                <Typography fontWeight="bold" textAlign={"center"} sx={{mr: "auto", ml: "auto", mt: 1, backgroundColor: "black", padding: 1, borderRadius: 2, fontFamily: "monospace"}}>{currentLog}</Typography>
+                : ""}
+                </Grid>
+                : <Grid container direction="column">
+                            <Error sx={{ mr: "auto", ml: "auto", fontSize: "70px", color: "#e85347", mb: 2 }} />
+                            <Typography fontWeight="bold" textAlign={"center"} sx={{mr: "auto", ml: "auto", mt: 1}}>{error}</Typography>
+                            <Typography textAlign="center">Please double check your information on the next screen.</Typography>
+                    </Grid>}
+                </>
+                : ""}
             </DialogContent>
             <Divider />
             <DialogActions>
                 <Grid container direction="row">
                     {currentStep == 0 ?
                     <Button sx={{ml: "auto", mr: 1}} variant="contained" color="error">Cancel</Button>
-                    :                     <Button onClick={() => setCurrentStep(currentStep - 1)} sx={{ml: "auto", mr: 1}} variant="contained" color="error">Go Back</Button>}
-                    <Button onClick={() => setCurrentStep(currentStep + 1)} variant="contained" color="info">Continue</Button>
+                    :                     <Button disabled={currentStep > 1} onClick={() => setCurrentStep(currentStep - 1)} sx={{ml: "auto", mr: 1}} variant="contained" color="error">Go Back</Button>}
+                    <Button disabled={currentStep > 1} onClick={() => setCurrentStep(currentStep + 1)} variant="contained" color="info">Continue</Button>
                 </Grid>
             </DialogActions>
         </Dialog>
