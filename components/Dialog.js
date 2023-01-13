@@ -1,3 +1,5 @@
+"use client";
+
 import { DialogContent, DialogTitle, Typography } from "@mui/material";
 
 export default function Dialog({ title, open, children }) {

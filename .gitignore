@@ -43,3 +43,4 @@ prisma/schema.prisma
 
 #api
 api/node_modules
+ca/ca.key
