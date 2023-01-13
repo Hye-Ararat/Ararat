@@ -54,6 +54,14 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiBackdrop: {
+      styleOverrides: {
+        root: {
+          backdropFilter: "blur(3px)",
+          backgroundColor: "inherit"
+        }
+      }
+    },
     MuiDrawer: {
       styleOverrides: {
         paper: {
@@ -74,8 +82,18 @@ const theme = createTheme({
         paper: {
           backgroundColor: "#141c26",
           backgroundImage: "linear-gradient(to bottom, #141c26, #141c26)",
-          borderRadius: 10
+          borderRadius: 10,
         },
+      }
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          "borderRadius": 12,
+          "marginRight": 10,
+          "marginLeft": 10
+        
+      }
       }
     },
     MuiListSubheader: {
@@ -102,14 +120,23 @@ const theme = createTheme({
     MuiTextField: {
       styleOverrides: {
         root: ({ ownerState }) => ({
-          backgroundColor: "#28374b",
+          backgroundColor: "inherit",
           borderRadius: 6,
           ...(ownerState.variant == "standard" ? {
             input: {
-              paddingLeft: 8
+              padding: 8,
+              backdropFilter: "brightness(150%)",
+              borderRadius: 12,
+              border: "1px solid",
+              borderColor: "rgba(200, 200, 200, 0.4)"
             }
           } : {}),
         }),
+      },
+      defaultProps: {
+      InputProps: {
+        disableUnderline: true
+      }
       }
     },
     MuiInput: {
@@ -128,7 +155,8 @@ const theme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: 6
+          borderRadius: 12,
+          backdropFilter: "brightness(150%)"
         },
         notchedOutline: {
           borderRadius: 6,
@@ -149,7 +177,8 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: "none",
-          fontWeight: "600"
+          fontWeight: "600",
+          borderRadius: 12
         },
         contained: {
           boxShadow: "none",
