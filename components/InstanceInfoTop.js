@@ -1,4 +1,5 @@
-import { Button, Grid, Paper, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Button, Grid, Paper, Typography, useMediaQuery } from "@mui/material";
+import {useTheme} from "@mui/material/styles";
 import { Box } from "@mui/system";
 import { InstanceStore } from "../states/instance";
 import StartButton from "./instance/StartButton";

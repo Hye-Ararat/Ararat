@@ -4,11 +4,12 @@ import prisma from "../../../lib/prisma";
 import { InstanceStore } from "../../../states/instance"
 import hyexd from "hyexd";
 import getNodeEnc from "../../../lib/getNodeEnc";
-import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, IconButton, List, ListItem, ListItemButton, ListItemText, MenuItem, Paper, Select, Skeleton, Stack, TextField, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, IconButton, List, ListItem, ListItemButton, ListItemText, MenuItem, Paper, Select, Skeleton, Stack, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowForward, Edit, ExpandMore } from "@mui/icons-material";
 import prettyBytes from "pretty-bytes";
+import {useTheme} from "@mui/material/styles";
 
 
 export async function getServerSideProps({ req, res, query }) {

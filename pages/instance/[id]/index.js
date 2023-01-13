@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { Grid, Paper, Typography, Chip, Button, useMediaQuery, useTheme, Container, IconButton, Tooltip } from "@mui/material";
+import { Grid, Paper, Typography, Chip, Button, useMediaQuery, Container, IconButton, Tooltip } from "@mui/material";
 import useSWR from "swr";
 import { InstanceStore } from "../../../states/instance";
 import axios from "axios";
@@ -16,7 +16,6 @@ import { Box } from "@mui/system";
 import { WidgetsArea } from "../../../components/widgets";
 import InstanceInfoTop from "../../../components/InstanceInfoTop";
 import { Edit } from "@mui/icons-material";
-
 
 
 

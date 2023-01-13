@@ -1,10 +1,11 @@
 import { faFile, faFolder } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Grid, Typography, Checkbox, Menu, MenuItem, Fade, useMediaQuery, useTheme } from "@mui/material"
+import { Grid, Typography, Checkbox, Menu, MenuItem, Fade, useMediaQuery } from "@mui/material"
 import prettyBytes from "pretty-bytes"
 import { Fragment, useState } from "react";
 import { MoreHoriz } from "@mui/icons-material";
 import moment from "moment";
+import {useTheme} from "@mui/material/styles";
 
 
 export default function File({ file, allChecked }) {

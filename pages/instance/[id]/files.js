@@ -1,5 +1,5 @@
 import Router, { useRouter } from "next/router";
-import { Typography, Paper, Button, Grid, Checkbox, Container, CircularProgress, Skeleton, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Input, Fade, useMediaQuery, useTheme } from "@mui/material";
+import { Typography, Paper, Button, Grid, Checkbox, Container, CircularProgress, Skeleton, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Input, Fade, useMediaQuery } from "@mui/material";
 import useSWR from "swr";
 import nookies from "nookies"
 import { Suspense, useEffect, useState } from "react";
@@ -14,6 +14,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { InstanceStore } from "../../../states/instance";
 import Navigation from "../../../components/instance/Navigation";
 import Footer from "../../../components/footer";
+import {useTheme} from "@mui/material/styles";
 const FileEditor = dynamic(import("../../../components/instance/files/FileEditor"), { ssr: false });
 export default function Files(props) {
     const instance = {

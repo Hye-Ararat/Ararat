@@ -1,4 +1,4 @@
-import { Dialog, Grid, DialogTitle, DialogContent, DividerPropsVariantOverrides, Typography, Divider, Modal, Box, Button } from "@mui/material"
+import { Dialog, Grid, DialogTitle, DialogContent, Typography, Divider, Modal, Box, Button } from "@mui/material"
 import { Cloud, Nightlight, CloudOutlined, CorporateFare, Security, SupportAgent, SignalCellularAlt } from "@mui/icons-material"
 import { useState } from "react";
 export default function SelectHost({ setPage }) {

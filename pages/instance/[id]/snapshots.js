@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Modal, Typography, TextField, Paper, Chip, Checkbox, Tooltip, Zoom, Dialog, DialogTitle, DialogContent, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, Grid, Modal, Typography, TextField, Paper, Chip, Checkbox, Tooltip, Zoom, Dialog, DialogTitle, DialogContent, useMediaQuery } from "@mui/material";
 import { Delete as DeleteIcon, History as HistoryIcon } from "@mui/icons-material";
 import { useState } from "react";
 import Navigation from "../../../components/instance/Navigation"
@@ -10,6 +10,7 @@ import hyexd from "hyexd";
 import prisma from "../../../lib/prisma";
 import getNodeEnc from "../../../lib/getNodeEnc";
 import prettyBytes from "pretty-bytes";
+import {useTheme} from "@mui/material/styles";
 
 export async function getServerSideProps({ req, res, query }) {
     if (!req.cookies.authorization) {

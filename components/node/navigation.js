@@ -16,7 +16,6 @@ import {
     Button,
     useMediaQuery,
     IconButton,
-    useTheme
 } from "@mui/material";
 import {
     Inbox as InboxIcon,
@@ -46,6 +45,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { NodeStore } from "../../states/node";
+import {useTheme} from "@mui/material/styles"
 
 export default function Navigation({ children, ...props }) {
     const [open, setOpen] = useState(false);
