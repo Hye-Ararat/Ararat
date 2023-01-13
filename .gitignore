@@ -40,3 +40,6 @@ yarn-error.log*
 
 # prisma
 prisma/schema.prisma
+
+#api
+api/node_modules
