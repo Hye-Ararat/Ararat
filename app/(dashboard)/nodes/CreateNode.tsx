@@ -48,7 +48,7 @@ export default function CreateNode() {
                          <TextField spellCheck={false} sx={{m: "auto", maxWidth: "150px"}} variant="standard" placeholder="Username" />  
                          <Typography sx={{m: "auto"}} variant="h6">@</Typography>
                          <TextField spellCheck={false} sx={{m: "auto", maxWidth: "150px"}} variant="standard" placeholder="Address" />
-                         <Typography sx={{m: "auto"}} variant="h6">:</Typography>
+                         <Typography sx={{m: "auto"}} variant="h6">-p</Typography>
                          <TextField onChange={(e) => setSSHPort(e.target.value)} value={sshPort} spellCheck={false} sx={{m: "auto", maxWidth: "80px"}} variant="standard" placeholder="Port" />
                     </Grid>
                     <Typography fontWeight="bold" fontSize={18} align="center" sx={{ mt: 2}}>Authentication</Typography>

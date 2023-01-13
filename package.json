@@ -36,7 +36,6 @@
     "copy-to-clipboard": "^3.3.1",
     "debounce": "^1.2.1",
     "easy-peasy": "^5.0.4",
-    "eslint-config-next": "^13.1.1",
     "express": "^4.18.2",
     "html2canvas": "^1.3.2",
     "hyexd": "^0.0.47",
@@ -74,6 +73,7 @@
   },
   "devDependencies": {
     "eslint": "7.32.0",
-    "prisma": "^4.3.1"
+    "prisma": "^4.3.1",
+    "eslint-config-next": "^13.1.1"
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { Box, CssBaseline, AppBar, Toolbar, Grid, Button, Drawer, List, ListItem, ListItemIcon, ListItemText, Divider, IconButton, useTheme, useMediaQuery, ListItemButton } from "@mui/material"
+import { Box, CssBaseline, AppBar, Toolbar, Grid, Button, Drawer, List, ListItem, ListItemIcon, ListItemText, Divider, IconButton, useMediaQuery, ListItemButton } from "@mui/material"
+import {useTheme} from "@mui/material/styles"
 import Link from "next/link";
 import {
     Storage as NodesIcon,

@@ -16,10 +16,10 @@ import {
   Button,
   useMediaQuery,
   IconButton,
-  useTheme,
   Icon,
   Fade
 } from "@mui/material";
+import {useTheme} from "@mui/material/styles"
 import {
   Inbox as InboxIcon,
   Mail as MailIcon,

@@ -1,16 +1,21 @@
 module.exports = {
   reactStrictMode: true,
-  webpack: (config, { dev }) => {
-    return {
-      ...config,
-      experiments: {
-        asyncWebAssembly: true,
-        layers: true
-      }
-    }
-  },
   experimental: {
-    appDir: true
+    appDir: true,
+  },
+  modularizeImports: {
+    "@mui/material": {
+      transform: "@mui/material/{{member}}"
+    },
+    "@mui/icons-material": {
+      transform: "@mui/icons-material/{{member}}"
+    },
+    "@mui/styles": {
+      transform: "@mui/styles/{{member}}"
+    },
+    "@mui/lab": {
+      transform: "@mui/lab/{{member}}"
+    }
   },
   async rewrites() {
     return {
