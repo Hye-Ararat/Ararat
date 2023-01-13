@@ -77,7 +77,7 @@ export default function Navigation({ children, ...props }) {
                 /*
                 instance.sockets.monitor.onopen = () => {
                   axios.get("/api/v1/client/instances/" + instance.data.id + "/monitor/ws").then((res) => {
-                    instance.sockets.monitor.send(res.data.access_token);
+                    instance.sockets.monitor.send(res.data.authorization);
                   });
                 };
                 */

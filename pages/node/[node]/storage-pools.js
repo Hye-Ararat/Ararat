@@ -10,7 +10,7 @@ import { useState } from "react";
 
 
 export async function getServerSideProps({ req, res, query }) {
-    if (!req.cookies.access_token) {
+    if (!req.cookies.authorization) {
         return {
             redirect: {
                 destination: "/auth/login",

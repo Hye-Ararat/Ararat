@@ -22,7 +22,7 @@ import { Edit } from "@mui/icons-material";
 
 
 export async function getServerSideProps({ req, res, query }) {
-    if (!req.cookies.access_token) {
+    if (!req.cookies.authorization) {
         return {
             redirect: {
                 destination: "/auth/login",
@@ -35,7 +35,7 @@ export async function getServerSideProps({ req, res, query }) {
         "public, s-maxage=10, stale-while-revalidate=59"
     );
 
-    const user_data = decodeToken(req.cookies.access_token);
+    const user_data = decodeToken(req.cookies.authorization);
     /*const instance = await prisma.instance.findUnique({
         where: {
             id: query.id,

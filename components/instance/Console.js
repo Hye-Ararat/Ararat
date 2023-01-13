@@ -194,7 +194,7 @@ export function TextConsole() {
         if (instance.data) {
             if (!instance.sockets.console) {
                 let cookies = nookies.get();
-                instance.sockets.setConsole(new WebSocket(`${instance.data.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/console?authorization=${cookies.access_token}`));
+                instance.sockets.setConsole(new WebSocket(`${instance.data.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/console?authorization=${cookies.authorization}`));
             } else {
                 let has = false;
                 instance.sockets.console.addEventListener("open", () => {

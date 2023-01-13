@@ -9,7 +9,7 @@ import nookies from "nookies";
 import Footer from "../../../components/footer";
 
 export async function getServerSideProps({ req, res, query }) {
-    if (!req.cookies.access_token) {
+    if (!req.cookies.authorization) {
         return {
             redirect: {
                 destination: "/auth/login",
@@ -22,7 +22,7 @@ export async function getServerSideProps({ req, res, query }) {
     var { db } = await connectToDatabase();
     var { decode } = require("jsonwebtoken");
     var { ObjectId } = require("mongodb");
-    var user_data = decode(req.cookies.access_token)
+    var user_data = decode(req.cookies.authorization)
     console.log(query.id)
     const backups = await db.collection("backups").find({
         instance: query.id
@@ -106,7 +106,7 @@ export default function Backups({ backups, instanceId }) {
                                         <Button disabled={backup.pending} variant="contained" color="success" sx={{ marginLeft: "auto" }} onClick={async () => {
                                             if (!backup.pending) {
                                                 console.log("clicked and going")
-                                                let download = window.open("/api/v1/client/instances/" + instanceId + "/backups/" + backup._id + "/download" + "?authorization=" + nookies.get(null).access_token, "_blank");
+                                                let download = window.open("/api/v1/client/instances/" + instanceId + "/backups/" + backup._id + "/download" + "?authorization=" + nookies.get(null).authorization, "_blank");
                                                 setTimeout(() => {
                                                     download.close();
 

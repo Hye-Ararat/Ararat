@@ -8,7 +8,7 @@ import { useState } from "react"
 import { useTheme } from "@emotion/react"
 
 export async function getServerSideProps({ req, res, query }) {
-    if (!req.cookies.access_token) {
+    if (!req.cookies.authorization) {
         return {
             redirect: {
                 destination: "/auth/login",

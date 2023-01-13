@@ -10,7 +10,7 @@ import { Box } from "@mui/system"
 
 
 export async function getServerSideProps({ req, res }) {
-    if (!req.cookies.access_token) {
+    if (!req.cookies.authorization) {
         return {
             redirect: {
                 destination: "/auth/login",
@@ -23,7 +23,7 @@ export async function getServerSideProps({ req, res }) {
 
     let valid;
     try {
-        valid = verify(req.cookies.access_token, process.env.ENC_KEY)
+        valid = verify(req.cookies.authorization, process.env.ENC_KEY)
     } catch {
         return {
             redirect: {
@@ -40,7 +40,7 @@ export async function getServerSideProps({ req, res }) {
             }
         }
     }
-    const userData = decode(req.cookies.access_token)
+    const userData = decode(req.cookies.authorization)
 
     const nodes = await prisma.node.findMany({
         select: {

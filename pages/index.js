@@ -17,7 +17,7 @@ import Link from "next/link";
 import Instance from "../components/instance";
 import prisma from "../lib/prisma"
 import Footer from "../components/footer";
-import Navigation from "../components/navigation";
+import Navigation from "../components/navigation"
 import translate, { languages } from "../translations/translations";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -26,7 +26,7 @@ import { useRouter } from "next/router";
 import CreateInstance from "../components/instances/CreateInstance";
 import Permissions from "../lib/permissions/index.js";
 export async function getServerSideProps({ req, res }) {
-  if (!req.cookies.access_token) {
+  if (!req.cookies.authorization) {
     return {
       redirect: {
         destination: "/auth/login",
@@ -40,7 +40,7 @@ export async function getServerSideProps({ req, res }) {
   );
 
   var { decode } = require("jsonwebtoken");
-  const user_data = decode(req.cookies.access_token)
+  const user_data = decode(req.cookies.authorization)
   let createPerm = await new Permissions(user_data.id).createInstance;
 
   const instances = await prisma.instance.findMany({

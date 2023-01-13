@@ -25,7 +25,7 @@ axios.interceptors.request.use(async (config) => {
 		console.log("adslkfjas;lkfj")
 		var running = false;
 		if (
-			!nookies.get(null).access_token &&
+			!nookies.get(null).authorization &&
 			nookies.get(null).refresh_token &&
 			!running
 		) {
@@ -41,7 +41,7 @@ axios.interceptors.request.use(async (config) => {
 			})
 				.then((res) => res.json())
 				.then((data) => {
-					nookies.set(null, "access_token", data.access_token, {
+					nookies.set(null, "access_token", data.authorization, {
 						expires: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
 						path: "/",
 					});
@@ -52,7 +52,7 @@ axios.interceptors.request.use(async (config) => {
 					window.location.href = "/auth/login"
 				});
 		}
-		config.headers["authorization"] = `Bearer ${nookies.get(null).access_token}`;
+		config.headers["authorization"] = `Bearer ${nookies.get(null).authorization}`;
 	}
 	return config;
 });

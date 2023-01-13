@@ -17,27 +17,26 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
   const [loginErr, setLoginErr] = useState("");
-  const loginUser = async () => {
-    try {
-      setLoggingIn(true);
-      await login(email, password);
-    } catch (error) {
-      setLoggingIn(false);
-      return setLoginErr(error);
+  useEffect(() => {
+    document.onkeydown = (ev) => {
+        if (ev.key === "Enter") loginUser();
     }
+}, [])
+  const loginUser = async () => {
+    setLoggingIn(true)
+    let email = (document.getElementById("email")).value;
+    let results;
+    try {
+        if (email == null || document.getElementById("password") == null) return;
+        results = await login(email, (document.getElementById("password")).value)
+    } catch (error) {
+        //setLoginErr(error)
+        setLoggingIn(false);
+        return;
+    }
+    document.cookie += `authorization=${results.authorization};path=/;max-age=604800;`;
+    router.push("/")
     setLoggingIn(false);
-    render(<Check color="success" />);
-    router.push("/");
-  };
-
-  if (typeof window !== "undefined") {
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        if (email != "" && password != "") {
-          loginUser();
-        }
-      }
-    })
   }
   return (
     <>
@@ -54,14 +53,14 @@ export default function Login() {
             <FormControl sx={{ m: 1, width: "40ch" }} variant="outlined">
               {loginErr && <Alert severity="error">{loginErr}</Alert>}
               <TextField
-                onChange={(e) => setEmail(e.target.value)}
+              id="email"
                 margin="dense"
                 placeholder="Email"
                 variant="outlined"
                 type="email"
               />
               <TextField
-                onChange={(e) => setPassword(e.target.value)}
+              id="password"
                 margin="dense"
                 placeholder="Password"
                 variant="outlined"

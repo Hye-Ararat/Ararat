@@ -12,7 +12,7 @@ import getNodeEnc from "../../../lib/getNodeEnc";
 import prettyBytes from "pretty-bytes";
 
 export async function getServerSideProps({ req, res, query }) {
-    if (!req.cookies.access_token) {
+    if (!req.cookies.authorization) {
         return {
             redirect: {
                 destination: "/auth/login",
@@ -22,7 +22,7 @@ export async function getServerSideProps({ req, res, query }) {
     }
     res.setHeader("Cache-Control", "public, s-maxage=10, stale-while-revalidate=59");
     const { decode } = require("jsonwebtoken");
-    const user_data = decode(req.cookies.access_token)
+    const user_data = decode(req.cookies.authorization)
 
     const instance = await prisma.instance.findUnique({
         where: {
