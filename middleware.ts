@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import {jwtVerify, importJWK} from "jose";
+import {jwtVerify} from "jose";
 import { errorResponse } from "./lib/responses";
 
 
@@ -21,12 +21,13 @@ async function verifyToken(token : string) {
 }
 
 export async function middleware(request: NextRequest) {
+  const headers = new Headers(request.headers)
   if (request.nextUrl.pathname.startsWith("/api")) {
     if (!request.headers.get("Authorization") && request.cookies.has("authorization")) {
-      request.headers.set("Authorization", `Bearer ${request.cookies.get("authorization")?.value}`)
+      headers.set("Authorization", `Bearer ${request.cookies.get("authorization")?.value}`)
     }
     // @ts-ignore
-    let allowed = await verifyToken(request.cookies.has("authorization") ? request.cookies.get("authorization") : request.headers.has("Authorization") ? request.headers.get("Authorization")?.split(" ")[1] : "");
+    let allowed = await verifyToken(request.cookies.has("authorization") ? request.cookies.get("authorization").value : request.headers.has("Authorization") ? request.headers.get("Authorization")?.split(" ")[1] : "");
     if (!allowed) return NextResponse.json(errorResponse(400, 400, "You are not allowed to access this resource"), {
       status: 401
     })
