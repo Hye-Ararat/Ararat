@@ -205,7 +205,8 @@ async (ws, req) => {
         //Download Ararat
         ws.send(JSON.stringify({event: "status", metadata: "Downloading Hye Ararat..."}));
         channel.write("mkdir /usr/lib/ararat\n");
-        channel.write(`cd /usr/lib/ararat && git clone https://github.com/Hye-Ararat/Ararat.git . && echo araratCloned\n`);
+        channel.write("cd /usr/lib/ararat\n")
+        channel.write(`git clone https://github.com/Hye-Ararat/Ararat.git . && echo araratCloned\n`);
         await araratReady()
 
         //Install Node Modules
