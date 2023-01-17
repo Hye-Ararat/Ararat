@@ -23,6 +23,8 @@ export default function CreateNode() {
 
     const [webSocket, setWebSocket] = useState(null)
 
+    const [configurationStage, setConfigurationStage] = useState(false);
+
     async function installNode() {
         const websocket = new WebSocket("wss://" + window.location.host + "/api/v1/nodes/new");
         setWebSocket(websocket)
@@ -135,6 +137,16 @@ export default function CreateNode() {
                 {
                     currentStep == 3 ?
                     <>
+                    {configurationStage ?
+                                    <Grid container direction="column">
+                                    <CircularProgress sx={{mr: "auto", ml: "auto"}} />
+                                    <Typography fontWeight="bold" textAlign={"center"} sx={{mr: "auto", ml: "auto", mt: 1}}>{status}</Typography>
+                                    {currentLog.length > 1 ?
+                                    <Typography fontWeight="bold" textAlign={"center"} sx={{mr: "auto", ml: "auto", mt: 1, backgroundColor: "black", padding: 1, borderRadius: 2, fontFamily: "monospace"}}>{currentLog}</Typography>
+                                    : ""}
+                                    </Grid>
+                    : 
+                    <>
                                         <Typography sx={{mb: 2}} fontWeight="bold" fontSize={18} align="center">Listen</Typography>
                                         <Grid container >
                                         <Grid xs={6}>
@@ -151,6 +163,9 @@ export default function CreateNode() {
                     <Typography fontWeight={600} sx={{ mb: 1}}>Accessible IP Address</Typography>
                     <TextField type="text" value={ipAddress} onChange={(e) => setIpAddress(e.target.value)} variant="standard" placeholder="Accessible IP Address" />
                     </>
+}
+                    </>
+                    
                     : ""
                 }
             </DialogContent>
@@ -171,7 +186,9 @@ export default function CreateNode() {
                                port,
                                ipAddress
                                 }
-                            }))                        }
+                            })) 
+                        setConfigurationStage(true)
+                        }
                     }} variant="contained" color="info">Continue</Button>
                 </Grid>
             </DialogActions>
