@@ -1,6 +1,9 @@
 import express from "express";
 import {NodeSSH} from "node-ssh"
 
+import {execSync} from "child_process";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+
 const router = express.Router({ mergeParams: true });
 
 
@@ -126,7 +129,6 @@ async (ws, req) => {
             })
         }
 
-
         channel.on("data", async(d) => {
            ws.send(JSON.stringify({event: "log", metadata: d.toString()}))
             //Superuser Escelation
@@ -175,7 +177,6 @@ async (ws, req) => {
                     npmIDone = true;
                 }
             }
-
         })
         
         //Escelate to Superuser
@@ -186,8 +187,8 @@ async (ws, req) => {
         await escalated();
 
         //Install curl and git
-        ws.send(JSON.stringify({event: "status", metadata: "Installing dependencies: curl git"}));
-        channel.write("apt-get install -y curl git && echo curlDone\n")
+        ws.send(JSON.stringify({event: "status", metadata: "Installing dependencies: curl git wget"}));
+        channel.write("apt-get install -y curl git wget && echo curlDone\n")
         await curlInstalled();
 
         //Install nvm
@@ -200,13 +201,88 @@ async (ws, req) => {
         ws.send(JSON.stringify({event: "status", metadata: "Installing dependency: Node.JS"}));
         channel.write("nvm install --lts\n")
         await nodeReady();
+
+        //Download Ararat
         ws.send(JSON.stringify({event: "status", metadata: "Downloading Hye Ararat..."}));
         channel.write("mkdir /usr/lib/ararat\n");
         channel.write(`cd /usr/lib/ararat && git clone https://github.com/Hye-Ararat/Ararat.git . && echo araratCloned\n`);
         await araratReady()
-        ws.send(JSON.stringify({event: "status", metadata: "Installing node modules...."}));
+
+        //Install Node Modules
+        ws.send(JSON.stringify({event: "status", metadata: "Installing node modules..."}));
         channel.write(`npm install && npm link && echo npmDone\n`)
         await npmReady();
+
+        ws.send(JSON.stringify({event: "complete", metadata: "Installation"}))
+        ws.on("message", async (e) => {
+            let data = JSON.parse(e);
+            if (data.event == "sendConfiguration") {
+                console.log(data.metadata)
+                console.log("SEND CONFIGURATION")
+
+
+                ws.send(JSON.stringify({event: "status", metadata: "Generating Certificates for CockroachDB..."}));
+                //Generate Hosts
+                let hosts = "localhost 127.0.0.1";
+                hosts += " " + data.metadata.domain + " " + data.metadata.ipAddress;
+
+                //Make Certs Directory for Certificates
+                channel.write(`mkdir certs\n`);
+
+                //Generate Certificate
+                try {
+                    rmSync("/usr/lib/ararat/tempCerts", {force: true, recursive: true});
+                } catch (error) {
+                    
+                }
+                mkdirSync("/usr/lib/ararat/tempCerts");
+                execSync(`cockroach cert create-node ${hosts} --certs-dir=tempCerts --ca-key=ca/ca.key`, {cwd: "/usr/lib/ararat"});
+                ws.send(JSON.stringify({event: "status", metadata: "Sending Certificates for CockroachDB..."}));
+
+                await connection.putFiles([
+                {local: "/usr/lib/ararat/tempCerts/ca.crt", remote: "/usr/lib/ararat/certs/ca.crt"}, 
+                {local: "/usr/lib/ararat/tempCerts/node.crt", remote: "/usr/lib/ararat/certs/node.crt"}, 
+                {local: "/usr/lib/ararat/tempCerts/node.key", remote: "/usr/lib/ararat/certs/node.key"}
+                ])
+
+                ws.send(JSON.stringify({event: "status", metadata: "Generating CockroachDB Service..."}));
+                let cockroachDbSystemd = readFileSync("/etc/systemd/system/cockroachdb.service", "utf8");
+                let joined = cockroachDbSystemd.split("--join=")[1].split(" --http-addr=")[0].split(",");
+                let updateJoined = false;
+                if (joined.length < 3) {
+                    joined.push(data.metadata.domain);
+                    updateJoined = true;
+
+                    let oldJoinString = cockroachDbSystemd.split("--join=")[1].split(" --http-addr=")[0];
+                    let newJoinString = "";
+                    joinList.forEach((address, index) => {
+                        newJoinString += `${address}${index != joinList.length - 1 ? "," : ""}`;
+                    });
+                    cockroachDbSystemd = cockroachDbSystemd.replace(oldJoinString, newJoinString);
+                }
+                let thisAdvertiseAddr = "--advertise-addr=" + newConf.split("--advertise-addr=")[1].split(" --join")[0];
+                let newAdvertiseAddr = `--advertise-addr=${data.metadata.domain};`
+                cockroachDbSystemd = cockroachDbSystemd.replace(thisAdvertiseAddr, newAdvertiseAddr);
+
+                ws.send(JSON.stringify({event: "status", metadata: "Sending CockroachDB Service File..."}));
+                try {
+                    rmSync("/usr/lib/ararat/tempConfigs", {force: true, recursive: true})
+                } catch (error) {
+                    
+                }
+                mkdirSync("/usr/lib/ararat/tempConfigs");
+                writeFileSync("/usr/lib/ararat/tempConfigs/cockroachdb.service", cockroachDbSystemd);
+                await connection.putFile([{local: "/usr/lib/ararat/tempConfigs/cockroachdb.service", remote: "/etc/systemd/system/cockroachdb.service"}]);
+
+
+                ws.send(JSON.stringify({event: "status", metadata: "Setting Up Environment..."}));
+                await connection.putFiles([
+                    {local: "/usr/lib/ararat/.env", remote: "/usr/lib/ararat/.env"}, 
+                    {local: "/usr/lib/ararat/.env.local", remote: "/usr/lib/ararat/.env.local"}, 
+                    ])
+                    ws.send(JSON.stringify({event: "status", metadata: "Finishing Up..."}));
+            }
+        })
 
     }
 
