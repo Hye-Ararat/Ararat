@@ -105,7 +105,7 @@ try {
 }
 rmSync("./cockroach", {recursive: true, force: true})
 console.log("✅ Dependency cockroachdb successfully installed")
-if (!join) {
+if (!joinNode) {
 try {
     rmSync("./ca", {recursive: true});
     rmSync("./certs", {recursive: true});
@@ -123,7 +123,7 @@ console.log("Generating Ararat CA");
 execSync(`cockroach cert create-ca --certs-dir=certs --ca-key=ca/ca.key`)
 console.log("✅ CA Generated");
 let publicIp;
-if (!join) {
+if (!joinNode) {
 publicIp = await prompts({
     type: "text",
     message: "What is this node's accessible IP address?",
@@ -156,7 +156,7 @@ try {
     
 }
 execSync("chown -R cockroach /var/lib/cockroach")
-if (!join) {
+if (!joinNode) {
 let cockroachSystemd = `
 [Unit]
 Description=Cockroach Database cluster node
@@ -185,13 +185,13 @@ execSync("systemctl stop cockroachdb")
 
 }
 execSync("systemctl start cockroachdb");
-if (!join){
+if (!joinNode){
 execSync(`cockroach init --certs-dir=/var/lib/cockroach/certs --host=${address.value}`)
 }
 execSync("systemctl enable cockroachdb");
 
 console.log("✅ Cluster Initialized");
-if (!join) {
+if (!joinNode) {
 let dbUsername = await prompts({
 type: "text",
 name: "value",
@@ -236,7 +236,7 @@ execSync("wget https://github.com/Hye-Ararat/lxd-pkg-snap/releases/download/5.9_
 execSync("snap install lib/lxd_amd64.snap --dangerous");
 execSync("rm lib/lxd_amd64.snap");
 console.log("✅ Patched LXD")
-if (!join){
+if (!joinNode){
 console.log("Generating Encryption Key...");
 const randomString = () => {
 const length = 32;
@@ -291,7 +291,7 @@ console.log("Enabling and Starting System Service...");
 //execSync("systemctl enable ararat");
 //execSync("systemctl start ararat");
 console.log("✅ Ararat enabled at startup and now running")
-if (!join){
+if (!joinNode){
 console.log("Now let's make a Hye Ararat account");
 const username = await prompts({
 message: "What would you like your username to be",
