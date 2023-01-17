@@ -13,12 +13,19 @@ export default function CreateNode() {
     const [sshAddress, setSSHAddress] = useState("")
     const [sshPort, setSSHPort] = useState("22");
 
+    const [domain, setDomain] = useState("")
+    const [port, setPort] = useState("443")
+    const [ipAddress, setIpAddress] = useState("")
+
     const [status, setStatus] = useState("Connecting");
     const [error, setError] = useState(null)
     const [currentLog, setCurrentLog] = useState("");
 
+    const [webSocket, setWebSocket] = useState(null)
+
     async function installNode() {
         const websocket = new WebSocket("wss://" + window.location.host + "/api/v1/nodes/new");
+        setWebSocket(websocket)
         websocket.onopen = () => {
             websocket.send(JSON.stringify({
                 event: "sendCredentials",
@@ -39,6 +46,9 @@ export default function CreateNode() {
                  websocket.close()
             }
             if (data.event == "log") setCurrentLog(data.metadata);
+            if (data.event == "complete") {
+                if (data.metadata = "Installation") setCurrentStep(3)
+            }
         })
     }
 
@@ -122,6 +132,27 @@ export default function CreateNode() {
                     </Grid>}
                 </>
                 : ""}
+                {
+                    currentStep == 3 ?
+                    <>
+                                        <Typography sx={{mb: 2}} fontWeight="bold" fontSize={18} align="center">Listen</Typography>
+                                        <Grid container >
+                                        <Grid xs={6}>
+
+                                        <Typography fontWeight={600} sx={{ mb: 1}}>Domain</Typography>
+                    <TextField type="text" value={domain} onChange={(e) => setDomain(e.target.value)} variant="standard" placeholder="Domain" />
+                    </Grid>
+                    <Grid xs={2}>
+                        <Typography fontWeight={600} sx={{ mb: 1}}>Port</Typography>
+                    <TextField type="text" value={port} onChange={(e) => setPort(e.target.value)} variant="standard" placeholder="Port" />
+                    </Grid>
+                    </Grid>
+                    <Typography sx={{mb: 2, mt: 2}} fontWeight="bold" fontSize={18} align="center">Connectivity</Typography>
+                    <Typography fontWeight={600} sx={{ mb: 1}}>Accessible IP Address</Typography>
+                    <TextField type="text" value={ipAddress} onChange={(e) => setIpAddress(e.target.value)} variant="standard" placeholder="Accessible IP Address" />
+                    </>
+                    : ""
+                }
             </DialogContent>
             <Divider />
             <DialogActions>
@@ -129,7 +160,19 @@ export default function CreateNode() {
                     {currentStep == 0 ?
                     <Button sx={{ml: "auto", mr: 1}} variant="contained" color="error">Cancel</Button>
                     :                     <Button disabled={currentStep > 1} onClick={() => setCurrentStep(currentStep - 1)} sx={{ml: "auto", mr: 1}} variant="contained" color="error">Go Back</Button>}
-                    <Button disabled={currentStep > 1} onClick={() => setCurrentStep(currentStep + 1)} variant="contained" color="info">Continue</Button>
+                    <Button disabled={currentStep > 1 && currentStep != 3} onClick={() => {
+                        if (currentStep != 3) {
+                        setCurrentStep(currentStep + 1)
+                        } else {
+                            webSocket.send(JSON.stringify({
+                                event: "sendConfiguration",
+                                metadata: {
+                               domain,
+                               port,
+                               ipAddress
+                                }
+                            }))                        }
+                    }} variant="contained" color="info">Continue</Button>
                 </Grid>
             </DialogActions>
         </Dialog>
