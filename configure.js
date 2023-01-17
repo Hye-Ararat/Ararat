@@ -84,7 +84,7 @@ let caddyConfig = {
       },
     }
   }
-  writeFileSync(caddyConfig, "./caddyConfig.json")
+  writeFileSync("./caddyConfig.json", caddyConfig)
 let newConf = await axios.post("http://localhost:2019/load", caddyConfig)
 console.log("✅ Web Server Setup Successful")
 console.log("Installing dependency: cockroachdb")

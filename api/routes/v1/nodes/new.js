@@ -2,7 +2,7 @@ import express from "express";
 import {NodeSSH} from "node-ssh"
 
 import {execSync} from "child_process";
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 
 const router = express.Router({ mergeParams: true });
 
@@ -103,6 +103,7 @@ async (ws, req) => {
 
         //Ararat download handler
         let araratCloned1 = false;
+        let araratDone2 = false;
         let araratDone = false;
         function araratReady() {
             return new Promise((resolve, reject) => {
@@ -161,12 +162,17 @@ async (ws, req) => {
             }
 
             //Ararat download handling
-            if (d.toString().includes("araratCloned") || d.toString().includes("fatal: destination path '.' already exists and is not an empty directory")) {
+            if (d.toString().includes("araratCloned")) {
                 if (!araratCloned1) {
                     araratCloned1 = true;
+                } else if (!araratDone2) {
+                    araratDone2 = true;
                 } else {
                     araratDone = true;
                 }
+            }
+            if (d.toString().includes("fatal: destination path '.' already exists and is not an empty directory")) {
+                araratDone = true;
             }
 
             //node module installation handling
@@ -237,6 +243,7 @@ async (ws, req) => {
                     
                 }
                 mkdirSync("/usr/lib/ararat/tempCerts");
+                cpSync("/var/lib/cockroach/certs/ca.crt", "/usr/lib/ararat/tempCerts/ca.crt")
                 execSync(`cockroach cert create-node ${hosts} --certs-dir=tempCerts --ca-key=ca/ca.key`, {cwd: "/usr/lib/ararat"});
                 ws.send(JSON.stringify({event: "status", metadata: "Sending Certificates for CockroachDB..."}));
 
@@ -248,6 +255,12 @@ async (ws, req) => {
 
                 ws.send(JSON.stringify({event: "status", metadata: "Generating CockroachDB Service..."}));
                 let cockroachDbSystemd = readFileSync("/etc/systemd/system/cockroachdb.service", "utf8");
+
+                let thisAdvertiseAddr = "--advertise-addr=" + cockroachDbSystemd.split("--advertise-addr=")[1].split(" --join")[0];
+                let newAdvertiseAddr = `--advertise-addr=${data.metadata.domain}`
+                cockroachDbSystemd = cockroachDbSystemd.replace(thisAdvertiseAddr, newAdvertiseAddr);
+
+
                 let joined = cockroachDbSystemd.split("--join=")[1].split(" --http-addr=")[0].split(",");
                 let updateJoined = false;
                 if (joined.length < 3) {
@@ -256,15 +269,16 @@ async (ws, req) => {
 
                     let oldJoinString = cockroachDbSystemd.split("--join=")[1].split(" --http-addr=")[0];
                     let newJoinString = "";
-                    joinList.forEach((address, index) => {
-                        newJoinString += `${address}${index != joinList.length - 1 ? "," : ""}`;
+                    joined.forEach((address, index) => {
+                        newJoinString += `${address}${index != joined.length - 1 ? "," : ""}`;
                     });
+                    console.log(oldJoinString);
+                    console.log(cockroachDbSystemd)
                     cockroachDbSystemd = cockroachDbSystemd.replace(oldJoinString, newJoinString);
+                    console.log(cockroachDbSystemd)
                 }
-                let thisAdvertiseAddr = "--advertise-addr=" + newConf.split("--advertise-addr=")[1].split(" --join")[0];
-                let newAdvertiseAddr = `--advertise-addr=${data.metadata.domain};`
-                cockroachDbSystemd = cockroachDbSystemd.replace(thisAdvertiseAddr, newAdvertiseAddr);
-
+                console.log(cockroachDbSystemd, "final")
+                
                 ws.send(JSON.stringify({event: "status", metadata: "Sending CockroachDB Service File..."}));
                 try {
                     rmSync("/usr/lib/ararat/tempConfigs", {force: true, recursive: true})
@@ -273,7 +287,7 @@ async (ws, req) => {
                 }
                 mkdirSync("/usr/lib/ararat/tempConfigs");
                 writeFileSync("/usr/lib/ararat/tempConfigs/cockroachdb.service", cockroachDbSystemd);
-                await connection.putFile([{local: "/usr/lib/ararat/tempConfigs/cockroachdb.service", remote: "/etc/systemd/system/cockroachdb.service"}]);
+                await connection.putFile("/usr/lib/ararat/tempConfigs/cockroachdb.service",  "/etc/systemd/system/cockroachdb.service");
 
 
                 ws.send(JSON.stringify({event: "status", metadata: "Setting Up Environment..."}));
@@ -281,7 +295,14 @@ async (ws, req) => {
                     {local: "/usr/lib/ararat/.env", remote: "/usr/lib/ararat/.env"}, 
                     {local: "/usr/lib/ararat/.env.local", remote: "/usr/lib/ararat/.env.local"}, 
                     ])
-                    ws.send(JSON.stringify({event: "status", metadata: "Finishing Up..."}));
+                try {
+                    rmSync("/usr/lib/ararat/tempCerts", {force: true, recursive: true})
+                    rmSync("/usr/lib/ararat/tempConfigs", {force: true, recursive: true})
+                } catch {
+                    
+                }
+                ws.send(JSON.stringify({event: "status", metadata: "Applying Configuration..."}));
+                channel.write(`node configure.js ${data.metadata.domain} ${data.metadata.port} ${data.metadata.ipAddress}\n`)
             }
         })
 
