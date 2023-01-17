@@ -5,6 +5,13 @@ const { mkdirSync, rmSync, cpSync, rmdirSync, writeFileSync } = require("fs");
 const { genSalt, hash } = require("bcryptjs");
 
 (async function setup(){
+  let joinNode = process.argv[2] ? {
+    domain: process.argv[2],
+    port: process.argv[3],
+    ip: process.argv[4]
+  }: false
+  console.log(joinNode)
+  
 console.log("Installing Dependency: caddy...");
 execSync("apt-get install -y debian-keyring debian-archive-keyring apt-transport-https wget");
 execSync("curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --batch --yes --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg");
@@ -12,21 +19,36 @@ execSync("curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.tx
 execSync("apt-get update -y")
 execSync("apt-get install caddy -y")
 console.log("✅ Dependency caddy successfully installed")
-let useDomain = await prompts({
+let useDomain;
+let address;
+let port;
+if (!joinNode) {
+useDomain = await prompts({
     type: "confirm",
     name: "value",
     message: "Is this Ararat install going to use a domain? If so, please point your domain to this install before proceeding."
 });
-let address = await prompts({
+address = await prompts({
     type: "text",
     name: "value",
     message: `Enter the ${useDomain.value ? "domain" : "ip address"} of this node ${useDomain.value ? "(ex: us-dal-1.hye.gg)" : "(ex: 8.8.8.8)"}`
 });
-let port = await prompts({
+port = await prompts({
     type: "number",
     name: "value",
     message: `Enter the port you would like this node to listen on. (443 is reccomended)`
 })
+} else {
+  useDomain = {};
+  useDomain.value = true;
+
+  address = {};
+  address.value = joinNode.domain;
+
+  port = {};
+  port.value = joinNode.port;
+}
+
 console.log("Setting up web server...")
 let caddyConfig = {
     "apps": {
@@ -83,6 +105,7 @@ try {
 }
 rmSync("./cockroach", {recursive: true, force: true})
 console.log("✅ Dependency cockroachdb successfully installed")
+if (!join) {
 try {
     rmSync("./ca", {recursive: true});
     rmSync("./certs", {recursive: true});
@@ -99,16 +122,24 @@ try {
 console.log("Generating Ararat CA");
 execSync(`cockroach cert create-ca --certs-dir=certs --ca-key=ca/ca.key`)
 console.log("✅ CA Generated");
-let publicIp = await prompts({
+let publicIp;
+if (!join) {
+publicIp = await prompts({
     type: "text",
     message: "What is this node's accessible IP address?",
     name: "value"
 });
+} else {
+  publicIp = {};
+  publicIp.value = joinNode.ip;
+}
 console.log("Generating Certificates...");
 let hosts = "localhost 127.0.0.1";
 hosts += " " + address.value;
 if (publicIp.value != address.value) hosts+=` ${publicIp.value}`
 execSync(`cockroach cert create-node ${hosts} --certs-dir=certs --ca-key=ca/ca.key`);
+}
+console.log("Generating Client Certificate...")
 execSync(`cockroach cert create-client root --certs-dir=certs --ca-key=ca/ca.key`);
 console.log("✅ Certificates Generated");
 console.log("Preparing Database for Cluster...")
@@ -125,6 +156,7 @@ try {
     
 }
 execSync("chown -R cockroach /var/lib/cockroach")
+if (!join) {
 let cockroachSystemd = `
 [Unit]
 Description=Cockroach Database cluster node
@@ -144,6 +176,7 @@ User=cockroach
 WantedBy=default.target
 `
 writeFileSync("/etc/systemd/system/cockroachdb.service", cockroachSystemd);
+}
 console.log("Initializing Cluster...")
 execSync("systemctl daemon-reload");
 try {
@@ -152,9 +185,13 @@ execSync("systemctl stop cockroachdb")
 
 }
 execSync("systemctl start cockroachdb");
+if (!join){
 execSync(`cockroach init --certs-dir=/var/lib/cockroach/certs --host=${address.value}`)
+}
 execSync("systemctl enable cockroachdb");
+
 console.log("✅ Cluster Initialized");
+if (!join) {
 let dbUsername = await prompts({
 type: "text",
 name: "value",
@@ -182,6 +219,7 @@ console.log("✅ Database Configuration Saved");
 console.log("Seeding Database...")
 execSync("npx prisma db push");
 console.log("✅ Database Seeded")
+}
 console.log("Installing dependency: snapd...");
 execSync("apt-get install -y snapd")
 console.log("✅ Installed dependency snapd")
@@ -198,6 +236,7 @@ execSync("wget https://github.com/Hye-Ararat/lxd-pkg-snap/releases/download/5.9_
 execSync("snap install lib/lxd_amd64.snap --dangerous");
 execSync("rm lib/lxd_amd64.snap");
 console.log("✅ Patched LXD")
+if (!join){
 console.log("Generating Encryption Key...");
 const randomString = () => {
 const length = 32;
@@ -217,6 +256,7 @@ console.log("✅ Communication Key Generated")
 console.log("Saving Configuration...");
 writeFileSync(".env.local", envLocal);
 console.log("✅ Configuration Saved!")
+}
 console.log("Building Ararat...");
 execSync("npm run build");
 console.log("✅ Build Successful")
@@ -248,9 +288,10 @@ WantedBy=multi-user.target
 writeFileSync("/etc/systemd/system/ararat.service", araratSystemd);
 console.log("✅ System Service Created")
 console.log("Enabling and Starting System Service...");
-execSync("systemctl enable ararat");
-execSync("systemctl start ararat");
+//execSync("systemctl enable ararat");
+//execSync("systemctl start ararat");
 console.log("✅ Ararat enabled at startup and now running")
+if (!join){
 console.log("Now let's make a Hye Ararat account");
 const username = await prompts({
 message: "What would you like your username to be",
@@ -303,5 +344,7 @@ let permission = await prisma.permission.create({
 })
 
 console.log("✅ Account created")
+}
 console.log("You're node has been setup! You can now navigate to it using the URL you specified earlier in your web browser.")
+
 })()
