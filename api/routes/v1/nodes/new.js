@@ -167,6 +167,9 @@ async (ws, req) => {
                     araratCloned1 = true;
                 } else if (!araratDone2) {
                     araratDone2 = true;
+                    setTimeout(() => {
+                        araratDone = true;
+                    }, 15000)
                 } else {
                     araratDone = true;
                 }
