@@ -26,8 +26,13 @@ export async function middleware(request: NextRequest) {
     if (!request.headers.get("Authorization") && request.cookies.has("authorization")) {
       headers.set("Authorization", `Bearer ${request.cookies.get("authorization")?.value}`)
     }
-    // @ts-ignore
-    let allowed = await verifyToken(request.cookies.has("authorization") ? request.cookies.get("authorization").value : request.headers.has("Authorization") ? request.headers.get("Authorization")?.split(" ")[1] : "");
+    let allowed;
+    if (request.nextUrl.pathname.startsWith("/api/v1/system")) {
+      allowed = request.headers.get("Authorization") == "Bearer " + process.env.COMMUNICATION_KEY;
+    } else {
+      allowed = await verifyToken(request.cookies.has("authorization") ? request.cookies.get("authorization").value : request.headers.has("Authorization") ? request.headers.get("Authorization")?.split(" ")[1] : "");
+    }
+
     if (!allowed) return NextResponse.json(errorResponse(400, 400, "You are not allowed to access this resource"), {
       status: 401
     })
