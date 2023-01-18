@@ -4,6 +4,7 @@ import {Dialog, DialogContent, DialogTitle, Divider, Typography, Stepper, Step, 
 import cookie from "cookie";
 import { Error } from "@mui/icons-material";
 import Ansi2Html from "ansi-to-html"
+import {useRouter} from "next/navigation";
 
 export default function CreateNode() {
 
@@ -20,6 +21,8 @@ export default function CreateNode() {
     const [port, setPort] = useState("443")
     const [ipAddress, setIpAddress] = useState("")
 
+    const [name, setName] = useState("")
+
     const [status, setStatus] = useState("Connecting");
     const [error, setError] = useState(null)
     const [currentLog, setCurrentLog] = useState("");
@@ -28,6 +31,8 @@ export default function CreateNode() {
 
     const [configurationStage, setConfigurationStage] = useState(false);
     const AnsiToHtml = new Ansi2Html();
+
+    const router = useRouter();
     async function installNode() {
         const websocket = new WebSocket("wss://" + window.location.host + "/api/v1/nodes/new");
         setWebSocket(websocket)
@@ -53,6 +58,7 @@ export default function CreateNode() {
             if (data.event == "log") setCurrentLog(data.metadata);
             if (data.event == "complete") {
                 if (data.metadata = "Installation") setCurrentStep(3)
+                if (data.metadata = "Configuration") router.refresh();
             }
         })
     }
@@ -171,6 +177,9 @@ export default function CreateNode() {
                     <Typography sx={{mb: 2, mt: 2}} fontWeight="bold" fontSize={18} align="center">Connectivity</Typography>
                     <Typography fontWeight={600} sx={{ mb: 1}}>Accessible IP Address</Typography>
                     <TextField type="text" value={ipAddress} onChange={(e) => setIpAddress(e.target.value)} variant="standard" placeholder="Accessible IP Address" />
+                    <Typography sx={{mb: 2, mt: 2}} fontWeight="bold" fontSize={18} align="center">Identification</Typography>
+                    <Typography fontWeight={600} sx={{ mb: 1}}>Name</Typography>
+                    <TextField type="text" value={name} onChange={(e) => setName(e.target.value)} variant="standard" placeholder="Node Name" />
                     </>
 }
                     </>
@@ -184,7 +193,7 @@ export default function CreateNode() {
                     {currentStep == 0 ?
                     <Button sx={{ml: "auto", mr: 1}} variant="contained" color="error">Cancel</Button>
                     :                     <Button disabled={currentStep > 1} onClick={() => setCurrentStep(currentStep - 1)} sx={{ml: "auto", mr: 1}} variant="contained" color="error">Go Back</Button>}
-                    <Button disabled={currentStep > 1 && (currentStep != 3 && !configurationStage)} onClick={() => {
+                    <Button disabled={currentStep == 3 ? configurationStage : currentStep > 1} onClick={() => {
                         if (currentStep != 3) {
                         setCurrentStep(currentStep + 1)
                         } else {
@@ -193,7 +202,8 @@ export default function CreateNode() {
                                 metadata: {
                                domain,
                                port,
-                               ipAddress
+                               ipAddress,
+                               name
                                 }
                             })) 
                         setConfigurationStage(true)
