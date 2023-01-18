@@ -93,16 +93,17 @@ try {
 } catch {
     
 }
-execSync("curl https://binaries.cockroachdb.com/cockroach-v22.2.2.linux-amd64.tgz -o cockroach/cockroach.tgz")
+execSync("wget https://binaries.cockroachdb.com/cockroach-v22.2.2.linux-amd64.tgz -O cockroach/cockroach.tgz")
 execSync("tar -xf cockroach.tgz", {cwd: "./cockroach"})
 try {
     rmSync("/usr/local/lib/cockroach");
-    execSync("mkdir -p /usr/local/lib/cockroach")
-    cpSync("./cockroach/cockroach-v22.2.2.linux-amd64/lib/libgeos.so /usr/local/lib/cockroach/libgeos.so")
-    cpSync("./cockroach/cockroach-v22.2.2.linux-amd64/lib/libgeos_c.so /usr/local/lib/cockroach/libgeos_c.so")
 } catch {
     
 }
+execSync("mkdir -p /usr/local/lib/cockroach")
+cpSync("./cockroach/cockroach-v22.2.2.linux-amd64/lib/libgeos.so /usr/local/lib/cockroach/libgeos.so")
+cpSync("./cockroach/cockroach-v22.2.2.linux-amd64/lib/libgeos_c.so /usr/local/lib/cockroach/libgeos_c.so")
+
 rmSync("./cockroach", {recursive: true, force: true})
 console.log("✅ Dependency cockroachdb successfully installed")
 if (!joinNode) {
