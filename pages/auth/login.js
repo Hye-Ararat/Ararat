@@ -10,6 +10,7 @@ import login from "../../scripts/api/v1/auth/login";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import nprogress, { render } from "nprogress";
+import nookies from "nookies";
 
 export default function Login() {
   const router = useRouter();
@@ -30,11 +31,12 @@ export default function Login() {
         if (email == null || document.getElementById("password") == null) return;
         results = await login(email, (document.getElementById("password")).value)
     } catch (error) {
-        //setLoginErr(error)
+        setLoginErr(error)
         setLoggingIn(false);
         return;
     }
-    document.cookie += `authorization=${results.authorization};path=/;max-age=604800;`;
+    nookies.set(null, "authorization", results.authorization, {maxAge: "604800", path: "/"})
+    console.log(document.cookie)
     router.push("/")
     setLoggingIn(false);
   }
@@ -51,7 +53,7 @@ export default function Login() {
               Welcome to Ararat! Please login to continue.
             </Typography>
             <FormControl sx={{ m: 1, width: "40ch" }} variant="outlined">
-              {loginErr && <Alert severity="error">{loginErr}</Alert>}
+              {loginErr && <Alert severity="error" variant="filled">{loginErr}</Alert>}
               <TextField
               id="email"
                 margin="dense"

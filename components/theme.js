@@ -21,7 +21,7 @@ const theme = createTheme({
     },
     error: {
       main: "#34242b",
-      contrastText: "#e85347"
+      contrastText: "#e85347",
     },
     info: {
       main: "#133542",
@@ -82,7 +82,7 @@ const theme = createTheme({
         paper: {
           backgroundColor: "#141c26",
           backgroundImage: "linear-gradient(to bottom, #141c26, #141c26)",
-          borderRadius: 10,
+          borderRadius: 12,
         },
       }
     },
@@ -187,6 +187,13 @@ const theme = createTheme({
           }
         }
       }
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+        },
+      },
     }
   }
 })
