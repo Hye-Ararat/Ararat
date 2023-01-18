@@ -10,7 +10,7 @@ export default async function Nodes() {
     console.log(nodes);
     return (
         <>
-        <Grid container direction="row">
+        <Grid container direction="row"> 
         <Typography variant="h4">Nodes</Typography>
  
                    <CreateNode />
