@@ -186,6 +186,55 @@ async (ws, req) => {
                     npmIDone = true;
                 }
             }
+
+
+
+            //Message Handling
+            if (d.toString().includes("Installing Dependency: caddy")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Installing Dependency: caddy"}));
+            }
+            if (d.toString().includes("Setting up web server..")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Setting up web server..."}));
+            }
+            if (d.toString().includes("Installing dependency: cockroachdb")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Installing Dependency: cockroachdb"}));
+            }
+            if (d.toString().includes("Preparing Database for Cluster")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Preparing to join cluster..."}));
+            }
+            if (d.toString().includes("Initializing Cluster...")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Joining Cluster..."}));
+            }
+            if (d.toString().includes("Installing dependency: snapd..")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Installing Dependency: snapd"}));
+            }
+            if (d.toString().includes("Installing dependency: LXD.")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Installing Dependency: LXD"}));
+            }
+            if (d.toString().includes("Patching LXD..")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Patching LXD..."}));
+            }
+            if (d.toString().includes("Building Ararat")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Building Ararat..."}));
+            }
+            if (d.toString().includes("Installing More Modules..")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Installing node modules"}));
+            }
+            if (d.toString().includes("Adjusting Permissions...")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Adjusting Permissions..."}));   
+            }
+            if (d.toString().includes("Creating System Service..")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Creating System Service..."}));   
+            }
+            if (d.toString().includes("Enabling and Starting System Service...")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Starting Hye Ararat..."}));   
+            }
+            if (d.toString().includes("node has been setup! You can now navigate to it using the")) {
+                ws.send(JSON.stringify({event: "complete", metadata: "Installation"}))
+                connection.dispose()
+                return ws.close();
+
+            }
         })
         
         //Escelate to Superuser
