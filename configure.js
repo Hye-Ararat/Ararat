@@ -141,8 +141,9 @@ hosts += " " + address.value;
 if (publicIp.value != address.value) hosts+=` ${publicIp.value}`
 execSync(`cockroach cert create-node ${hosts} --certs-dir=certs --ca-key=ca/ca.key`);
 }
-console.log("Generating Client Certificate...")
 if (!joinNode) {
+
+console.log("Generating Client Certificate...")
 execSync(`cockroach cert create-client root --certs-dir=certs --ca-key=ca/ca.key`);
 }
 console.log("✅ Certificates Generated");
