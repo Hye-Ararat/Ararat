@@ -294,8 +294,8 @@ WantedBy=multi-user.target
 writeFileSync("/etc/systemd/system/ararat.service", araratSystemd);
 console.log("✅ System Service Created")
 console.log("Enabling and Starting System Service...");
-//execSync("systemctl enable ararat");
-//execSync("systemctl start ararat");
+execSync("systemctl enable ararat");
+execSync("systemctl start ararat");
 console.log("✅ Ararat enabled at startup and now running")
 if (!joinNode){
 console.log("Now let's make a Hye Ararat account");
