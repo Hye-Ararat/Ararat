@@ -155,6 +155,7 @@ try {
 execSync("mkdir /var/lib/cockroach");
 execSync("mv certs /var/lib/cockroach");
 execSync("chmod -rwx------ -R /var/lib/cockroach/certs")
+execSync("chmod -R 700 /var/lib/cockroach/certs")
 try {
     execSync("useradd cockroach");
 } catch {
