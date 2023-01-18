@@ -3,6 +3,7 @@ import {NodeSSH} from "node-ssh"
 
 import {execSync} from "child_process";
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import prisma from "../../../../lib/prisma.js";
 
 const router = express.Router({ mergeParams: true });
 
@@ -16,6 +17,12 @@ router.ws("/",
  */
 async (ws, req) => {
     async function installNode(host, port, username, password) {
+
+        //Global Storage
+        let nodeName = "";
+        let nodeUrl= "";
+
+
         //Connect
         const ssh = new NodeSSH();
         let connection;
@@ -230,7 +237,13 @@ async (ws, req) => {
                 ws.send(JSON.stringify({event: "status", metadata: "Starting Hye Ararat..."}));   
             }
             if (d.toString().includes("node has been setup! You can now navigate to it using the")) {
-                ws.send(JSON.stringify({event: "complete", metadata: "Installation"}))
+                await prisma.node.create({
+                    data: {
+                        name: nodeName,
+                        url: nodeUrl
+                    }
+                })
+                ws.send(JSON.stringify({event: "complete", metadata: "Configuration"}));
                 connection.dispose()
                 return ws.close();
 
@@ -277,6 +290,8 @@ async (ws, req) => {
             let data = JSON.parse(e);
             if (data.event == "sendConfiguration") {
                 console.log(data.metadata)
+                nodeName = data.metadata.name
+                nodeUrl = `https://${data.metadata.domain}:${data.metadata.port}`
                 console.log("SEND CONFIGURATION")
 
 
