@@ -266,6 +266,9 @@ console.log("✅ Configuration Saved!")
 console.log("Building Ararat...");
 execSync("npm run build");
 console.log("✅ Build Successful")
+console.log("Installing More Modules...");
+execSync("npm install", {cwd: "./api"});
+console.log("✅ Installed Additional Modules")
 console.log("Adjusting Permissions...")
 execSync("chmod +x start.sh");
 console.log("✅ Permissions Adjusted")
