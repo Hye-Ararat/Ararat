@@ -363,7 +363,7 @@ const nodeName = await prompts({
 let node = await prisma.node.create({
   data: {
     url: `https://${address.value}:${port.value}`,
-    name: nodeName
+    name: nodeName.value
   }
 })
 }
