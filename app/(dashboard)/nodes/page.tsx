@@ -12,9 +12,7 @@ export default async function Nodes() {
         <>
         <Grid container direction="row"> 
         <Typography variant="h4">Nodes</Typography>
- 
                    <CreateNode />
-
         </Grid>
         {nodes.map((node) => {
             return (
