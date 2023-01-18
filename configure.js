@@ -122,9 +122,7 @@ try {
 }
 
 console.log("Generating Ararat CA");
-if (!joinNode) {
 execSync(`cockroach cert create-ca --certs-dir=certs --ca-key=ca/ca.key`)
-}
 console.log("✅ CA Generated");
 let publicIp;
 if (!joinNode) {
@@ -144,7 +142,9 @@ if (publicIp.value != address.value) hosts+=` ${publicIp.value}`
 execSync(`cockroach cert create-node ${hosts} --certs-dir=certs --ca-key=ca/ca.key`);
 }
 console.log("Generating Client Certificate...")
+if (!joined) {
 execSync(`cockroach cert create-client root --certs-dir=certs --ca-key=ca/ca.key`);
+}
 console.log("✅ Certificates Generated");
 console.log("Preparing Database for Cluster...")
 try {
