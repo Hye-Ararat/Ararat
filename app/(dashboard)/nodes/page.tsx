@@ -7,7 +7,7 @@ export const revalidate = 0;
 
 export default async function Nodes() {
     const nodes = await prisma.node.findMany({})
-    console.log(nodes)
+    console.log(nodes);
     return (
         <>
         <Grid container direction="row">
