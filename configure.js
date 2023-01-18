@@ -122,7 +122,9 @@ try {
 }
 
 console.log("Generating Ararat CA");
+if (!joinNode) {
 execSync(`cockroach cert create-ca --certs-dir=certs --ca-key=ca/ca.key`)
+}
 console.log("✅ CA Generated");
 let publicIp;
 if (!joinNode) {
