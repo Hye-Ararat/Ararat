@@ -6,7 +6,7 @@ const theme = createTheme({
     mode: "dark",
     background: {
       default: "#0d141d",
-      paper: "#141c26",
+      paper: "#101924",
     },
     primary: {
       main: blue[500],
@@ -59,8 +59,11 @@ const theme = createTheme({
         root: {
           backdropFilter: "blur(3px)",
           backgroundColor: "inherit"
+        },
+        invisible: {
+          backdropFilter: "none"
         }
-      }
+      },
     },
     MuiDrawer: {
       styleOverrides: {
@@ -74,6 +77,13 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: "#28374b",
+        }
+      }
+    },
+    MuiPaper: {
+      styleOverrides: {
+        rounded: {
+          borderRadius: 12
         }
       }
     },
@@ -130,7 +140,16 @@ const theme = createTheme({
               border: "1px solid",
               borderColor: "rgba(200, 200, 200, 0.4)"
             }
-          } : {}),
+          }
+           : {})
+           ,...(ownerState.variant == "outlined" ? {
+            input: {
+              padding: 8,
+              borderRadius: 12,
+              borderColor: "rgba(200, 200, 200, 0.4)"
+            }
+          }
+          : {})
         }),
       },
       defaultProps: {
