@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import {Dialog, DialogContent, DialogTitle, Divider, Typography, Stepper, Step, StepLabel, DialogActions, Button, Grid, TextField, CircularProgress} from "../../../components/base";
 import cookie from "cookie";
 import { Error } from "@mui/icons-material";
+import Ansi2Html from "ansi-to-html"
 
 export default function CreateNode() {
+
+    const [creatingNode, setCreatingNode] = useState(false);
 
     let steps = ["Prerequisites", "SSH", "Installation", "Configuration"]
     const [currentStep, setCurrentStep] = useState(0);
@@ -24,7 +27,7 @@ export default function CreateNode() {
     const [webSocket, setWebSocket] = useState(null)
 
     const [configurationStage, setConfigurationStage] = useState(false);
-
+    const AnsiToHtml = new Ansi2Html();
     async function installNode() {
         const websocket = new WebSocket("wss://" + window.location.host + "/api/v1/nodes/new");
         setWebSocket(websocket)
@@ -69,7 +72,13 @@ export default function CreateNode() {
         }
     }, [error])
     return (
-        <Dialog open={true} fullWidth={true}>
+        <>
+        <Button onClick={() => setCreatingNode(true)} variant="contained" sx={{ml: "auto"}}>Create Node</Button>
+        <Dialog open={creatingNode} fullWidth={true} onClose={() => {
+            if(!(currentStep > 1)) {
+                setCreatingNode(false)
+            }
+        }}>
             <DialogTitle>
                 <Typography variant="h6" align="center" fontFamily="Poppins" fontWeight="bold">Create Node</Typography>
             </DialogTitle>
@@ -124,7 +133,7 @@ export default function CreateNode() {
                 <CircularProgress sx={{mr: "auto", ml: "auto"}} />
                 <Typography fontWeight="bold" textAlign={"center"} sx={{mr: "auto", ml: "auto", mt: 1}}>{status}</Typography>
                 {currentLog.length > 1 ?
-                <Typography fontWeight="bold" textAlign={"center"} sx={{mr: "auto", ml: "auto", mt: 1, backgroundColor: "black", padding: 1, borderRadius: 2, fontFamily: "monospace"}}>{currentLog}</Typography>
+                <div style={{backgroundColor: "black", borderRadius: 12, padding: 12,  textAlign: "center", marginTop: 8}} dangerouslySetInnerHTML={{__html: AnsiToHtml.toHtml(currentLog)}} />
                 : ""}
                 </Grid>
                 : <Grid container direction="column">
@@ -142,8 +151,8 @@ export default function CreateNode() {
                                     <CircularProgress sx={{mr: "auto", ml: "auto"}} />
                                     <Typography fontWeight="bold" textAlign={"center"} sx={{mr: "auto", ml: "auto", mt: 1}}>{status}</Typography>
                                     {currentLog.length > 1 ?
-                                    <Typography fontWeight="bold" textAlign={"center"} sx={{mr: "auto", ml: "auto", mt: 1, backgroundColor: "black", padding: 1, borderRadius: 2, fontFamily: "monospace"}}>{currentLog}</Typography>
-                                    : ""}
+                <div style={{backgroundColor: "black", borderRadius: 12, padding: 12, textAlign: "center", marginTop: 8}} dangerouslySetInnerHTML={{__html: AnsiToHtml.toHtml(currentLog)}} />
+                : ""}
                                     </Grid>
                     : 
                     <>
@@ -175,7 +184,7 @@ export default function CreateNode() {
                     {currentStep == 0 ?
                     <Button sx={{ml: "auto", mr: 1}} variant="contained" color="error">Cancel</Button>
                     :                     <Button disabled={currentStep > 1} onClick={() => setCurrentStep(currentStep - 1)} sx={{ml: "auto", mr: 1}} variant="contained" color="error">Go Back</Button>}
-                    <Button disabled={currentStep > 1 && currentStep != 3} onClick={() => {
+                    <Button disabled={currentStep > 1 && (currentStep != 3 && !configurationStage)} onClick={() => {
                         if (currentStep != 3) {
                         setCurrentStep(currentStep + 1)
                         } else {
@@ -193,5 +202,6 @@ export default function CreateNode() {
                 </Grid>
             </DialogActions>
         </Dialog>
+        </>
     )
 }
