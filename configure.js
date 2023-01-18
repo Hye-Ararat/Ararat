@@ -354,6 +354,18 @@ let permission = await prisma.permission.create({
 })
 
 console.log("✅ Account created")
+console.log("Adding to database");
+const nodeName = await prompts({
+  type: "text",
+  name: "value",
+  message: "Give this node a name"
+  })
+let node = await prisma.node.create({
+  data: {
+    url: `https://${address.value}:${port.value}`,
+    name: nodeName
+  }
+})
 }
 console.log("You're node has been setup! You can now navigate to it using the URL you specified earlier in your web browser.")
 
