@@ -74,14 +74,7 @@ model NodeUser {
 model Node {
   id          String     @id @default(cuid())
   name        String
-  address     String
-  port        String
-  lxdPort     String
-  sftpPort    String
-  certificate String
-  key         String
-  encIV       String
-  ssl         Boolean?
+  url         String
   instances   Instance[]
   users       NodeUser[]
 }
