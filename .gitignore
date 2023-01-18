@@ -43,4 +43,7 @@ prisma/schema.prisma
 
 #api
 api/node_modules
+
+#system
 ca/ca.key
+caddyConfig.json

@@ -3,6 +3,8 @@ import prisma from "../../../lib/prisma.js";
 import {Typography, Button, Grid} from "../../../components/base";
 import CreateNode from "./CreateNode";
 
+export const revalidate = 0;
+
 export default async function Nodes() {
     const nodes = await prisma.node.findMany({})
     console.log(nodes)
@@ -16,7 +18,7 @@ export default async function Nodes() {
         </Grid>
         {nodes.map((node) => {
             return (
-                <p key={node.name}>{node.name}</p>
+                <p key={node.id}>{node.name}</p>
             )
         })}
         </>
