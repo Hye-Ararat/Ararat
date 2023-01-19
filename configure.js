@@ -13,7 +13,7 @@ const { genSalt, hash } = require("bcryptjs");
   console.log(joinNode)
   
 console.log("Installing Dependency: caddy...");
-execSync("apt-get install -y debian-keyring debian-archive-keyring apt-transport-https wget");
+execSync("apt-get update -y && apt-get install -y debian-keyring debian-archive-keyring apt-transport-https wget");
 execSync("curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --batch --yes --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg");
 execSync("curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list");
 execSync("apt-get update -y")
