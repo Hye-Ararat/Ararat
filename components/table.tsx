@@ -3,7 +3,16 @@ import { Paper, Divider, Menu, MenuItem, Button, Grid, TextField, Input, InputAd
 import { useState } from "react";
 import { CheckBox, KeyboardArrowDown, Search, Brightness1, Circle } from "@mui/icons-material";
 
-export default function Table() {
+
+interface TableColumn {
+    title: string,
+    sizes: {
+        xs?: number,
+        md?: number
+    }
+}
+
+export default function Table({columns, rows}) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [actionsOpen, setActionsOpen] = useState(false);
     return (
