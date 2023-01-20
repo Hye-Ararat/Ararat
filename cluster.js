@@ -1,5 +1,4 @@
 const axios = require("axios").default;
-const ws = require("ws").WebSocket;
 
 (async function cluster() {
     let addr = process.argv[2];
@@ -25,27 +24,6 @@ const ws = require("ws").WebSocket;
         return console.log(error)
     }
     console.log(config.data);
-    console.log("💻 Connecting to Events Socket");
-    const WebSocket = new ws("ws+unix:///var/snap/lxd/common/lxd/unix.socket:/1.0/events");
-    WebSocket.on("open", () => {
-        console.log("WebSocket Open")
-    })
-    WebSocket.on("message", (data) => {
-        let message = JSON.parse(data.toString());
-        try {
-            if (message.type == "operation") {
-                if (message.metadata.context.description == "Creating bootstrap node") {
-                    if (message.metadata.message == "Success for operation") {
-                        console.log("💻 Cluster Created");
-                        WebSocket.close();
-                        process.exit(0);
-                    }
-                }
-            }   
-        } catch (error) {
-            
-        }
-    })
 
     console.log("💻 Setting Cluster Config");
     let clusterConfig;
