@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id              String            @id @default(cuid())
+  id              String            @id @default(cuid()) @unique
   firstName       String
   lastName        String
   email           String            @unique
@@ -20,50 +20,31 @@ model User {
   language        String?
   permissions     Permission[]
   instances       InstanceUser[]
-  ImageServerUser ImageServerUser[]
   NodeUser        NodeUser[]
 }
 
 model Permission {
-  id         String @id @default(cuid())
+  id         String @id @default(cuid()) @unique
   user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
   permission String
 }
 
-model ImageServerUser {
-  id            String                  @id @default(cuid())
-  user          User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-  imageServer   ImageServer             @relation(fields: [imageServerId], references: [id], onDelete: Cascade)
-  imageServerId String
-  permissions   ImageServerPermission[]
-}
 
-model ImageServerPermission {
-  id         String          @id @default(cuid())
-  user       ImageServerUser @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String
-  permission String
-}
 
-model ImageServer {
-  id       String            @id @default(cuid())
-  name     String            @unique
-  url      String            @unique
-  protocol String            @default("simplestreams")
-  users    ImageServerUser[]
-}
+
+
+
 
 model NodePermission {
-  id         String   @id @default(cuid())
+  id         String   @id @default(cuid()) @unique
   user       NodeUser @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
   permission String
 }
 
 model NodeUser {
-  id          String           @id @default(cuid())
+  id          String           @id @default(cuid()) @unique
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
   node        Node             @relation(fields: [nodeId], references: [id], onDelete: Cascade)
@@ -71,16 +52,24 @@ model NodeUser {
   permissions NodePermission[]
 }
 
+model Location {
+    id          String     @id @default(cuid()) @unique
+    name String
+    nodes Node[]
+}
+
 model Node {
-  id          String     @id @default(cuid())
+  id          String     @id @default(cuid()) @unique
   name        String
   url         String
+  location   Location           @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  locationId String
   instances   Instance[]
   users       NodeUser[]
 }
 
 model Instance {
-  id     String         @id @default(cuid())
+  id     String         @id @default(cuid())  @unique
   name   String
   node   Node           @relation(fields: [nodeId], references: [id], onDelete: Cascade)
   nodeId String
@@ -88,7 +77,7 @@ model Instance {
 }
 
 model InstanceUser {
-  id          String                   @id @default(cuid())
+  id          String                   @id @default(cuid()) @unique
   user        User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
   instance    Instance                 @relation(fields: [instanceId], references: [id], onDelete: Cascade)
@@ -98,16 +87,15 @@ model InstanceUser {
 }
 
 model InstanceUserPermission {
-  id             String       @id @default(cuid())
+  id             String       @id @default(cuid()) @unique
   instanceUser   InstanceUser @relation(fields: [instanceUserId], references: [id], onDelete: Cascade)
   instanceUserId String
   permission     String
 }
 
 model InstanceUserWidgetGrid {
-  id             String               @id @default(cuid())
+  id             String               @id @default(cuid()) @unique
   direction      String
-  //If using a database other than CockroachDB, change sequence() to autoincrement()
   index          Int                  @default(sequence())
   size           String
   instanceUser   InstanceUser         @relation(fields: [instanceUserId], references: [id], onDelete: Cascade)
@@ -116,8 +104,7 @@ model InstanceUserWidgetGrid {
 }
 
 model InstanceUserWidget {
-  id           String                 @id @default(cuid())
-  //If using a database other than CockroachDB, change sequence() to autoincrement()
+  id           String                 @id @default(cuid()) @unique
   index        Int                    @default(sequence())
   widget       String
   widgetGridId String
