@@ -265,9 +265,18 @@ console.log("Saving Configuration...");
 writeFileSync(".env.local", envLocal);
 console.log("✅ Configuration Saved!")
 }
+let failed = false;
 console.log("Building Ararat...");
-execSync("npm run build");
+try {
+  execSync("npm run build");
+} catch {
+  failed = true;  
+}
+if (!failed) {
 console.log("✅ Build Successful")
+} else {
+  console.log("❌ Build failed, continuing regardless")
+}
 console.log("Installing More Modules...");
 execSync("npm install", {cwd: "./api"});
 console.log("✅ Installed Additional Modules")
@@ -300,8 +309,15 @@ writeFileSync("/etc/systemd/system/ararat.service", araratSystemd);
 console.log("✅ System Service Created")
 console.log("Enabling and Starting System Service...");
 execSync("systemctl enable ararat");
+if (!failed) {
 execSync("systemctl start ararat");
+} else {
+}
+if (!failed) {
 console.log("✅ Ararat enabled at startup and now running")
+} else {
+  console.log("Skipped starting ararat due to failed build. Rebuild and try npm run build.");
+}
 if (!joinNode){
 console.log("Now let's make a Hye Ararat account");
 const username = await prompts({
