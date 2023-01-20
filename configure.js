@@ -23,6 +23,7 @@ console.log("✅ Dependency caddy successfully installed")
 let useDomain;
 let address;
 let port;
+let publicIp;
 if (!joinNode) {
 useDomain = await prompts({
     type: "confirm",
@@ -125,7 +126,6 @@ try {
 console.log("Generating Ararat CA");
 execSync(`cockroach cert create-ca --certs-dir=certs --ca-key=ca/ca.key`)
 console.log("✅ CA Generated");
-let publicIp;
 if (!joinNode) {
 publicIp = await prompts({
     type: "text",
@@ -372,15 +372,32 @@ let permission = await prisma.permission.create({
 
 console.log("✅ Account created")
 console.log("Adding to database");
+const nodeLocation = await prompts({
+  type: "text",
+  name: "value",
+  message: "What would you like to name this node's location?"
+  })
+  let location = await prisma.location.create({
+    data: {
+      name: nodeLocation.value,
+    }
+  })
+console.log("Setting Up Location Cluster...")
 const nodeName = await prompts({
   type: "text",
   name: "value",
   message: "Give this node a name"
   })
+  execSync(`node cluster.js ${publicIp.value} ${nodeName.value}`)
 let node = await prisma.node.create({
   data: {
     url: `https://${address.value}:${port.value}`,
-    name: nodeName.value
+    name: nodeName.value,
+    location: {
+      connect: {
+        id: location.id
+      }
+    }
   }
 })
 }
