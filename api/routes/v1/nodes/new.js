@@ -5,6 +5,8 @@ import {execSync} from "child_process";
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import prisma from "../../../../lib/prisma.js";
 
+import axios from "axios";
+
 const router = express.Router({ mergeParams: true });
 
 
@@ -240,6 +242,7 @@ async (ws, req) => {
             }
             if (d.toString().includes("node has been setup! You can now navigate to it using the")) {
                 ws.send(JSON.stringify({event: "status", metadata: "Joining Location Cluster"}));
+                //REMINDER: update client code to send location id
                 let location = await prisma.location.findUnique({
                     where: {
                         id: locationId
@@ -252,9 +255,7 @@ async (ws, req) => {
                     channel.write(`node cluster.js ${nodeIp} ${nodeName}\n`)   
                 } else {
                     let node = location.nodes[0];
-                    //send request to get join token
-
-                    //join cluster using token
+                    channel.write(`node cluster.js ${nodeIp} ${nodeName} ${node.url}\n`)
                 }
                 await prisma.node.create({
                     data: {
