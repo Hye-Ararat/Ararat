@@ -5,6 +5,7 @@ require('dotenv').config({ path: ".env.local" });
     let addr = process.argv[2];
     let name = process.argv[3];
     let mode = process.argv[4] ? process.argv[4] : false;
+    console.log(mode)
     const requestClient = new axios.Axios({
         socketPath: "/var/snap/lxd/common/lxd/unix.socket",
         headers: {
