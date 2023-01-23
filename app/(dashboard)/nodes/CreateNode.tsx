@@ -20,6 +20,7 @@ export default function CreateNode() {
     const [domain, setDomain] = useState("")
     const [port, setPort] = useState("443")
     const [ipAddress, setIpAddress] = useState("")
+    const [locationId, setLocationId] = useState("")
 
     const [name, setName] = useState("")
 
@@ -178,8 +179,16 @@ export default function CreateNode() {
                     <Typography fontWeight={600} sx={{ mb: 1}}>Accessible IP Address</Typography>
                     <TextField type="text" value={ipAddress} onChange={(e) => setIpAddress(e.target.value)} variant="standard" placeholder="Accessible IP Address" />
                     <Typography sx={{mb: 2, mt: 2}} fontWeight="bold" fontSize={18} align="center">Identification</Typography>
+                    <Grid container direction="row">
+                        <Grid container direction="column">
                     <Typography fontWeight={600} sx={{ mb: 1}}>Name</Typography>
                     <TextField type="text" value={name} onChange={(e) => setName(e.target.value)} variant="standard" placeholder="Node Name" />
+                    </Grid>
+                    <Grid container direction="column">
+                    <Typography fontWeight={600} sx={{ mb: 1}}>Location ID</Typography>
+                    <TextField type="text" value={locationId} onChange={(e) => setLocationId(e.target.value)} variant="standard" placeholder="Location ID" />
+                    </Grid>
+                    </Grid>
                     </>
 }
                     </>
@@ -203,7 +212,8 @@ export default function CreateNode() {
                                domain,
                                port,
                                ipAddress,
-                               name
+                               name,
+                               location: locationId
                                 }
                             })) 
                         setConfigurationStage(true)
