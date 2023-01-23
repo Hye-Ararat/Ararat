@@ -21,6 +21,8 @@ async (ws, req) => {
         //Global Storage
         let nodeName = "";
         let nodeUrl= "";
+        let locationId  = "";
+        let nodeIp = "";
 
 
         //Connect
@@ -237,10 +239,32 @@ async (ws, req) => {
                 ws.send(JSON.stringify({event: "status", metadata: "Starting Hye Ararat..."}));   
             }
             if (d.toString().includes("node has been setup! You can now navigate to it using the")) {
+                ws.send(JSON.stringify({event: "status", metadata: "Joining Location Cluster"}));
+                let location = await prisma.location.findUnique({
+                    where: {
+                        id: locationId
+                    },
+                    include: {
+                        nodes: true
+                    }
+                })
+                if (location.nodes.length == 0) {
+                    channel.write(`node cluster.js ${nodeIp} ${nodeName}\n`)   
+                } else {
+                    let node = location.nodes[0];
+                    //send request to get join token
+
+                    //join cluster using token
+                }
                 await prisma.node.create({
                     data: {
                         name: nodeName,
-                        url: nodeUrl
+                        url: nodeUrl,
+                        location: {
+                            connect: {
+                                id: locationId
+                            }
+                        }
                     }
                 })
                 ws.send(JSON.stringify({event: "complete", metadata: "Configuration"}));
@@ -292,6 +316,8 @@ async (ws, req) => {
                 console.log(data.metadata)
                 nodeName = data.metadata.name
                 nodeUrl = `https://${data.metadata.domain}:${data.metadata.port}`
+                nodeIp = data.metadata.ipAddress;
+                locationId = data.metadata.location
                 console.log("SEND CONFIGURATION")
 
 
