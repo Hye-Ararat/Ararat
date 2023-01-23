@@ -2,6 +2,7 @@ const axios = require("axios").default;
 require('dotenv').config({ path: ".env.local" });
 
 (async function cluster() {
+    console.log(process.argv)
     let addr = process.argv[2];
     let name = process.argv[3];
     let mode = process.argv[4] ? process.argv[4] : false;
