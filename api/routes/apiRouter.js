@@ -13,16 +13,17 @@ router.use(cookieParser())
 router.use("*", async (req, res, next) => {
     async function verifyToken(token) {
     let allowed;
-
     try {
         allowed = verify(token, process.env.ENC_KEY)
     } catch (error) {
         console.log("error", error)
         allowed = false
     }
+    if (token == process.env.COMMUNICATION_KEY) allowed = true;
     return allowed;
     
 }
+if (req.headers["authorization"] ) req.headers["Authorization"] = req.headers["authorization"]
 if (!req.headers["Authorization"] && req.cookies.authorization) {
     req.headers["Authorization"] = "Bearer " + req.cookies.authorization
 }
