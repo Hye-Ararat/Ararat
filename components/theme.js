@@ -1,5 +1,6 @@
 import {createTheme} from "@mui/material/styles"
 import { blue } from "@mui/material/colors";
+import { Grow } from "@mui/material";
 
 const theme = createTheme({
   palette: {
@@ -94,6 +95,14 @@ const theme = createTheme({
           backgroundImage: "linear-gradient(to bottom, #141c26, #141c26)",
           borderRadius: 12,
         },
+      },
+      defaultProps: {
+        transitionDuration: {
+          appear: 0,
+          enter: 600,
+          exit: 300
+        },
+        TransitionComponent: Grow
       }
     },
     MuiListItemButton: {
@@ -111,6 +120,31 @@ const theme = createTheme({
         root: {
           backgroundColor: "#101924",
         }
+      }
+    },
+    MuiList: {
+      styleOverrides: {
+        root: {
+          "borderRadius": 12,
+        }
+      }
+    },
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12
+        }
+      }
+    },
+    MuiAccordion: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          marginBottom: "10px",
+          "&:before": {
+            height: 0
+          }
+        },
       }
     },
     MuiChip: {
