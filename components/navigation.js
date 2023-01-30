@@ -12,6 +12,7 @@ import {
     Badge as RanksIcon,
     ViewInAr as ImagesIcon,
     SettingsEthernet as NetworkIcon,
+    FilterDrama as ImageServersIcon,
     Menu,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
@@ -110,12 +111,20 @@ export default function Navigation({ children, ...props }) {
                                 <ListItemText primary={translate(nookies.get(null).authorization ? decodeToken(nookies.get(null).authorization).language : "en", "sidebar", "networks")} />
                             </ListItemButton>
                         </Link>
-                        <Link style={{color: "inherit", textDecoration:"none"}} onClick={() => setOpen(false)} href="/">
-                            <ListItemButton>
+                        <Link style={{color: "inherit", textDecoration:"none"}} onClick={() => setOpen(false)} href="/images">
+                            <ListItemButton selected={page == "images"}>
                                 <ListItemIcon>
                                     <ImagesIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={translate(nookies.get(null).authorization ? decodeToken(nookies.get(null).authorization).language : "en", "sidebar", "images")} />
+                            </ListItemButton>
+                        </Link>
+                           <Link style={{color: "inherit", textDecoration:"none"}} onClick={() => setOpen(false)} href="/image_servers">
+                            <ListItemButton selected={page == "image_servers"}>
+                                <ListItemIcon>
+                                    <ImageServersIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={translate(nookies.get(null).authorization ? decodeToken(nookies.get(null).authorization).language : "en", "sidebar", "image_servers")} />
                             </ListItemButton>
                         </Link>
                     </List>
