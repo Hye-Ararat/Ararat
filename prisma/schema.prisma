@@ -21,6 +21,7 @@ model User {
   permissions     Permission[]
   instances       InstanceUser[]
   NodeUser        NodeUser[]
+  imageServerPermissions ImageServerPermission[]
 }
 
 model Permission {
@@ -30,11 +31,22 @@ model Permission {
   permission String
 }
 
+model ImageServer {
+  id         String     @id @default(cuid()) @unique
+  name        String
+  url         String
+  permissions ImageServerPermission[]
+}
 
 
-
-
-
+model ImageServerPermission {
+  id        String   @id @default(cuid()) @unique
+  imageServer ImageServer @relation(fields: [imageServerId], references: [id], onDelete: Cascade)
+  imageServerId String
+  user User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  permission String
+}
 
 model NodePermission {
   id         String   @id @default(cuid()) @unique
