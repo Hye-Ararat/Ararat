@@ -1,24 +1,9 @@
 import Client from "hyexd";
-import getNodeEnc from "../../../../../../lib/getNodeEnc";
-import prisma from "../../../../../../lib/prisma";
 
 export default async function handler(req, res) {
     const { method, query: { id } } = req;
-    const node = await prisma.node.findUnique({
-        where: {
-            id: id
-        }
-    })
-    if (!node) return res.status(404).send({
-        code: 404,
-        error: "node not found",
-        type: "error"
-    });
 
-    const lxd = new Client("https://" + node.address + ":" + node.lxdPort, {
-        certificate: Buffer.from(Buffer.from(getNodeEnc(node.encIV, node.certificate)).toString(), "base64").toString("ascii"),
-        key: Buffer.from(Buffer.from(getNodeEnc(node.encIV, node.key)).toString(), "base64").toString("ascii")
-    })
+    const lxd = new Client("unix:///var/snap/lxd/common/lxd/unix.socket", null)
     switch (method) {
         case "GET":
             let storage_pools = [];
