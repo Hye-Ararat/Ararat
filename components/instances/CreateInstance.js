@@ -13,6 +13,7 @@ import Users from "./create/Users";
 export default function CreateInstance({ setCreatingInstance }) {
     const [page, setPage] = useState("selectNode");
     const [node, setNode] = useState(null);
+    const [nodeData, setNodeData] = useState(null);
     const [imageData, setImageData] = useState(null);
     const [type, setType] = useState(null);
     const [cpu, setCpu] = useState(null);
@@ -32,7 +33,7 @@ export default function CreateInstance({ setCreatingInstance }) {
     return (
         <>
             {page == "selectNode" ?
-                <SelectNode setCreatingInstance={setCreatingInstance} setPage={setPage} setNode={setNode} />
+                <SelectNode setCreatingInstance={setCreatingInstance} setPage={setPage} setNode={setNode} setNodeData={setNodeData} />
                 : ""}
             {page == "selectImage" ?
                 <SelectImage setPage={setPage} setImageData={setImageData} node={node} />
@@ -47,7 +48,7 @@ export default function CreateInstance({ setCreatingInstance }) {
                 <SetResources setPage={setPage} setCpu={setCpu} setMemory={setMemory} />
                 : ""}
             {page == "devices" ?
-                <Devices setPage={setPage} devices={devices} setDevices={setDevices} node={node} />
+                <Devices setPage={setPage} devices={devices} setDevices={setDevices} node={node} nodeData={nodeData} />
                 : ""}
             {page == "identity" ?
                 <Identity setPage={setPage} setName={setName} />

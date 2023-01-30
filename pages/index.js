@@ -104,7 +104,7 @@ export default function Dashboard({ data, user, canCreate }) {
           {translate(user.language, "instances", "your_instances")}
         </Typography>
         {canCreate ?
-          <Button variant="contained" sx={{ ml: "auto", mt: "auto", mb: "auto" }} onClick={() => setCreatingInstance(true)}>{translate(user.language, "instances", "create_instance")}</Button>
+          <Button variant="contained" sx={{ ml: "auto"}} onClick={() => setCreatingInstance(true)}>{translate(user.language, "instances", "create_instance")}</Button>
           : ""}
       </Grid>
       {creatingInstance ?

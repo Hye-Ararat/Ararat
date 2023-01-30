@@ -2,7 +2,7 @@ import { Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogTitle
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default function SelectNode({ setPage, setNode, setCreatingInstance }) {
+export default function SelectNode({ setPage, setNode, setCreatingInstance, setNodeData }) {
     const [nodes, setNodes] = useState(null);
     useEffect(() => {
         axios.get("/api/v1/nodes?purpose=create_instance").then(res => {
@@ -11,6 +11,7 @@ export default function SelectNode({ setPage, setNode, setCreatingInstance }) {
                 tempNodes.push({
                     label: node.name,
                     id: node.id,
+                    data: node,
                     value: node.id
                 })
             })
@@ -29,6 +30,7 @@ export default function SelectNode({ setPage, setNode, setCreatingInstance }) {
                         <Autocomplete onChange={(e, value) => {
                             console.log(value.id)
                             setNode(value.id)
+                            setNodeData(value.data)
                             setPage("selectImage")
                         }} sx={{ mr: "auto", ml: "auto" }} options={nodes} renderInput={(params) => <TextField placeholder="Select Node" {...params} sx={{ minWidth: "300px" }} />} />
                     </Grid>

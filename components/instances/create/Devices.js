@@ -3,7 +3,7 @@ import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Autoco
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default function Devices({ devices, setDevices, node, setPage }) {
+export default function Devices({ devices, setDevices, node, setPage, nodeData }) {
     const [panel, setPanel] = useState("disks");
     const [creatingDisk, setCreatingDisk] = useState(false);
     const [creatingNetwork, setCreatingNetwork] = useState(false);
@@ -19,7 +19,7 @@ export default function Devices({ devices, setDevices, node, setPage }) {
     const [netIndex, setNetIndex] = useState(0);
 
     useEffect(() => {
-        axios.get(`/api/v1/nodes/${node}/storage-pools`).then(res => {
+        axios.get(`${nodeData.url}/api/v1/storage_pools`).then(res => {
             let tempPools = [];
             res.data.metadata.forEach(pool => {
                 tempPools.push({
@@ -30,7 +30,7 @@ export default function Devices({ devices, setDevices, node, setPage }) {
             setPools(tempPools)
             console.log(tempPools)
         })
-        axios.get(`/api/v1/nodes/${node}/networks`).then(res => {
+        axios.get(`${nodeData.url}/api/v1/networks`).then(res => {
             let tempNetworks = [];
             res.data.metadata.forEach(network => {
                 tempNetworks.push({
