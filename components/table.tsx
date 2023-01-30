@@ -1,20 +1,36 @@
 "use client";
-import { Paper, Divider, Menu, MenuItem, Button, Grid, TextField, Input, InputAdornment, Typography } from "./base";
-import { useState } from "react";
-import { CheckBox, KeyboardArrowDown, Search, Brightness1, Circle } from "@mui/icons-material";
+import { Paper, Divider, Menu, MenuItem, Button, Grid, TextField, Input, InputAdornment, Typography, Checkbox } from "./base";
+import { useEffect, useState } from "react";
+import {  KeyboardArrowDown, Search, Brightness1, Circle, PsychologyAlt } from "@mui/icons-material";
 
 
 interface TableColumn {
     title: string,
+    fontWeight?: string | number,
     sizes: {
         xs?: number,
         md?: number
     }
 }
 
-export default function Table({columns, rows}) {
+export default function Table({columns, rows, actions} : {columns: TableColumn[], rows: any[], actions?: any[]}) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [actionsOpen, setActionsOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [activeRows, setActiveRows] = useState(rows);
+    const [checkedRows, setCheckedRows] = useState([]);
+    useEffect(() => {
+        setActiveRows(rows.filter((row) => {
+            let found = false;
+            row.forEach((cell) => {
+                if (cell.props.children.toString().toLowerCase().includes(searchQuery.toLowerCase())) {
+                    found = true;
+                }
+            })
+            return found;
+        }))
+        setCheckedRows([]);
+    }, [searchQuery])
     return (
         <>
             <Menu
@@ -25,9 +41,14 @@ export default function Table({columns, rows}) {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem>Profile</MenuItem>
-                <MenuItem>My account</MenuItem>
-                <MenuItem>Logout</MenuItem>
+                {actions?.map((action) => {
+                    return (
+                        <MenuItem disabled={checkedRows.length == 0} onClick={() => {
+                            action.action(checkedRows);
+                            setActionsOpen(false);
+                        }}>{action.name}</MenuItem>
+                    )
+                })}
             </Menu>
 
 
@@ -43,51 +64,71 @@ export default function Table({columns, rows}) {
                             setActionsOpen(true)
                         }}
                     >Actions <KeyboardArrowDown /> </Button>
-                    <TextField InputProps={{
+                    <TextField value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
                                 <Search />
                             </InputAdornment>
                         )
-                    }} sx={{ mt: "auto", mb: "auto", ml: "auto" }} placeholder="Search Nodes" />
+                    }} sx={{ mt: "auto", mb: "auto", ml: "auto" }} placeholder="Search" />
                 </Grid>
                 <Paper elevation={8} sx={{ boxShadow: "none", mt: 2, padding: 2, borderRadius: 0, borderTop: "0.5px solid gray", borderBottom: "0.5px solid gray" }}>
                     <Grid container direction="row">
                         <Grid container xs={1}>
-                            <CheckBox />
+                            <Checkbox onClick={() => {
+                                if (checkedRows.length == activeRows.length) {
+                                    setCheckedRows([]);
+                                } else {
+                                    setCheckedRows(activeRows.map((row, index) => index));
+                                }
+                            }} sx={{p: 0}} indeterminate={checkedRows.length > 0 && checkedRows.length != activeRows.length} checked={checkedRows.length == activeRows.length && activeRows.length != 0}  />
                         </Grid>
-                        <Grid container xs={4}>
-                            <Typography fontWeight={500} sx={{m: "auto"}}>Name</Typography>
-                        </Grid>
-                        <Grid container xs={4}>
-                            <Typography sx={{m: "auto"}}>URL</Typography>
-                        </Grid>
-                        <Grid container xs={3}>
-                            <Typography sx={{m: "auto"}}>Status</Typography>
-                        </Grid>
+                        {columns.map((column) => {
+                            return (
+                                <Grid container {...{xs: column.sizes.xs ? column.sizes.xs : undefined}}>
+                                <Typography {...column.fontWeight ? {fontWeight: column.fontWeight} : {}} sx={{m: "auto"}}>{column.title}</Typography>
+                            </Grid>
+                            )
+                        })}
+                    
                     </Grid>
                 </Paper>
-                <Paper sx={{ boxShadow: "none", padding: 2, borderRadius: 0, borderTop: "0.5px solid gray", borderBottom: "0.5px solid gray" }}>
+                    {activeRows.map((row, index) => {
+                        return (
+                                        <Paper sx={{ boxShadow: "none", padding: 2, borderRadius: 0, borderTop: "0.5px solid gray", borderBottom: "0.5px solid gray" }}>
+                                                                <Grid container direction="row">
+                                                                    
+                                                                <Grid container xs={1}>
+                                <Checkbox onChange={(e) => {
+                                    if (e.target.checked) {
+                                        setCheckedRows([...checkedRows, index])
+                                    } else {
+                                        setCheckedRows(checkedRows.filter((row) => row !== index))
+                                    }
+                                }} checked={checkedRows.includes(index)} sx={{p: 0}}/>
+                            </Grid>
+                        {row.map((row, index) => {
+                            return (
+                                <Grid container xs={columns[index].sizes.xs}>
+                                {row}
+                            </Grid>
+                            )
 
-                    <Grid container direction="row">
-                        <Grid container xs={1}>
-                            <CheckBox/>
-                        </Grid>
-                        <Grid container xs={4}>
-                            <Typography sx={{m: "auto"}} fontWeight="bold">Hyelab-01</Typography>
-                        </Grid>
-                        <Grid container xs={4}>
-                            <Typography sx={{m: "auto"}}>https://development.hye.gg:443</Typography>
-                        </Grid>
-                        <Grid container xs={3} direction="row">
-                            <Grid sx={{maxWidth: "15px", ml: "auto", mt: "auto", mb: "auto" }} container>
-                                <Circle sx={{ fontSize: "15px", mt: "auto", mb: "auto", color: "#1ee0ac" }} />
-                                <Circle sx={{ fontSize: "15px", mt: "auto", mb: "auto", color: "#1ee0ac", animation: "status-pulse 3s linear infinite", position: "absolute", transformBox: "view-box", transformOrigin: "center center" }} />
-                            </Grid>
-                            <Typography sx={{mt: "auto", mb: "auto", ml: 1, mr: "auto"}}>Online</Typography>
-                            </Grid>
-                    </Grid>
-                </Paper>
+                        })}
+                                            </Grid>
+
+                                        </Paper>
+                        )
+
+                    })}
+                    {activeRows.length === 0 ?
+                    <>
+                    <Typography align="center">
+                    <PsychologyAlt sx={{fontSize: 100}} />
+                    </Typography>
+                    <Typography align="center">Looks like there's nothing here.</Typography> 
+                    </>
+                    : ""}
             </Paper>
         </>
     )
