@@ -1,8 +1,8 @@
 import prisma from "../../../lib/prisma.js";
 
-import {Typography, Button, Grid} from "../../../components/base";
+import {Typography, Grid} from "../../../components/base";
 import CreateNode from "./CreateNode";
-import Table from "../../../components/table";
+import NodeTable from "./NodeTable"
 
 export const revalidate = 0;
 
@@ -13,14 +13,9 @@ export default async function Nodes() {
         <>
         <Grid container direction="row"> 
         <Typography variant="h4">Nodes</Typography>
-                   <CreateNode />
+                   <CreateNode nodes={nodes} />
         </Grid>
-        <Table />
-        {nodes.map((node) => {
-            return (
-                <p key={node.id}>{node.name}</p>
-            )
-        })}
+        <NodeTable nodes={nodes} />
         </>
     )
 }
