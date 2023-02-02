@@ -13,7 +13,7 @@ const router = express.Router({ mergeParams: true });
 router.ws("/", async (ws, req) => {
     const { name } = req.params;
     let authorization = req.headers.authorization;
-    let permissions = await axios.get(process.env.PANEL_URL + "/api/v1/instances/" + name + "/permissions", {
+    let permissions = await axios.get("http://localhost:3000"+ "/api/v1/instances/" + name + "/permissions", {
         headers: {
             Authorization: authorization
         }
