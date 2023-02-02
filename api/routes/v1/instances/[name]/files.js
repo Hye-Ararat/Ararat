@@ -9,7 +9,7 @@ router.get("/", async (req, res) => {
     const { name } = req.params;
     const { path } = req.query;
     const authorization = req.headers.authorization;
-    let permissions = await axios.get(process.env.PANEL_URL + "/api/v1/instances/" + name + "/permissions", {
+    let permissions = await axios.get("http://localhost:3000" + "/api/v1/instances/" + name + "/permissions", {
         headers: {
             Authorization: authorization
         }
