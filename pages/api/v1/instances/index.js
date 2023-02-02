@@ -8,9 +8,18 @@ import getLXDUserPermissions from "../../../../lib/getLXDUserPermissions";
 import Permissions from "../../../../lib/permissions/index";
 import { backgroundResponse, errorResponse } from "../../../../lib/responses";
 import axios from "axios";
+import caddyConfig from "../../../../caddyConfig.json";
+/**
+ * 
+ * @param {import("next").NextApiRequest} req 
+ * @param {*} res 
+ * @returns 
+ */
 export default async function handler(req, res) {
     const { method } = req;
-
+    //get FULL url
+    let url = "https://" + caddyConfig.apps.http.servers.ararat.routes[0].match[0].host[0] + caddyConfig.apps.http.servers.ararat.listen[0]
+    console.log(url)
     const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
     const permissions = await getUserPermissions(tokenData.id)
     switch (method) {
@@ -21,7 +30,7 @@ export default async function handler(req, res) {
             console.log("line2")
             const nodeData = await prisma.node.findUnique({
                 where: {
-                    id: node
+                    url: url
                 },
                 include: {
                     users: {
@@ -43,10 +52,7 @@ export default async function handler(req, res) {
 
             if (!nodeData) return res.status(400).send(errorResponse("Node does not exist", 400))
             console.log("line5")
-            const lxd = new Client("https://" + nodeData.address + ":" + nodeData.lxdPort, {
-                certificate: Buffer.from(Buffer.from(getNodeEnc(nodeData.encIV, nodeData.certificate)).toString(), "base64").toString("ascii"),
-                key: Buffer.from(Buffer.from(getNodeEnc(nodeData.encIV, nodeData.key)).toString(), "base64").toString("ascii")
-            })
+            const lxd = new Client("unix:///var/snap/lxd/common/lxd/unix.socket", null)
             console.log("line6")
             const perms = new Promise((resolve, reject) => {
                 console.log("line7")
@@ -177,7 +183,7 @@ export default async function handler(req, res) {
                             grid.widgets.forEach(async widget => {
                                 let widg = await prisma.instanceUserWidget.create({
                                     data: {
-                                        instanceUserWidgetGrid: {
+                                        widgetGrid: {
                                             connect: {
                                                 id: widgetGrid.id
                                             }
@@ -246,17 +252,16 @@ export default async function handler(req, res) {
                 operation = await lxd.createInstance(instance.id, type, {
                     config: config,
                     devices: devices,
-                    source: {
-                        ...source
-                    }
+                    source: source
                 })
             } catch (error) {
+                console.log("e",  error)
                 await prisma.instance.delete({
                     where: {
                         id: instance.id
                     }
                 });
-                return res.status(error.error_code).send(error);
+                return res.status(500).send(error);
             }
             console.log("line24")
             operation.operation = operation.operation.replace("/1.0", `/api/v1/nodes/${node}`);
@@ -266,7 +271,7 @@ export default async function handler(req, res) {
                 operation.metadata.resources.instances[index] = instance.replace("/1.0", "/api/v1")
             });
             console.log("line25")
-            return res.status(202).send(backgroundResponse(100, operation.operation, operation.metadata));
+            return res.status(202).send(backgroundResponse(100, operation.operation, 100, operation.metadata));
         case "GET":
             const dbInstances = await prisma.instance.findMany({
                 include: {
