@@ -26,6 +26,9 @@ export async function middleware(request: NextRequest) {
     if (!request.headers.get("Authorization") && request.cookies.has("authorization")) {
       headers.set("Authorization", `Bearer ${request.cookies.get("authorization")?.value}`)
     }
+    if (!request.headers.get("authorization") && request.headers.has("Authorization")) {
+      headers.set("authorization", request.headers.get("Authorization"))
+    }
     let allowed;
     if (request.nextUrl.pathname.startsWith("/api/v1/system")) {
       allowed = request.headers.get("Authorization") == "Bearer " + process.env.COMMUNICATION_KEY;
