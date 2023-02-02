@@ -3,6 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import Table from "../../table";
 
 export default function SelectImage({ setPage, setImageData, node }) {
     const [images, setImages] = useState(null);
@@ -59,13 +60,36 @@ export default function SelectImage({ setPage, setImageData, node }) {
                         })
                     })
                 })
-                setFormattedImages(sorted)
+                let formatted = [];
+                console.log("SORT", sorted)
+                sorted.forEach((image, index) => {
+                    formatted.push([
+            <Typography key={index} onClick={(e) => {
+                setImageData(image)
+                setPage("imageType")
+            }} sx={{m: "auto"}} fontWeight="bold">{image.name}</Typography>,
+                        
+            <Typography key={index} onClick={(e) => {
+                setImageData(image)
+                setPage("imageType")
+            }} sx={{m: "auto"}}>{image.type}</Typography>,
+            
+                         <>
+                                     <Typography onClick={(e) => {
+                setImageData(image)
+                setPage("imageType")
+            }} sx={{m: "auto"}}>{image.server}</Typography>
+                         </>
+                    ])
+                })
+                console.log("FORM", formatted)
+                setFormattedImages(formatted)
             })
         })
 
     }, [])
     return (
-        <Dialog open={true}>
+        <Dialog open={true} sx={{ minWidth: 600, py: 5, px: 10 }} fullScreen>
             <DialogTitle>
 
                 <Typography variant="h6" fontFamily={"Poppins"}>{images ? "Select an Image" : "Fetching Images..."}</Typography>
@@ -73,10 +97,32 @@ export default function SelectImage({ setPage, setImageData, node }) {
             <DialogContent sx={{ minWidth: 600 }}>
                 {formattedImages ?
                     <div style={{ width: "100%", height: 400 }}>
-                        <DataGrid onRowClick={(e) => {
+           <Table columns={[
+            {
+                title: "Name",
+                fontWeight: 500,
+                sizes: {
+                    xs: 4
+                }
+            },
+            {
+                title: "Type",
+                sizes: {
+                    xs: 4
+                }
+            },
+            {
+                title: "Server",
+                sizes: {
+                    xs: 3
+                }
+            },
+            
+            ]} rows={formattedImages} />
+{/*                                     <DataGrid onRowClick={(e) => {
                             setImageData(e.row);
                             setPage("imageType");
-                        }} columns={[{ field: "name", headerName: "Name", width: 150 }, { field: "type", headerName: "Type", width: 205 }, { width: 190, field: "server", headerName: "Server" }]} rows={formattedImages} />
+                        }} columns={[{ field: "name", headerName: "Name", width: 150 }, { field: "type", headerName: "Type", width: 205 }, { width: 190, field: "server", headerName: "Server" }]} rows={formattedImages} /> */}
                     </div>
                     : ""}
                 {/*
