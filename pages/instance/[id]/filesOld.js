@@ -15,7 +15,9 @@ import { InstanceStore } from "../../../states/instance";
 import Navigation from "../../../components/instance/Navigation";
 import Footer from "../../../components/footer";
 import {useTheme} from "@mui/material/styles";
-const FileEditor = dynamic(import("../../../components/instance/files/FileEditor"), { ssr: false });
+import getInstanceFiles from "../../../scripts/api/v1/instances/[id]/files";
+/* const FileEditor = dynamic(import("../../../app/(instance)/instance/[id]/files/FileEditor"), { ssr: false });
+ */
 export default function Files(props) {
     const instance = {
         data: InstanceStore.useStoreState(state => state.data),
@@ -59,7 +61,21 @@ export default function Files(props) {
     }, [instance.data])
     console.log(instance.data)
     const fetcher = (url) => axios.get(url).then((res) => res.data);
-    const { data: files, error } = useSWR(() => id ? `/api/v1/instances/${id}/files?path=${path.replace("//", "/")}` : null, fetcher)
+/*     const { data: files, error } = useSWR(() => id ? `/api/v1/instances/${id}/files?path=${path.replace("//", "/")}` : null, fetcher)
+ */    
+   const [files, setFiles] = useState(null);
+   const [error, setError] = useState(null);
+
+   useEffect(() => {
+    async function run(){
+    if (id) {
+            let data = await getInstanceFiles(id, path.replace("//", "/"))
+            setFiles(data)
+        
+    }
+}
+run()
+}, [id]);
     function HandleClicked(e) {
         console.log(checked)
         e.preventDefault();
@@ -253,7 +269,7 @@ export default function Files(props) {
                                 router.push(`/instance/${id}/files?path=${newPath}`)
                             }} sx={{ width: "30%", mt: 2, mr: "auto", ml: "auto" }} variant="contained" color="primary">Go Back</Button>
                         </Grid></> : "" : ""}
-                    {files != null ? files.additional.type == "file" ? <Grid xs={12} container><FileEditor file={files.metadata} path={path} instance={id} /></Grid> : "" : ""}
+                    {files != null ? files.additional.type == "file" ? <Grid xs={12} container>{/* <FileEditor file={files.metadata} path={path} instance={id} /> */}</Grid> : "" : ""}
                 </Grid>
             </Container>
         </>
