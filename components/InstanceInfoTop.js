@@ -1,6 +1,7 @@
 import { Button, Grid, Paper, Typography, useMediaQuery } from "@mui/material";
 import {useTheme} from "@mui/material/styles";
 import { Box } from "@mui/system";
+import { useEffect, useState } from "react";
 import { InstanceStore } from "../states/instance";
 import StartButton from "./instance/StartButton";
 import StateIndicator from "./instance/StateIndicator";
@@ -15,11 +16,17 @@ export default function InstanceInfoTop() {
         },
         monitor: InstanceStore.useStoreState((state) => state.monitor)
     };
+    const theme = useTheme();
+    const matches = !useMediaQuery(theme.breakpoints.up("sm"));
+    const [desktop, setDesktop] = useState(false);
+    useEffect(() => {
+        setDesktop(matches)
+    }, [matches])
     return (
 
         <Grid component={Paper} container direction="row" sx={{ p: 2 }}>
             <Grid item xs={12} sm={12} md={5} container direction="row">
-                {useMediaQuery(useTheme().breakpoints.up("md")) ?
+                {desktop ?
                     <Grid container xs={.5} sm={.8} md={.3} lg={.2} sx={{ mt: "auto", mb: "auto", mr: 1.5 }}>
                         <StateIndicator />
                     </Grid> :
@@ -36,12 +43,12 @@ export default function InstanceInfoTop() {
                         </Box>
                     </Grid>}
 
-                {useMediaQuery(useTheme().breakpoints.up("md")) ?
+                {desktop ?
 
                     <Typography variant="h6" sx={{ mt: "auto", mb: "auto" }}>{instanceState.data ? instanceState.data.name : ""}</Typography>
                     : ""}
             </Grid>
-            {useMediaQuery(useTheme().breakpoints.up("md")) ? <Grid container item xs={12} sm={12} md={4.5} lg={3} xl={2.5} sx={{ marginLeft: "auto" }}>
+            {desktop ? <Grid container item xs={12} sm={12} md={4.5} lg={3} xl={2.5} sx={{ marginLeft: "auto" }}>
                 {instanceState.data ?
                     <StartButton instance={instanceState.data.id} />
                     : ""}
