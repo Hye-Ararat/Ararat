@@ -14,6 +14,7 @@ import prisma from "../../../lib/prisma";
 import Footer from "../../../components/footer";
 import { Box } from "@mui/system";
 import { WidgetsArea } from "../../../components/widgets";
+import getInstance from "../../../scripts/api/v1/instances/[id]/instance";
 
 const Console = dynamic(() => import("../../../components/instance/Console"), {
     ssr: false
@@ -67,11 +68,25 @@ export default function ConsolePage({ instance, instance_user }) {
         setData: InstanceStore.useStoreActions((state) => state.setData),
         containerState: InstanceStore.useStoreState((state) => state.containerState),
     };
-    var { data: instanceData } = useSWR(
+    const [instanceData, setInstanceData] = useState(null);
+
+  /*   var { data: instanceData } = useSWR(
         `/api/v1/instances/${id}`,
         fetcher
-    );
-
+    ); */
+    useEffect(() => {
+        async function run(){
+        if (id && !instanceState.data) {
+                console.log("BABOOM")
+                console.log(instanceData)
+                let data = await getInstance(id)
+                instanceState.setData(data);
+                setInstanceData(data)
+            
+        }
+    }
+    run()
+}, [instance, id]);
     useEffect(() => {
         if (id && !instanceState.data) {
             if (instanceData) {
