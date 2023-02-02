@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Typography,
   Toolbar,
@@ -47,20 +49,30 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as Icons from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { usePathname, useSearchParams } from "next/navigation";
 import StateIndicator from "./StateIndicator";
 import { InstanceStore } from "../../states/instance";
 import StopButton from "./StopButton";
 import StartButton from "./StartButton";
 import nookies from "nookies";
+import getInstance from "../../scripts/api/v1/instances/[id]/instance";
 
-export default function Navigation({ children, ...props }) {
+export default function Navigation({ children, id, ...props }) {
   const [open, setOpen] = useState(false);
   const [extensionPages, setExtensionPages] = useState([]);
+  const theme = useTheme();
+  const matches = !useMediaQuery(theme.breakpoints.up("sm"));
+    const [mobile, setMobile] = useState(false);
   const fetcher = (url) => axios.get(url).then((res) => res.data);
   console.log(props.page);
-  const router = useRouter();
-  const { id } = router.query;
+  const router = useSearchParams();
+  const pathname = usePathname();
+  const [page, setPage] = useState(props.page ? props.page : pathname.replace("/", ""));
+  id = id;
+  if (!id) {
+    id = router.get("id");
+  }
+  console.log("ID", id)
   function Addons() {
     const { data } = useSWR(`/api/v1/client/instances/${id}/addons/pages`, fetcher);
     if (!data) {
@@ -81,14 +93,30 @@ export default function Navigation({ children, ...props }) {
     }
   }
 
-  var { data: instanceData } = useSWR(`/api/v1/instances/${id}`, fetcher);
+  //var { data: instanceData } = useSWR(`/api/v1/instances/${id}`, fetcher);
+  const [instanceData, setInstanceData] = useState(null)
   useEffect(() => {
+    async function run() {
+    if (id) {
+      let data = await getInstance(id);
+      setInstanceData(data)
+      instance.setData(data);
+      console.log(data)
+    }
+  }
+  run()
+  }, [id])
+  useEffect(() => {
+    console.log("SETTING")
     if (!instance.data) {
       if (instanceData) {
-        instance.setData(instanceData.metadata);
+        console.log("SET")
       }
     }
   }, [instance.data, instanceData])
+  useEffect(() => {
+    setMobile(matches)
+}, [matches])
   useEffect(() => {
     if (instance.data) {
       console.log("yes");
@@ -105,7 +133,7 @@ export default function Navigation({ children, ...props }) {
         let cookies = nookies.get();
         instance.sockets.setMonitor(
           new WebSocket(
-            `${instance.data.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/state?authorization=${cookies["access_token"]}`
+            `wss://${instance.data.node.url.split("//")[1]}/api/v1/instances/${instance.data.id}/state?authorization=${cookies["access_token"]}`
           )
         );
       }
@@ -181,27 +209,24 @@ export default function Navigation({ children, ...props }) {
   return (
     <>
       <Box sx={{ display: "flex" }}>
-        <CssBaseline />
         <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <Toolbar>
             <Grid container direction="row">
-              {useMediaQuery(useTheme().breakpoints.up("sm"))
-                ?
-                ""
-                : <IconButton onClick={() => setOpen(!open)}>
+              {mobile ?
+                <IconButton onClick={() => setOpen(!open)}>
                   <Menu />
                 </IconButton>
+                : ""
               }
-              {props.page ?
+              {page ?
                 <Grid container xs={.5} sm={.8} md={.3} lg={.2} sx={{ mt: "auto", mb: "auto", mr: .5 }}>
                   <StateIndicator />
                 </Grid> : ""}
               <Typography sx={{ mt: "auto", mb: "auto" }} variant="h6" noWrap component="div">
-
-                {props.page ? instance.data ? instance.data.name : "Ararat" : "Ararat"}
+                {page ? instance.data ? instance.data.name : "Ararat" : "Ararat"}
               </Typography>
             </Grid>
-            {useMediaQuery(useTheme().breakpoints.up("sm")) ? props.page ? instance.data ?
+            {!mobile ? page ? instance.data ?
               <Grid container sx={{ ml: "auto" }} xs={3} sm={10} md={5} xl={3}>
                 <Box sx={{
                   mt: "auto", mb: "auto", height: "100%"
@@ -225,8 +250,8 @@ export default function Navigation({ children, ...props }) {
               : '' : "" : ""}
           </Toolbar>
         </AppBar>
-        <Drawer open={useMediaQuery(useTheme().breakpoints.up("sm")) ? true : open}
-          variant={useMediaQuery(useTheme().breakpoints.up("sm")) ? "persistent" : "temporary"}
+        <Drawer open={mobile ? open : true}
+          variant={mobile ? "temporary" : "persistent"}
           sx={{
             width: 240,
             flexShrink: 0,
@@ -240,7 +265,7 @@ export default function Navigation({ children, ...props }) {
           <Toolbar />
           <Box sx={{ overflow: "auto" }}>
             <List>
-              <Link href="/" >
+              <Link style={{color: "inherit", textDecoration:"none"}} href="/" >
                 <ListItem button onClick={() => setOpen(false)}>
                   <ListItemIcon>
                     <InstanceIcon />
@@ -263,15 +288,15 @@ export default function Navigation({ children, ...props }) {
             </List>
             <Divider />
             <List>
-              <Link href={`/instance/${encodeURIComponent(id)}`}>
-                <ListItem onClick={() => setOpen(false)} button selected={props.page == null ? true : false}>
+              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}`}>
+                <ListItem onClick={() => setOpen(false)} button selected={page == null ? true : false}>
                   <ListItemIcon>
                     <Dashboard />
                   </ListItemIcon>
                   <ListItemText primary="Dashboard" />
                 </ListItem>
               </Link>
-              <Link href={`/instance/${encodeURIComponent(id)}/console`}>
+              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/console`}>
                 <ListItem onClick={() => setOpen(false)} button selected={props.page != null ? (props.page.includes("console") ? true : false) : false}>
                   <ListItemIcon>
                     <ConsoleIcon />
@@ -279,15 +304,15 @@ export default function Navigation({ children, ...props }) {
                   <ListItemText primary="Console" />
                 </ListItem>
               </Link>
-              <Link href={`/instance/${encodeURIComponent(id)}/files`}>
-                <ListItem onClick={() => setOpen(false)} button selected={props.page != null ? (props.page.includes("files") ? true : false) : false}>
+              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/files`}>
+                <ListItem onClick={() => setOpen(false)} button selected={page != null ? (page.includes("files") ? true : false) : false}>
                   <ListItemIcon>
                     <FilesIcon />
                   </ListItemIcon>
                   <ListItemText primary="Files" />
                 </ListItem>
               </Link>
-              <Link href={`/instance/${encodeURIComponent(id)}/snapshots`}>
+              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/snapshots`}>
                 <ListItem onClick={() => setOpen(false)} button selected={props.page == "snapshots" ? true : false}>
                   <ListItemIcon>
                     <SnapshotsIcon />
@@ -295,7 +320,7 @@ export default function Navigation({ children, ...props }) {
                   <ListItemText primary="Snapshots" />
                 </ListItem>
               </Link>
-              <Link href={`/instance/${encodeURIComponent(id)}/users`}>
+              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/users`}>
                 <ListItem onClick={() => setOpen(false)} button selected={props.page == "users" ? true : false}>
                   <ListItemIcon>
                     <UsersIcon />
@@ -304,7 +329,7 @@ export default function Navigation({ children, ...props }) {
                 </ListItem>
               </Link>
               {/*
-              <Link href={`/instance/${encodeURIComponent(id)}`}>
+              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}`}>
                 <ListItem button selected={props.page == "schedules" ? true : false}>
                   <ListItemIcon>
                     <SchedulesIcon />
@@ -313,7 +338,7 @@ export default function Navigation({ children, ...props }) {
                 </ListItem>
               </Link>
         */}
-              <Link href={`/instance/${encodeURIComponent(id)}/networks`}>
+              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/networks`}>
                 <ListItem onClick={() => setOpen(false)} button selected={props.page == "networks" ? true : false}>
                   <ListItemIcon>
                     <NetworkIcon />
@@ -321,7 +346,7 @@ export default function Navigation({ children, ...props }) {
                   <ListItemText primary="Networks" />
                 </ListItem>
               </Link>
-              <Link href={`/instance/${encodeURIComponent(id)}/disks`}>
+              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/disks`}>
                 <ListItem onClick={() => setOpen(false)} button selected={props.page == "disks" ? true : false}>
                   <ListItemIcon>
                     <Storage />
@@ -332,7 +357,7 @@ export default function Navigation({ children, ...props }) {
               {extensionPages ? extensionPages.length > 0 ?
                 extensionPages.map((ext) => {
                   return (
-                    <Link key={ext.name} href={`/instance/${encodeURIComponent(id)}/extension/${ext.name}`}>
+                    <Link style={{color: "inherit", textDecoration:"none"}} key={ext.name} href={`/instance/${encodeURIComponent(id)}/extension/${ext.name}`}>
                       <Fade in={true}>
                         <ListItem onClick={() => setOpen(false)} button selected={props.page == `extension-${ext.name}` ? true : false}>
                           <ListItemIcon>
@@ -345,7 +370,7 @@ export default function Navigation({ children, ...props }) {
                   )
                 })
                 : "" : ""}
-              <Link href={`/instance/${encodeURIComponent(id)}/settings`}>
+              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/settings`}>
                 <ListItem onClick={() => setOpen(false)} button selected={props.page == "settings" ? true : false}>
                   <ListItemIcon>
                     <SettingsIcon />
