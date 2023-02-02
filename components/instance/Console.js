@@ -23,7 +23,7 @@ export default function Console({ minHeight }) {
             {instance.data ?
                 <>
                     {instance.data.type == "kvm" ? <>
-                        {instance.data.config["user.console"] ? <TextConsole /> : <VgaConsole minHeight={minHeight} />}
+                        {instance.data.config["user.console"] != "vnc" ? <TextConsole /> : <VgaConsole minHeight={minHeight} />}
                     </> : <TextConsole />}
                 </>
                 : ""}
@@ -44,7 +44,7 @@ export function VgaConsole({ minHeight }) {
         if (instance.data && url.length < 1) {
             let cookies = nookies.get();
             let token = cookies["access_token"];
-            setUrl(`${instance.data.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/console?authorization=${token}`)
+            setUrl(`wss://${instance.data.node.url.split("//")[1]}/api/v1/instances/${instance.data.id}/console?authorization=${token}`)
         }
     }, [instance.data])
     useEffect(() => {
@@ -182,6 +182,7 @@ export function TextConsole() {
     const termRef = useRef(null);
     let terminal = useRef(null);
     let fitAddon = useRef(new FitAddon());
+    const [created, setCreated] = useState(false);
     const instance = {
         data: InstanceStore.useStoreState((state) => state.data),
         sockets: {
@@ -194,8 +195,10 @@ export function TextConsole() {
         if (instance.data) {
             if (!instance.sockets.console) {
                 let cookies = nookies.get();
-                instance.sockets.setConsole(new WebSocket(`${instance.data.node.ssl ? "wss" : "ws"}://${instance.data.node.address}:${instance.data.node.port}/v1/instances/${instance.data.id}/console?authorization=${cookies.authorization}`));
+                instance.sockets.setConsole(new WebSocket(`wss://${instance.data.node.url.split("//")[1]}/api/v1/instances/${instance.data.id}/console?authorization=${cookies.authorization}`));
             } else {
+                if (!created) {
+                    setCreated(true)
                 let has = false;
                 instance.sockets.console.addEventListener("open", () => {
                     instance.sockets.console.addEventListener("message", (dat) => {
@@ -232,8 +235,9 @@ export function TextConsole() {
                 terminal.current.loadAddon(attachAddon);
                 fitAddon.current.fit();
             }
+            }
         }
-    }, [instance.sockets.console, instance.data])
+    }, [instance.sockets.console, instance.data, created])
     window.addEventListener("resize", debounce(() => {
         try {
             fitAddon.current.fit();
