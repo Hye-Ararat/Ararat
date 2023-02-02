@@ -73,7 +73,7 @@ model Location {
 model Node {
   id          String     @id @default(cuid()) @unique
   name        String
-  url         String
+  url         String @unique
   location   Location           @relation(fields: [locationId], references: [id], onDelete: Cascade)
   locationId String
   instances   Instance[]
