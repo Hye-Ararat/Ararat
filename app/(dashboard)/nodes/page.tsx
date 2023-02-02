@@ -13,7 +13,7 @@ export default async function Nodes() {
         <>
         <Grid container direction="row"> 
         <Typography variant="h4">Nodes</Typography>
-                   <CreateNode nodes={nodes} />
+                   <CreateNode />
         </Grid>
         <NodeTable nodes={nodes} />
         </>
