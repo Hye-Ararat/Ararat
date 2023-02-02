@@ -26,6 +26,7 @@ router.use("*", async (req, res, next) => {
 if (req.headers["authorization"] ) req.headers["Authorization"] = req.headers["authorization"]
 if (!req.headers["Authorization"] && req.cookies.authorization) {
     req.headers["Authorization"] = "Bearer " + req.cookies.authorization
+    req.headers.authorization = "Bearer " + req.cookies.authorization
 }
 let allowed = await verifyToken(req.headers["Authorization"] ? req.headers["Authorization"].split(" ")[1] : req.cookies.authorization ? req.cookies.authorization : "")
 if (allowed) return next();
