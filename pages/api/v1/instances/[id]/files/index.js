@@ -18,16 +18,13 @@ export default async function handler(req, res) {
             node: true
         }
     })
-    const lxd = new Client("https://" + instance.node.address + ":" + instance.node.lxdPort, {
-        certificate: Buffer.from(Buffer.from(getNodeEnc(instance.node.encIV, instance.node.certificate)).toString(), "base64").toString("ascii"),
-        key: Buffer.from(Buffer.from(getNodeEnc(instance.node.encIV, instance.node.key)).toString(), "base64").toString("ascii")
-    });
+    const lxd = new Client("unix:///var/snap/lxd/common/lxd/unix.socket", null);
     switch (method) {
         case "GET":
             if (!(await perms.readFiles)) return res.status(403).send(errorResponse("You are not allowed to read files on this instance", 403));
             let files;
             try {
-                files = await axios.get(`http${instance.node.ssl ? "s" : ""}://${instance.node.address}:${instance.node.port}/v1/instances/${instance.id}/files?path=${path}`, {
+                files = await axios.get(`http://localhost:3001/api/v1/instances/${instance.id}/files?path=${path}`, {
                     headers: {
                         "Authorization": req.headers["authorization"]
                     }

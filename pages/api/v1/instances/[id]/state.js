@@ -51,10 +51,7 @@ export default async function handler(req, res) {
             if (state == "stop" && !(await perms.stop)) return res.status(403).send(notAllowedError);
             if (state == "restart" && (!(await perms.start) || !(await perms.stop))) return res.status(403).send(notAllowedError);
 
-            const lxd = new Client("https://" + instance.node.address + ":" + instance.node.lxdPort, {
-                certificate: Buffer.from(Buffer.from(getNodeEnc(instance.node.encIV, instance.node.certificate)).toString(), "base64").toString("ascii"),
-                key: Buffer.from(Buffer.from(getNodeEnc(instance.node.encIV, instance.node.key)).toString(), "base64").toString("ascii")
-            })
+            const lxd = new Client("unix:///var/snap/lxd/common/lxd/unix.socket", null)
             let operation;
             try {
                 operation = await lxd.instance(id).updateState(state)
