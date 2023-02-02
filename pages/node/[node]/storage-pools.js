@@ -25,10 +25,7 @@ export async function getServerSideProps({ req, res, query }) {
         }
     })
     let storagePools;
-    const client = new hyexd("https://" + node.address + ":" + node.lxdPort, {
-        certificate: Buffer.from(Buffer.from(getNodeEnc(node.encIV, node.certificate)).toString(), "base64").toString("ascii"),
-        key: Buffer.from(Buffer.from(getNodeEnc(node.encIV, node.key)).toString(), "base64").toString("ascii"),
-    })
+    const client = new hyexd("unix:///var/snap/lxd/common/lxd/unix.socket", null)
     storagePools = (await client.storagePools(true)).metadata
     console.log(storagePools)
     return {

@@ -9,7 +9,9 @@ import Table from "../../../components/table";
 
 export default function NodeTable({nodes} : {nodes: Prisma.NodeGetPayload<{}>[]}) {
     let rows = [];
+    let rowLinks = [];
     nodes.forEach((node) => {
+        rowLinks.push({link: `${node.url}/node/${node.id}`})
         rows.push([
             <Typography sx={{m: "auto"}} fontWeight="bold">{node.name}</Typography>,
             <Typography sx={{m: "auto"}}>{node.url}</Typography>,
@@ -45,7 +47,7 @@ return (
                 }
             },
             
-            ]} rows={rows} />
+            ]} rows={rows} rowLinks={rowLinks} />
     </>
 )
 }

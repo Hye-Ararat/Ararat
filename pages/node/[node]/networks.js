@@ -51,12 +51,7 @@ export async function getServerSideProps({ req, res, query }) {
         }
     });
     let networks;
-    const client = new hyexd("https://" + node.address + ":" + node.lxdPort, {
-        certificate: Buffer.from(Buffer.from(getNodeEnc(node.encIV, node.certificate)).toString(), "base64").toString(
-            "ascii"
-        ),
-        key: Buffer.from(Buffer.from(getNodeEnc(node.encIV, node.key)).toString(), "base64").toString("ascii")
-    });
+    const client = new hyexd("unix:///var/snap/lxd/common/lxd/unix.socket", null);
     networks = (await client.networks(true)).metadata.filter((net) => net.managed === true);
     await Promise.all(
         networks.map(async (net, index) => {
