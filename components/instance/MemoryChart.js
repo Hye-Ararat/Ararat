@@ -209,7 +209,11 @@ export default function MemoryChart() {
                 options: memoryChartOptions,
                 data: memoryChartData
             };
+            try {
             setMemChart(new Chart(memoryChart, memoryChartConfig));
+            } catch {
+                
+            }
         }
     }, [instance.data]);
     return (

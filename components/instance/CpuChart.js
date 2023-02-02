@@ -216,7 +216,11 @@ export default function CpuChart() {
                 options: cpuChartOptions,
                 data: cpuChartData
             };
+            try {
             setCpuChart(new Chart(cpuChart, cpuChartConfig));
+            } catch {
+                
+            }
         }
     }, [instance.data]);
     return (
