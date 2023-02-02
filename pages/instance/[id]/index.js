@@ -16,6 +16,7 @@ import { Box } from "@mui/system";
 import { WidgetsArea } from "../../../components/widgets";
 import InstanceInfoTop from "../../../components/InstanceInfoTop";
 import { Edit } from "@mui/icons-material";
+import getInstance from "../../../scripts/api/v1/instances/[id]/instance";
 
 
 
@@ -120,19 +121,29 @@ export default function Instance({ instance, instance_user }) {
         }, */
 /*         monitor: InstanceStore.useStoreState((state) => state.monitor)
  */    };
-    var { data: instanceData } = useSWR(
+    /*var { data: instanceData } = useSWR(
         `/api/v1/instances/${id}`,
         fetcher
-    );
+    );*/
+   const [instanceData, setInstanceData] = useState(null);
 
     useEffect(() => {
+        async function run(){
         if (id && !instanceState.data) {
-            if (instanceData) {
+                console.log("BABOOM")
                 console.log(instanceData)
-                instanceState.setData(instanceData.metadata);
-            }
+                let data = await getInstance(id)
+                instanceState.setData(data);
+                setInstanceData(data)
+            
         }
-    }, [instance, instanceData, id]);
+    }
+    run()
+    }, [instance, id]);
+    useEffect(() => {
+        console.log("BOOM");
+        console.log(instanceState.data)
+    }, [instanceState.data])
     const [editMode, setEditMode] = useState(false);
     useEffect(() => {
         if (router.query.edit) {
