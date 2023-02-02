@@ -57,7 +57,7 @@ export default function CreateInstance({ setCreatingInstance }) {
                 <Users setPage={setPage} setUsers={setUsers} users={users} />
                 : ""}
             {page == "deploy" ?
-                <Deploy name={name} image={imageData} users={users} node={node} cpu={cpu} memory={memory} type={type} devices={devices} instanceConfig={config} /> : ""}
+                <Deploy name={name} image={imageData} users={users} node={node} cpu={cpu} memory={memory} type={type} devices={devices} instanceConfig={config} nodeData={nodeData} /> : ""}
         </>
     )
 }
