@@ -3,11 +3,14 @@ import { Avatar, CircularProgress, Dialog, Grid, Typography } from "@mui/materia
 import axios from "axios"
 import { useEffect, useState } from "react"
 
-export default function Deploy({ image, users, node, cpu, memory, type, name, devices, instanceConfig }) {
+export default function Deploy({ image, users, node, cpu, memory, type, name, devices, instanceConfig, nodeData }) {
     const [created, setCreated] = useState(false)
     const [opId, setOpId] = useState(null)
     const [currentOpStatus, setCurrentOpStatus] = useState(null)
     useEffect(() => {
+        let run = false;
+        if (!run) {
+            run = true;
         console.log(image, users, node, cpu, memory, type, image)
         axios.get("/api/v1/images/servers/" + image.serverId).then(res => {
             let config = {
@@ -18,7 +21,7 @@ export default function Deploy({ image, users, node, cpu, memory, type, name, de
                 source: {
                     alias: image.imageDat.aliases.includes(",") ? image.imageDat.aliases.split(",")[0] : image.imageDat.aliases,
                     mode: "pull",
-                    protocol: res.data.metadata.protocol,
+                    protocol: "simplestreams",
                     server: res.data.metadata.url,
                     type: "image"
                 },
@@ -30,11 +33,12 @@ export default function Deploy({ image, users, node, cpu, memory, type, name, de
                 users: users
 
             }
-            axios.post("/api/v1/instances", config).then(res => {
+            axios.post(`${nodeData.url}/api/v1/instances`, config).then(res => {
                 setOpId(res.data.operation);
                 setCreated(true);
             })
         })
+    }
     }, [])
     useEffect(() => {
         if (opId) {
