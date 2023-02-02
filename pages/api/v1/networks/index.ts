@@ -20,6 +20,7 @@ export default async function handler(req, res) {
                 let e = await lxd.network(network).data
                 networks.push(e.metadata)
             })
+            //@ts-ignore
             function ready() {
                 return new Promise((resolve, reject) => {
                     let interval = setInterval(() => {

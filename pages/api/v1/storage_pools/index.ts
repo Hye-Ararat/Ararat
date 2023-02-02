@@ -21,6 +21,7 @@ export default async function handler(req, res) {
                 let e = await lxd.storagePool(pool).data
                 storage_pools.push(e.metadata)
             })
+            //@ts-ignore
             function ready() {
                 return new Promise((resolve, reject) => {
                     let interval = setInterval(() => {
