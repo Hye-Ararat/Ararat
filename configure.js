@@ -211,13 +211,13 @@ name: "value",
 message: "What should the password to this database account be?"
 })
 console.log("Creating Database User...");
-execSync(`cockroach sql --certs-dir=/var/lib/cockroach/certs --host=development.hye.gg --execute="CREATE USER ${dbUsername.value} WITH PASSWORD '${dbPassword.value}'";`);
+execSync(`cockroach sql --certs-dir=/var/lib/cockroach/certs --host=127.0.0.1 --execute="CREATE USER ${dbUsername.value} WITH PASSWORD '${dbPassword.value}'";`);
 console.log("✅ Database User Created")
 console.log("Granting Administrative Privileges...");
-execSync(`cockroach sql --certs-dir=/var/lib/cockroach/certs --host=development.hye.gg --execute="GRANT admin TO ${dbUsername.value}";`);
+execSync(`cockroach sql --certs-dir=/var/lib/cockroach/certs --host=127.0.0.1 --execute="GRANT admin TO ${dbUsername.value}";`);
 console.log("✅ Administrative Privileges Granted")
 console.log("Creating Database...");
-execSync(`cockroach sql --certs-dir=/var/lib/cockroach/certs --host=development.hye.gg --execute="CREATE DATABASE ararat";`);
+execSync(`cockroach sql --certs-dir=/var/lib/cockroach/certs --host=127.0.0.1 --execute="CREATE DATABASE ararat";`);
 console.log("✅ Database Created")
 console.log("Saving Database Configuration...");
 let envConfig = "";
