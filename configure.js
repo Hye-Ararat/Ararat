@@ -73,7 +73,7 @@ let caddyConfig = {
                             "handler": "reverse_proxy",
                             "upstreams": [
                               {
-                                "dial": "localhost:3000"
+                                "dial": "127.0.0.1:3000"
                               }
                             ]
                        
@@ -87,7 +87,7 @@ let caddyConfig = {
     }
   }
   writeFileSync("./caddyConfig.json", JSON.stringify(caddyConfig))
-let newConf = await axios.post("http://localhost:2019/load", caddyConfig)
+let newConf = await axios.post("http://127.0.0.1:2019/load", caddyConfig)
 console.log("✅ Web Server Setup Successful")
 console.log("Installing dependency: cockroachdb")
 try {
