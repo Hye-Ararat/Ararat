@@ -24,7 +24,7 @@ export default async function handler(req, res) {
             if (!(await perms.readFiles)) return res.status(403).send(errorResponse("You are not allowed to read files on this instance", 403));
             let files;
             try {
-                files = await axios.get(`http://localhost:3001/api/v1/instances/${instance.id}/files?path=${path}`, {
+                files = await axios.get(`http://127.0.0.1:3001/api/v1/instances/${instance.id}/files?path=${path}`, {
                     headers: {
                         "Authorization": req.headers["authorization"]
                     }

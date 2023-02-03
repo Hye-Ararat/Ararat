@@ -71,7 +71,7 @@ setTimeout(async () => {
     await waitDone(createOperation.metadata.id);
     console.log("TEST INSTANCE CREATED")
     console.log("OPENING CONSOLE SOCKET")
-    const consoleSock = new WebSocket("ws://localhost:3001/v1/instances/hyeTest/console");
+    const consoleSock = new WebSocket("ws://127.0.0.1:3001/v1/instances/hyeTest/console");
     consoleSock.on("open", () => {
         console.log("CONSOLE SOCKET OPENED")
     });
@@ -79,7 +79,7 @@ setTimeout(async () => {
         console.log("[TEST INSTANCE CONSOLE]", data.toString());
     });
     console.log("GETTING LIST OF FILES");
-    let files = await axios.get("http://localhost:3001/v1/instances/hyeTest/files?path=/");
+    let files = await axios.get("http://127.0.0.1:3001/v1/instances/hyeTest/files?path=/");
     console.log("FILES", files.data);
     console.log("STARTING TEST INSTANCE");
     let startOperation;

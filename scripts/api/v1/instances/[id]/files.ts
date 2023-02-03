@@ -2,7 +2,7 @@ import nookies from "nookies";
 
 export default async function getInstanceFile(id: string, path: string, authorization: string) {
     return new Promise(async (resolve, reject) => {
-        fetch(`${typeof document != 'undefined' ? "" : "http://localhost:3000"}/api/v1/instances/${id}/files?path=${path}` , {
+        fetch(`${typeof document != 'undefined' ? "" : "http://127.0.0.1:3000"}/api/v1/instances/${id}/files?path=${path}` , {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${authorization ? authorization : nookies.get(null).authorization}`

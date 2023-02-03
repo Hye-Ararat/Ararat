@@ -58,7 +58,7 @@ export function VgaConsole({ minHeight }) {
           return (
             <p>e</p>
           )
-        }} connectionName="localhost:6080" isSecure={false} onDisconnected={() => console.log("e")} password={"fA8o8tTY"} /> */}
+        }} connectionName="127.0.0.1:6080" isSecure={false} onDisconnected={() => console.log("e")} password={"fA8o8tTY"} /> */}
             <IconButton sx={{ position: "absolute", zIndex: 1 }} id="overlay" onClick={() => setOverlayOpen(true)}><Menu /></IconButton>
             <Popover onClose={() => {
                 setOverlayOpen(false)
