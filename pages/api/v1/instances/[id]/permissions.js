@@ -3,7 +3,7 @@ import decodeToken from "../../../../../lib/decodeToken";
 import prisma from "../../../../../lib/prisma";
 
 export default async function handler(req, res) {
-    let authorization = req.headers.authorization;
+    let authorization = req.headers["authorization"];
     let token = authorization.split(" ")[1];
     let valid = verify(token, process.env.ENC_KEY);
     let tokenData = decodeToken(token);
