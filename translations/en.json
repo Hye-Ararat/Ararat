@@ -18,6 +18,7 @@
         "images": "Images",
         "users": "Users",
         "ranks": "Ranks",
-        "image_servers": "Image Servers"
+        "image_servers": "Image Servers",
+        "image_builders": "Image Builders"
     }
 }
