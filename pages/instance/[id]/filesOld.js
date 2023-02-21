@@ -15,7 +15,7 @@ import { InstanceStore } from "../../../states/instance";
 import Navigation from "../../../components/instance/Navigation";
 import Footer from "../../../components/footer";
 import {useTheme} from "@mui/material/styles";
-import getInstanceFiles from "../../../scripts/api/v1/instances/[id]/files";
+import {getInstanceFile} from "../../../scripts/api/v1/instances/[id]/files";
 /* const FileEditor = dynamic(import("../../../app/(instance)/instance/[id]/files/FileEditor"), { ssr: false });
  */
 export default function Files(props) {
@@ -69,7 +69,7 @@ export default function Files(props) {
    useEffect(() => {
     async function run(){
     if (id) {
-            let data = await getInstanceFiles(id, path.replace("//", "/"))
+            let data = await getInstanceFile(id, path.replace("//", "/"))
             setFiles(data)
         
     }
