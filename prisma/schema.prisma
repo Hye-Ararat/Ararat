@@ -22,12 +22,30 @@ model User {
   instances       InstanceUser[]
   NodeUser        NodeUser[]
   imageServerPermissions ImageServerPermission[]
+  imageBuilderPermissions ImageBuilderPermission[]
 }
 
 model Permission {
   id         String @id @default(cuid()) @unique
   user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
+  permission String
+}
+
+model ImageBuilder {
+  id         String     @id @default(cuid()) @unique
+  name        String
+  url         String @unique
+  permissions ImageBuilderPermission[]
+}
+
+
+model ImageBuilderPermission {
+  id        String   @id @default(cuid()) @unique
+  imageBuilder ImageBuilder @relation(fields: [imageBuilderId], references: [id], onDelete: Cascade)
+  imageBuilderId String
+  user User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
   permission String
 }
 
