@@ -8,7 +8,12 @@ import { errorResponse } from "../../../../../../lib/responses";
 
 export default async function handler(req, res) {
     let { query: { id, path }, method } = req;
-    const tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
+    let tokenData;
+    try {
+        tokenData = decodeToken(req.headers["authorization"].split(" ")[1]);
+    } catch (error) {
+        
+    }
     let perms = new Permissions(tokenData.id).instance(id);
     const instance = await prisma.instance.findUnique({
         where: {
