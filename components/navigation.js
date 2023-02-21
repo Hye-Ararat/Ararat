@@ -13,6 +13,7 @@ import {
     ViewInAr as ImagesIcon,
     SettingsEthernet as NetworkIcon,
     FilterDrama as ImageServersIcon,
+    Engineering as ImageBuilderIcon,
     Menu,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
@@ -125,6 +126,14 @@ export default function Navigation({ children, ...props }) {
                                     <ImageServersIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={translate(nookies.get(null).authorization ? decodeToken(nookies.get(null).authorization).language : "en", "sidebar", "image_servers")} />
+                            </ListItemButton>
+                        </Link>
+                        <Link style={{color: "inherit", textDecoration:"none"}} onClick={() => setOpen(false)} href="/image_builders">
+                            <ListItemButton selected={page == "image_builders"}>
+                                <ListItemIcon>
+                                    <ImageBuilderIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={translate(nookies.get(null).authorization ? decodeToken(nookies.get(null).authorization).language : "en", "sidebar", "image_builders")} />
                             </ListItemButton>
                         </Link>
                     </List>
