@@ -203,7 +203,8 @@ if (!joinNode) {
 let dbUsername = await prompts({
 type: "text",
 name: "value",
-message: "What would you like your database account's username to be?"
+message: "What would you like your database account's username to be?",
+validate: value => value != "admin"
 })
 let dbPassword = await prompts({
 type: "password",
