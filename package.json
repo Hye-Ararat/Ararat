@@ -60,6 +60,7 @@
     "nookies": "^2.5.2",
     "nprogress": "^0.2.0",
     "oidc-provider": "^8.1.0",
+    "openid-client": "^5.4.0",
     "parse-apache-directory-index": "^2.1.0",
     "pretty-bytes": "^5.6.0",
     "prompts": "^2.4.2",

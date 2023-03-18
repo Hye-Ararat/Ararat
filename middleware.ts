@@ -23,8 +23,8 @@ async function verifyToken(token : string) {
 export async function middleware(request: NextRequest) {
   const headers = new Headers(request.headers)
   if (request.nextUrl.pathname.startsWith("/api")) {
-    if (!request.headers.get("Authorization") && request.cookies.has("authorization")) {
-      headers.set("Authorization", `Bearer ${request.cookies.get("authorization")?.value}`)
+    if (!request.headers.get("Authorization") && request.cookies.has("access_token")) {
+      headers.set("Authorization", `Bearer ${request.cookies.get("access_token")?.value}`)
     }
     if (!request.headers.get("authorization") && request.headers.has("Authorization")) {
       headers.set("authorization", request.headers.get("Authorization"))
@@ -40,9 +40,9 @@ export async function middleware(request: NextRequest) {
       status: 401
     })
   }
-  if (!request.headers.get("Authorization") && !request.cookies.has("authorization")) {
-    if (!request.cookies.has("authorization")) {
-      return NextResponse.redirect(new URL("/auth/login", request.url));
+  if (!request.headers.get("Authorization") && !request.cookies.has("access_token")) {
+    if (!request.cookies.has("access_token")) {
+      return NextResponse.redirect(new URL("/authentication/login", request.url));
     }
   }
   return NextResponse.next();

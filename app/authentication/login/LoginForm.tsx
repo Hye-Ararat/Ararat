@@ -29,7 +29,6 @@ export default function LoginForm({interaction}) {
     }
     
     return (
-        <form action={`/api/authentication/interaction/${interaction}/confirm`} method="post">
         <FormControl sx={{ m: 1, width: "40ch" }} variant="outlined">
                         <TextField
               id="email"
@@ -57,6 +56,5 @@ export default function LoginForm({interaction}) {
                 </LoadingButton>
               </Box>
         </FormControl>
-        </form>
         )
 }

@@ -29,7 +29,11 @@ module.exports = {
         },
         {
           source: "/api/authentication/auth/:path*",
-          destination: "http://127.0.0.1:3002/api/authentication/auth:path*"
+          destination: "http://127.0.0.1:3002/api/authentication/auth/:path*"
+        },
+        {
+          source: "/api/authentication/token/:path*",
+          destination: "http://127.0.0.1:3002/api/authentication/token:path*"
         },
         {
           source: "/interaction/:path*",
