@@ -1,6 +1,8 @@
 import { Issuer, generators, Client } from 'openid-client';
 import { provider } from "./oidc";
+import caddyConfig from "../caddyConfig.json";
 
+let url = caddyConfig.apps.http.servers.ararat.routes[0].match[0].host;
 
 
 let issuer : Issuer;
@@ -20,13 +22,12 @@ let cachedClient;
 async function getClient() {
     provider()
     if (!issuer) {
-        issuer = await Issuer.discover('https://us-dal-1.hye.gg/api/authentication');
+        issuer = await Issuer.discover(`https://${url}/api/authentication`);
     }
     if (!oidClient) {
         oidClient = new issuer.Client({
-            client_id: "test",
-            client_secret: "test",
-            redirect_uris: ["https://us-dal-1.hye.gg/api/authentication/callback"],
+            client_id: "lxd",
+            redirect_uris: [`https://${url}/api/authentication/callback`],
             response_types: ["code"]
         })
     }

@@ -10,11 +10,13 @@ export default function ScopesList({scopes, activeScopes}) {
         if (scope === "profile") return {description: "View basic profile information", active: false};
         if (scope === "email") return {description: "View your email address", active: false};
         if (scope == "openid") return {description: "Authenticate with your account", active: true};
+        if (scope == "offline_access") return {description: "Access your account when offline", active: true};
     })
     let activeEnglishScopes = activeScopes.map((scope) => {
         if (scope === "profile") return {description: "View basic profile information", active: true};
         if (scope === "email") return {description: "View your email address", active: true};
         if (scope == "openid") return {description: "Authenticate with your account", active: true};
+        if (scope == "offline_access") return {description: "Access your account when offline", active: true};
     })
     let allScopes = englishScopes.concat(activeEnglishScopes);
     allScopes.sort((a, b) => {

@@ -10,7 +10,7 @@ export default async function Login({searchParams }) {
     let url;
     if (!interaction) {
         let client = await oidcClient();
-        url = client.authorizationUrl("openid profile");
+        url = client.authorizationUrl("openid profile offline_access");
     }
     return (
         <>

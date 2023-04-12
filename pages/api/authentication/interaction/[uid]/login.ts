@@ -53,6 +53,6 @@ export default async function handler(req, res) {
             inter.result = result;
             let epoch = (date = Date.now()) => Math.floor(date / 1000)
             await inter?.save(inter.exp - epoch())
-            res.setHeader("Location", inter.returnTo).setHeader("Content-Length", "0").status(303).end();
+            return res.setHeader("Location", inter.returnTo).setHeader("Content-Length", "0").status(303).end();
     }
 }
