@@ -26,7 +26,7 @@ import { useRouter } from "next/router";
 import CreateInstance from "../components/instances/CreateInstance";
 import Permissions from "../lib/permissions/index.js";
 export async function getServerSideProps({ req, res }) {
-  if (!req.cookies.authorization) {
+  if (!req.cookies.access_token) {
     return {
       redirect: {
         destination: "/auth/login",
@@ -40,14 +40,14 @@ export async function getServerSideProps({ req, res }) {
   );
 
   var { decode } = require("jsonwebtoken");
-  const user_data = decode(req.cookies.authorization)
-  let createPerm = await new Permissions(user_data.id).createInstance;
+  const user_data = decode(req.cookies.access_token)
+  let createPerm = await new Permissions(user_data.sub).createInstance;
 
   const instances = await prisma.instance.findMany({
     where: {
       users: {
         some: {
-          userId: user_data.id
+          userId: user_data.sub
         }
       }
     }
