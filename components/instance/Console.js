@@ -195,7 +195,7 @@ export function TextConsole() {
         if (instance.data) {
             if (!instance.sockets.console) {
                 let cookies = nookies.get();
-                instance.sockets.setConsole(new WebSocket(`wss://${instance.data.node.url.split("//")[1]}/api/v1/instances/${instance.data.id}/console?authorization=${cookies.authorization}`));
+                instance.sockets.setConsole(new WebSocket(`wss://${instance.data.node.url.split("//")[1]}/api/v1/instances/${instance.data.id}/console?authorization=${cookies.access_token}`));
             } else {
                 if (!created) {
                     setCreated(true)

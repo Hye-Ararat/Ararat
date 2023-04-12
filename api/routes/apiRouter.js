@@ -24,11 +24,11 @@ router.use("*", async (req, res, next) => {
     
 }
 if (req.headers["authorization"] ) req.headers["Authorization"] = req.headers["authorization"]
-if (!req.headers["Authorization"] && req.cookies.authorization) {
-    req.headers["Authorization"] = "Bearer " + req.cookies.authorization
-    req.headers.authorization = "Bearer " + req.cookies.authorization
+if (!req.headers["Authorization"] && req.cookies.access_token) {
+    req.headers["Authorization"] = "Bearer " + req.cookies.access_token
+    req.headers.authorization = "Bearer " + req.cookies.access_token
 }
-let allowed = await verifyToken(req.headers["Authorization"] ? req.headers["Authorization"].split(" ")[1] : req.cookies.authorization ? req.cookies.authorization : "")
+let allowed = await verifyToken(req.headers["Authorization"] ? req.headers["Authorization"].split(" ")[1] : req.cookies.access_token ? req.cookies.access_token : "")
 if (allowed) return next();
 return res.status(401).send({"type":"error","error":"Failure","error_code":400,"metadata":"You are not allowed to access this resource"})
 })

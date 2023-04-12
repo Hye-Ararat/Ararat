@@ -23,7 +23,7 @@ const Console = dynamic(() => import("../../../components/instance/Console"), {
 
 
 export async function getServerSideProps({ req, res, query }) {
-    if (!req.cookies.authorization) {
+    if (!req.cookies.access_token) {
         return {
             redirect: {
                 destination: "/auth/login",
@@ -36,7 +36,7 @@ export async function getServerSideProps({ req, res, query }) {
         "public, s-maxage=10, stale-while-revalidate=59"
     );
 
-    const user_data = decodeToken(req.cookies.authorization);
+    const user_data = decodeToken(req.cookies.access_token);
     const instance = await prisma.instance.findUnique({
         where: {
             id: query.id,

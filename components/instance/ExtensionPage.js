@@ -7,7 +7,7 @@ import { CircularProgress, Fade, Grid, Typography } from "@mui/material";
 
 function Extension({ extension, imageId }) {
     let cookies = nookies.get();
-    const url = `https://images.ararat.hye.gg/accountServices/image/${imageId}/extension/${extension}?key=${cookies.authorization}&type=ararat`;
+    const url = `https://images.ararat.hye.gg/accountServices/image/${imageId}/extension/${extension}?key=${cookies.access_token}&type=ararat`;
     const HelloWorld = ({ name }) => <RemoteComponent url={url} name={name} />;
     return (
         <HelloWorld name="TEST" />

@@ -6,7 +6,7 @@ import axios from "axios";
 
 function Widget({ widget, imageId }) {
     let cookies = nookies.get();
-    const url = `https://images.ararat.hye.gg/accountServices/image/${imageId}/widget/${widget}?key=${cookies.authorization}&type=ararat`;
+    const url = `https://images.ararat.hye.gg/accountServices/image/${imageId}/widget/${widget}?key=${cookies.access_token}&type=ararat`;
     const HelloWorld = ({ name }) => <RemoteComponent url={url} name={name} />;
     return (
         <div>

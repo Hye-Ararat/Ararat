@@ -13,7 +13,7 @@ import prettyBytes from "pretty-bytes";
 import {useTheme} from "@mui/material/styles";
 
 export async function getServerSideProps({ req, res, query }) {
-    if (!req.cookies.authorization) {
+    if (!req.cookies.access_token) {
         return {
             redirect: {
                 destination: "/auth/login",
@@ -23,7 +23,7 @@ export async function getServerSideProps({ req, res, query }) {
     }
     res.setHeader("Cache-Control", "public, s-maxage=10, stale-while-revalidate=59");
     const { decode } = require("jsonwebtoken");
-    const user_data = decode(req.cookies.authorization)
+    const user_data = decode(req.cookies.access_token)
 
     const instance = await prisma.instance.findUnique({
         where: {
