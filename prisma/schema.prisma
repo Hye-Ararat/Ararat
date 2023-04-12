@@ -20,7 +20,7 @@ model User {
   language        String?
   permissions     Permission[]
   instances       InstanceUser[]
-  NodeUser        NodeUser[]
+  nodePermissions NodePermission[]
   imageServerPermissions ImageServerPermission[]
   imageBuilderPermissions ImageBuilderPermission[]
 }
@@ -68,18 +68,11 @@ model ImageServerPermission {
 
 model NodePermission {
   id         String   @id @default(cuid()) @unique
-  user       NodeUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  node       Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  nodeId     String
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
   permission String
-}
-
-model NodeUser {
-  id          String           @id @default(cuid()) @unique
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String
-  node        Node             @relation(fields: [nodeId], references: [id], onDelete: Cascade)
-  nodeId      String
-  permissions NodePermission[]
 }
 
 model Location {
@@ -95,7 +88,7 @@ model Node {
   location   Location           @relation(fields: [locationId], references: [id], onDelete: Cascade)
   locationId String
   instances   Instance[]
-  users       NodeUser[]
+  permissions NodePermission[]
 }
 
 model Instance {
