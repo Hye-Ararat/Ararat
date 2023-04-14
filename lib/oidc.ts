@@ -56,9 +56,9 @@ const configuration : Configuration = {
         cookies: {
             keys: [process.env.ENC_KEY]
         },
-      /*   jwks: {
-            keys: [null]
-        }, */
+        jwks: {
+            keys: [JSON.parse(fs.readFileSync("./key", "utf8")) as any]
+        },
     features: {
         devInteractions: {
             enabled: false
@@ -129,7 +129,7 @@ export function provider() {
         })
     } else {
         if (!global.oidc && !listenInProg && !oidc) {
-            global.oidc = new Provider(`https:/${url}`, configuration);
+            global.oidc = new Provider(`https://${url}`, configuration);
             listenInProg = true;
             global.oidc.listen(3002, () => {
                 listenInProg = false;
