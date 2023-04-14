@@ -1,5 +1,4 @@
-import caddyConfig from "./caddyConfig.json"
-
+const caddyConfig = require("./caddyConfig.json");
 module.exports = {
   reactStrictMode: false,
   experimental: {
