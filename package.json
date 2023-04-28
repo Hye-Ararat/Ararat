@@ -54,7 +54,7 @@
     "keycloak-js": "^21.0.2",
     "language-detect": "^1.1.0",
     "lxd.js": "^0.0.7",
-    "lxdjs": "^0.0.12",
+    "lxdjs": "^0.0.20",
     "md5": "^2.3.0",
     "moment": "^2.29.4",
     "mongodb": "^4.4.1",
