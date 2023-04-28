@@ -16,6 +16,5 @@ export async function POST(req: NextRequest) {
     } as NextRequest;
     const headers = new Headers(request.headers);
   let result =  await (new AccessHandler(headers.get("Authorization")?.split("Bearer ")[1])).currentRequestAccess(request);
-  console.log(result)
     return result;
 }
