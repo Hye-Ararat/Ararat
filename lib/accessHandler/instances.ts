@@ -19,10 +19,14 @@ export default class Instances {
 
     }
 
+    instance(id: string) {
+        return new Instance(id, this.accessClient, this.authorization, this.payload)
+    }
+
     async currentRequestAccess(request: NextRequest) {
         console.log(request.nextUrl.pathname.split("/"))
-        if (request.nextUrl.pathname.split("/").length == 4) {
-            return new Instance(request.nextUrl.pathname.split("/")[4], this.accessClient, this.authorization, this.payload).currentRequestAccess(request);
+        if (request.nextUrl.pathname.split("/").length >= 4) {
+            return new Instance(request.nextUrl.pathname.split("/")[3], this.accessClient, this.authorization, this.payload).currentRequestAccess(request);
         }
         let sub = this.payload["sub"];
         if (request.nextUrl.search.includes("recursion=2")) {
