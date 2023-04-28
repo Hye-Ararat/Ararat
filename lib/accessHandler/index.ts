@@ -5,6 +5,7 @@ import { allowed, notAllowed } from "./responses";
 import {decode} from "jsonwebtoken";
 import prisma from "../prisma";
 import caddyConfig from "../../caddyConfig.json";
+import Operations from "./operations";
 
 export default class AccessHandler {
     private authorization: string;
@@ -17,6 +18,9 @@ export default class AccessHandler {
 
     get instances() {
         return new Instances(this, this.authorization)
+    }
+    get operations() {
+        return new Operations(this, this.authorization)
     }
     async hasPermission(permission: string) {
         if (this.authorization) {
@@ -52,6 +56,7 @@ export default class AccessHandler {
         if (pathname == "/1.0") return allowed();
         if (this.authorization) {
           if (pathname.startsWith("/1.0/instances")) return await (this.instances).currentRequestAccess(request);
+          if (pathname.startsWith("/1.0/operations")) return await (this.operations).currentRequestAccess(request);
         }
         return notAllowed();
     }
