@@ -79,7 +79,7 @@ export async function middleware(request: NextRequest) {
         })
       }
        else {
-        console.log(response);
+       // console.log(response);
       }
       
   }
