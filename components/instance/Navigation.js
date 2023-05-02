@@ -19,7 +19,8 @@ import {
   useMediaQuery,
   IconButton,
   Icon,
-  Fade
+  Fade,
+  ListItemButton
 } from "@mui/material";
 import {useTheme} from "@mui/material/styles"
 import {
@@ -67,7 +68,12 @@ export default function Navigation({ children, id, ...props }) {
   console.log(props.page);
   const router = useSearchParams();
   const pathname = usePathname();
-  const [page, setPage] = useState(props.page ? props.page : pathname.replace("/", ""));
+  console.log(pathname)
+  const [page, setPage] = useState(pathname.replaceAll("/", "").replaceAll("instances", "").replaceAll(id, ""))
+  useEffect(() => {
+    setPage(pathname.replaceAll("/", "").replaceAll("instances", "").replaceAll(id, ""))
+  }, [pathname])
+  console.log(page)
   id = id;
   if (!id) {
     id = router.get("id");
@@ -266,67 +272,67 @@ export default function Navigation({ children, id, ...props }) {
           <Box sx={{ overflow: "auto" }}>
             <List>
               <Link style={{color: "inherit", textDecoration:"none"}} href="/" >
-                <ListItem button onClick={() => setOpen(false)}>
+                <ListItemButton onClick={() => setOpen(false)}>
                   <ListItemIcon>
                     <InstanceIcon />
                   </ListItemIcon>
                   <ListItemText primary="Instances" />
-                </ListItem>
+                </ListItemButton>
               </Link>
-              <ListItem button onClick={() => setOpen(false)}>
+              <ListItemButton onClick={() => setOpen(false)}>
                 <ListItemIcon>
                   <AccountIcon />
                 </ListItemIcon>
                 <ListItemText primary="Account" />
-              </ListItem>
-              <ListItem button onClick={() => setOpen(false)}>
+              </ListItemButton>
+              <ListItemButton onClick={() => setOpen(false)}>
                 <ListItemIcon>
                   <ApiIcon />
                 </ListItemIcon>
                 <ListItemText primary="API" />
-              </ListItem>
+              </ListItemButton>
             </List>
             <Divider />
             <List>
-              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}`}>
-                <ListItem onClick={() => setOpen(false)} button selected={page == null ? true : false}>
+            <Link style={{color: "inherit", textDecoration:"none"}} href={`/instances/${encodeURIComponent(id)}`}>
+                <ListItemButton onClick={() => setOpen(false)} button selected={page == ""}>
                   <ListItemIcon>
                     <Dashboard />
                   </ListItemIcon>
                   <ListItemText primary="Dashboard" />
-                </ListItem>
+                </ListItemButton>
               </Link>
-              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/console`}>
-                <ListItem onClick={() => setOpen(false)} button selected={props.page != null ? (props.page.includes("console") ? true : false) : false}>
+              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instances/${encodeURIComponent(id)}/console`}>
+                <ListItemButton onClick={() => setOpen(false)} button selected={page == "console"}>
                   <ListItemIcon>
                     <ConsoleIcon />
                   </ListItemIcon>
                   <ListItemText primary="Console" />
-                </ListItem>
+                </ListItemButton>
               </Link>
               <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/files`}>
-                <ListItem onClick={() => setOpen(false)} button selected={page != null ? (page.includes("files") ? true : false) : false}>
+                <ListItemButton onClick={() => setOpen(false)} button selected={page != null ? (page.includes("files") ? true : false) : false}>
                   <ListItemIcon>
                     <FilesIcon />
                   </ListItemIcon>
                   <ListItemText primary="Files" />
-                </ListItem>
+                </ListItemButton>
               </Link>
               <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/snapshots`}>
-                <ListItem onClick={() => setOpen(false)} button selected={props.page == "snapshots" ? true : false}>
+                <ListItemButton onClick={() => setOpen(false)} button selected={props.page == "snapshots" ? true : false}>
                   <ListItemIcon>
                     <SnapshotsIcon />
                   </ListItemIcon>
                   <ListItemText primary="Snapshots" />
-                </ListItem>
+                </ListItemButton>
               </Link>
               <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/users`}>
-                <ListItem onClick={() => setOpen(false)} button selected={props.page == "users" ? true : false}>
+                <ListItemButton onClick={() => setOpen(false)} button selected={props.page == "users" ? true : false}>
                   <ListItemIcon>
                     <UsersIcon />
                   </ListItemIcon>
                   <ListItemText primary="Users" />
-                </ListItem>
+                </ListItemButton>
               </Link>
               {/*
               <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}`}>
@@ -339,44 +345,44 @@ export default function Navigation({ children, id, ...props }) {
               </Link>
         */}
               <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/networks`}>
-                <ListItem onClick={() => setOpen(false)} button selected={props.page == "networks" ? true : false}>
+                <ListItemButton onClick={() => setOpen(false)} button selected={props.page == "networks" ? true : false}>
                   <ListItemIcon>
                     <NetworkIcon />
                   </ListItemIcon>
                   <ListItemText primary="Networks" />
-                </ListItem>
+                </ListItemButton>
               </Link>
               <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/disks`}>
-                <ListItem onClick={() => setOpen(false)} button selected={props.page == "disks" ? true : false}>
+                <ListItemButton onClick={() => setOpen(false)} button selected={props.page == "disks" ? true : false}>
                   <ListItemIcon>
                     <Storage />
                   </ListItemIcon>
                   <ListItemText primary="Disks" />
-                </ListItem>
+                </ListItemButton>
               </Link>
               {extensionPages ? extensionPages.length > 0 ?
                 extensionPages.map((ext) => {
                   return (
                     <Link style={{color: "inherit", textDecoration:"none"}} key={ext.name} href={`/instance/${encodeURIComponent(id)}/extension/${ext.name}`}>
                       <Fade in={true}>
-                        <ListItem onClick={() => setOpen(false)} button selected={props.page == `extension-${ext.name}` ? true : false}>
+                        <ListItemButton onClick={() => setOpen(false)} button selected={props.page == `extension-${ext.name}` ? true : false}>
                           <ListItemIcon>
                             <Icon>{ext.data.icon}</Icon>
                           </ListItemIcon>
                           <ListItemText primary={ext.data.title} />
-                        </ListItem>
+                        </ListItemButton>
                       </Fade>
                     </Link>
                   )
                 })
                 : "" : ""}
               <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/settings`}>
-                <ListItem onClick={() => setOpen(false)} button selected={props.page == "settings" ? true : false}>
+                <ListItemButton onClick={() => setOpen(false)} button selected={props.page == "settings" ? true : false}>
                   <ListItemIcon>
                     <SettingsIcon />
                   </ListItemIcon>
                   <ListItemText primary="Settings" />
-                </ListItem>
+                </ListItemButton>
               </Link>
             </List>
           </Box>
