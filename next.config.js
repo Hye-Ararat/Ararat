@@ -69,6 +69,10 @@ module.exports = {
           destination: "http://127.0.0.1:8082/:path*"
         },
         {
+          source: "/1.0/operations/:operation/websocket:path*",
+          destination: `http://localhost:3004/1.0/operations/:operation/websocket:path*`
+        },
+        {
           source: "/1.0/:path*",
           destination: `https://${caddyConfig.apps.http.servers.ararat.routes[0].match[0].host}:8443/1.0/:path*`
         }
