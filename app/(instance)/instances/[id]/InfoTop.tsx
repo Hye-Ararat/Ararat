@@ -14,7 +14,8 @@ export default function InfoTop({instance}) {
         let interval = setInterval(async () => {
             let state = await client.instances.instance(instance.name).getState()
             setStatus(state.status);
-        }, 1000);
+        }, 5000);
+        return () => clearInterval(interval);
     }, [])
     return (
     <Grid component={Paper} container direction="row" sx={{p: 2, mb: 2}}>
