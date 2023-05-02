@@ -7,6 +7,7 @@ import nookies from "nookies";
 import { FitAddon } from "xterm-addon-fit"
 import { AttachAddon } from "xterm-addon-attach"
 import { Terminal } from "xterm";
+import correctWs from "isomorphic-ws"
 
 export default function Console({instance}) {
     let terminal = useRef(null)
@@ -17,18 +18,30 @@ export default function Console({instance}) {
         const client = lxd(accessToken);
         async function getConsole() {
         let socket = await client.instances.instance(instance.name).connectConsole("console");
-       const consoleSocket = new WebSocket(`wss://us-dal-1.hye.gg/1.0/operations/${socket.id}/websocket?secret=${socket.metadata.fds["0"]}`);
+        const controlSocket = new correctWs(`wss://us-dal-1.hye.gg/1.0/operations/${socket.id}/websocket?secret=${socket.metadata.fds["control"]}`);
+       const consoleSocket = new correctWs(`wss://us-dal-1.hye.gg/1.0/operations/${socket.id}/websocket?secret=${socket.metadata.fds["0"]}`);
+     /*  consoleSocket.onmessage = async (mess) => {
+        console.log(mess.data)
+        //make blob buffer
+        const arrayBuffer = await mess.data.arrayBuffer();
+        terminal.current.write(Buffer.from(arrayBuffer))
+       }*/
        terminal.current = new Terminal({
         fontSize: 12,
         theme: {
             background: "#141c26",
         },
     });
-    const attachAddon = new AttachAddon(consoleSocket);
-    terminal.current.loadAddon(attachAddon);
     terminal.current.loadAddon(fitAddon.current);
     terminal.current.open(termRef.current);
     fitAddon.current.fit()
+    /*terminal.current.onData(data => {
+        console.log(data)
+        consoleSocket.send(Buffer.from(data), {binary: true})
+    })*/
+    const attachAddon = new AttachAddon(consoleSocket);
+    terminal.current.loadAddon(attachAddon);
+    
 
         }
         getConsole();
