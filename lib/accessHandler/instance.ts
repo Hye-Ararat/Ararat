@@ -2,7 +2,7 @@ import { InstanceFull } from "lxdjs/dist/lib/lxd/instance";
 import { NextRequest } from "next/server";
 import { lxdUnix } from "../lxd";
 import prisma from "../prisma";
-import { allowed, notAllowed, sendData } from "./responses";
+import { allowed, notAllowed, rewrite, sendData } from "./responses";
 import AccessHandler from ".";
 
 export default class Instance {
@@ -26,7 +26,6 @@ export default class Instance {
         if (await this.accessClient.hasPermission(permission)) return true;
         //get instance and check here instead
         let instance = await lxdUnix().instances.instance(this.id).metadata();
-        console.log(instance)
         let sub = this.payload["sub"];
         if (instance.config[`user.users.${sub}`]) {
             let permissions = JSON.parse(instance.config[`user.users.${sub}`]);
@@ -82,7 +81,25 @@ export default class Instance {
         }
         if (path == `/1.0/instances/${this.id}/console`) {
             if (request.method == "POST") {
-                if (await this.hasPermission("connect-console_instance")) return allowed();
+                let canAccess  = await this.hasPermission("connect-console_instance")
+                console.log(await lxdUnix().getOperations())
+                let operations = await lxdUnix().getOperations();
+                if (operations.running && canAccess) {
+                    if (operations.running.length > 0) {
+                        let operation = operations.running[0];
+                        if (operation.description == "Showing console") {
+                            let rawInstances = operation.resources.instances;
+                            let instances = rawInstances.map((instance) => instance.split("/")[3]);
+                            if (instances.length == 1) {
+                                if (instances[0] == this.id) {
+                                  return sendData(operation);
+                                }
+                            }
+                        }
+                    }
+                
+                }
+                if (canAccess) return allowed();
             }
         }
 
