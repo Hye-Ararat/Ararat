@@ -44,7 +44,7 @@ export default function InstancesTable({ instances }) {
                 },
 
             ]}
-                rows={rows} />
+                rows={rows} rowLinks={[{link: "/instances/demo"}]} />
         </>
     )
 }
