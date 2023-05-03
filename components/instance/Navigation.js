@@ -310,7 +310,7 @@ export default function Navigation({ children, id, ...props }) {
                   <ListItemText primary="Console" />
                 </ListItemButton>
               </Link>
-              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instance/${encodeURIComponent(id)}/files`}>
+              <Link style={{color: "inherit", textDecoration:"none"}} href={`/instances/${encodeURIComponent(id)}/files`}>
                 <ListItemButton onClick={() => setOpen(false)} button selected={page != null ? (page.includes("files") ? true : false) : false}>
                   <ListItemIcon>
                     <FilesIcon />
