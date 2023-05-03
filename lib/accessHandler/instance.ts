@@ -103,6 +103,12 @@ export default class Instance {
             }
         }
 
+        if (path == `/1.0/instances/${this.id}/files`) {
+            if (request.method == "GET" || request.method == "HEAD") {
+                if (await this.hasPermission("get-files_instance")) return allowed();
+            }
+        }
+
         return notAllowed();
     }
 }
