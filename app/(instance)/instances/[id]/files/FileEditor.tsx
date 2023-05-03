@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from 'react';
 import Monaco, { useMonaco } from "@monaco-editor/react";
-import { Breadcrumbs, Button, Container, Grid } from "@mui/material";
+import { Breadcrumbs, Button, Container, Grid, Paper } from "@mui/material";
 import ResizeObserver from "react-resize-observer";
 import axios from "axios";
 import { LoadingButton } from "@mui/lab";
@@ -264,7 +264,7 @@ export default function FileEditor({ file, path, instance }) {
   }, [monaco])
   return (
     <>
-    <Grid container>
+{/*     <Grid container>
           <Link prefetch={false} href={`/instance/${instance}/files?path=/`} style={{textDecoration: "none", color: "rgba(255, 255, 255, 0.7)", marginTop: "auto", marginBottom: "auto", marginRight: "10px"}}>
                             {"/"}
                         </Link>
@@ -280,9 +280,11 @@ export default function FileEditor({ file, path, instance }) {
                 })
             }
             </Breadcrumbs>
-            </Grid>
-    <div style={{ cursor: "text", width: "100%" }}>
-      <Monaco height={"50vh"} width={"100%"} onChange={(data) => setData(data)} id="monaco-editor-parent" theme="hye" value={typeof (file) == "object" ? JSON.stringify(file) : file.length == 0 ? "" : file} style={{ marginLeft: "auto", marginRight: "auto" }} language={language()} options={{ cursorSmoothCaretAnimation: true, cursorBlinking: "smooth", smoothScrolling: true, automaticLayout: true }} />
+            </Grid> */}
+    <div style={{ cursor: "text", width: "100%", marginTop: 20 }}>
+      <div style={{padding: 4, backgroundColor: "#141c26", borderRadius: "12px"}}>
+      <Monaco height={"42vh"} maxWidth={"100%"} onChange={(data) => setData(data)} id="monaco-editor-parent" theme="hye" value={typeof (file) == "object" ? JSON.stringify(file) : file.length == 0 ? "" : file} style={{ marginLeft: "auto", marginRight: "auto" }} language={language()} options={{ cursorSmoothCaretAnimation: true, cursorBlinking: "smooth", smoothScrolling: true, automaticLayout: true }} />
+      </div>
       <LoadingButton loading={saving} sx={{ mt: 1 }} variant="contained" color="success" onClick={async () => {
         console.log(data);
         setSaving(true);
