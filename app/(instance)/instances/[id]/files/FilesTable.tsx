@@ -6,9 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faFolder, faFileImage, faFilePdf, faFileWord, faFilePowerpoint, faFileExcel, faFileCsv, faFileAudio, faFileVideo, faFileArchive, faFileCode, faFileAlt } from "@fortawesome/free-solid-svg-icons";
 import getClassNameForExtension from 'font-awesome-filetypes'
 import Link from "next/link";
+import lxd from "../../../../../lib/lxd";
+import prettyBytes from "pretty-bytes";
 
 
-export default function FilesTable({files, path, id}) {
+export default function FilesTable({files, path, id, accessToken}) {
     function getIcon(code) {
         if (code == "fa-file") return faFile;
         if (code == "fa-folder") return faFolder;
@@ -27,20 +29,22 @@ export default function FilesTable({files, path, id}) {
     }
     let rows = [];
     let rowLinks = [];
-    files.forEach((file) => {
-        const icon = getClassNameForExtension(file.Name.split(".").pop());
-        let filePath = (path + "/" + file.Name).replace("//", "/");
-        rowLinks.push({"link": `/instance/${id}/files?path=${filePath}`, "prefetch": false})
+    files.forEach(async (file) => {
+        const icon = getClassNameForExtension(file.name.split(".").pop());
+        let filePath = (path + "/" + file.name).replace("//", "/");
+        //let fileMetadata = await lxd(accessToken).instances.instance(id).getFileMetadata(filePath);
+        //console.log(fileMetadata)
+        rowLinks.push({"link": `/instances/${id}/files?path=${filePath}`, "prefetch": false})
         rows.push([
             <Grid sx={{maxWidth: "20px", m: "auto"}}>
-                {!file.IsDir ?
+                {!file.type == "directory" ?
                 <FontAwesomeIcon icon={getIcon(icon)} style={{  color: "grey" }} />
-:                 <FontAwesomeIcon icon={file.IsDir ? faFolder : faFile} style={{  color: "grey" }} />
+:                 <FontAwesomeIcon icon={file.type == "directory" ? faFolder : faFile} style={{  color: "grey" }} />
         }
             </Grid>,
-            <Typography sx={{m: "auto"}} fontWeight="bold">{file.Name}</Typography>,
-            <Typography sx={{m: "auto"}}>{file.Size}</Typography>,
-            <Typography sx={{m: "auto"}}>{file.ModTime}</Typography>
+            <Typography sx={{m: "auto"}} fontWeight="bold">{file.name}</Typography>,
+            <Typography sx={{m: "auto"}}>{file.size ? prettyBytes(file.size) : ""}</Typography>,
+            <Typography sx={{m: "auto"}}>{file.modified}</Typography>
         ])
     })
     return (
@@ -73,7 +77,7 @@ export default function FilesTable({files, path, id}) {
             },
         ]} rows={rows} top={
             <Grid xs={5} sx={{marginTop: "auto", marginBottom: "auto", ml: 2}} container>
-                 <Link prefetch={false} href={`/instance/${id}/files?path=/`} style={{textDecoration: "none", color: "rgba(255, 255, 255, 0.7)", marginTop: "auto", marginBottom: "auto", marginRight: "10px"}}>
+                 <Link prefetch={false} href={`/instances/${id}/files?path=/`} style={{textDecoration: "none", color: "rgba(255, 255, 255, 0.7)", marginTop: "auto", marginBottom: "auto", marginRight: "10px"}}>
                             {"/"}
                         </Link>
             <Breadcrumbs sx={{my: "auto"}}>
