@@ -134,3 +134,17 @@ model InstanceUserWidget {
   size         String
   widgetGrid   InstanceUserWidgetGrid @relation(fields: [widgetGridId], references: [id], onDelete: Cascade)
 }
+model Authentication {
+  id         String    @id
+  type       Int // name of the oidc-provider model
+  payload    Json
+  grantId    String?
+  userCode   String?
+  uid        String?   @unique
+  expiresAt  DateTime?
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  @@unique([id, type])
+  @@map("authentication")
+}
