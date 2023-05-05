@@ -60,3 +60,4 @@ node_modules
 api/lava.sock
 .DS_Store
 .vscode/terminals.json
+operations/node_modules
