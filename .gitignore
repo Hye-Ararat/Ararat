@@ -59,3 +59,4 @@ authentication/key
 node_modules
 api/lava.sock
 .DS_Store
+.vscode/terminals.json
