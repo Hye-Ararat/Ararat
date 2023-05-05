@@ -2,10 +2,11 @@
   "name": "ararat",
   "version": "1.0.0",
   "scripts": {
-    "dev": "concurrently \"npm:next:dev\" \"npm:api:dev\" \"npm:authentication:dev\"",
+    "dev": "concurrently \"npm:next:dev\" \"npm:api:dev\" \"npm:authentication:dev\" \"npm:operations:dev\"",
     "next:dev": "cd core && npm run dev",
     "api:dev": "cd api && npm run dev",
-    "authentication:dev": "cd authentication && npm run dev"
+    "authentication:dev": "cd authentication && npm run dev",
+    "operations:dev": "cd operations && npm run dev"
   },
   "keywords": [],
   "author": "",
