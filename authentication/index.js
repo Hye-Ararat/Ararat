@@ -12,7 +12,7 @@ const caddyConfig = JSON.parse(fs.readFileSync("../caddyConfig.json", "utf8"));
 const prisma = new PrismaClient();
 import dotenv from "dotenv";
 dotenv.config({path: "../core/.env.local"});
-dotenv.config({path: "../.env"});
+dotenv.config({path: "../core/.env"});
 
 async function setupKey() {
     console.log("Checking for key...");
