@@ -10,9 +10,21 @@ import { LoadingButton } from "@mui/lab";
 import nookies from "nookies";
 import Link from "next/link";
 
-export default function FileEditor({ file, path, instance }) {
+export default function FileEditor({ file, path, instance, setFiles, activeFile, files, fileData }) {
   const [data, setData] = useState(file);
   const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    let fileDat = files;
+    console.log(data, file);
+    console.log(data == file);
+    if (data == file) {
+       fileDat[activeFile].saved = true;
+    } else {
+             fileDat[activeFile].saved = false;
+    }
+    fileDat[activeFile].contentState = data;
+    setFiles(fileDat);
+  }, [data, activeFile])
   console.log(file)
   function language() {
     if (path.includes(".")) {
@@ -284,7 +296,14 @@ export default function FileEditor({ file, path, instance }) {
     <div style={{ cursor: "text", width: "100%", marginTop: 20 }}>
       <div style={{padding: 4, backgroundColor: "#141c26", borderRadius: "12px"}}>
       {/*@ts-ignore*/}
-      <Monaco height={"42vh"} onChange={(data) => setData(data)} id="monaco-editor-parent" theme="hye" value={typeof (file) == "object" ? JSON.stringify(file) : file.length == 0 ? "" : file} style={{ marginLeft: "auto", marginRight: "auto" }} language={language()} options={{ cursorSmoothCaretAnimation: "on", cursorBlinking: "smooth", smoothScrolling: true, automaticLayout: true }} />
+      <Monaco height={"42vh"} onChange={(data) => {
+      console.log(files.findIndex((item) => item.name == fileData.name))
+       /*  let fileArr = files;
+        fileArr[files.findIndex((item) => item.name == fileData.name)].contentState = data;
+        console.log(fileArr);
+        setFiles(fileArr); */
+        setData(data)
+      }} id="monaco-editor-parent" theme="hye" value={typeof (file) == "object" ? JSON.stringify(file) : file.length == 0 ? "" : file} style={{ marginLeft: "auto", marginRight: "auto" }} language={language()} options={{ cursorSmoothCaretAnimation: "on", cursorBlinking: "smooth", smoothScrolling: true, automaticLayout: true }} />
       </div>
       <LoadingButton loading={saving} sx={{ mt: 1 }} variant="contained" color="success" onClick={async () => {
         console.log(data);
