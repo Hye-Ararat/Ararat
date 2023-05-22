@@ -66,6 +66,18 @@ const theme = createTheme({
         }
       },
     },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          borderRadius: 12
+        },
+        "&.Mui-selected": {
+          backgroundColor: "#28374b",
+          color: "#fff",
+        }
+      }
+    },
     MuiDrawer: {
       styleOverrides: {
         paper: {
