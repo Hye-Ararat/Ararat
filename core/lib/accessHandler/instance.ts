@@ -107,6 +107,9 @@ export default class Instance {
             if (request.method == "GET" || request.method == "HEAD") {
                 if (await this.hasPermission("get-files_instance")) return allowed();
             }
+            if (request.method == "POST") {
+                if (await this.hasPermission("write-files_instance")) return allowed();
+            }
         }
 
         return notAllowed();

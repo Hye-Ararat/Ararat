@@ -29,6 +29,12 @@ export default class Instances {
             return new Instance(request.nextUrl.pathname.split("/")[3], this.accessClient, this.authorization, this.payload).currentRequestAccess(request);
         }
         let sub = this.payload["sub"];
+        if (request.nextUrl.pathname == "/1.0/instances") {
+            if (request.method == "POST") {
+                //add permission checking for this later
+                return allowed();
+            } 
+        }
         if (request.nextUrl.search.includes("recursion=2")) {
             let instances = await lxdUnix().getInstances(2);
             let filteredInstances = instances.filter((instance) => {

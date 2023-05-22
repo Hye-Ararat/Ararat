@@ -6,6 +6,9 @@ import {decode} from "jsonwebtoken";
 import prisma from "../prisma";
 import caddyConfig from "../../../caddyConfig.json";
 import Operations from "./operations";
+import Profiles from "./profiles";
+import StoragePools from "./storagePools";
+import Networks from "./networks";
 
 export default class AccessHandler {
     private authorization: string;
@@ -21,6 +24,16 @@ export default class AccessHandler {
     }
     get operations() {
         return new Operations(this, this.authorization)
+    }
+    get profiles() {
+        return new Profiles(this, this.authorization);
+    }
+    get storagePools() {
+        return new StoragePools(this, this.authorization);
+    }
+
+    get networks() {
+        return new Networks(this, this.authorization);
     }
     async hasPermission(permission: string) {
         if (this.authorization) {
@@ -53,10 +66,14 @@ export default class AccessHandler {
     }
     async currentRequestAccess(request: NextRequest) {
         const pathname = request.nextUrl.pathname;
+        console.log(pathname, "This is the pathname :)")
         if (pathname == "/1.0") return allowed();
         if (this.authorization) {
           if (pathname.startsWith("/1.0/instances")) return await (this.instances).currentRequestAccess(request);
           if (pathname.startsWith("/1.0/operations")) return await (this.operations).currentRequestAccess(request);
+          if (pathname.startsWith("/1.0/profiles")) return await (this.profiles).currentAccessRequest(request);
+          if (pathname.startsWith("/1.0/storage-pools")) return await (this.storagePools).currentAccessRequest(request);
+          if (pathname.startsWith("/1.0/networks")) return await (this.networks).currentAccessRequest(request);
         }
         return notAllowed();
     }
