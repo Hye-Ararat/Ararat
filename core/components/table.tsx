@@ -42,6 +42,7 @@ export default function Table({columns, rows, actions, top, rowLinks} : {columns
         setActiveRowLinks(tempRowLinks);
         setCheckedRows([]);
     }, [searchQuery])
+    console.log(activeRows)
     return (
         <>
             <Menu
@@ -108,9 +109,10 @@ export default function Table({columns, rows, actions, top, rowLinks} : {columns
                     {activeRows.map((row, index) => {
                         return (
                                         <Paper key={index} sx={{ boxShadow: "none", padding: 2, borderRadius: 0, borderTop: "0.5px solid gray", borderBottom: "0.5px solid gray" }}>
+                                            {activeRowLinks[index] ?
                                             <Link href={activeRowLinks[index] ? activeRowLinks[index].link : ""} style={{textDecoration: "none", color: "inherit"}} prefetch={false}>
                                                                 <Grid container direction="row">
-                                                                    
+                                                                
                                                                 <Grid container xs={1}>
                                 <Checkbox onChange={(e) => {
                                     if (e.target.checked) {
@@ -130,6 +132,27 @@ export default function Table({columns, rows, actions, top, rowLinks} : {columns
                         })}
                                             </Grid>
                                             </Link>
+                                            : 
+                                                                                    <Grid container direction="row">
+                                                                
+                                                                <Grid container xs={1}>
+                                <Checkbox onChange={(e) => {
+                                    if (e.target.checked) {
+                                        setCheckedRows([...checkedRows, index])
+                                    } else {
+                                        setCheckedRows(checkedRows.filter((row) => row !== index))
+                                    }
+                                }} checked={checkedRows.includes(index)} sx={{p: 0}}/>
+                            </Grid>
+                        {row.map((row, index) => {
+                            return (
+                                <Grid key={index} container xs={columns[index].sizes.xs}>
+                                {row}
+                            </Grid>
+                            )
+
+                        })}
+                                            </Grid>}
                                         </Paper>
                         )
 
