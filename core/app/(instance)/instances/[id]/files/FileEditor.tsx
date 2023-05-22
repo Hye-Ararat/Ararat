@@ -305,18 +305,6 @@ export default function FileEditor({ file, path, instance, setFiles, activeFile,
         setData(data)
       }} id="monaco-editor-parent" theme="hye" value={typeof (file) == "object" ? JSON.stringify(file) : file.length == 0 ? "" : file} style={{ marginLeft: "auto", marginRight: "auto" }} language={language()} options={{ cursorSmoothCaretAnimation: "on", cursorBlinking: "smooth", smoothScrolling: true, automaticLayout: true }} />
       </div>
-      <LoadingButton loading={saving} sx={{ mt: 1 }} variant="contained" color="success" onClick={async () => {
-        console.log(data);
-        setSaving(true);
-        await axios.post(`/api/v1/instances/${instance}/files?path=${path}`, data, {
-          headers: {
-            'Content-Type': 'text/plain',
-            authorization: `Bearer ${nookies.get(null).authorization}`
-          }
-        });
-        console.log(instance)
-        setSaving(false);
-      }}>Save</LoadingButton>
     </div >
     </>
   )

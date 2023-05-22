@@ -1,7 +1,7 @@
 "use client";
 
 import FileEditor from "./FileEditor"
-import { Tabs, Tab, Grid, Divider, IconButton, Tooltip, Paper, Typography, Accordion, AccordionActions, AccordionSummary, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, Button } from "../../../../../components/base";
+import { Tabs, Tab, Grid, Divider, IconButton, Tooltip, Paper, Typography, Accordion, AccordionActions, AccordionSummary, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, Button, LoadingButton } from "../../../../../components/base";
 import Console from "../Console";
 import { useEffect, useState } from "react";
 import { Close, ExpandMore } from "@mui/icons-material";
@@ -12,6 +12,8 @@ export default function FileView({ file, path, instance, accessToken, instanceDa
     const [activeFile, setActiveFile] = useState(0);
     const [files, setFiles] = useState<{ name: string, active: boolean, contentState: string, saved: boolean }>([]); // can u add the type that useState returns
     const [showSavedPopup, setShowSavedPopup] = useState(false);
+    const [stateThing, setStateThing] = useState(false);
+    const [saving, setSaving] = useState(false);
     //there are no types because my vscode is f***
     //it needs to be a state u didnt do usestate oh im dumb loluh :skull:
     const client = lxd(accessToken);
@@ -32,6 +34,7 @@ export default function FileView({ file, path, instance, accessToken, instanceDa
                 }
                 if (index == fileList.data.length - 1){
              setFiles(fileMetadata)
+             setActiveFile(files.findIndex((file) => file.name.includes(path.split("/").slice(-1).join("/"))))
             }
             })
 
@@ -39,6 +42,15 @@ export default function FileView({ file, path, instance, accessToken, instanceDa
         }
         run();
     }, []);
+    async function saveFile() {
+        let newFiles = files;
+        let currentFile = files[activeFile];
+            let parentDirectory = path.split("/").slice(0, -1).join("/");
+        await client.instances.instance(instance).createOrReplaceFile(parentDirectory + "/" + currentFile.name, currentFile.contentState);
+        newFiles[activeFile].saved = true;
+        setFiles(newFiles);
+        return;
+    }
     return (
         <>
         <Dialog open={showSavedPopup} onClose={() => setShowSavedPopup(false)}>
@@ -55,8 +67,31 @@ export default function FileView({ file, path, instance, accessToken, instanceDa
             <Divider />
             <DialogActions>
                                 <Button color="info" variant="contained" onClick={() => setShowSavedPopup(false)}>Cancel</Button>
-                <Button color="error" variant="contained" onClick={() => setShowSavedPopup(false)}>Close without saving</Button>
-                                <Button color="success" variant="contained" onClick={() => setShowSavedPopup(false)}>Save and close</Button>
+                <Button color="error" variant="contained" onClick={() => {
+                     let newFiles = files;
+                     let file = files[activeFile];
+                    newFiles[files.findIndex((item) => item.name == file.name)].active = false;
+                                                    if (files.findIndex((item) => item.name == file.name) == activeFile) {
+                                                        setActiveFile(files.filter((file) => file.active == true)[0]);
+                                                    }
+                                                    setFiles(newFiles); 
+                                                    setStateThing(!stateThing)
+                    setShowSavedPopup(false)
+                
+                }}>Close without saving</Button>
+                                <Button color="success" variant="contained" onClick={async() => {
+                                    await saveFile();
+                                    setShowSavedPopup(false)
+                            let newFiles = files;
+                        let file = files[activeFile];
+                                    newFiles[files.findIndex((item) => item.name == file.name)].active = false;
+                                                    if (files.findIndex((item) => item.name == file.name) == activeFile) {
+                                                        setActiveFile(files.filter((file) => file.active == true)[0]);
+                                                    }
+                                                    setFiles(newFiles); 
+                                                    setStateThing(!stateThing)
+                                }
+                                    }>Save and close</Button>
             </DialogActions>
         </Dialog>
             <Grid container direction="row" sx={{ mt: 2 }}>
@@ -92,7 +127,17 @@ export default function FileView({ file, path, instance, accessToken, instanceDa
                                             <Tooltip title="Close File" onClick={() => {
                                                 let currentFile = files[activeFile];
                                                 if (!currentFile.saved) {
+                                                    setActiveFile(files.findIndex((item) => item.name == file.name))
                                                     setShowSavedPopup(true);
+                                                   new Audio("/audio/popup.mp3").play()
+                                                } else {
+                                                    let newFiles = files;
+                                                    newFiles[files.findIndex((item) => item.name == file.name)].active = false;
+                                                    if (files.findIndex((item) => item.name == file.name) == activeFile) {
+                                                        setActiveFile(files.filter((file) => file.active == true)[0]);
+                                                    }
+                                                    setFiles(newFiles); 
+                                                    setStateThing(!stateThing)
                                                 }
                                             }}>
                                                 <IconButton sx={{ color: "#e85347" }} size="small">
@@ -110,7 +155,14 @@ export default function FileView({ file, path, instance, accessToken, instanceDa
                         </Tabs>
                     </Paper>
                     {files[activeFile] ?
+                    <>
                     <FileEditor files={files} setFiles={setFiles} fileData={files[activeFile]} file={files[activeFile].contentState} path={path} instance={instance} activeFile={activeFile} />
+                    <LoadingButton sx={{mt: 1}} loading={saving} onClick={async () => {
+                        setSaving(true);
+                        await saveFile();
+                        setSaving(false);
+                    }} color="success" variant="contained">Save</LoadingButton>
+                    </>
                     : <CircularProgress />}
                 </Grid>
                 <Grid xs={12} sx={{ maxHeight: "20vh", width: "100%" }}>

@@ -50,7 +50,7 @@ export default async function Files({params, searchParams}) {
         <>
         <Grid container>
         <Typography variant="h4">Files</Typography>
-        <UploadFile id={params.id} path={searchParams.path || "/"} />
+        <UploadFile id={params.id} path={searchParams.path || "/"} accessToken={accessToken} />
         <NewFile id={params.id} path={searchParams.path || "/"} />
         </Grid>
         {/*@ts-ignore*/}

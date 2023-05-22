@@ -1,11 +1,13 @@
 "use client";
 
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, TextField, Typography, Input} from "../../../../../components/base";
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, TextField, Typography, Input, LoadingButton} from "../../../../../components/base";
 import { useState } from "react";
 import { createInstanceFile } from "../../../../../scripts/api/v1/instances/[id]/files";
 import {useRouter} from "next/navigation"
+import sanitize from "sanitize-filename";
+import lxd from "../../../../../lib/lxd";
 
-export default function UploadFile({id, path}) {
+export default function UploadFile({id, path, accessToken}) {
     const [uploading, setUploading] = useState(false)
     const router = useRouter();
     return (
@@ -18,15 +20,22 @@ export default function UploadFile({id, path}) {
                                             reader.readAsText(e.target.files[0]);
                                             reader.onloadend = async () => {
                                                 //console.log(reader.result)
-                                                let dat = await createInstanceFile(id, path + "/" + e.target.files[0].name, reader.result)
-                                                console.log(dat)
+                                                //let dat = await createInstanceFile(id, path + "/" + e.target.files[0].name, reader.result)
+                                                let client = lxd(accessToken)
+                                                if (path.includes(".")) {
+                                                    let parentPath = path.split("/");
+                                                    parentPath.pop();
+                                                    parentPath = parentPath.join("/");
+                                                    path = parentPath;
+                                                }
+                                                await client.instances.instance(id).createOrReplaceFile(path + "/" + sanitize(e.target.files[0].name), reader.result);
                                                 console.log("DONE")
                                                 setUploading(false);
                                                 router.refresh();
                                             }
                                             setUploading(false)
                                         }} sx={{ display: "none" }} accept="*" type="file" id="file-upload" />
-                                    <Button sx={{height: "100%"}} variant="contained" color="success" component="span">{uploading ? "Loading" : "Upload"}</Button>
+                                    <LoadingButton loading={uploading} sx={{height: "100%"}} variant="contained" color="success" component="span">{uploading ? "Loading" : "Upload"}</LoadingButton>
                     </label>
                                             <Dialog open={uploading} onClose={() => setUploading(false)}>
         <DialogTitle>
