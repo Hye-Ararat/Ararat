@@ -9,7 +9,11 @@ export default function AuthorizeActions({interaction}) {
         <form method="post" id="leForm" action={`/authentication/interaction/${interaction}/confirm`}>
         <Grid sx={{mt: 2}} container direction="row">
         <Button sx={{ml: "auto", mr: 1, minWidth: "100px"}} variant="contained" color="error">Block</Button>
-        <Button onClick={() => confirm()} sx={{mr: "auto", ml: 1, minWidth: "100px"}} variant="contained" color="success">Allow</Button>
+        <Button onClick={async () => {
+            const audio = new Audio("/audio/logon.wav");
+            await audio.play();
+            confirm()
+        }} sx={{mr: "auto", ml: 1, minWidth: "100px"}} variant="contained" color="success">Allow</Button>
         </Grid>
         </form>
     );
