@@ -25,6 +25,7 @@ async function verifyToken(token : string) {
 export async function middleware(request: NextRequest) {
   console.log(request.nextUrl.pathname)
   const headers = new Headers(request.headers)
+  if (request.nextUrl.pathname.startsWith("/audio")) return NextResponse.next();
   if (request.nextUrl.pathname.startsWith("/authentication")) {
     return NextResponse.next();
   }
