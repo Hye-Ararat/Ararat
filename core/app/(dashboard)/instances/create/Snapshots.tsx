@@ -1,8 +1,9 @@
 "use client";
 
 import {FormControlLabel, Grid, MenuItem, Select, Switch, Typography, TextField, Button, Divider} from "../../../../components/base"
+import lxd from "../../../../lib/lxd";
 
-export default function Snapshots({setStep, snapshotSchedule, setSnapshotSchedule, snapshotExpiration, setSnapshotExpiration, autoWhileStopped, setAutoWhileStopped}) {
+export default function Snapshots({setStep, snapshotSchedule, setSnapshotSchedule, snapshotExpiration, setSnapshotExpiration, autoWhileStopped, setAutoWhileStopped, configuration, accessToken}) {
     return (
         <>
                         <Typography>Snapshot Expiration</Typography>
@@ -38,7 +39,12 @@ export default function Snapshots({setStep, snapshotSchedule, setSnapshotSchedul
                 <Divider sx={{mt: 2, mb: 2}} />
                 <Grid container>
                                                 <Button sx={{mr: "auto"}} onClick={() => setStep("securityPolicies")} variant="contained" color="info">Back</Button>
-                    <Button sx={{ml: "auto"}} onClick={() => setStep("networks")} sx={{ml: "auto"}} variant="contained" color="success">Create Instance</Button>
+                    <Button sx={{ml: "auto"}} onClick={async () => {
+                                  let createOperation = await lxd(accessToken).createInstance(configuration);
+                                  setTimeout(() => {
+                                    window.location.href = `/operations/${createOperation.id}`
+                                  }, 500)
+                    }} sx={{ml: "auto"}} variant="contained" color="success">Create Instance</Button>
                     </Grid>
         </>
     )

@@ -68,6 +68,7 @@ export default class AccessHandler {
         const pathname = request.nextUrl.pathname;
         console.log(pathname, "This is the pathname :)")
         if (pathname == "/1.0") return allowed();
+        if (pathname.startsWith("/1.0/events")) return allowed() //change later
         if (this.authorization) {
           if (pathname.startsWith("/1.0/instances")) return await (this.instances).currentRequestAccess(request);
           if (pathname.startsWith("/1.0/operations")) return await (this.operations).currentRequestAccess(request);

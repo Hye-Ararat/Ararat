@@ -22,6 +22,7 @@ import decodeToken from "../lib/decodeToken";
 import nookies from "nookies";
 import signOut from "../scripts/lib/auth/signout"
 import { usePathname } from "next/navigation";
+import Events from "../app/Events";
 
 export default function Navigation({ children, ...props }) {
     const signout = async () => {
@@ -42,6 +43,7 @@ export default function Navigation({ children, ...props }) {
     }, [matches])
     return (
         <Box sx={{ display: "flex" }}>
+            <Events />
             <AppBar
                 position="fixed"
                 sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}

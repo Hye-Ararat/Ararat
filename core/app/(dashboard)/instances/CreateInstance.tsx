@@ -230,7 +230,7 @@ export default function CreateInstance({imageServers, profiles, storagePools, ac
             {step == "networks" ? <Networks setStep={setStep} networks={networks} instanceNetworks={instanceNetworks} setInstanceNetworks={setInstanceNetworks} /> : ""}
             {step == "resourceLimits" ? <ResourceLimits setStep={setStep} profiles={profiles} profile={profile} memoryLimit={memoryLimit} setMemoryLimit={setMemoryLimit} cpuCores={cpuCores} setCpuCores={setCpuCores} /> : ""}
             {step == "securityPolicies" ? <SecurityPolicies type={type} setStep={setStep} profiles={profiles} profile={profile} securityPolicies={securityPolicies} setSecurityPolicies={setSecurityPolicies} /> : ""}
-            {step == "snapshots" ? <Snapshots setStep={setStep} snapshotSchedule={snapshotSchedule} setSnapshotSchedule={setSnapshotSchedule} snapshotExpiration={snapshotExpiration} setSnapshotExpiration={setSnapshotExpiration} autoWhileStopped={autoWhileStopped} setAutoWhileStopped={setAutoWhileStopped} /> : ""}
+            {step == "snapshots" ? <Snapshots setStep={setStep} snapshotSchedule={snapshotSchedule} setSnapshotSchedule={setSnapshotSchedule} snapshotExpiration={snapshotExpiration} setSnapshotExpiration={setSnapshotExpiration} autoWhileStopped={autoWhileStopped} setAutoWhileStopped={setAutoWhileStopped} configuration={config} accessToken={accessToken} /> : ""}
             {step == "advanced" ? <Advanced accessToken={accessToken} config={config} /> : ""}
             </DialogContent>
             : ""}

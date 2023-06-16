@@ -19,7 +19,9 @@ export default function RootLayout({ children }: { children:  React.ReactNode })
           />
       </head>
       <body>
-        <RootStyleRegistry>{children}</RootStyleRegistry>
+        <RootStyleRegistry>
+          {children}
+          </RootStyleRegistry>
       </body>
     </html>
   );
