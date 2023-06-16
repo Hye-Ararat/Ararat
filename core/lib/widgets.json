@@ -1,7 +1,0 @@
-{
-    "instance": [
-        "console",
-        "cpu-chart",
-        "memory-chart"
-    ]
-}
