@@ -1,0 +1,6 @@
+{
+  "extends": ["config:base", "group:allNonMajor"],
+  "includeForks": true,
+  "dependencyDashboard": true,
+  "schedule": ["every weekend"]
+}
