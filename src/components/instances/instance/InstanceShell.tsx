@@ -1,7 +1,7 @@
 import { use, useEffect, useState } from 'react';
 import { Badge, Button, Flex, Tabs, Title } from '@mantine/core';
 import Link from 'next/link';
-import { IconBox, IconFolder, IconHistory, IconHome, IconSettings, IconTerminal2 } from '@tabler/icons-react';
+import { IconBox, IconFolder, IconHistory, IconHome, IconSettings, IconTerminal2, IconWifi } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 
 export default function InstanceTabs() {
@@ -11,8 +11,9 @@ export default function InstanceTabs() {
     if (router.pathname == "/instances/[instance]") setActiveTab("dashboard");
     if (router.pathname == "/instances/[instance]/console") setActiveTab("console");
     if (router.pathname == "/instances/[instance]/files") setActiveTab("files");
-    if (router.pathname == "/instances/[instance]/snapshots") setActiveTab("snapshots");
+    if (router.pathname == "/instances/[instance]/networks") setActiveTab("networks");
     if (router.pathname == "/instances/[instance]/volumes") setActiveTab("volumes");
+    if (router.pathname == "/instances/[instance]/snapshots") setActiveTab("snapshots");
     if (router.pathname == "/instances/[instance]/settings") setActiveTab("settings");
 
   }, [router.asPath])
@@ -39,12 +40,16 @@ export default function InstanceTabs() {
           <Link href="/instances/inst/files" style={{ textDecoration: "none" }} >
             <Tabs.Tab icon={<IconFolder size="0.8rem" />} value="files">Files</Tabs.Tab>
           </Link>
-          <Link href="/instances/inst/snapshots" style={{ textDecoration: "none" }} >
-            <Tabs.Tab icon={<IconHistory size="0.8rem" />} value="snapshots">Snapshots</Tabs.Tab>
+          <Link href="/instances/inst/networks" style={{ textDecoration: "none" }} >
+            <Tabs.Tab icon={<IconWifi size="0.8rem" />} value="networks">Networks</Tabs.Tab>
           </Link>
           <Link href="/instances/inst/volumes" style={{ textDecoration: "none" }} >
             <Tabs.Tab icon={<IconBox size="0.8rem" />} value="volumes">Volumes</Tabs.Tab>
           </Link>
+          <Link href="/instances/inst/snapshots" style={{ textDecoration: "none" }} >
+            <Tabs.Tab icon={<IconHistory size="0.8rem" />} value="snapshots">Snapshots</Tabs.Tab>
+          </Link>
+       
           <Link href="/instances/inst/settings" style={{ textDecoration: "none" }} >
             <Tabs.Tab icon={<IconSettings size="0.8rem" />} value="settings">Settings</Tabs.Tab>
           </Link>
