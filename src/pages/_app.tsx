@@ -4,10 +4,12 @@ import { Header, MantineProvider, Navbar } from '@mantine/core';
 import AppShell from '../components/AppShell';
 import { RouterTransition } from '@/components/RouteTransition';
 import {useColorScheme} from "@mantine/hooks";
+import { useRouter } from 'next/router';
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
   const colorScheme = useColorScheme("dark");
+  const router = useRouter();
 
   return (
     <>
@@ -25,9 +27,11 @@ export default function App(props: AppProps) {
         }}
       >
         <RouterTransition />
+        {!router.pathname.startsWith("/authentication") ?
         <AppShell>
     <Component {...pageProps} />
     </AppShell>
+    : <Component {...pageProps} />}
       </MantineProvider>
     </>
   );
