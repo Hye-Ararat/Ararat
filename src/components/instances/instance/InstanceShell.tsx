@@ -23,8 +23,8 @@ export default function InstanceTabs() {
           <Title order={1}>{router.query.instance}</Title>
           <Badge color="green" variant="dot">Online</Badge>
         </div>
-        <Button variant="filled" color="green" sx={{ marginLeft: "auto", marginRight: 5, marginTop: "auto", marginBottom: "auto" }} disabled>Start</Button>
-        <Button variant="filled" sx={{ marginRight: 5, marginTop: "auto", marginBottom: "auto" }} color="red">Stop</Button>
+        <Button variant="filled" color="green" sx={{ marginLeft: "auto", marginRight: 10, marginTop: "auto", marginBottom: "auto" }} disabled>Start</Button>
+        <Button variant="filled" sx={{ marginRight: 10, marginTop: "auto", marginBottom: "auto" }} color="red">Stop</Button>
         <Button variant="filled" sx={{ marginTop: "auto", marginBottom: "auto" }} color="yellow">Restart</Button>
 
       </Flex>
