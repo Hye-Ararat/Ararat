@@ -22,6 +22,9 @@ import {
   IconTerminal2,
   IconUsers,
   IconHome,
+  IconServerBolt,
+  IconCubeSend,
+  IconArrowBack,
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -78,7 +81,9 @@ export default function ApplicationShell({children} : {children: ReactNode}) {
   const links = [
     { icon: <IconHome size="1rem" />, color: 'indigo', label: 'Dashboard', path: "/" },
   { icon: <IconTerminal2 size="1rem" />, color: 'blue', label: 'Instances', path: "/instances" },
+  { icon: <IconArrowBack size="1rem" />, color: 'red', label: 'Reverse Proxies', path: "/reverse_proxies" },
   { icon: <IconServer2 size="1rem" />, color: 'teal', label: 'Nodes', path: "/nodes" },
+  {icon: <IconCubeSend size="1rem" />, color: "yellow", label: "Image Servers", path: "/image_servers"},
   { icon: <IconUsers size="1rem" />, color: 'violet', label: 'Users', path: "/users" },
 ];
   return (
