@@ -15,6 +15,6 @@ app.prepare().then(() => {
 
   server.listen(port, (err) => {
     if (err) throw err
-    console.log(`> Ready on http://localhost:${port}`)
+    console.log(`> Hye Ararat is running on http://localhost:${port}`)
   })
 })
