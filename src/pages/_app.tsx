@@ -1,10 +1,13 @@
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import { Header, MantineProvider, Navbar } from '@mantine/core';
+import { MantineProvider } from '@mantine/core';
 import AppShell from '../components/AppShell';
 import { RouterTransition } from '@/components/RouteTransition';
 import {useColorScheme} from "@mantine/hooks";
 import { useRouter } from 'next/router';
+import { SpotlightProvider } from '@mantine/spotlight';
+import { IconSearch } from '@tabler/icons-react';
+
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -26,12 +29,14 @@ export default function App(props: AppProps) {
           colorScheme: colorScheme,
         }}
       >
+            <SpotlightProvider searchIcon={<IconSearch size="1.2rem" />} searchPlaceholder='Spotlight (BETA)' nothingFoundMessage="We couldn't find anything that matches your query" shortcut={['mod + P', 'mod + K', '/']} actions={[]}>
         <RouterTransition />
         {!router.pathname.startsWith("/authentication") ?
         <AppShell>
     <Component {...pageProps} />
     </AppShell>
     : <Component {...pageProps} />}
+    </SpotlightProvider>
       </MantineProvider>
     </>
   );
