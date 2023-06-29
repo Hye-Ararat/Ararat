@@ -10,14 +10,34 @@ import {
   Divider,
   Stack,
   Flex,
+  LoadingOverlay,
 } from '@mantine/core';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { client } from '@/lib/oidc';
 
-export default function AuthenticationForm(props: PaperProps) {
+export async function getServerSideProps({query}) {
+    if (!query["interaction"]) {
+       let oidc = await client();
+       let url = oidc.authorizationUrl("login openid email");
+       return {
+              redirect: {
+                destination: url,
+                permanent: false,
+              }
+       }
+    }
+    return {props: {
+        interaction: query["interaction"] ? query["interaction"] : null
+    }}
+}
+
+export default function Authentication({interaction}: {interaction: string}) {
+    const [loggingIn, setLoggingIn] = useState(false);
   function randomIntFromInterval(min: number, max: number) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
-  const [wallpaper, setWallpaper]= useState(randomIntFromInterval(1, 3))
+  const [wallpaper, setWallpaper]= useState(randomIntFromInterval(1, 10))
   const form = useForm({
     initialValues: {
       email: '',
@@ -29,16 +49,31 @@ export default function AuthenticationForm(props: PaperProps) {
       password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
     },
   });
-
+  const router = useRouter();
   return (
-    <Flex style={{minHeight: "100vh", backgroundImage: `url(/images/login/login${wallpaper}.jpg)`, backgroundPosition: "center"}}>
-    <Paper my="auto" mx="auto" radius="md" p="xl" sx={{minWidth: "20vw"}} withBorder {...props} >
+    <Flex style={{minHeight: "100vh", backgroundImage: `url(/images/login/login${wallpaper}.jpg)`, backgroundPosition: "center", backgroundSize: "cover"}}>
+    <Paper my="auto" mx="auto" radius="md" p="xl" sx={{minWidth: "20vw"}} withBorder >
+    <LoadingOverlay visible={!interaction} overlayBlur={2} />
       <Text ta="center" size="lg" weight={500}>
         Welcome to Hye Ararat!
       </Text>
       <Divider label="Please login to continue" labelPosition="center" my="lg" />
 
-      <form onSubmit={form.onSubmit(() => {})}>
+      <form onSubmit={form.onSubmit(async ({email, password}) => {
+        setLoggingIn(true)
+        let res = await fetch(`/oidc/interaction/${interaction}/login`, {
+            method: "POST",
+            body: JSON.stringify({
+                login: email,
+                password
+            }),
+            headers: {
+                "Content-Type": "application/json"
+            },
+            cache: "no-cache"
+        });
+        router.replace(res.url);
+      })}>
         <Stack>
 
           <TextInput
@@ -63,7 +98,7 @@ export default function AuthenticationForm(props: PaperProps) {
         </Stack>
 
 
-          <Button type="submit" radius="md" mt="xl" fullWidth>
+          <Button type="submit" radius="md" mt="xl" fullWidth loading={loggingIn}>
             Login
           </Button>
       </form>
