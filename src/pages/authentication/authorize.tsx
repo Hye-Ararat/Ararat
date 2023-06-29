@@ -32,12 +32,21 @@ export async function getServerSideProps({query}) {
               }
        }
     }
+    const interactionDetails = await fetch(`http://localhost:3000/oidc/interaction/${query["interaction"]}`);
+    const interactionJson = await interactionDetails.json();
+    console.log(interactionJson);
+    const clientDetails = await fetch(`http://localhost:3000/oidc/client/${interactionJson.params.client_id}`);
+    const clientJson = await clientDetails.json();
+    console.log(clientJson)
+    console.log("READY")
     return {props: {
-        interaction: query["interaction"] ? query["interaction"] : null
+        interaction: query["interaction"] ? query["interaction"] : null,
+        interactionDetails: interactionJson,
+        clientDetails: clientJson
     }}
 }
 
-export default function Authentication({interaction}: {interaction: string}) {
+export default function Authentication({interaction, interactionDetails, clientDetails}: {interaction: string, interactionDetails: any, clientDetails: any}) {
     const [authorizing, setAuthorizing] = useState(false);
   function randomIntFromInterval(min: number, max: number) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
@@ -52,10 +61,10 @@ export default function Authentication({interaction}: {interaction: string}) {
     <Paper my="auto" mx="auto" radius="md" p="xl" sx={{minWidth: "20vw"}} withBorder >
     <LoadingOverlay visible={!interaction} overlayBlur={2} />
     <Center>
-        <img width={70} src="https://linuxcontainers.org/lxd/docs/latest/_images/containers.png" />
+        <img width={70} src={clientDetails.logoUri} />
         </Center>
       <Text ta="center" size="lg" mt="sm" weight={500}>
-        Welcome back, Joseph!
+        Welcome back, {interactionDetails.lastSubmission.login.firstName}!
       </Text>
 
       <form id="leForm" action={`/oidc/interaction/${interaction}/confirm`} method="post" onSubmit={form.onSubmit(async ({email, password}) => {
@@ -65,7 +74,7 @@ export default function Authentication({interaction}: {interaction: string}) {
         document.getElementById("leForm").submit();
       })}>
         <Divider my="md" />
-        <Text ta="center" size="sm">Hye Ararat wants to</Text>
+        <Text ta="center" size="sm">{clientDetails.clientName} wants to</Text>
             <List mt="sm" spacing="xs" size="md" center icon={<ThemeIcon color="teal" size={24} radius="xl">
                 <IconCircleCheck size="1rem" />
             </ThemeIcon>}>
