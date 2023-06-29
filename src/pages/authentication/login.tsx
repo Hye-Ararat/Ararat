@@ -38,6 +38,7 @@ export default function Authentication({interaction}: {interaction: string}) {
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
   const [wallpaper, setWallpaper]= useState(randomIntFromInterval(1, 10))
+  const [error, setError]= useState(null)
   const form = useForm({
     initialValues: {
       email: '',
@@ -72,7 +73,23 @@ export default function Authentication({interaction}: {interaction: string}) {
             },
             cache: "no-cache"
         });
+        let data;
+        try {
+            data = await res.json();
+            console.log(data)
+        } catch (error) {
+            
+        }
+        if (data) {
+        if (data.error == "Invalid email or password") {
+            setLoggingIn(false);
+            return setError("Invalid email or password");
+        }
+    }
         router.replace(res.url);
+        setTimeout(() => {
+            window.location = res.url;
+        }, 300)
       })}>
         <Stack>
 
@@ -82,7 +99,7 @@ export default function Authentication({interaction}: {interaction: string}) {
             placeholder="hello@hye.gg"
             value={form.values.email}
             onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
-            error={form.errors.email && 'Invalid email'}
+            error={(form.errors.email && 'Invalid email') || error}
             radius="md"
           />
 
@@ -92,7 +109,7 @@ export default function Authentication({interaction}: {interaction: string}) {
             placeholder="Your password"
             value={form.values.password}
             onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
-            error={form.errors.password && 'Password should include at least 6 characters'}
+            error={form.errors.password && 'Password should include at least 6 characters' || error}
             radius="md"
           />
         </Stack>
