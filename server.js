@@ -7,6 +7,8 @@ const app = next({ dev })
 const handle = app.getRequestHandler()
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const prisma = require("./src/lib/prisma");
+const {compare} = require("bcrypt")
 
 app.prepare().then(() => {
     const server = express()
@@ -23,28 +25,24 @@ app.prepare().then(() => {
         try {
             let email = req.body.email;
             let password = req.body.password;
-            // const user = await prisma.user.findFirst({
-            //     where: {
-            //         email: email
-            //     },
-            //     include: {
-            //         permissions: true
-            //     }
-            // });
+            const user = await prisma.user.findFirst({
+                where: {
+                    email: email
+                }
+            });
             const authError = {
                 error: "Invalid email or password"
             }
-            let user = {
-                id: "1234",
-                email: "1234",
-                password: "adfasdfasdfasdf"
-            }
+            console.log(user, "USER");
             if (!user) return res.status(401).json(authError);
-            //const match = await compare(password, user.password);
-            //if (!match) return res.status(401).json(authError);
+            const match = await compare(password, user.password);
+            console.log(match, "MATCH")
+            console.log(password, "REQUESTPASSWD")
+            if (!match) return res.status(401).json(authError);
             const result = {
                 login: {
-                    accountId: user.id
+                    accountId: user.id,
+                    firstName: user.firstName
                 }
             }
             const inter = await oidcProvider.Interaction.find(req.params.uid);
@@ -69,7 +67,8 @@ app.prepare().then(() => {
             } else {
                 grant = new oidcProvider.Grant({
                     accountId: inter.session.accountId,
-                    clientId: inter.params.client_id
+                    clientId: inter.params.client_id,
+                    firstName: inter.session.firstName
                 });
             }
             if (inter.prompt.details.missingOIDCScope) {
@@ -100,6 +99,15 @@ app.prepare().then(() => {
             res.send(500).send("err");
         }
 
+    })
+    server.get("/oidc/client/:id", async (req, res) => {
+        let client = await oidcProvider.Client.find(req.params.id);
+        if (client) {
+        if (client.clientSecret) {
+        client.clientSecret = undefined;
+        }
+    }
+        res.json(client);
     })
     server.all('*', (req, res) => {
         if (req.url.startsWith("/.well-known") || req.url.startsWith("/oidc")) return oidcProvider.callback()(req, res)
