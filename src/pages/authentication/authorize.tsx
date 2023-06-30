@@ -64,7 +64,7 @@ export default function Authentication({interaction, interactionDetails, clientD
         <img width={70} src={clientDetails.logoUri} />
         </Center>
       <Text ta="center" size="lg" mt="sm" weight={500}>
-        Welcome back, {interactionDetails.lastSubmission.login.firstName}!
+        Welcome back{interactionDetails.lastSubmission ? ", " + interactionDetails.lastSubmission.login.firstName : ""}!
       </Text>
 
       <form id="leForm" action={`/oidc/interaction/${interaction}/confirm`} method="post" onSubmit={form.onSubmit(async ({email, password}) => {
