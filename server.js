@@ -13,9 +13,13 @@ const {compare} = require("bcrypt")
 app.prepare().then(() => {
     const server = express()
     const configuration = require("./src/authentication/configuration.js");
-    const oidcProvider = new provider("http://localhost:3000/oidc", { ...configuration });
+    const oidcProvider = new provider(`http://${process.env.URL}/oidc`, { ...configuration });
     server.use(bodyParser.json())
     server.use(cookieParser())
+    server.get("/oidc/.well-known/openid-configuration", async (req, res) => {
+        let config = await fetch("http://localhost:3000/.well-known/openid-configuration").then(re => re.json());
+        res.json(config);
+    })
     server.get("/oidc/interaction/:uid", async (req, res) => {
         let inter = await oidcProvider.Interaction.find(req.params.uid);
         res.json(inter);
@@ -116,6 +120,6 @@ app.prepare().then(() => {
     server.use(oidcProvider.callback());
     server.listen(port, (err) => {
         if (err) throw err
-        console.log(`> Hye Ararat is running on http://localhost:${port}`)
+        console.log(`> Hye Ararat is running on http://${process.env.URL}`)
     })
 })
