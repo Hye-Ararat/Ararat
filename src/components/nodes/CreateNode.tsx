@@ -33,7 +33,7 @@ export default function CreateNode() {
     useEffect(() => {
         console.log(activeStep);
         if (activeStep == 2) {
-            let socket = new WebSocket("ws://192.168.1.133:3001/install");
+            let socket = new WebSocket(`ws://${nodeDomain}:3001/install`);
             socket.onopen = () => setConnected(true);
             socket.onmessage = (e) => {
                 let data = JSON.parse(e.data);
