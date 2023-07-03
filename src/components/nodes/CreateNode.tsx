@@ -34,7 +34,10 @@ export default function CreateNode() {
         console.log(activeStep);
         if (activeStep == 2) {
             let socket = new WebSocket(`ws://${nodeDomain}:3001/install`);
-            socket.onopen = () => setConnected(true);
+            socket.onopen = () => {
+                setConnected(true);
+                socket.send(window.location.origin);
+            }
             socket.onmessage = (e) => {
                 let data = JSON.parse(e.data);
                 console.log(data)
