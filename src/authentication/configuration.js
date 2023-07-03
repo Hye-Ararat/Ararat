@@ -18,7 +18,7 @@ async function setupKey() {
 setupKey();
 
 
-let url = "localhost:3000"
+let url = process.env.URL
 
 const configuration = {
     //adapter: PrismaAdapter,

@@ -32,10 +32,10 @@ export async function getServerSideProps({query}) {
               }
        }
     }
-    const interactionDetails = await fetch(`http://localhost:3000/oidc/interaction/${query["interaction"]}`);
+    const interactionDetails = await fetch(`http://${process.env.URL}/oidc/interaction/${query["interaction"]}`);
     const interactionJson = await interactionDetails.json();
     console.log(interactionJson);
-    const clientDetails = await fetch(`http://localhost:3000/oidc/client/${interactionJson.params.client_id}`);
+    const clientDetails = await fetch(`http://${process.env.URL}/oidc/client/${interactionJson.params.client_id}`);
     const clientJson = await clientDetails.json();
     console.log(clientJson)
     console.log("READY")

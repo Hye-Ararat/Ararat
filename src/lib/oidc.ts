@@ -1,6 +1,6 @@
 import { Issuer, generators, Client } from 'openid-client';
 
-let url = "localhost:3000"
+let url = process.env.URL
 
 
 let issuer : Issuer;

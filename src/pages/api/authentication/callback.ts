@@ -3,7 +3,7 @@ import http from "node:http";
 import {serialize} from "cookie"
 
 export default async function handler(req, res : http.ServerResponse) {
-    let url = "localhost:3000";
+    let url = process.env.URL;
     console.log(req.query)
     const formBody = new URLSearchParams();
     formBody.append("grant_type", "authorization_code");
