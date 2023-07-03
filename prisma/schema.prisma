@@ -17,3 +17,9 @@ model User {
   firstName String
   lastName  String
 }
+
+model Node {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  url      String
+}
