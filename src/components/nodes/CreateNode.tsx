@@ -1,5 +1,6 @@
-import { Button, Flex, List, Modal, Stepper, useMantineTheme, Text, TextInput, Code, LoadingOverlay, Progress, Center, Loader } from "@mantine/core";
+import { Button, Flex, List, Modal, Stepper, useMantineTheme, Text, TextInput, Code, LoadingOverlay, Progress, Center, Loader, CheckIcon } from "@mantine/core";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function CreateNode() {
@@ -40,9 +41,15 @@ export default function CreateNode() {
                 setCurrentStatus(data.status);
                 setCurrentPercent(data.percent);
                 setCurrentImage(data.image);
+                if (data.percent == 100) {
+                    setTimeout(() => {
+                    setActiveStep(3);
+                    }, 1000)
+                }
             }
         }
     }, [activeStep])
+    const router = useRouter();
     return (
         <>
             <Button onClick={() => setCreatingNode(true)} my="auto" ml="auto">Create Node</Button>
@@ -92,12 +99,34 @@ export default function CreateNode() {
                         </>}
                     </Stepper.Step>
                     <Stepper.Completed>
-                        <p>done</p>
+                        <Flex>
+                        <CheckIcon color="green" width={50} style={{marginRight: "auto", marginLeft: "auto"}} />
+                        </Flex>
+                        <Text ta="center" mt="md">All done! Press add node to finish.</Text>
                     </Stepper.Completed>
                 </Stepper>
                 <Flex mt="md">
-                    <Button disabled={activeStep == 0 || activeStep == 2} color="red" mr="sm" ml="auto" onClick={() => setActiveStep(activeStep - 1)}>Back</Button>
-                    <Button disabled={activeStep == 2} onClick={() => setActiveStep(activeStep + 1)}>Next</Button>
+                    <Button disabled={activeStep == 0 || activeStep == 2 ||activeStep==3} color="red" mr="sm" ml="auto" onClick={() => setActiveStep(activeStep - 1)}>Back</Button>
+                    <Button color={activeStep == 3 ?"green": "blue"} disabled={activeStep == 2} onClick={() => {
+                        if (activeStep != 3){
+                        setActiveStep(activeStep + 1)
+                        } else {
+                            fetch("/api/nodes", {
+                                method: "POST",
+                                body: JSON.stringify({
+                                    name: nodeName,
+                                    domain: nodeDomain
+                                }),
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                cache: "no-cache",
+                            }).then(() => {
+                                setCreatingNode(false);
+                                router.reload()
+                            })
+                        }
+                    }}>{activeStep == 3 ? "Add Node" : "Next"}</Button>
                 </Flex>
             </Modal>        </>
     )
