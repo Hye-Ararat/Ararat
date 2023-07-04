@@ -10,21 +10,21 @@ export async function getServerSideProps() {
     props: {
       nodes
     }
-}
+  }
 }
 
-export default function Nodes({nodes} : {nodes: Node[]}) {
+export default function Nodes({ nodes }: { nodes: Node[] }) {
   return (
     <>
-    <Flex>
-    <Title order={1}>Nodes</Title>
-    <CreateNode />
-    </Flex>
-    {nodes.map((node) => (
-      <Flex key={node.id}>
-      <Title order={3}>{node.name}</Title>
+      <Flex>
+        <Title order={1}>Nodes</Title>
+        <CreateNode />
       </Flex>
-    ))}
+      {nodes.map((node) => (
+        <Flex key={node.id}>
+          <Title order={3}>{node.name}</Title>
+        </Flex>
+      ))}
     </>
   )
 }
