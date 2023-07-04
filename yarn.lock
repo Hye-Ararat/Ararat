@@ -1763,6 +1763,11 @@ isarray@~1.0.0:
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
   integrity sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==
 
+isomorphic-ws@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/isomorphic-ws/-/isomorphic-ws-5.0.0.tgz#e5529148912ecb9b451b46ed44d53dae1ce04bbf"
+  integrity sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==
+
 jake@^10.8.5:
   version "10.8.7"
   resolved "https://registry.yarnpkg.com/jake/-/jake-10.8.7.tgz#63a32821177940c33f356e0ba44ff9d34e1c7d8f"
@@ -1778,13 +1783,15 @@ jose@^4.10.3, jose@^4.14.1, jose@^4.14.4:
   resolved "https://registry.yarnpkg.com/jose/-/jose-4.14.4.tgz#59e09204e2670c3164ee24cbfe7115c6f8bff9ca"
   integrity sha512-j8GhLiKmUAh+dsFXlX1aJCbt5KMibuKb+d7j1JaOJG6s2UjX1PQlW+OKB/sD4a/5ZYF4RcmYmLSndOoU3Lt/3g==
 
-js-lxd@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/js-lxd/-/js-lxd-1.0.1.tgz#56b8dbbc46654bb68113f36f19608793623eb7fa"
-  integrity sha512-Xuwo1cflcNY8JUQV8rHlfV3YYxOlleSczW7C3+CG4ffxAjtU9Nw2pbuDDX/ncWl4OVUO+aqcSieh1f/o7SLEnw==
+js-lxd@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/js-lxd/-/js-lxd-1.0.5.tgz#0e31395642bf32feb38285715962b8726006d337"
+  integrity sha512-LhefvafjidA82sdgXuv8Ox/oyA4W1et7G5KWGaIl0ArvrSldd2NfQPjEyoD4Sw/XXWhOTBYG+sU1Z+zsLF2DyA==
   dependencies:
     axios "^1.4.0"
+    isomorphic-ws "^5.0.0"
     openid-client "^5.4.2"
+    ws "^8.13.0"
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
@@ -2824,6 +2831,11 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
+
+ws@^8.13.0:
+  version "8.13.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.13.0.tgz#9a9fb92f93cf41512a0735c8f4dd09b8a1211cd0"
+  integrity sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==
 
 xtend@~2.1.1:
   version "2.1.2"
