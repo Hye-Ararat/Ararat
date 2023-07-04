@@ -1,5 +1,5 @@
 import React from "react";
-import ImageServerList from "./ImageServerList";
+import ImageServerList from "../../image_servers/ImageServerList";
 
 const App: React.FC = () => {
   return (
