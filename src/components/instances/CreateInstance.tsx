@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 export default function CreateInstance() {
     const [createInstance, setCreatingInstance] = useState(false);
-    const [audio, setAudio] = useState(null);
+    const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
     const theme = useMantineTheme();
     useEffect(() => {
         if (createInstance) {
@@ -14,21 +14,21 @@ export default function CreateInstance() {
             setAudio(aud);
         } else {
             if (audio) {
-            audio.pause();
-            audio.currentTime = 0;
+                audio.pause();
+                audio.currentTime = 0;
             }
         }
     }, [createInstance])
     return (
         <>
-        <Button my="auto" onClick={() => setCreatingInstance(true)} sx={{marginLeft: "auto"}}>Create Instance</Button>
-        <Modal overlayProps={{
-          color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
-          opacity: 0.55,
-          blur: 3,
-        }} opened={createInstance} onClose={() => setCreatingInstance(false)} title="Create Instance" centered>
-        <p>test</p>
-        </Modal>
+            <Button my="auto" onClick={() => setCreatingInstance(true)} sx={{ marginLeft: "auto" }}>Create Instance</Button>
+            <Modal overlayProps={{
+                color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
+                opacity: 0.55,
+                blur: 3,
+            }} opened={createInstance} onClose={() => setCreatingInstance(false)} title="Create Instance" centered>
+                <p>test</p>
+            </Modal>
         </>
     )
 }

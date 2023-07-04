@@ -4,7 +4,6 @@ import {
   Navbar,
   Header,
   Footer,
-  Aside,
   Text,
   MediaQuery,
   Burger,
@@ -12,17 +11,14 @@ import {
   UnstyledButton,
   Group,
   ThemeIcon,
-  Title
+  Title,
 } from '@mantine/core';
-import {nprogress, NavigationProgress} from "@mantine/nprogress";
+import { NavigationProgress } from "@mantine/nprogress";
 import {
   IconServer2,
-  IconAlertCircle,
-  IconMessages,
   IconTerminal2,
   IconUsers,
   IconHome,
-  IconServerBolt,
   IconCubeSend,
   IconArrowBack,
 } from '@tabler/icons-react';
@@ -39,40 +35,40 @@ interface MainLinkProps {
 
 function MainLink({ icon, color, label, path, setOpen }: MainLinkProps) {
   return (
-    <Link onClick={() => setOpen(false)} href={path} style={{textDecoration: "none"}}>
-    <UnstyledButton
-      sx={(theme) => ({
-        display: 'block',
-        width: '100%',
-        padding: theme.spacing.xs,
-        borderRadius: theme.radius.sm,
-        color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
-        '&:hover': {
-          backgroundColor:
-            theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-        },
-      })}
-    >
-      <Group>
-        <ThemeIcon color={color} variant="light">
-          {icon}
-        </ThemeIcon>
+    <Link onClick={() => setOpen(false)} href={path} style={{ textDecoration: "none" }}>
+      <UnstyledButton
+        sx={(theme) => ({
+          display: 'block',
+          width: '100%',
+          padding: theme.spacing.xs,
+          borderRadius: theme.radius.sm,
+          color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+          '&:hover': {
+            backgroundColor:
+              theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+          },
+        })}
+      >
+        <Group>
+          <ThemeIcon color={color} variant="light">
+            {icon}
+          </ThemeIcon>
 
-        <Text size="sm">{label}</Text>
-      </Group>
-    </UnstyledButton>
+          <Text size="sm">{label}</Text>
+        </Group>
+      </UnstyledButton>
     </Link>
   );
 }
 
-export default function ApplicationShell({children} : {children: ReactNode}) {
+export default function ApplicationShell({ children }: { children: ReactNode }) {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
-  const [pageType, setPageType] = useState(null);
+  const [pageType, setPageType] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    if (router.pathname.includes("/instances/[instance]")){
+    if (router.pathname.includes("/instances/[instance]")) {
       setPageType("instance");
     } else {
       setPageType(null);
@@ -80,12 +76,12 @@ export default function ApplicationShell({children} : {children: ReactNode}) {
   }, [router.asPath])
   const links = [
     { icon: <IconHome size="1rem" />, color: 'indigo', label: 'Dashboard', path: "/" },
-  { icon: <IconTerminal2 size="1rem" />, color: 'blue', label: 'Instances', path: "/instances" },
-  { icon: <IconArrowBack size="1rem" />, color: 'red', label: 'Reverse Proxies', path: "/reverse_proxies" },
-  { icon: <IconServer2 size="1rem" />, color: 'teal', label: 'Nodes', path: "/nodes" },
-  {icon: <IconCubeSend size="1rem" />, color: "yellow", label: "Image Servers", path: "/image_servers"},
-  { icon: <IconUsers size="1rem" />, color: 'violet', label: 'Users', path: "/users" },
-];
+    { icon: <IconTerminal2 size="1rem" />, color: 'blue', label: 'Instances', path: "/instances" },
+    { icon: <IconArrowBack size="1rem" />, color: 'red', label: 'Reverse Proxies', path: "/reverse_proxies" },
+    { icon: <IconServer2 size="1rem" />, color: 'teal', label: 'Nodes', path: "/nodes" },
+    { icon: <IconCubeSend size="1rem" />, color: "yellow", label: "Image Servers", path: "/image_servers" },
+    { icon: <IconUsers size="1rem" />, color: 'violet', label: 'Users', path: "/users" },
+  ];
   return (
     <AppShell
       styles={{
@@ -97,7 +93,7 @@ export default function ApplicationShell({children} : {children: ReactNode}) {
       asideOffsetBreakpoint="sm"
       navbar={
         <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 300 }}>
-          {links.map((link) => {return (<MainLink {...link} key={link.label} setOpen={setOpened}/>)}) }
+          {links.map((link) => { return (<MainLink {...link} key={link.label} setOpen={setOpened} />) })}
         </Navbar>
       }
       footer={
@@ -123,8 +119,8 @@ export default function ApplicationShell({children} : {children: ReactNode}) {
         </Header>
       }
     >
-        <NavigationProgress />
-        {pageType == "instance" ? <InstanceShell /> : ""}
+      <NavigationProgress />
+      {pageType == "instance" ? <InstanceShell /> : ""}
       {children}
     </AppShell>
   );

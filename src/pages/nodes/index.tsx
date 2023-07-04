@@ -1,5 +1,5 @@
 import CreateNode from '@/components/nodes/CreateNode'
-import { Button, Flex, Title } from '@mantine/core'
+import { Flex, Title } from '@mantine/core';
 
 
 export default function Nodes({testProp} : {testProp: string}) {

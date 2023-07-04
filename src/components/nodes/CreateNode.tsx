@@ -1,11 +1,24 @@
-import { Button, Flex, List, Modal, Stepper, useMantineTheme, Text, TextInput, Code, LoadingOverlay, Progress, Center, Loader } from "@mantine/core";
+import {
+    Button,
+    Flex,
+    List,
+    Modal,
+    Stepper,
+    useMantineTheme,
+    Text,
+    TextInput,
+    Code,
+    Progress,
+    Center,
+    Loader,
+} from "@mantine/core";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function CreateNode() {
     const [creatingNode, setCreatingNode] = useState(false);
     const [activeStep, setActiveStep] = useState(0);
-    const [audio, setAudio] = useState(null);
+    const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
     const theme = useMantineTheme();
 
     const [nodeName, setNodeName] = useState("");
@@ -71,25 +84,25 @@ export default function CreateNode() {
                     <Stepper.Step label="Install Dependencies">
                         <List type="ordered">
                             <List.Item>Install snap using these <Link target="_blank" href="https://snapcraft.io/docs/installing-snapd">instructions</Link></List.Item>
-                            <List.Item>Install NGINX using these <Link target="_blank" href="https://www.nginx.com/resources/wiki/start/topics/tutorials/install/">instructions</Link></List.Item> 
+                            <List.Item>Install NGINX using these <Link target="_blank" href="https://www.nginx.com/resources/wiki/start/topics/tutorials/install/">instructions</Link></List.Item>
                             <List.Item>Run the following automatic setup command <Code>snap install lxd</Code></List.Item>
                             <List.Item>Press next when prompted</List.Item>
                         </List>
                     </Stepper.Step>
                     <Stepper.Step label="Hye Lava Setup">
                         <Center mt="lg">
-                        <img src={currentImage} width="75px" style={{marginRight: "auto", marginLeft: "auto"}} />
+                            <img src={currentImage} width="75px" style={{ marginRight: "auto", marginLeft: "auto" }} />
                         </Center>
                         <Text ta="center" mt="xs">{currentStatus}</Text>
-                        {connected ? 
-                        <Progress label={`${currentPercent}%`} size="xl" mr="auto" ml="auto" mt="xs" value={currentPercent} sx={{maxWidth: "30%"}} />            
-                        : 
+                        {connected ?
+                            <Progress label={`${currentPercent}%`} size="xl" mr="auto" ml="auto" mt="xs" value={currentPercent} sx={{ maxWidth: "30%" }} />
+                            :
                             <>
-                        <Center>
-                            <Loader mr="auto" ml="auto" />
-                        </Center>
-                        <Text ta="center" mt={"xs"}>Connecting...</Text>
-                        </>}
+                                <Center>
+                                    <Loader mr="auto" ml="auto" />
+                                </Center>
+                                <Text ta="center" mt={"xs"}>Connecting...</Text>
+                            </>}
                     </Stepper.Step>
                     <Stepper.Completed>
                         <p>done</p>

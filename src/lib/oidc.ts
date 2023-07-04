@@ -1,14 +1,13 @@
-import { Issuer, generators, Client } from 'openid-client';
-
+import { Issuer, generators, Client, BaseClient } from 'openid-client';
 let url = process.env.URL
 
 
-let issuer : Issuer;
-let oidClient : Client;
-let codeVerifier : string;
-let codeChallenge : string;
+let issuer: Issuer;
+let oidClient: Client;
+let codeVerifier: string;
+let codeChallenge: string;
 
-function authorizationUrl(scope) {
+function authorizationUrl(scope: string) {
     return oidClient.authorizationUrl({
         scope: scope,
         code_challenge: codeChallenge,
@@ -16,7 +15,12 @@ function authorizationUrl(scope) {
     })
 }
 
-let cachedClient;
+let cachedClient: {
+    authorizationUrl: (scope: any) => string;
+    codeVerifier: string;
+    codeChallenge: string;
+    oidClient: BaseClient;
+};
 async function getClient() {
     if (!issuer) {
         issuer = await Issuer.discover(`http://${url}`);
@@ -39,7 +43,7 @@ async function getClient() {
         codeVerifier: codeVerifier,
         codeChallenge: codeChallenge,
         oidClient: oidClient
-    }    
+    }
 }
 
 interface ClientInt {
@@ -56,9 +60,12 @@ export async function client(): Promise<ClientInt> {
             cachedClient = await getClient();
         }
     } else {
+        //@ts-expect-error
         if (!global.oidcClient) {
+            //@ts-expect-error
             global.oidcClient = await getClient();
         }
+        //@ts-expect-error
         cachedClient = global.oidcClient;
     }
     return cachedClient;
