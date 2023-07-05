@@ -1,6 +1,7 @@
 # Hye Ararat
 
 ![image](public/images/Hye_Ararat_2.png)
+
 Ararat is the next-generation **container/virtual machine control panel**. It is **your one-stop shop for single application container, full system containers, and KVM instances**.
 
 Ararat is **built on top of the incredible LXD platform**, making it **compatible with the same pre-made images available for a wide number of Linux distrubutions that LXD is**.
