@@ -1,10 +1,9 @@
-import { useState, ReactNode, useEffect } from 'react';
+import { useState, ReactNode, useEffect, createContext, Dispatch, SetStateAction } from 'react';
 import {
   AppShell,
   Navbar,
   Header,
   Footer,
-  Aside,
   Text,
   MediaQuery,
   Burger,
@@ -12,80 +11,77 @@ import {
   UnstyledButton,
   Group,
   ThemeIcon,
-  Title
+  Title,
+  Aside,
 } from '@mantine/core';
-import {nprogress, NavigationProgress} from "@mantine/nprogress";
+import { NavigationProgress } from "@mantine/nprogress";
 import {
   IconServer2,
-  IconAlertCircle,
-  IconMessages,
   IconTerminal2,
   IconUsers,
   IconHome,
-  IconServerBolt,
   IconCubeSend,
   IconArrowBack,
 } from '@tabler/icons-react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import InstanceShell from './instances/instance/InstanceShell';
+
 interface MainLinkProps {
   icon: React.ReactNode;
   color: string;
   label: string;
   path: string;
   setOpen: (open: boolean) => void;
+  setAsideOpen: (open: boolean) => void;
 }
 
-function MainLink({ icon, color, label, path, setOpen }: MainLinkProps) {
-  return (
-    <Link onClick={() => setOpen(false)} href={path} style={{textDecoration: "none"}}>
-    <UnstyledButton
-      sx={(theme) => ({
-        display: 'block',
-        width: '100%',
-        padding: theme.spacing.xs,
-        borderRadius: theme.radius.sm,
-        color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
-        '&:hover': {
-          backgroundColor:
-            theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-        },
-      })}
-    >
-      <Group>
-        <ThemeIcon color={color} variant="light">
-          {icon}
-        </ThemeIcon>
+export const MainContext = createContext<{ setAsideOpen: Dispatch<SetStateAction<boolean>>, setAside: (content: any) => void, asideOpen: boolean }>({ setAsideOpen: (...args: any[]) => { }, setAside: () => { }, asideOpen: false })
 
-        <Text size="sm">{label}</Text>
-      </Group>
-    </UnstyledButton>
+function MainLink({ icon, color, label, path, setOpen, setAsideOpen }: MainLinkProps) {
+  return (
+    <Link onClick={() => {
+      setAsideOpen(false)
+      setOpen(false)
+    }} href={path} style={{ textDecoration: "none" }}>
+      <UnstyledButton
+        sx={(theme) => ({
+          display: 'block',
+          width: '100%',
+          padding: theme.spacing.xs,
+          borderRadius: theme.radius.sm,
+          color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+          '&:hover': {
+            backgroundColor:
+              theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+          },
+        })}
+      >
+        <Group>
+          <ThemeIcon color={color} variant="light">
+            {icon}
+          </ThemeIcon>
+
+          <Text size="sm">{label}</Text>
+        </Group>
+      </UnstyledButton>
     </Link>
   );
 }
 
-export default function ApplicationShell({children} : {children: ReactNode}) {
+export default function ApplicationShell({ children }: { children: ReactNode }) {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
-  const [pageType, setPageType] = useState(null);
-  const router = useRouter();
+  const [asideOpen, setAsideOpen] = useState(false)
+  const [asideContent, setAsideContent] = useState("")
 
-  useEffect(() => {
-    if (router.pathname.includes("/instances/[instance]")){
-      setPageType("instance");
-    } else {
-      setPageType(null);
-    }
-  }, [router.asPath])
   const links = [
     { icon: <IconHome size="1rem" />, color: 'indigo', label: 'Dashboard', path: "/" },
-  { icon: <IconTerminal2 size="1rem" />, color: 'blue', label: 'Instances', path: "/instances" },
-  { icon: <IconArrowBack size="1rem" />, color: 'red', label: 'Reverse Proxies', path: "/reverse_proxies" },
-  { icon: <IconServer2 size="1rem" />, color: 'teal', label: 'Nodes', path: "/nodes" },
-  {icon: <IconCubeSend size="1rem" />, color: "yellow", label: "Image Servers", path: "/image_servers"},
-  { icon: <IconUsers size="1rem" />, color: 'violet', label: 'Users', path: "/users" },
-];
+    { icon: <IconTerminal2 size="1rem" />, color: 'blue', label: 'Instances', path: "/instances" },
+    { icon: <IconArrowBack size="1rem" />, color: 'red', label: 'Reverse Proxies', path: "/reverse_proxies" },
+    { icon: <IconServer2 size="1rem" />, color: 'teal', label: 'Nodes', path: "/nodes" },
+    { icon: <IconCubeSend size="1rem" />, color: "yellow", label: "Image Servers", path: "/image_servers" },
+    { icon: <IconUsers size="1rem" />, color: 'violet', label: 'Users', path: "/users" },
+  ];
+
   return (
     <AppShell
       styles={{
@@ -97,7 +93,10 @@ export default function ApplicationShell({children} : {children: ReactNode}) {
       asideOffsetBreakpoint="sm"
       navbar={
         <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 300 }}>
-          {links.map((link) => {return (<MainLink {...link} key={link.label} setOpen={setOpened}/>)}) }
+          {links.map((link) => { return (<MainLink {...link} key={link.label} setOpen={setOpened} setAsideOpen={(open) => {
+              setAsideContent("")
+              setAsideOpen(false)
+          }} />) })}
         </Navbar>
       }
       footer={
@@ -122,10 +121,15 @@ export default function ApplicationShell({children} : {children: ReactNode}) {
           </div>
         </Header>
       }
+      aside={asideOpen ? <Aside p="md" width={{ sm: 200, lg: 300 }} sx={{ backgroundColor: "#111214" }}>
+        {asideContent}
+      </Aside> : undefined}
     >
-        <NavigationProgress />
-        {pageType == "instance" ? <InstanceShell /> : ""}
-      {children}
+      <NavigationProgress />
+      <MainContext.Provider value={{ setAside: (content: any) => setAsideContent(content), setAsideOpen: setAsideOpen, asideOpen: asideOpen }}>
+        {children}
+      </MainContext.Provider>
+
     </AppShell>
   );
 }
