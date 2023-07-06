@@ -24,8 +24,7 @@ import {
   IconArrowBack,
 } from '@tabler/icons-react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import InstanceShell from './instances/instance/InstanceShell';
+
 interface MainLinkProps {
   icon: React.ReactNode;
   color: string;
@@ -71,17 +70,9 @@ function MainLink({ icon, color, label, path, setOpen, setAsideOpen }: MainLinkP
 export default function ApplicationShell({ children }: { children: ReactNode }) {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
-  const [pageType, setPageType] = useState<string | null>(null);
-  const router = useRouter();
   const [asideOpen, setAsideOpen] = useState(false)
   const [asideContent, setAsideContent] = useState("")
-  useEffect(() => {
-    if (router.pathname.includes("/instances/[instance]")) {
-      setPageType("instance");
-    } else {
-      setPageType(null);
-    }
-  }, [router.asPath])
+
   const links = [
     { icon: <IconHome size="1rem" />, color: 'indigo', label: 'Dashboard', path: "/" },
     { icon: <IconTerminal2 size="1rem" />, color: 'blue', label: 'Instances', path: "/instances" },
@@ -90,6 +81,7 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
     { icon: <IconCubeSend size="1rem" />, color: "yellow", label: "Image Servers", path: "/image_servers" },
     { icon: <IconUsers size="1rem" />, color: 'violet', label: 'Users', path: "/users" },
   ];
+
   return (
     <AppShell
       styles={{
@@ -134,7 +126,6 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
       </Aside> : undefined}
     >
       <NavigationProgress />
-      {pageType == "instance" ? <InstanceShell /> : ""}
       <MainContext.Provider value={{ setAside: (content: any) => setAsideContent(content), setAsideOpen: setAsideOpen, asideOpen: asideOpen }}>
         {children}
       </MainContext.Provider>
