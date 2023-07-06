@@ -21,7 +21,6 @@ setupKey();
 let url = process.env.URL
 
 const configuration = {
-    //adapter: PrismaAdapter,
     scopes: ['openid', 'profile', 'email', 'offline_access'],
     clients: [
         {
