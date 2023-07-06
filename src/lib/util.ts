@@ -25,3 +25,6 @@ export function getBadgeColor(status: string) {
             return "gray";
     }
 }
+export function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
