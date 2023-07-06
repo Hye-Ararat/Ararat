@@ -7,7 +7,7 @@ export default function CreateInstance() {
     const theme = useMantineTheme();
     useEffect(() => {
         if (createInstance) {
-            let aud = new Audio("/audio/create.mp3")
+            let aud = new Audio("/audio/createInstance.m4a")
             aud.volume = 0.60;
             aud.play()
             aud.loop = true;
