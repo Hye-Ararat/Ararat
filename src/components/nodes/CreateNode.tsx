@@ -55,7 +55,7 @@ export default function CreateNode() {
     const router = useRouter();
     return (
         <>
-            <Button onClick={() => setCreatingNode(true)} my="auto" ml="auto">Create Node</Button>
+            <Button onClick={() => setCreatingNode(true)} my="auto">Create Node</Button>
             <Modal size="xl" overlayProps={{
                 color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
                 opacity: 0.55,
