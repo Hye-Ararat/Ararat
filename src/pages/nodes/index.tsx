@@ -1,12 +1,10 @@
 import CreateNode from '@/components/nodes/CreateNode'
 import mongo from '@/lib/mongo'
-import { Button, Flex, Title, Text, Group, Badge, ThemeIcon, ActionIcon, Table } from '@mantine/core'
-import { Node } from "@/types/db"
-import { sanitizeMany } from '@/lib/db'
+import { Button, Flex, Title, Text, Group, Badge, ActionIcon, Table } from '@mantine/core';
 import { connectOIDC } from 'js-lxd'
 import { DataTable, DataTableColumn, DataTableRow } from '@/components/DataTable'
 import { LxdResources } from '@/types/resources'
-import { IconServer, IconServer2, IconX } from '@tabler/icons-react'
+import { IconServer2, IconX } from '@tabler/icons-react';
 import prettyBytes from 'pretty-bytes'
 import { MainContext } from '@/components/AppShell'
 import { createContext, useContext, useState } from 'react'

@@ -1,5 +1,4 @@
-import { useMantineTheme, Group, Avatar, Badge, Anchor, ActionIcon, ScrollArea, Table, Text } from "@mantine/core";
-import { IconPencil, IconTrash } from "@tabler/icons-react";
+import { ScrollArea, Table } from "@mantine/core";
 import { Children, MouseEventHandler, ReactNode } from "react";
 
 export function DataTable({ children, headings }: { children: ReactNode, headings?: string[] }) {

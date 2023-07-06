@@ -1,4 +1,4 @@
-import { Button, Text } from "@mantine/core";
+import { Button } from "@mantine/core";
 
 export function CreateUser() {
     return (

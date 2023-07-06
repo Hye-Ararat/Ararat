@@ -1,12 +1,11 @@
 import { DataTable, DataTableColumn, DataTableRow } from "@/components/DataTable";
 import CreateInstance from "@/components/instances/CreateInstance";
 import { Flex, Title, Text, Group, ActionIcon, Badge, Button, Table, List } from "@mantine/core";
-import { IconCross, IconPencil, IconPlayerPlay, IconPlayerStop, IconTrash, IconX } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
 import { connectOIDC } from "js-lxd"
-import { SiUbuntu } from "@icons-pack/react-simple-icons"
 import prettyBytes from 'pretty-bytes';
 import { getOSLogo } from "@/lib/logo";
-import { LxdInstance, LxdInstanceAction, LxdInstanceNetwork, LxdInstanceState } from "@/types/instance";
+import { LxdInstance } from "@/types/instance";
 import { getCookie } from "cookies-next";
 import { createContext, useContext, useEffect, useState } from "react";
 import { MainContext } from "@/components/AppShell";
