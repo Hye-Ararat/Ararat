@@ -1,14 +1,18 @@
 import { DataTable, DataTableColumn, DataTableRow } from "@/components/DataTable";
 import CreateInstance from "@/components/instances/CreateInstance";
-import { Flex, Title, Text, Group, ActionIcon, Badge, Button } from "@mantine/core";
-import { IconPencil, IconPlayerPlay, IconPlayerStop, IconTrash } from "@tabler/icons-react";
+import { Flex, Title, Text, Group, ActionIcon, Badge, Button, Table, List } from "@mantine/core";
+import { IconCross, IconPencil, IconPlayerPlay, IconPlayerStop, IconTrash, IconX } from "@tabler/icons-react";
 import { connectOIDC } from "js-lxd"
 import { SiUbuntu } from "@icons-pack/react-simple-icons"
 import prettyBytes from 'pretty-bytes';
 import { getOSLogo } from "@/lib/logo";
-import { LxdInstance, LxdInstanceAction, LxdInstanceState } from "@/types/instance";
+import { LxdInstance, LxdInstanceAction, LxdInstanceNetwork, LxdInstanceState } from "@/types/instance";
 import { getCookie } from "cookies-next";
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { MainContext } from "@/components/AppShell";
+import { formatDate, getBadgeColor } from "@/lib/util";
+
+
 export async function getServerSideProps({ req, res }: any) {
     // TODO: iterate nodes
     let client = connectOIDC("https://10.17.167.6:8443", req.cookies.access_token)
@@ -30,41 +34,13 @@ export async function getServerSideProps({ req, res }: any) {
     }
 }
 
-function getBadgeColor(status: string) {
-    switch (status) {
-        case "Running":
-            return "green";
-        case "Error":
-            return "red";
-        case "Freezing":
-            return "blue";
-        case "Frozen":
-            return "blue";
-        case "Restarting":
-            return "yellow";
-        case "Starting":
-            return "darkgreen";
-        case "Stopped":
-            return "red";
-        case "Stopping":
-            return "darkred";
-        default:
-            return "gray";
-    }
-}
 
+const InstanceContext = createContext({ setActiveInstance: (instance: string) => { }, activeInstance: "" })
 export default function Instances({ instances }: { instances: LxdInstance[] }) {
     var access_token = getCookie("access_token")
     // TODO: iterate nodes
     var client = connectOIDC("https://10.17.167.6:8443", (access_token as string))
-
-    function changeInstanceState(instance: string, action: LxdInstanceAction, force?: boolean) {
-        client.put(`/instances/${instance}/state`, {
-            action,
-            force: force ?? false
-        })
-    }
-
+    var [activeInstance, setActiveInstance] = useState<string>("")
     return (
         <>
             <Flex>
@@ -72,41 +48,158 @@ export default function Instances({ instances }: { instances: LxdInstance[] }) {
                 <CreateInstance />
             </Flex>
             <DataTable>
-                {instances.map((instance) => {
-                    return (
-                        <InstanceTableRow instance={instance} />
-                    )
-                })}
+                <InstanceContext.Provider value={{ setActiveInstance, activeInstance }}>
+                    {instances.map((instance) => {
+                        return (
+                            <InstanceTableRow instance={instance} />
+                        )
+                    })}
+                </InstanceContext.Provider>
             </DataTable>
         </>
     )
 }
-function InstanceTableRow({ instance }: { instance: LxdInstance }) {
-    var access_token = getCookie("access_token")
-    // TODO: iterate nodes
-    var client = connectOIDC("https://10.17.167.6:8443", (access_token as string))
-    var [cpuUsage, setCpuUsage] = useState(0);
-    useEffect(() => {
-        client.get("/instances/" + instance.name + "?recursion=1").then(async ({ data }) => {
-            var startTime = Date.now()
-            var lxdData = await client.get("/resources");
-            console.log(lxdData)
-            var instanceData: any = data.metadata;
-            var cpu_ns = instanceData.state?.cpu.usage;
-            var s: string = instanceData.config["limits.cpu"]
-            var cpuCount = s ? parseFloat(s) : lxdData.data.metadata.cpu.total
-            var multiplier = (100000 / cpuCount) * 2
-            
-            var usage1 = instanceData.state.cpu.usage / 1000000000
-            client.get("/instances/" + instance.name + "?recursion=1").then(({ data }) => {
-                var usage2 = data.metadata.state.cpu.usage / 1000000000
-                var cpu_usage = ((usage2 - usage1) / (Date.now() - startTime)) * multiplier
-                console.log(cpu_usage)
+function InstanceAside({ instance, closeAside }: { instance: LxdInstance, closeAside: () => void }) {
+    if (instance.state?.network) {
+        var interfaces = Object.keys((instance.state?.network))
+        var ips: string[] = []
+        interfaces.forEach(netIfaceKey => {
+            //@ts-expect-error
+            var netIface = instance.state.network[netIfaceKey];
+            var mappedAddresses = netIface.addresses.filter(s => s.family == "inet").map((ifaceaddr) => {
+                return `${ifaceaddr.address}/${ifaceaddr.netmask}`
             })
+            ips = ips.concat(mappedAddresses)
         })
-    }, [])
+    } else {
+        var ips = ["Unknown"]
+    }
+
+    console.log(instance)
     return (
-        <DataTableRow>
+        <>
+
+            <Text pb={"md"}>
+                <Group>
+                    <Text fw={700} fz="lg">
+                        Instance Details
+                    </Text>
+                    <Flex align={"flex-end"} direction={"row"} ml={"auto"}>
+                        <ActionIcon onClick={closeAside}>
+                            <IconX />
+                        </ActionIcon>
+                    </Flex>
+
+                </Group>
+            </Text>
+
+
+            <Table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <Text fw={650}>
+                                Name
+                            </Text>
+                        </td>
+                        <td>
+                            {instance.name}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <Text fw={650}>
+                                Status
+                            </Text>
+                        </td>
+                        <td>
+                            <Badge color={getBadgeColor(instance.status)}>
+                                {instance.status}
+                            </Badge>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <Text fw={650}>
+                                OS
+                            </Text>
+                        </td>
+                        <td>
+                            {instance.config["image.os"] && instance.config["image.release"] ? instance.config["image.os"] + " " + instance.config["image.release"] : "Unknown OS"}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <Text fw={650}>
+                                Architecture
+                            </Text>
+                        </td>
+                        <td>
+                            {instance.config["image.architecture"] ? instance.config["image.architecture"] : "Unknown Architecture"}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <Text fw={650}>
+                                Adresses
+                            </Text>
+                        </td>
+                        <td>
+                            <List>
+                                {ips.map(ip => {
+                                    return (
+                                        <List.Item>
+                                            {ip}
+                                        </List.Item>
+                                    )
+                                })}
+                            </List>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <Text fw={650}>
+                                Created
+                            </Text>
+                        </td>
+                        <td>
+                            {formatDate(new Date(instance.created_at))}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <Text fw={650}>
+                                Last Used
+                            </Text>
+                        </td>
+                        <td>
+                            {formatDate(new Date(instance.last_used_at))}
+                        </td>
+                    </tr>
+                </tbody>
+            </Table>
+        </>
+
+    )
+}
+function InstanceTableRow({ instance }: { instance: LxdInstance }) {
+    const { setAside, setAsideOpen, asideOpen } = useContext(MainContext)
+    const { setActiveInstance, activeInstance } = useContext(InstanceContext)
+
+    function closeAside() {
+        setAsideOpen(false);
+        setAside("")
+        setActiveInstance("")
+    }
+    useEffect(() => {
+        console.log({asideOpen,activeInstance})
+    }, [asideOpen, activeInstance])
+    return (
+        <DataTableRow active={activeInstance == instance.config["volatile.uuid"]} onClick={() => {
+            setAsideOpen(true)
+            setActiveInstance(instance.config["volatile.uuid"])
+            setAside(<InstanceAside instance={instance} closeAside={closeAside} />)
+        }}>
             <DataTableColumn>
                 <Group>
                     {getOSLogo(instance.config["image.os"] ? instance.config["image.os"].toLowerCase() : "generic", 40)}
@@ -168,7 +261,7 @@ function InstanceTableRow({ instance }: { instance: LxdInstance }) {
             </DataTableColumn>
             <DataTableColumn>
                 <Group spacing={0} position="right">
-                    <Button sx={{ mr: 40 }}>Manage</Button>
+                    <Button sx={{ mr: 40 }} component="a" href={`/instances/${instance.name}`}>Manage</Button>
                 </Group>
             </DataTableColumn>
         </DataTableRow>
