@@ -1,18 +1,20 @@
 import { DataTable, DataTableColumn, DataTableRow } from "@/components/DataTable";
 import CreateInstance from "@/components/instances/CreateInstance";
-import { Flex, Title, Text, Group, ActionIcon, Badge, Button, Table, List } from "@mantine/core";
-import { IconX } from "@tabler/icons-react";
+import { Flex, Title, Text, Group, ActionIcon, Badge, Button, Table, List, Checkbox } from "@mantine/core";
+import { IconPlayerPlay, IconPlayerSkipForward, IconPlayerStop, IconTrash, IconX } from "@tabler/icons-react";
 import { connectOIDC } from "js-lxd"
 import prettyBytes from 'pretty-bytes';
 import { getOSLogo } from "@/lib/logo";
 import { LxdInstance } from "@/types/instance";
 import { getCookie } from "cookies-next";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { MainContext } from "@/components/AppShell";
 import { formatDate, getBadgeColor } from "@/lib/util";
 
-
 export async function getServerSideProps({ req, res }: any) {
+    console.log(req.cookies)
+
+
     // TODO: iterate nodes
     let client = connectOIDC("https://10.17.167.6:8443", req.cookies.access_token)
     try {
@@ -34,20 +36,50 @@ export async function getServerSideProps({ req, res }: any) {
 }
 
 
-const InstanceContext = createContext({ setActiveInstance: (instance: string) => { }, activeInstance: "" })
+const InstanceContext = createContext({ setActiveInstance: (instance: string) => { }, activeInstance: "", selectedInstances: ([] as { id: string, checked: boolean }[]), setSelectedInstances: (instances: { id: string, checked: boolean }[]) => { } })
+
 export default function Instances({ instances }: { instances: LxdInstance[] }) {
     var access_token = getCookie("access_token")
     // TODO: iterate nodes
     var client = connectOIDC("https://10.17.167.6:8443", (access_token as string))
     var [activeInstance, setActiveInstance] = useState<string>("")
+    var initialCheckedInstances = ([] as { id: string, checked: boolean }[])
+    instances.forEach(inst => initialCheckedInstances.push({ id: inst.config["volatile.uuid"], checked: false }))
+    var [selectedInstances, setSelectedInstances] = useState<{ id: string, checked: boolean }[]>(initialCheckedInstances)
     return (
         <>
             <Flex>
                 <Title order={1}>Instances</Title>
-                <CreateInstance />
+                <div style={{ marginLeft: "auto" }}>
+                    {selectedInstances.filter(s => s.checked == true).length > 0 ? <>
+                        <Group>
+                            <ActionIcon color="green" variant="light" size={"lg"}>
+                                <IconPlayerPlay size={"1.2rem"} />
+                            </ActionIcon>
+                            <ActionIcon color="yellow" variant="light" size={"lg"}>
+                                <IconPlayerSkipForward size={"1.2rem"}/>
+                            </ActionIcon>
+                            <ActionIcon color="red" variant="light" size={"lg"}>
+                                <IconPlayerStop size={"1.2rem"}/>
+                            </ActionIcon>
+                            <ActionIcon color="red" variant="light" size={"lg"}>
+                                <IconTrash size={"1.2rem"}/>
+                            </ActionIcon>
+                            <Button variant="light" onClick={() => {
+                                setSelectedInstances(initialCheckedInstances)
+                            }}>Cancel</Button>
+                        </Group>
+
+                    </> : ""}
+                    {selectedInstances.filter(s => s.checked == true).length == 0 ? <>
+                        <CreateInstance />
+                    </> : ""}
+
+                </div>
+
             </Flex>
             <DataTable>
-                <InstanceContext.Provider value={{ setActiveInstance, activeInstance }}>
+                <InstanceContext.Provider value={{ setActiveInstance, activeInstance, selectedInstances, setSelectedInstances }}>
                     {instances.map((instance) => {
                         return (
                             <InstanceTableRow instance={instance} />
@@ -120,11 +152,27 @@ function InstanceAside({ instance, closeAside }: { instance: LxdInstance, closeA
                     <tr>
                         <td>
                             <Text fw={650}>
+                                Type
+                            </Text>
+                        </td>
+                        <td>
+                            <Badge color={instance.type == "virtual-machine" ? "teal" : "indigo"}>
+                            {instance.type == "virtual-machine" ? "Virtual Machine" : "Container"}
+                            </Badge>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <Text fw={650}>
                                 OS
                             </Text>
                         </td>
                         <td>
-                            {instance.config["image.os"] && instance.config["image.release"] ? instance.config["image.os"] + " " + instance.config["image.release"] : "Unknown OS"}
+                            <Group>
+                                {getOSLogo(instance.config["image.os"] ? instance.config["image.os"].toLowerCase() : "generic", 13)}
+                                {instance.config["image.os"] && instance.config["image.release"] ? instance.config["image.os"] + " " + instance.config["image.release"] : "Unknown OS"}
+                            </Group>
+
                         </td>
                     </tr>
                     <tr>
@@ -182,17 +230,28 @@ function InstanceAside({ instance, closeAside }: { instance: LxdInstance, closeA
     )
 }
 function InstanceTableRow({ instance }: { instance: LxdInstance }) {
-    const { setAside, setAsideOpen, asideOpen } = useContext(MainContext)
-    const { setActiveInstance, activeInstance } = useContext(InstanceContext)
+    const { setAside, setAsideOpen } = useContext(MainContext)
+    const { setActiveInstance, activeInstance, setSelectedInstances, selectedInstances } = useContext(InstanceContext)
 
     function closeAside() {
         setAsideOpen(false);
         setAside("")
         setActiveInstance("")
     }
-    useEffect(() => {
-        console.log({asideOpen,activeInstance})
-    }, [asideOpen, activeInstance])
+    function setSelect(checked: boolean) {
+        console.log("change", checked)
+        if (checked == false) {
+            var i = selectedInstances.findIndex(s => s.id == instance.config["volatile.uuid"])
+            var tmp = [...selectedInstances]
+            tmp[i].checked = false
+            setSelectedInstances(tmp)
+        } else {
+            var i = selectedInstances.findIndex(s => s.id == instance.config["volatile.uuid"])
+            var tmp = [...selectedInstances]
+            tmp[i].checked = true
+            setSelectedInstances(tmp)
+        }
+    }
     return (
         <DataTableRow active={activeInstance == instance.config["volatile.uuid"]} onClick={() => {
             setAsideOpen(true)
@@ -201,6 +260,9 @@ function InstanceTableRow({ instance }: { instance: LxdInstance }) {
         }}>
             <DataTableColumn>
                 <Group>
+                    <Checkbox checked={selectedInstances.find(s => s.id == instance.config["volatile.uuid"])?.checked} onChange={(event) => {
+                        setSelect(event.currentTarget.checked)
+                    }} />
                     {getOSLogo(instance.config["image.os"] ? instance.config["image.os"].toLowerCase() : "generic", 40)}
                     <Text>
                         <div>
@@ -215,11 +277,14 @@ function InstanceTableRow({ instance }: { instance: LxdInstance }) {
                 </Group>
             </DataTableColumn>
             <DataTableColumn>
-                <Text>
+                <Group>
                     <Badge color={getBadgeColor(instance.status)}>
                         {instance.status}
                     </Badge>
-                </Text>
+                    <Badge color={instance.type == "virtual-machine" ? "teal" : "indigo"}>
+                        {instance.type == "virtual-machine" ? "Virtual Machine" : "Container"}
+                    </Badge>
+                </Group>
             </DataTableColumn>
             <DataTableColumn>
                 <Text>

@@ -1,15 +1,15 @@
 import CreateNode from '@/components/nodes/CreateNode'
 import mongo from '@/lib/mongo'
-import { Button, Flex, Title, Text, Group, Badge, ActionIcon, Table } from '@mantine/core';
+import { Button, Flex, Title, Text, Group, Badge, ActionIcon, Table, Checkbox } from '@mantine/core';
 import { connectOIDC } from 'js-lxd'
 import { DataTable, DataTableColumn, DataTableRow } from '@/components/DataTable'
 import { LxdResources } from '@/types/resources'
-import { IconServer2, IconX } from '@tabler/icons-react';
+import { IconServer2, IconTrash, IconX } from '@tabler/icons-react';
 import prettyBytes from 'pretty-bytes'
 import { MainContext } from '@/components/AppShell'
 import { createContext, useContext, useState } from 'react'
 
-const NodeContext = createContext({ setActiveNode: (instance: string) => { }, activeNode: "" })
+const NodeContext = createContext({ setActiveNode: (node: string) => { }, activeNode: "", selectedNodes: ([] as { id: string, checked: boolean }[]), setSelectedNodes: (nodes: { id: string, checked: boolean }[]) => { } })
 
 export async function getServerSideProps({ req, res }: any) {
   var nodesCollection = await mongo.db().collection("Node")
@@ -127,9 +127,23 @@ function NodeAside({ node, closeAside }: { node: LxdResources & { name: string, 
 }
 
 function NodeTableRow({ node }: { node: LxdResources & { name: string, status: string, instances: number } }) {
-  const { setActiveNode, activeNode } = useContext(NodeContext)
+  const { setActiveNode, activeNode, setSelectedNodes, selectedNodes } = useContext(NodeContext)
   const { setAside, setAsideOpen, asideOpen } = useContext(MainContext)
 
+  function setSelect(checked: boolean) {
+    console.log("change", checked)
+    if (checked == false) {
+      var i = selectedNodes.findIndex(s => s.id == node.name)
+      var tmp = [...selectedNodes]
+      tmp[i].checked = false
+      setSelectedNodes(tmp)
+    } else {
+      var i = selectedNodes.findIndex(s => s.id == node.name)
+      var tmp = [...selectedNodes]
+      tmp[i].checked = true
+      setSelectedNodes(tmp)
+    }
+  }
   function closeAside() {
     setAsideOpen(false);
     setAside("")
@@ -144,6 +158,9 @@ function NodeTableRow({ node }: { node: LxdResources & { name: string, status: s
     }}>
       <DataTableColumn>
         <Group>
+          <Checkbox checked={selectedNodes.find(s => s.id == node.name)?.checked} onChange={(event) => {
+            setSelect(event.currentTarget.checked)
+          }} />
           <IconServer2 size={40} />
 
           <div>
@@ -224,17 +241,36 @@ function NodeTableRow({ node }: { node: LxdResources & { name: string, status: s
 }
 
 export default function Nodes({ nodes }: { nodes: (LxdResources & { name: string, status: string, instances: number })[] }) {
-
   var [activeNode, setActiveNode] = useState<string>("")
+  var initialCheckedNodes = ([] as { id: string, checked: boolean }[])
+  nodes.forEach(node => {
+    initialCheckedNodes.push({ id: node.name, checked: false })
+  })
+  var [selectedNodes, setSelectedNodes] = useState<{ id: string, checked: boolean }[]>(initialCheckedNodes)
+
   console.log(nodes)
   return (
     <>
       <Flex>
         <Title order={1}>Nodes</Title>
-        <CreateNode />
+        <div style={{ marginLeft: "auto" }}>
+          {selectedNodes.filter(s => s.checked == true).length > 0 ? <>
+            <Group>
+              <ActionIcon color="red" variant="light" size={"lg"}>
+                <IconTrash size={"1.2rem"} />
+              </ActionIcon>
+              <Button variant="light" onClick={() => {
+                setSelectedNodes(initialCheckedNodes)
+              }}>Cancel</Button>
+            </Group>
+          </> : ""}
+          {selectedNodes.filter(s => s.checked == true).length == 0 ? <>
+            <CreateNode />
+          </> : ""}
+        </div>
       </Flex>
       <DataTable>
-        <NodeContext.Provider value={{ activeNode, setActiveNode }}>
+        <NodeContext.Provider value={{ activeNode, setActiveNode, selectedNodes, setSelectedNodes }}>
           {nodes.map((node) => (
             <NodeTableRow node={node} />
           ))}
