@@ -24,6 +24,7 @@ import {
   IconArrowBack,
 } from '@tabler/icons-react';
 import Link from 'next/link';
+import Image from 'next/image'
 
 interface MainLinkProps {
   icon: React.ReactNode;
@@ -116,7 +117,12 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
                 mr="xl"
               />
             </MediaQuery>
-
+            <Image
+            src="/images/Hye_Ararat_2.png"
+            width={100}
+            height={100}
+            alt="hye hosting"
+            />
             <Title order={3}>Hye Ararat</Title>
           </div>
         </Header>
