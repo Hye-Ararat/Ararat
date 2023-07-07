@@ -327,14 +327,10 @@ function InstanceTableRow({ instance }: { instance: LxdInstance }) {
             <DataTableColumn>
                 <Group spacing={0} position="right">
                     <Link onClick={(e) => {
+                        closeAside();
                         setTimeout(() => {
-                            setAsideOpen(false)
-                            setAside("")
-                            setActiveInstance("")
-                        }, 0.000000000001)
-                     
-                        
-                        
+                            closeAside();
+                        }, Number.MIN_VALUE)
                     }} href={`/instances/${instance.name}`}>
                     <Button sx={{ mr: 40 }}>Manage</Button>
                     </Link>
