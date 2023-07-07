@@ -10,6 +10,7 @@ import { getCookie } from "cookies-next";
 import { createContext, useContext, useState } from "react";
 import { MainContext } from "@/components/AppShell";
 import { formatDate, getBadgeColor } from "@/lib/util";
+import Link from "next/link";
 
 export async function getServerSideProps({ req, res }: any) {
     console.log(req.cookies)
@@ -325,7 +326,9 @@ function InstanceTableRow({ instance }: { instance: LxdInstance }) {
             </DataTableColumn>
             <DataTableColumn>
                 <Group spacing={0} position="right">
-                    <Button sx={{ mr: 40 }} component="a" href={`/instances/${instance.name}`}>Manage</Button>
+                    <Link href={`/instances/${instance.name}`}>
+                    <Button sx={{ mr: 40 }}>Manage</Button>
+                    </Link>
                 </Group>
             </DataTableColumn>
         </DataTableRow>
