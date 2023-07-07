@@ -1,5 +1,5 @@
 import { LxdInstance } from "@/types/instance";
-import { ActionIcon, Anchor, Breadcrumbs, Button, Grid, Group, Menu, SegmentedControl, Text, Center, Modal } from "@mantine/core";
+import { ActionIcon, Anchor, Breadcrumbs, Button, Grid, Group, Menu, SegmentedControl, Text, Center, Modal, TextInput, Flex } from "@mantine/core";
 import { IconArrowLeft, IconArrowRight, IconFile, IconFolder, IconLayoutGrid, IconLayoutList, IconPlus } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
 import { GridFileView } from "@/components/instances/instance/files/GridFileView";
@@ -10,15 +10,28 @@ import { GetServerSidePropsContext } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { useTheme } from "@emotion/react";
 
-export async function getServerSideProps({ req, res, params }: GetServerSidePropsContext) {
+export async function getServerSideProps({ req, res, params, query }: GetServerSidePropsContext) {
     // TODO: iterate nodes
+    console.log("redone")
     console.log(req.cookies)
+    console.log(query)
+    if (!query.path) {
+        return {
+            redirect: {
+                permanent: true,
+                destination: `/instances/${(params as ParsedUrlQuery).instance}/files?path=/`
+            },
+        }
+    }
     let client = connectOIDC("https://192.168.1.133:8443", (req.cookies.access_token as string))
     try {
         let instance = (await client.get(`/instances/${(params as ParsedUrlQuery).instance}?recursion=1`)).data.metadata
+        let files = (await client.get(`/instances/${(params as ParsedUrlQuery).instance}/files?path=${query.path}`)).data.metadata
+        console.log(files)
         return {
             props: {
-                instance
+                instance,
+                files
             }
         }
     } catch (error) {
@@ -32,10 +45,11 @@ export async function getServerSideProps({ req, res, params }: GetServerSideProp
         };
     }
 }
-export default function InstanceFiles({ instance }: { instance: LxdInstance }) {
+export default function InstanceFiles({ instance, files }: { instance: LxdInstance }) {
     let [fileView, setFileView] = useState<string>("grid")
     const [creatingFile, setCreatingFile] = useState(false);
     const [instanceData, setInstanceData]= useContext(InstanceContext);
+    const [fileCreateErr, setFileCreateErr] = useState<string | undefined>(undefined);
     useEffect(() => {
         setInstanceData(instance);
     }, [])
@@ -53,7 +67,17 @@ export default function InstanceFiles({ instance }: { instance: LxdInstance }) {
                 opacity: 0.55,
                 blur: 3,
             }}  opened={creatingFile} onClose={() => setCreatingFile(false)} title="Create File">
-            
+            <TextInput error={fileCreateErr} placeholder="File Name" onChange={(e) => {
+                let audio = new Audio("/audio/ding.wav");
+                setFileCreateErr(undefined);
+                if (e.currentTarget.value.includes("/")) {
+                    setFileCreateErr("File name cannot contain /");
+                    audio.play();
+                }
+            }} />
+            <Flex mt="md">
+            <Button disabled={fileCreateErr} ml="auto" color="green" variant="light" onClick={() => setCreatingFile(false)}>Create</Button>
+            </Flex>
         </Modal>
          <Group spacing={10} mt={"sm"}>
             <ActionIcon color="blue" variant="light" size={"md"}>
@@ -88,7 +112,7 @@ export default function InstanceFiles({ instance }: { instance: LxdInstance }) {
             </Menu>
 
         </Group>
-        {fileView == "grid" ? <GridFileView /> : (fileView == "list" ? <ListFileView /> : "")}
+        {fileView == "grid" ? <GridFileView files={files} /> : (fileView == "list" ? <ListFileView /> : "")}
         </>
        
     )

@@ -1,21 +1,30 @@
-import { Anchor, Button, Center, Grid, Group, Menu, Paper, Popover, Stack, Text, UnstyledButton } from "@mantine/core";
+import { Anchor, Button, Center, Grid, Group, Menu, Paper, Popover, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
 import { IconDownload, IconFile, IconFolder, IconPencil, IconTrash } from "@tabler/icons-react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
-export function GridFileView() {
+export function GridFileView({files}) {
     return (
         <Grid gutter={20} pt={20} columns={18}>
-            <GridFileViewItem />
+            {files.map((file) => {
+                return(
+                     <GridFileViewItem file={file} folder={true} />
+                )
+            })}
         </Grid>
     )
 }
-function GridFileViewItem({ folder }: { folder?: boolean }) {
+function GridFileViewItem({ file, folder }: { folder?: boolean }) {
     const [opened, setOpened] = useState(false);
     const ref = useClickOutside(() => setOpened(false));
+    const router = useRouter();
     return (
-
-        <Menu opened={opened} withArrow>
+        <Menu opened={opened} withArrow onClick={() => {
+            const path = router.query.path as string;
+            router.push(`/instances/${router.query.instance}/files?path=${path}/${file}`)
+        }}>
             <Menu.Target>
                 <Grid.Col span={2}>
                     <Anchor underline={false} onContextMenu={(e) => {
@@ -30,7 +39,7 @@ function GridFileViewItem({ folder }: { folder?: boolean }) {
                                     </Center>
                                     <Center>
                                         <Text>
-                                            TestFolder
+                                            {file}
                                         </Text>
                                     </Center>
                                 </Stack>
