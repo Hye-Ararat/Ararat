@@ -16,7 +16,7 @@ export async function getServerSideProps({ req, res }: any) {
 
 
     // TODO: iterate nodes
-    let client = connectOIDC("https://10.17.167.6:8443", req.cookies.access_token)
+    let client = connectOIDC("https://192.168.1.133:8443", req.cookies.access_token)
     try {
         let instances = (await client.get("/instances?recursion=2")).data.metadata
         return {
@@ -41,7 +41,7 @@ const InstanceContext = createContext({ setActiveInstance: (instance: string) =>
 export default function Instances({ instances }: { instances: LxdInstance[] }) {
     var access_token = getCookie("access_token")
     // TODO: iterate nodes
-    var client = connectOIDC("https://10.17.167.6:8443", (access_token as string))
+    var client = connectOIDC("https://192.168.1.133:8443", (access_token as string))
     var [activeInstance, setActiveInstance] = useState<string>("")
     var initialCheckedInstances = ([] as { id: string, checked: boolean }[])
     instances.forEach(inst => initialCheckedInstances.push({ id: inst.config["volatile.uuid"], checked: false }))

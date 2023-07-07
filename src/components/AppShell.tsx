@@ -25,6 +25,8 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import Image from 'next/image'
+import InstanceShell from './instances/instance/InstanceShell';
+import { useRouter } from 'next/router';
 
 interface MainLinkProps {
   icon: React.ReactNode;
@@ -36,6 +38,7 @@ interface MainLinkProps {
 }
 
 export const MainContext = createContext<{ setAsideOpen: Dispatch<SetStateAction<boolean>>, setAside: (content: any) => void, asideOpen: boolean }>({ setAsideOpen: (...args: any[]) => { }, setAside: () => { }, asideOpen: false })
+export const InstanceContext = createContext();
 
 function MainLink({ icon, color, label, path, setOpen, setAsideOpen }: MainLinkProps) {
   return (
@@ -73,6 +76,17 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
   const [opened, setOpened] = useState(false);
   const [asideOpen, setAsideOpen] = useState(false)
   const [asideContent, setAsideContent] = useState("")
+  const [instance, setInstance] = useState(null);
+  const [pageType, setPageType] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.pathname.includes("/instances/[instance]")){
+      setPageType("instance");
+    } else {
+      setPageType(null);
+    }
+  }, [router.asPath])
 
   const links = [
     { icon: <IconHome size="1rem" />, color: 'indigo', label: 'Dashboard', path: "/" },
@@ -132,7 +146,10 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
     >
       <NavigationProgress />
       <MainContext.Provider value={{ setAside: (content: any) => setAsideContent(content), setAsideOpen: setAsideOpen, asideOpen: asideOpen }}>
+        <InstanceContext.Provider value={[instance, setInstance]}>
+        {pageType == "instance" ? <InstanceShell />: ""}
         {children}
+        </InstanceContext.Provider>
       </MainContext.Provider>
 
     </AppShell>
