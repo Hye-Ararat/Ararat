@@ -56,12 +56,18 @@ export default function Authentication({ interaction }: { interaction: string })
     <Flex style={{ minHeight: "100vh", backgroundImage: `url(/images/login/login${wallpaper}.jpg)`, backgroundPosition: "center", backgroundSize: "cover" }}>
       <Paper my="auto" mx="auto" radius="md" p="xl" sx={{ minWidth: "20vw" }} withBorder >
         <LoadingOverlay visible={!interaction} overlayBlur={2} />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+          }}>
         <Image
             src="/images/Hye_Ararat_2.png"
             width={50}
             height={50}
             alt="hye hosting"
             />
+          </div>
         <Text ta="center" size="lg" weight={500}>
           Welcome to Hye Ararat!
         </Text>
