@@ -1,11 +1,42 @@
 import { LxdInstance } from "@/types/instance";
 import { ActionIcon, Anchor, Breadcrumbs, Button, Grid, Group, Menu, SegmentedControl, Text, Center } from "@mantine/core";
 import { IconArrowLeft, IconArrowRight, IconFile, IconFolder, IconLayoutGrid, IconLayoutList, IconPlus } from "@tabler/icons-react";
-import { useState } from "react";
-import { GridFileView } from "./files/GridFileView"
-import { ListFileView } from "./files/ListFileView"
-export function InstanceFiles({ instance }: { instance: LxdInstance }) {
+import { useContext, useEffect, useState } from "react";
+import { GridFileView } from "@/components/instances/instance/files/GridFileView";
+import { ListFileView } from "@/components/instances/instance/files/ListFileView";
+import { connectOIDC } from "js-lxd";
+import { InstanceContext } from "@/components/AppShell";
+import { GetServerSidePropsContext } from "next";
+import { ParsedUrlQuery } from "querystring";
+
+export async function getServerSideProps({ req, res, params }: GetServerSidePropsContext) {
+    // TODO: iterate nodes
+    console.log(req.cookies)
+    let client = connectOIDC("https://192.168.1.133:8443", (req.cookies.access_token as string))
+    try {
+        let instance = (await client.get(`/instances/${(params as ParsedUrlQuery).instance}?recursion=1`)).data.metadata
+        return {
+            props: {
+                instance
+            }
+        }
+    } catch (error) {
+        console.log(error)
+        res.setHeader("Set-Cookie", ["access_token=deleted; Max-Age=0"])
+        return {
+            redirect: {
+                permanent: false,
+                destination: `/authentication/login`
+            },
+        };
+    }
+}
+export default function InstanceFiles({ instance }: { instance: LxdInstance }) {
     let [fileView, setFileView] = useState<string>("grid")
+    const [instanceData, setInstanceData]= useContext(InstanceContext); 
+    useEffect(() => {
+        setInstanceData(instance);
+    }, [])
     return (
         <>
          <Group spacing={10} mt={"sm"}>
