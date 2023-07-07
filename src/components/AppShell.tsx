@@ -119,11 +119,10 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
             </MediaQuery>
             <Image
             src="/images/Hye_Ararat_2.png"
-            width={100}
-            height={100}
+            width={50}
+            height={50}
             alt="hye hosting"
             />
-            <Title order={3}>Hye Ararat</Title>
           </div>
         </Header>
       }
