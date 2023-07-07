@@ -24,6 +24,7 @@ import {
   IconArrowBack,
 } from '@tabler/icons-react';
 import Link from 'next/link';
+import Image from 'next/image'
 import InstanceShell from './instances/instance/InstanceShell';
 import { useRouter } from 'next/router';
 
@@ -130,8 +131,12 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
                 mr="xl"
               />
             </MediaQuery>
-
-            <Title order={3}>Hye Ararat</Title>
+            <Image
+            src="/images/Hye_Ararat_2.png"
+            width={50}
+            height={50}
+            alt="hye hosting"
+            />
           </div>
         </Header>
       }
