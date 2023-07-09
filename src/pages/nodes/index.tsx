@@ -131,7 +131,6 @@ function NodeTableRow({ node }: { node: LxdResources & { name: string, status: s
   const { setAside, setAsideOpen, asideOpen } = useContext(MainContext)
 
   function setSelect(checked: boolean) {
-    console.log("change", checked)
     if (checked == false) {
       var i = selectedNodes.findIndex(s => s.id == node.name)
       var tmp = [...selectedNodes]
@@ -248,7 +247,6 @@ export default function Nodes({ nodes }: { nodes: (LxdResources & { name: string
   })
   var [selectedNodes, setSelectedNodes] = useState<{ id: string, checked: boolean }[]>(initialCheckedNodes)
 
-  console.log(nodes)
   return (
     <>
       <Flex>

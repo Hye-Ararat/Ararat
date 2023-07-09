@@ -1,4 +1,7 @@
 import { Issuer, generators, Client, BaseClient } from 'openid-client';
+import jwt from "jsonwebtoken"
+import jwsClient from "jwks-rsa"
+import axios from "axios"
 let url = process.env.URL
 
 
@@ -53,6 +56,32 @@ interface ClientInt {
     oidClient: Client
 }
 
+
+
+export async function validateSession(access_token: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        var jws = jwsClient({
+            jwksUri: `http://${url}/oidc/jwks`
+        })
+
+        jwt.verify(access_token, function getKey(header, callback) {
+            jws.getSigningKey(header.kid, function (err, key) {
+                if (!key) {
+                    resolve(false)
+                } else {
+                    var signingKey = key.getPublicKey()
+                    callback(null, signingKey);
+                }
+            });
+        }, { algorithms: ["RS256"] }, (err, decoded) => {
+            if (err) {
+                resolve(false)
+            } else {
+                resolve(true)
+            }
+        })
+    })
+}
 
 export async function client(): Promise<ClientInt> {
     if (process.env.NODE_ENV === 'production') {
