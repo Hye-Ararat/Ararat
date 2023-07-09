@@ -31,7 +31,6 @@ export default function CreateNode() {
     }, [creatingNode])
 
     useEffect(() => {
-        console.log(activeStep);
         if (activeStep == 2) {
             let socket = new WebSocket(`ws://${nodeDomain}:3001/install`);
             socket.onopen = () => {
@@ -40,7 +39,6 @@ export default function CreateNode() {
             }
             socket.onmessage = (e) => {
                 let data = JSON.parse(e.data);
-                console.log(data)
                 setCurrentStatus(data.status);
                 setCurrentPercent(data.percent);
                 setCurrentImage(data.image);

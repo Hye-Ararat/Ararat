@@ -4,7 +4,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     let url = process.env.URL;
-    console.log(req.query)
     const formBody = new URLSearchParams();
     formBody.append("grant_type", "authorization_code");
     formBody.append("code", (req.query.code as string));
@@ -12,7 +11,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     formBody.append("client_id", "lxd");
     formBody.append("scope", "openid profile");
     formBody.append("code_verifier", (await oidcClient()).codeVerifier);
-    console.log(formBody)
 
     process.env.NODE_DEBUG = "http"
     const tokenResponse = await fetch(`http://${url}/oidc/token`, {
@@ -24,7 +22,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         cache: "no-cache"
     })
     let data = await tokenResponse.json();
-    console.log(data, "This is the response") // thats not what im looking for
     let expires = data.expires_in;
     let id_token_cookie = serialize("id_token", data.id_token, {
         path: "/",

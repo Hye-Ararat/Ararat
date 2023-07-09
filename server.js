@@ -1,5 +1,6 @@
 const express = require("express");
 const next = require("next");
+
 const provider = require("oidc-provider")
 const port = parseInt(process.env.PORT, 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'
@@ -7,14 +8,17 @@ const app = next({ dev })
 const handle = app.getRequestHandler()
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-require("dotenv").config({"path": "./.env.local"})
+require("dotenv").config({ "path": "./.env.local" })
 const mongo = require("./src/lib/mongo")
-const {compare} = require("bcrypt")
+const { compare } = require("bcrypt")
 
 app.prepare().then(() => {
     const usersCollection = mongo.db().collection("User")
     const server = express()
     const configuration = require("./src/authentication/configuration.js");
+    /**
+ * @type {import("@types/oidc-provider").default}
+ */
     const oidcProvider = new provider(`http://${process.env.URL}/oidc`, { ...configuration });
     oidcProvider.on("authorization.error", console.log)
     server.use(bodyParser.json())
@@ -28,40 +32,36 @@ app.prepare().then(() => {
         res.json(inter);
     })
     server.post("/oidc/interaction/:uid/login", async (req, res, next) => {
-        console.log(req.cookies)
-        try {
-            let email = req.body.login;
-            let password = req.body.password;
 
-            const user = await usersCollection.findOne({
+        let email = req.body.login;
+        let password = req.body.password;
+        try {
+            var user = await usersCollection.findOne({
                 email: email
             })
-            const authError = {
-                error: "Invalid email or password"
-            }
-            console.log(req.params)
-            console.log(user, "USER");
-            if (!user) return res.status(401).json(authError);
-            const match = await compare(password, user.password);
-            console.log(match, "MATCH")
-            console.log(password, "REQUESTPASSWD")
-            if (!match) return res.status(401).json(authError);
-            const result = {
-                login: {
-                    accountId: user._id.toString(),
-                    firstName: user.firstName
-                }
-            }
-            const inter = await oidcProvider.Interaction.find(req.params.uid);
-            inter.result = result;
-            let epoch = (date = Date.now()) => Math.floor(date / 1000);
-            await inter.save(inter.exp - epoch());
-            console.log("inter", inter.returnTo)
-            return res.redirect(inter.returnTo);
         } catch (error) {
-            console.log(error)
-            return next(error)
+            return res.status(500).json({
+                error: "Internal server error"
+            })
         }
+        const authError = {
+            error: "Invalid email or password"
+        }
+        if (!user) return res.status(401).json(authError);
+        const match = await compare(password, user.password);
+        if (!match) return res.status(401).json(authError);
+        const result = {
+            login: {
+                accountId: user._id.toString(),
+                firstName: user.firstName
+            }
+        }
+        const inter = await oidcProvider.Interaction.find(req.params.uid);
+        inter.result = result;
+        let epoch = (date = Date.now()) => Math.floor(date / 1000);
+        await inter.save(inter.exp - epoch());
+        return res.redirect(inter.returnTo);
+
     })
 
     server.post("/oidc/interaction/:uid/confirm", async (req, res, next) => {
@@ -109,11 +109,11 @@ app.prepare().then(() => {
     })
     server.get("/oidc/client/:id", async (req, res) => {
         let client = await oidcProvider.Client.find(req.params.id);
-        if (client) {
-        if (client.clientSecret) {
-        client.clientSecret = undefined;
-        }
-    }
+       // if (client) {
+       //    if (client.clientSecret) {
+        //        client.clientSecret = undefined;
+        //    }
+       // }
         res.json(client);
     })
     server.all('*', (req, res) => {

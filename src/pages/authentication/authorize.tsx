@@ -28,11 +28,8 @@ export async function getServerSideProps({ query }: { query: { [key: string]: st
   }
   const interactionDetails = await fetch(`http://${process.env.URL}/oidc/interaction/${query["interaction"]}`);
   const interactionJson = await interactionDetails.json();
-  console.log(interactionJson);
   const clientDetails = await fetch(`http://${process.env.URL}/oidc/client/${interactionJson.params.client_id}`);
   const clientJson = await clientDetails.json();
-  console.log(clientJson)
-  console.log("READY")
   return {
     props: {
       interaction: query["interaction"] ? query["interaction"] : null,

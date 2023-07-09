@@ -1,5 +1,7 @@
 import { LxdConfigPair } from "./config";
+import { Node } from "./db";
 import { LxdDevices } from "./device";
+import { AxiosInstance } from "axios"
 
 interface LxdInstanceUsageProp {
   usage: number;
@@ -99,4 +101,8 @@ export interface LxdInstance {
   status: LxdInstanceStatus;
   type: string;
   etag?: string;
+}
+
+export interface NodeLxdInstance extends LxdInstance {
+  node: Node;
 }

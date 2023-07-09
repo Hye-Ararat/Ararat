@@ -5,43 +5,42 @@ import { IconPlayerPlay, IconPlayerSkipForward, IconPlayerStop, IconTrash, IconX
 import { connectOIDC } from "js-lxd"
 import prettyBytes from 'pretty-bytes';
 import { getOSLogo } from "@/lib/logo";
-import { LxdInstance } from "@/types/instance";
+import { LxdInstance, NodeLxdInstance } from "@/types/instance";
 import { getCookie } from "cookies-next";
 import { createContext, useContext, useState } from "react";
 import { MainContext } from "@/components/AppShell";
 import { formatDate, getBadgeColor } from "@/lib/util";
-
+import Link from "next/link";
+import { client, client as oidcClient, validateSession } from "@/lib/oidc"
+import mongo from "@/lib/mongo";
+import { Node } from "@/types/db";
+import { fetchAllInstances } from "@/lib/lxd";
 export async function getServerSideProps({ req, res }: any) {
-    console.log(req.cookies)
-
-
-    // TODO: iterate nodes
-    let client = connectOIDC("https://192.168.1.133:8443", req.cookies.access_token)
-    try {
-        let instances = (await client.get("/instances?recursion=2")).data.metadata
-        return {
-            props: {
-                instances
-            }
-        }
-    } catch (error) {
+    var valid = await validateSession(req.cookies.access_token)
+    if (!valid) {
         res.setHeader("Set-Cookie", ["access_token=deleted; Max-Age=0"])
         return {
             redirect: {
                 permanent: false,
                 destination: `/authentication/login`
             },
-        };
+        }
+    };
+
+    var instances = await fetchAllInstances(req.cookies.access_token)
+
+    return {
+        props: {
+            instances
+        }
     }
 }
 
 
 const InstanceContext = createContext({ setActiveInstance: (instance: string) => { }, activeInstance: "", selectedInstances: ([] as { id: string, checked: boolean }[]), setSelectedInstances: (instances: { id: string, checked: boolean }[]) => { } })
 
-export default function Instances({ instances }: { instances: LxdInstance[] }) {
+export default function Instances({ instances }: { instances: NodeLxdInstance[] }) {
     var access_token = getCookie("access_token")
-    // TODO: iterate nodes
-    var client = connectOIDC("https://192.168.1.133:8443", (access_token as string))
     var [activeInstance, setActiveInstance] = useState<string>("")
     var initialCheckedInstances = ([] as { id: string, checked: boolean }[])
     instances.forEach(inst => initialCheckedInstances.push({ id: inst.config["volatile.uuid"], checked: false }))
@@ -57,13 +56,13 @@ export default function Instances({ instances }: { instances: LxdInstance[] }) {
                                 <IconPlayerPlay size={"1.2rem"} />
                             </ActionIcon>
                             <ActionIcon color="yellow" variant="light" size={"lg"}>
-                                <IconPlayerSkipForward size={"1.2rem"}/>
+                                <IconPlayerSkipForward size={"1.2rem"} />
                             </ActionIcon>
                             <ActionIcon color="red" variant="light" size={"lg"}>
-                                <IconPlayerStop size={"1.2rem"}/>
+                                <IconPlayerStop size={"1.2rem"} />
                             </ActionIcon>
                             <ActionIcon color="red" variant="light" size={"lg"}>
-                                <IconTrash size={"1.2rem"}/>
+                                <IconTrash size={"1.2rem"} />
                             </ActionIcon>
                             <Button variant="light" onClick={() => {
                                 setSelectedInstances(initialCheckedInstances)
@@ -90,7 +89,7 @@ export default function Instances({ instances }: { instances: LxdInstance[] }) {
         </>
     )
 }
-function InstanceAside({ instance, closeAside }: { instance: LxdInstance, closeAside: () => void }) {
+function InstanceAside({ instance, closeAside }: { instance: NodeLxdInstance, closeAside: () => void }) {
     if (instance.state?.network) {
         var interfaces = Object.keys((instance.state?.network))
         var ips: string[] = []
@@ -106,7 +105,6 @@ function InstanceAside({ instance, closeAside }: { instance: LxdInstance, closeA
         var ips = ["Unknown"]
     }
 
-    console.log(instance)
     return (
         <>
 
@@ -140,6 +138,16 @@ function InstanceAside({ instance, closeAside }: { instance: LxdInstance, closeA
                     <tr>
                         <td>
                             <Text fw={650}>
+                                Node
+                            </Text>
+                        </td>
+                        <td>
+                            {instance.node.name}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <Text fw={650}>
                                 Status
                             </Text>
                         </td>
@@ -157,7 +165,7 @@ function InstanceAside({ instance, closeAside }: { instance: LxdInstance, closeA
                         </td>
                         <td>
                             <Badge color={instance.type == "virtual-machine" ? "teal" : "indigo"}>
-                            {instance.type == "virtual-machine" ? "Virtual Machine" : "Container"}
+                                {instance.type == "virtual-machine" ? "Virtual Machine" : "Container"}
                             </Badge>
                         </td>
                     </tr>
@@ -229,7 +237,7 @@ function InstanceAside({ instance, closeAside }: { instance: LxdInstance, closeA
 
     )
 }
-function InstanceTableRow({ instance }: { instance: LxdInstance }) {
+function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
     const { setAside, setAsideOpen } = useContext(MainContext)
     const { setActiveInstance, activeInstance, setSelectedInstances, selectedInstances } = useContext(InstanceContext)
 
@@ -239,7 +247,6 @@ function InstanceTableRow({ instance }: { instance: LxdInstance }) {
         setActiveInstance("")
     }
     function setSelect(checked: boolean) {
-        console.log("change", checked)
         if (checked == false) {
             var i = selectedInstances.findIndex(s => s.id == instance.config["volatile.uuid"])
             var tmp = [...selectedInstances]
@@ -325,7 +332,14 @@ function InstanceTableRow({ instance }: { instance: LxdInstance }) {
             </DataTableColumn>
             <DataTableColumn>
                 <Group spacing={0} position="right">
-                    <Button sx={{ mr: 40 }} component="a" href={`/instances/${instance.name}`}>Manage</Button>
+                    <Link onClick={(e) => {
+                        closeAside();
+                        setTimeout(() => {
+                            closeAside();
+                        }, Number.MIN_VALUE)
+                    }} href={`/instances/${instance.node.name}/${instance.name}`}>
+                        <Button sx={{ mr: 40 }}>Manage</Button>
+                    </Link>
                 </Group>
             </DataTableColumn>
         </DataTableRow>
