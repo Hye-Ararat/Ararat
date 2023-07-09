@@ -7,13 +7,16 @@ const app = next({ dev })
 const handle = app.getRequestHandler()
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const prisma = require("./src/lib/prisma");
+require("dotenv").config({"path": "./.env.local"})
+const mongo = require("./src/lib/mongo")
 const {compare} = require("bcrypt")
 
 app.prepare().then(() => {
+    const usersCollection = mongo.db().collection("User")
     const server = express()
     const configuration = require("./src/authentication/configuration.js");
     const oidcProvider = new provider(`http://${process.env.URL}/oidc`, { ...configuration });
+    oidcProvider.on("authorization.error", console.log)
     server.use(bodyParser.json())
     server.use(cookieParser())
     server.get("/oidc/.well-known/openid-configuration", async (req, res) => {
@@ -27,16 +30,16 @@ app.prepare().then(() => {
     server.post("/oidc/interaction/:uid/login", async (req, res, next) => {
         console.log(req.cookies)
         try {
-            let email = req.body.email;
+            let email = req.body.login;
             let password = req.body.password;
-            const user = await prisma.user.findFirst({
-                where: {
-                    email: email
-                }
-            });
+
+            const user = await usersCollection.findOne({
+                email: email
+            })
             const authError = {
                 error: "Invalid email or password"
             }
+            console.log(req.params)
             console.log(user, "USER");
             if (!user) return res.status(401).json(authError);
             const match = await compare(password, user.password);
@@ -45,7 +48,7 @@ app.prepare().then(() => {
             if (!match) return res.status(401).json(authError);
             const result = {
                 login: {
-                    accountId: user.id,
+                    accountId: user._id.toString(),
                     firstName: user.firstName
                 }
             }

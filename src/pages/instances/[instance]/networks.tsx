@@ -1,4 +1,4 @@
-export default function Networks() {
+export default function InstanceNetworks() {
     return (
         <p>networks</p>
     )

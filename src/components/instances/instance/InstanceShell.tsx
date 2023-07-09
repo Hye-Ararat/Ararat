@@ -1,10 +1,13 @@
-import { use, useEffect, useState } from 'react';
+import { use, useContext, useEffect, useState } from 'react';
 import { Badge, Button, Flex, Tabs, Title } from '@mantine/core';
 import Link from 'next/link';
-import { IconBox, IconFolder, IconHistory, IconHome, IconSettings, IconTerminal2, IconWifi } from '@tabler/icons-react';
+import { IconBox, IconFolder, IconHistory, IconHome, IconNetwork, IconSettings, IconTerminal2, IconWifi } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
+import { InstanceContext } from '@/components/AppShell';
+import { getBadgeColor } from '@/lib/util';
 
-export default function InstanceTabs() {
+export default function InstanceShell() {
+    const [instance, setInstance] = useContext(InstanceContext)
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("dashboard")
   useEffect(() => {
@@ -21,36 +24,36 @@ export default function InstanceTabs() {
     <>
       <Flex>
         <div>
-          <Title order={1}>{router.query.instance}</Title>
-          <Badge color="green" variant="dot">Online</Badge>
+          <Title order={1}>{instance.name}</Title>
+          <Badge color={getBadgeColor(instance.status)} variant="dot">{instance.status}</Badge>
         </div>
-        <Button variant="filled" color="green" sx={{ marginLeft: "auto", marginRight: 10, marginTop: "auto", marginBottom: "auto" }} disabled>Start</Button>
-        <Button variant="filled" sx={{ marginRight: 10, marginTop: "auto", marginBottom: "auto" }} color="red">Stop</Button>
-        <Button variant="filled" sx={{ marginTop: "auto", marginBottom: "auto" }} color="yellow">Restart</Button>
+        <Button variant="filled" color="green" sx={{ marginLeft: "auto", marginRight: 10, marginTop: "auto", marginBottom: "auto" }} disabled={instance.status == "Running"}>Start</Button>
+        <Button variant="filled" sx={{ marginRight: 10, marginTop: "auto", marginBottom: "auto" }} color="red" disabled={instance.status == "Stopped"}>Stop</Button>
+        <Button variant="filled" sx={{ marginTop: "auto", marginBottom: "auto" }} color="yellow" disabled={instance.status == "Stopped"}>Restart</Button>
 
       </Flex>
       <Tabs value={activeTab} sx={{ marginTop: 10 }} >
         <Tabs.List>
-          <Link href="/instances/inst" style={{ textDecoration: "none" }} >
+          <Link href={`/instances/${instance.name}`} style={{ textDecoration: "none" }} >
             <Tabs.Tab icon={<IconHome size="0.8rem" />} value="dashboard">Dashboard</Tabs.Tab>
           </Link>
-          <Link href="/instances/inst/console" style={{ textDecoration: "none" }} >
+          <Link href={`/instances/${instance.name}/console`} style={{ textDecoration: "none" }} >
             <Tabs.Tab icon={<IconTerminal2 size="0.8rem" />} value="console">Console</Tabs.Tab>
           </Link>
-          <Link href="/instances/inst/files" style={{ textDecoration: "none" }} >
+          <Link href={`/instances/${instance.name}/files`} style={{ textDecoration: "none" }} >
             <Tabs.Tab icon={<IconFolder size="0.8rem" />} value="files">Files</Tabs.Tab>
           </Link>
-          <Link href="/instances/inst/networks" style={{ textDecoration: "none" }} >
-            <Tabs.Tab icon={<IconWifi size="0.8rem" />} value="networks">Networks</Tabs.Tab>
+          <Link href={`/instances/${instance.name}/networks`} style={{ textDecoration: "none" }} >
+            <Tabs.Tab icon={<IconNetwork size="0.8rem" />} value="networks">Networks</Tabs.Tab>
           </Link>
-          <Link href="/instances/inst/volumes" style={{ textDecoration: "none" }} >
+          <Link href={`/instances/${instance.name}/volumes`} style={{ textDecoration: "none" }} >
             <Tabs.Tab icon={<IconBox size="0.8rem" />} value="volumes">Volumes</Tabs.Tab>
           </Link>
-          <Link href="/instances/inst/snapshots" style={{ textDecoration: "none" }} >
+          <Link href={`/instances/${instance.name}/snapshots`} style={{ textDecoration: "none" }} >
             <Tabs.Tab icon={<IconHistory size="0.8rem" />} value="snapshots">Snapshots</Tabs.Tab>
           </Link>
        
-          <Link href="/instances/inst/settings" style={{ textDecoration: "none" }} >
+          <Link href={`/instances/${instance.name}/settings`} style={{ textDecoration: "none" }} >
             <Tabs.Tab icon={<IconSettings size="0.8rem" />} value="settings">Settings</Tabs.Tab>
           </Link>
         </Tabs.List>

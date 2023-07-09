@@ -1,5 +1,5 @@
-export default function settings() {
+export default function InstanceSettings() {
     return (
-        <p>settings</p>
+        <p>Settings</p>
     )
 }

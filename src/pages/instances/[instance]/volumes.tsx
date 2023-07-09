@@ -1,5 +1,5 @@
-export default function Volumes() {
+export default function InstanceVolumes() {
     return (
-        <p>volumes</p>
+        <p>Volumes</p>
     )
 }

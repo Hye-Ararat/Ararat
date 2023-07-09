@@ -1,7 +1,5 @@
 export default function InstanceConsole() {
     return (
-        <>
-        <p>console</p>
-        </>
+        <p>Console</p>
     )
 }

@@ -1,13 +1,13 @@
-import {client as oidcClient} from "@/lib/oidc";
-import http from "node:http";
-import {serialize} from "cookie"
+import { client as oidcClient } from "@/lib/oidc";
+import { serialize } from "cookie"
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req, res : http.ServerResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     let url = process.env.URL;
     console.log(req.query)
     const formBody = new URLSearchParams();
     formBody.append("grant_type", "authorization_code");
-    formBody.append("code", req.query.code);
+    formBody.append("code", (req.query.code as string));
     formBody.append("redirect_uri", `http://${url}/api/authentication/callback`);
     formBody.append("client_id", "lxd");
     formBody.append("scope", "openid profile");
@@ -37,4 +37,4 @@ export default async function handler(req, res : http.ServerResponse) {
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Set-Cookie", [id_token_cookie, access_token_cookie]);
     return res.redirect("/")
-    }
+}
