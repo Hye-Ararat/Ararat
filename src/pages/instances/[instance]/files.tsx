@@ -23,7 +23,7 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
             },
         }
     }
-    let client = connectOIDC("https://192.168.1.133:8443", (req.cookies.access_token as string))
+    let client = connectOIDC("https://192.168.10.96:8443", (req.cookies.access_token as string))
     try {
         let instance = (await client.get(`/instances/${(params as ParsedUrlQuery).instance}?recursion=1`)).data.metadata
         let files = (await client.get(`/instances/${(params as ParsedUrlQuery).instance}/files?path=${query.path}`)).data.metadata
@@ -48,6 +48,7 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
 export default function InstanceFiles({ instance, files }: { instance: LxdInstance }) {
     let [fileView, setFileView] = useState<string>("grid")
     const [creatingFile, setCreatingFile] = useState(false);
+    const [creatingFileName, setCreatingFileName] = useState("");
     const [instanceData, setInstanceData]= useContext(InstanceContext);
     const [fileCreateErr, setFileCreateErr] = useState<string | undefined>(undefined);
     useEffect(() => {
@@ -67,13 +68,15 @@ export default function InstanceFiles({ instance, files }: { instance: LxdInstan
                 opacity: 0.55,
                 blur: 3,
             }}  opened={creatingFile} onClose={() => setCreatingFile(false)} title="Create File">
-            <TextInput error={fileCreateErr} placeholder="File Name" onChange={(e) => {
+            <TextInput value={creatingFileName} error={fileCreateErr} placeholder="File Name" onChange={(e) => {
                 let audio = new Audio("/audio/ding.wav");
                 setFileCreateErr(undefined);
                 if (e.currentTarget.value.includes("/")) {
                     setFileCreateErr("File name cannot contain /");
                     audio.play();
+                    return;
                 }
+                setCreatingFileName(e.currentTarget.value);
             }} />
             <Flex mt="md">
             <Button disabled={fileCreateErr} ml="auto" color="green" variant="light" onClick={() => setCreatingFile(false)}>Create</Button>
