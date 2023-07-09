@@ -89,7 +89,6 @@ export default function Authentication({ interaction }: { interaction: string })
           let data;
           try {
             data = await res.json();
-            console.log(data)
           } catch (error) {
 
           }
@@ -97,6 +96,12 @@ export default function Authentication({ interaction }: { interaction: string })
             if (data.error == "Invalid email or password") {
               setLoggingIn(false);
               return setError("Invalid email or password");
+            } else if (data.error == "Internal server error") {
+              setLoggingIn(false);
+              return setError("Internal server error");
+            } else if (data.error) {
+              setLoggingIn(false);
+              return setError("Unspecified error");
             }
           }
           router.replace(res.url);

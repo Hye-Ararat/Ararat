@@ -23,7 +23,7 @@ export function DataTableRow({ children, active,onClick }: { children: ReactNode
     var normalStyle = { backgroundColor: active ? "#28292e" : "#1a1b1e", marginTop: 30, border: 0 }
     var mappedChildren = Children.map(children, (child, i) => {
         return (
-            <td key={i} style={i == 0 ? firstStyle : (i == (children as any).length - 1 ? lastStyle : normalStyle)} onClick={onClick}>
+            <td key={i.toString()} style={i == 0 ? firstStyle : (i == (children as any).length - 1 ? lastStyle : normalStyle)} onClick={onClick}>
                 {child}
             </td>
         )

@@ -20,6 +20,9 @@ setupKey();
 
 let url = process.env.URL
 
+/**
+ * @type {import("@types/oidc-provider").Configuration}
+ */
 const configuration = {
     scopes: ['openid', 'profile', 'email', 'offline_access'],
     clients: [
@@ -54,6 +57,10 @@ const configuration = {
     jwks: {
         keys: [JSON.parse(fs.readFileSync("./key", "utf8"))]
     },
+    // renderError: (ctx, out, error) => {
+
+    //     console.log("ERR", out, error)
+    // },
     features: {
         devInteractions: {
             enabled: false
@@ -88,30 +95,25 @@ const configuration = {
     interactions: {
         url(ctx, interaction) {
             try {
-            console.log(interaction, "INTERACTION")
-            let interactionId = interaction.returnTo.split("/").pop();
-            console.log(interactionId, "INTERACTION ID")
-            console.log(interaction.prompt.name, "INTERACTION PROMPT NAME")
-            if (interaction.prompt.name == "login") {
-                return `http://${url}/authentication/login?interaction=${interactionId}`;
+                let interactionId = interaction.returnTo.split("/").pop();
+                if (interaction.prompt.name == "login") {
+                    return `http://${url}/authentication/login?interaction=${interactionId}`;
+                }
+                if (interaction.prompt.name == "consent") {
+                    return `http://${url}/authentication/authorize?interaction=${interactionId}`;
+                }
+            } catch (err) {
+                console.log("ERROR", err)
             }
-            if (interaction.prompt.name == "consent") {
-                return `http://${url}/authentication/authorize?interaction=${interactionId}`;
-            }
-        } catch (err) {
-            console.log("ERROR", err)
-        }
         }
     },
     ttl: {
         Grant: 1 * 60 * 60, // 1 hour
     },
     findAccount(ctx, sub, token) {
-        console.log(sub, "THIS IS THE SUB")
         return {
             accountId: sub,
             async claims(use, scope, claims, rejected) {
-                console.log(use, scope, claims, rejected, "THIS IS THE CLAIMS")
                 return {
                     sub: sub,
                 }
