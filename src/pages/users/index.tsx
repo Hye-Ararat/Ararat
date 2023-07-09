@@ -89,7 +89,6 @@ function UserTableRow({ user }: { user: User }) {
     const { setAside, setAsideOpen, asideOpen } = useContext(MainContext)
 
     function setSelect(checked: boolean) {
-        console.log("change", checked)
         if (checked == false) {
             var i = selectedUsers.findIndex(s => s.id == user.email)
             var tmp = [...selectedUsers]
