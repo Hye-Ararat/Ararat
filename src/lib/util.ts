@@ -1,3 +1,5 @@
+import { LxdInstance, NodeLxdInstance } from "@/types/instance";
+
 export function formatDate(date: Date) {
     var d = date
     var date_format_str = d.getFullYear().toString() + "-" + ((d.getMonth() + 1).toString().length == 2 ? (d.getMonth() + 1).toString() : "0" + (d.getMonth() + 1).toString()) + "-" + (d.getDate().toString().length == 2 ? d.getDate().toString() : "0" + d.getDate().toString()) + " " + (d.getHours().toString().length == 2 ? d.getHours().toString() : "0" + d.getHours().toString()) + ":" + (((d.getMinutes() / 5) * 5).toString().length == 2 ? ((d.getMinutes() / 5) * 5).toString() : "0" + ((d.getMinutes() / 5) * 5).toString());
@@ -27,4 +29,12 @@ export function getBadgeColor(status: string) {
 }
 export function capitalizeFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+export function relativeDirMove(backmoves: number) {
+    const times = backmoves;
+    var res = "./"
+    for (let i = 0; i < times; i++) {
+        res += "../"
+    }
+    return res;
 }
