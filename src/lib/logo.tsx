@@ -1,4 +1,5 @@
-import { SiAlpinelinux, SiAmazon, SiArchlinux, SiCentos, SiDebian, SiFedora, SiGentoo, SiKalilinux, SiLinux, SiLinuxmint, SiOpensuse, SiOpenwrt, SiOracle, SiRockylinux, SiUbuntu } from "@icons-pack/react-simple-icons";
+import { SiAlpinelinux, SiAmazon, SiApple, SiArchlinux, SiCentos, SiDebian, SiDell, SiFedora, SiGentoo, SiHp, SiKalilinux, SiLenovo, SiLinux, SiLinuxmint, SiMicrosoft, SiOpensuse, SiOpenwrt, SiOracle, SiProxmox, SiRockylinux, SiSupermicro, SiUbuntu, SiVirtualbox, SiVmware } from "@icons-pack/react-simple-icons";
+import { IconServer2 } from "@tabler/icons-react";
 
 export function getOSLogo(os: string, size?: number) {
     switch (os) {
@@ -33,4 +34,43 @@ export function getOSLogo(os: string, size?: number) {
         default:
             return <SiLinux color="#FCC624" size={size}/>;
     }
+}
+
+export function getVendorLogo(vendor: string, size?: number) {
+   if (vendor.toLowerCase().includes("dell")) {
+    return <SiDell color="#007DB8"  size={size}/>;
+   }
+   if (vendor.toLowerCase().includes("hp") || vendor.toLowerCase().includes("hewlett")) {
+    return <SiHp color="#0096D6" size={size} />;
+   }
+   if (vendor.toLowerCase().includes("lenovo")) {
+    return <SiLenovo color="#E2231A" size={size} />;
+   }
+   if (vendor.toLowerCase().includes("vmware")) {
+    return <SiVmware color="#607078" size={size} />;
+   }
+   if (vendor.toLowerCase().includes("virtualbox")) {
+    return <SiVirtualbox color="#183A61" size={size} />;
+   }
+   if (vendor.toLowerCase().includes("apple")) {
+    return <SiApple color="#000000" size={size} />;
+   }
+   if (vendor.toLowerCase().includes("microsoft")) {
+    return <SiMicrosoft color="#5E5E5E" size={size} />;
+   }
+   if (vendor.toLowerCase().includes("supermicro")) {
+    return <SiSupermicro color="#5E5E5E" size={size} />;
+   }
+   if (vendor.toLowerCase().includes("amazon")) {
+    return <SiAmazon color="#FF9900" size={size} />;
+   }
+   if (vendor.toLowerCase().includes("oracle")) {
+    return <SiOracle color="#F80000" size={size} />;
+   }
+   if (vendor.toLowerCase().includes("proxmox")) {
+    return <SiProxmox color="#E57000" size={size} />;
+   }
+   return <IconServer2 color="#000000" size={size} />;
+
+
 }

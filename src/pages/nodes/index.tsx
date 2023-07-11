@@ -8,6 +8,7 @@ import { IconServer2, IconTrash, IconX } from '@tabler/icons-react';
 import prettyBytes from 'pretty-bytes'
 import { MainContext } from '@/components/AppShell'
 import { createContext, useContext, useState } from 'react'
+import { getVendorLogo } from '@/lib/logo';
 
 const NodeContext = createContext({ setActiveNode: (node: string) => { }, activeNode: "", selectedNodes: ([] as { id: string, checked: boolean }[]), setSelectedNodes: (nodes: { id: string, checked: boolean }[]) => { } })
 
@@ -160,14 +161,14 @@ function NodeTableRow({ node }: { node: LxdResources & { name: string, status: s
           <Checkbox checked={selectedNodes.find(s => s.id == node.name)?.checked} onChange={(event) => {
             setSelect(event.currentTarget.checked)
           }} />
-          <IconServer2 size={40} />
+          {getVendorLogo(node.system.vendor, 40)}
 
           <div>
             <Text fz="md" fw={550}>
               {node.name}
             </Text>
             <Text c="dimmed" fz="xs">
-              {node.cpu ? node.cpu.architecture : ""}
+              {node.system.product}
             </Text>
           </div>
 
@@ -199,7 +200,7 @@ function NodeTableRow({ node }: { node: LxdResources & { name: string, status: s
               {prettyBytes(node.memory ? node.memory.total : 0)}
             </Text>
             <Text c="dimmed" fz="xs">
-              Memory Total
+              Memory
             </Text>
           </div>
         </Text>
