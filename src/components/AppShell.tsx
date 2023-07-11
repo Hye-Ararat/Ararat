@@ -80,8 +80,12 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
   const [asideOpen, setAsideOpen] = useState(false)
   const [asideContent, setAsideContent] = useState("")
   const [notification, setNotification] = useState(null);
+  const [ws, setWS] = useState(null);
   useEffect(() => {
-    const ws = new WebSocket(`ws://192.168.10.96:3001/events?access_token=${getCookie("access_token")}`);
+    setWS(new WebSocket(`ws://192.168.10.96:3001/events?access_token=${getCookie("access_token")}`));
+  }, [])
+  useEffect(() => {
+    if (!ws) return
     ws.onmessage = (event) => {
       let eventData = JSON.parse(event.data);
       let eventType = eventData.type;
@@ -118,7 +122,7 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
       const audio = new Audio('/audio/notification.wav');
       audio.play();
     }
-  }, [])
+  }, [ws])
 
   const links = [
     { icon: <IconHome size="1rem" />, color: 'indigo', label: 'Dashboard', path: "/" },
