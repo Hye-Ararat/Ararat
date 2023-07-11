@@ -9,6 +9,7 @@ import prettyBytes from 'pretty-bytes'
 import { MainContext } from '@/components/AppShell'
 import { createContext, useContext, useState } from 'react'
 import { getVendorLogo } from '@/lib/logo';
+import Link from 'next/link';
 
 const NodeContext = createContext({ setActiveNode: (node: string) => { }, activeNode: "", selectedNodes: ([] as { id: string, checked: boolean }[]), setSelectedNodes: (nodes: { id: string, checked: boolean }[]) => { } })
 
@@ -233,7 +234,9 @@ function NodeTableRow({ node }: { node: LxdResources & { name: string, status: s
       </DataTableColumn>
       <DataTableColumn>
         <Group spacing={2} position="right">
-          <Button sx={{ mr: 40 }}>Edit</Button>
+          <Link href={`/nodes/${node.name}`}>
+          <Button sx={{ mr: 40 }}>Manage</Button>
+          </Link>
         </Group>
       </DataTableColumn>
     </DataTableRow>
