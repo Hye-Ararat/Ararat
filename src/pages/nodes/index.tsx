@@ -233,7 +233,7 @@ function NodeTableRow({ node }: { node: LxdResources & { name: string, status: s
       </DataTableColumn>
       <DataTableColumn>
         <Group spacing={2} position="right">
-          <Button sx={{ mr: 40 }}>Edit</Button>
+          <Button sx={{ mr: 40 }}>Manage</Button>
         </Group>
       </DataTableColumn>
     </DataTableRow>
