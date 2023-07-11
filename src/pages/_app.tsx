@@ -7,6 +7,7 @@ import { useColorScheme } from "@mantine/hooks";
 import { useRouter } from 'next/router';
 import { SpotlightProvider } from '@mantine/spotlight';
 import { IconSearch } from '@tabler/icons-react';
+import { Notifications } from '@mantine/notifications';
 
 
 export default function App(props: AppProps) {
@@ -29,6 +30,7 @@ export default function App(props: AppProps) {
           colorScheme: colorScheme,
         }}
       >
+        <Notifications position="top-right" />
         <SpotlightProvider searchIcon={<IconSearch size="1.2rem" />} searchPlaceholder='Spotlight (BETA)' nothingFoundMessage="We couldn't find anything that matches your query" shortcut={['mod + P', 'mod + K', '/']} actions={[]}>
           <RouterTransition />
           {!router.pathname.startsWith("/authentication") ?

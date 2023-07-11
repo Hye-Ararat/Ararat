@@ -13,6 +13,7 @@ import {
   ThemeIcon,
   Title,
   Aside,
+  Notification
 } from '@mantine/core';
 import { NavigationProgress } from "@mantine/nprogress";
 import {
@@ -28,6 +29,8 @@ import Image from 'next/image'
 import InstanceShell from './instances/instance/InstanceShell';
 import { useRouter } from 'next/router';
 import { LxdInstance } from '@/types/instance';
+import { notifications } from '@mantine/notifications';
+import { getCookie } from 'cookies-next';
 
 interface MainLinkProps {
   icon: React.ReactNode;
@@ -76,6 +79,46 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
   const [opened, setOpened] = useState(false);
   const [asideOpen, setAsideOpen] = useState(false)
   const [asideContent, setAsideContent] = useState("")
+  const [notification, setNotification] = useState(null);
+  useEffect(() => {
+    const ws = new WebSocket(`ws://192.168.10.96:3001/events?access_token=${getCookie("access_token")}`);
+    ws.onmessage = (event) => {
+      let eventData = JSON.parse(event.data);
+      let eventType = eventData.type;
+      if (eventType == "logging") return;
+      let title = "";
+      let message = "";
+      let color = "green"
+      if (eventData.type == "operation") {
+        title = eventData.metadata.description
+        let status = eventData.metadata.status
+        if (status == "Pending") {
+          color = "blue"
+        }
+        if (status == "Running") {
+          return;
+        }
+        if (status == "Success") {
+          return;
+        }
+        if (status == "Failed") {
+          color = "red"
+        }
+
+      }
+      if (eventData.type == "lifecycle") {
+        if (eventData.metadata.action.includes("retrieved")) return;
+        title = eventData.metadata.action.split("-").map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
+      }
+      notifications.show({
+        title: title,
+        message: message,
+        color: color
+      })
+      const audio = new Audio('/audio/notification.wav');
+      audio.play();
+    }
+  }, [])
 
   const links = [
     { icon: <IconHome size="1rem" />, color: 'indigo', label: 'Dashboard', path: "/" },
@@ -97,10 +140,12 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
       asideOffsetBreakpoint="sm"
       navbar={
         <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 300 }}>
-          {links.map((link) => { return (<MainLink {...link} key={link.label} setOpen={setOpened} setAsideOpen={(open) => {
+          {links.map((link) => {
+            return (<MainLink {...link} key={link.label} setOpen={setOpened} setAsideOpen={(open) => {
               setAsideContent("")
               setAsideOpen(false)
-          }} />) })}
+            }} />)
+          })}
         </Navbar>
       }
       footer={
@@ -121,10 +166,10 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
               />
             </MediaQuery>
             <Image
-            src="/images/Hye_Ararat_2.png"
-            width={50}
-            height={50}
-            alt="hye hosting"
+              src="/images/Hye_Ararat_2.png"
+              width={50}
+              height={50}
+              alt="hye hosting"
             />
           </div>
         </Header>
@@ -137,7 +182,11 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
       <MainContext.Provider value={{ setAside: (content: any) => setAsideContent(content), setAsideOpen: setAsideOpen, asideOpen: asideOpen }}>
         {children}
       </MainContext.Provider>
-
+      {notification ?
+        <Notification sx={{ bottom: 90, position: "fixed" }} title={notification}>
+          <p>yes</p>
+        </Notification>
+        : ""}
     </AppShell>
   );
 }

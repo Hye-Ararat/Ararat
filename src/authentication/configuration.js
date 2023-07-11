@@ -31,7 +31,7 @@ const configuration = {
             client_secret: 'test',
             redirect_uris: ["http://localhost:5556/auth/lxd/callback", `http://${url}/api/authentication/callback`],
             client_name: "Hye Ararat",
-            logo_uri: "https://linuxcontainers.org/lxd/docs/latest/_images/containers.png",
+            logo_uri: `http://${url}/images/Hye_Ararat_2.png`,
             scope: "openid profile email offline_access",
             token_endpoint_auth_method: "none",
             grant_types: ["authorization_code", "urn:ietf:params:oauth:grant-type:device_code", "refresh_token", "client_credentials"]

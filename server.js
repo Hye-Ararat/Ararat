@@ -4,6 +4,7 @@ const next = require("next");
 const provider = require("oidc-provider")
 const port = parseInt(process.env.PORT, 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'
+const url = process.env.URL;
 const app = next({ dev })
 const handle = app.getRequestHandler()
 const bodyParser = require("body-parser");
@@ -109,13 +110,14 @@ app.prepare().then(() => {
     })
     server.get("/oidc/client/:id", async (req, res) => {
         let client = await oidcProvider.Client.find(req.params.id);
-       // if (client) {
-       //    if (client.clientSecret) {
-        //        client.clientSecret = undefined;
-        //    }
-       // }
+        if (client) {
+           if (client.clientSecret) {
+               client.clientSecret = undefined;
+           }
+        }
         res.json(client);
     })
+
     server.all('*', (req, res) => {
         if (req.url.startsWith("/.well-known") || req.url.startsWith("/oidc")) return oidcProvider.callback()(req, res)
         return handle(req, res)
