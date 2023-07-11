@@ -301,7 +301,7 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
                                 {instance.name}
                             </Text>
                             <Text c="dimmed" fz="xs">
-                                {instance.config["image.os"] && instance.config["image.release"] ? instance.config["image.os"] + " " + instance.config["image.release"] : "Unknown OS"}
+                                {instance.description ? instance.description : instance.config["image.os"] && instance.config["image.release"] ? instance.config["image.os"] + " " + instance.config["image.release"] : "Unknown OS"}
                             </Text>
                         </div>
                     </Text>
