@@ -1,5 +1,5 @@
 import { use, useContext, useEffect, useState } from 'react';
-import { Badge, Button, Flex, Tabs, Title } from '@mantine/core';
+import { Badge, Button, Flex, Group, Tabs, Title, Text, Center } from '@mantine/core';
 import Link from 'next/link';
 import { IconBox, IconFolder, IconHistory, IconHome, IconNetwork, IconSettings, IconTerminal2, IconWifi } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
@@ -12,6 +12,7 @@ export default function InstanceShell({ instance }: { instance: any }) {
     if (router.pathname == "/instances/[node]/[instance]") setActiveTab("dashboard");
     if (router.pathname == "/instances/[node]/[instance]/console") setActiveTab("console");
     if (router.pathname == "/instances/[node]/[instance]/files") setActiveTab("files");
+    if (router.pathname == "/instances/[node]/[instance]/files/editor") setActiveTab("files");
     if (router.pathname == "/instances/[node]/[instance]/networks") setActiveTab("networks");
     if (router.pathname == "/instances/[node]/[instance]/volumes") setActiveTab("volumes");
     if (router.pathname == "/instances/[node]/[instance]/snapshots") setActiveTab("snapshots");
@@ -21,10 +22,16 @@ export default function InstanceShell({ instance }: { instance: any }) {
   return (
     <>
       <Flex>
-        <div>
-          <Title order={1}>{instance.name}</Title>
-          <Badge color={getBadgeColor(instance.status)} variant="dot">{instance.status}</Badge>
-        </div>
+        <Group>
+          <Center>
+          <Title order={1} mb={"xs"}>{instance.name}</Title>
+          
+          </Center>
+
+          <Badge color={getBadgeColor(instance.status)} mb={1} variant="filled"></Badge>
+
+
+        </Group>
         <Button variant="filled" color="green" sx={{ marginLeft: "auto", marginRight: 10, marginTop: "auto", marginBottom: "auto" }} disabled={instance.status == "Running"}>Start</Button>
         <Button variant="filled" sx={{ marginRight: 10, marginTop: "auto", marginBottom: "auto" }} color="red" disabled={instance.status == "Stopped"}>Stop</Button>
         <Button variant="filled" sx={{ marginTop: "auto", marginBottom: "auto" }} color="yellow" disabled={instance.status == "Stopped"}>Restart</Button>
