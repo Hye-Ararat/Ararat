@@ -36,7 +36,7 @@ export function getOSLogo(os: string, size?: number) {
     }
 }
 
-export function getVendorLogo(vendor: string, size?: number) {
+export function getVendorLogo(vendor: string, size?: number | string) {
    if (vendor.toLowerCase().includes("dell")) {
     return <SiDell color="#007DB8"  size={size}/>;
    }
