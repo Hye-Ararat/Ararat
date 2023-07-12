@@ -11,9 +11,12 @@ import {
     Modal,
     TextInput,
     Flex,
+    Progress,
+    Stack,
+    Text
 } from "@mantine/core";
 import { IconArrowLeft, IconArrowRight, IconFile, IconFolder, IconLayoutGrid, IconLayoutList, IconPlus, IconReload, IconUpload } from "@tabler/icons-react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { GridFileView } from "@/components/instances/instance/files/GridFileView";
 import { ListFileView } from "@/components/instances/instance/files/ListFileView";
 import { connectOIDC } from "js-lxd";
@@ -76,6 +79,9 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
 export default function InstanceFiles({ instance, files, path: folderPath }: { instance: NodeLxdInstance, files: string[], path: string }) {
     var access_token = (getCookie("access_token") as string)
     const [inst, setInst] = useState(instance);
+    const [isUploading, setIsUploading] = useState(false)
+    const [uploadDataDone, setUploadDataDone] = useState(0)
+    const inputFile = useRef<HTMLInputElement | null>(null)
     const router = useRouter()
     let [fileView, setFileView] = useState<string>("grid")
     const [filesState, setFilesState] = useState(files)
@@ -91,7 +97,7 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
         }
     }, [creatingFile])
     const theme: any = useTheme()
-    
+
     async function rerender() {
         var client = await connectOIDC(instance.node.url, access_token)
         client.get(`/instances/${instance.name}/files?path=${folderPath}`).then(({ data }) => {
@@ -99,9 +105,41 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
             setFilesState(newFiles)
         })
     }
-    
+    useEffect(() => {
+        if (uploadDataDone == 100) {
+            setIsUploading(false)
+            setUploadDataDone(0)
+            rerender()
+        }
+    }, [uploadDataDone])
+    function onProgress(event: any) {
+        setUploadDataDone((event.progress as number) * 100)
+    }
+    function doUpload(file: FileList) {
+        if (!file || file.length == 0) return;
+        var fileArray = Array.from(file);
+        console.log(fileArray.map((s) => { return { name: s.name, progress: 0 } }))
+        setIsUploading(true)
+        var f = fileArray[0]
+        const nodeClient = connectOIDC(instance.node.url, access_token)
+        f.arrayBuffer().then((d) => {
+            nodeClient.post(`/instances/${instance.name}/files?path=${folderPath}/${f.name}`, d, {
+                onUploadProgress: onProgress,
+                headers: {
+                    "Content-Type": "application/octet-stream"
+                }
+            }).then(s => {
+                console.log("Done")
+            }).catch(() => {
+
+            })
+        })
+
+
+    }
     return (
         <>
+            <input type='file' id='file' ref={inputFile} style={{ display: 'none' }} onChange={(f) => { if (!f.currentTarget.files) return; doUpload(f.currentTarget.files) }} />
             <InstanceShell instance={instance} />
             <Modal centered overlayProps={{
                 color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
@@ -155,13 +193,16 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
                         <Menu.Item onClick={() => setCreatingFile(true)} icon={<IconFile />}>
                             File
                         </Menu.Item>
-                        <Menu.Item icon={<IconUpload />}>
+                        <Menu.Item icon={<IconUpload />} onClick={() => {
+                            (inputFile.current as HTMLInputElement).click();
+                        }}>
                             Upload
                         </Menu.Item>
                     </Menu.Dropdown>
                 </Menu>
 
             </Group>
+            {isUploading ? <Progress value={uploadDataDone} mt={10} /> : ""}
             <InstanceFileContext.Provider value={{ setInstance: setInst, instance: inst, rerender }}>
                 {fileView == "grid" ? <GridFileView files={filesState.sort((a, b) => a.localeCompare(b))} /> : (fileView == "list" ? <ListFileView files={filesState.sort((a, b) => a.localeCompare(b))} path={folderPath} /> : "")}
             </InstanceFileContext.Provider>
