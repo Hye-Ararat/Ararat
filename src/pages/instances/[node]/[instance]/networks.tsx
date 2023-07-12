@@ -28,7 +28,7 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
     }
 }
 
-export default function InstanceNetworks({ instance }: {instance:NodeLxdInstance}) {
+export default function InstanceNetworks({ instance }: { instance: NodeLxdInstance }) {
     return (
         <>
             <InstanceShell instance={instance} />
