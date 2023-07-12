@@ -12,7 +12,7 @@ import {
     TextInput,
     Flex,
 } from "@mantine/core";
-import { IconArrowLeft, IconArrowRight, IconFile, IconFolder, IconLayoutGrid, IconLayoutList, IconPlus, IconReload } from "@tabler/icons-react";
+import { IconArrowLeft, IconArrowRight, IconFile, IconFolder, IconLayoutGrid, IconLayoutList, IconPlus, IconReload, IconUpload } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
 import { GridFileView } from "@/components/instances/instance/files/GridFileView";
 import { ListFileView } from "@/components/instances/instance/files/ListFileView";
@@ -58,9 +58,12 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
                 props: {
                     instance: instance,
                     files,
-                    path: query.path
+                    path: query.path,
+                    isFile: false
                 }
             }
+        } else if (rawFiles.headers["x-lxd-type"] == "file") {
+            return redirect(`/instances/${params.node}/${params.instance}/files/editor?path=${query.path}`)
         }
     } catch (error) {
         console.log(error)
@@ -88,7 +91,7 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
         }
     }, [creatingFile])
     const theme: any = useTheme()
-
+    
     async function rerender() {
         var client = await connectOIDC(instance.node.url, access_token)
         client.get(`/instances/${instance.name}/files?path=${folderPath}`).then(({ data }) => {
@@ -96,7 +99,7 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
             setFilesState(newFiles)
         })
     }
-
+    
     return (
         <>
             <InstanceShell instance={instance} />
@@ -151,6 +154,9 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
                         </Menu.Item>
                         <Menu.Item onClick={() => setCreatingFile(true)} icon={<IconFile />}>
                             File
+                        </Menu.Item>
+                        <Menu.Item icon={<IconUpload />}>
+                            Upload
                         </Menu.Item>
                     </Menu.Dropdown>
                 </Menu>
