@@ -15,8 +15,12 @@ import { client, client as oidcClient, validateSession } from "@/lib/oidc"
 import mongo from "@/lib/mongo";
 import { Node } from "@/types/db";
 import { fetchAllInstances } from "@/lib/lxd";
+import { getNodes } from "@/lib/db";
+import nookies from "nookies";
+import { useRouter } from "next/router";
+
 export async function getServerSideProps({ req, res }: any) {
-    var valid = await validateSession(req.cookies.access_token)
+    const valid = await validateSession(req.cookies.access_token)
     if (!valid) {
         res.setHeader("Set-Cookie", ["access_token=deleted; Max-Age=0"])
         return {
@@ -26,12 +30,13 @@ export async function getServerSideProps({ req, res }: any) {
             },
         }
     };
-
-    var instances = await fetchAllInstances(req.cookies.access_token)
+    const nodes = await getNodes();
+    const instances = await fetchAllInstances(req.cookies.access_token)
 
     return {
         props: {
-            instances
+            instances,
+            nodes
         }
     }
 }
@@ -39,12 +44,13 @@ export async function getServerSideProps({ req, res }: any) {
 
 const InstanceContext = createContext({ setActiveInstance: (instance: string) => { }, activeInstance: "", selectedInstances: ([] as { id: string, checked: boolean }[]), setSelectedInstances: (instances: { id: string, checked: boolean }[]) => { } })
 
-export default function Instances({ instances }: { instances: NodeLxdInstance[] }) {
+export default function Instances({ instances, nodes }: { instances: NodeLxdInstance[], nodes: Node[] }) {
     var access_token = getCookie("access_token")
     var [activeInstance, setActiveInstance] = useState<string>("")
     var initialCheckedInstances = ([] as { id: string, checked: boolean }[])
     instances.forEach(inst => initialCheckedInstances.push({ id: inst.config["volatile.uuid"], checked: false }))
     var [selectedInstances, setSelectedInstances] = useState<{ id: string, checked: boolean }[]>(initialCheckedInstances)
+    const router = useRouter();
     return (
         <>
             <Flex>
@@ -62,7 +68,25 @@ export default function Instances({ instances }: { instances: NodeLxdInstance[] 
                                 <IconPlayerStop size={"1.2rem"} />
                             </ActionIcon>
                             <ActionIcon color="red" variant="light" size={"lg"}>
-                                <IconTrash size={"1.2rem"} />
+                                <IconTrash onClick={(e) => {
+                                    let selected = selectedInstances.filter(s => s.checked == true);
+                                    let fullInstances = instances.filter(i => selected.map(s => s.id).includes(i.config["volatile.uuid"]))
+                                    let count = 0;
+                                    let waitDone = new Promise((resolve, reject) => {
+                                        let interval = setInterval(() => {
+                                            clearInterval(interval);
+                                            return resolve(count == fullInstances.length)
+                                        }, 100);
+                                    })
+                                    fullInstances.forEach(async (instance) => {
+                                        let client = connectOIDC(instance.node.url, nookies.get().access_token);
+                                        await client.delete(`/instances/${instance.name}`);
+                                        count++;
+                                    });
+                                    waitDone.then(() => {
+                                        router.reload();
+                                    })
+                                }} size={"1.2rem"} />
                             </ActionIcon>
                             <Button variant="light" onClick={() => {
                                 setSelectedInstances(initialCheckedInstances)
@@ -71,7 +95,7 @@ export default function Instances({ instances }: { instances: NodeLxdInstance[] 
 
                     </> : ""}
                     {selectedInstances.filter(s => s.checked == true).length == 0 ? <>
-                        <CreateInstance />
+                        <CreateInstance nodes={nodes} />
                     </> : ""}
 
                 </div>
@@ -277,7 +301,7 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
                                 {instance.name}
                             </Text>
                             <Text c="dimmed" fz="xs">
-                                {instance.config["image.os"] && instance.config["image.release"] ? instance.config["image.os"] + " " + instance.config["image.release"] : "Unknown OS"}
+                                {instance.description ? instance.description : instance.config["image.os"] && instance.config["image.release"] ? instance.config["image.os"] + " " + instance.config["image.release"] : "Unknown OS"}
                             </Text>
                         </div>
                     </Text>
@@ -322,7 +346,7 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
                 <Text>
                     <div>
                         <Text fz="md" fw={550}>
-                            {instance.state ? prettyBytes(instance.state.disk.root.usage) : "0 MB"}
+                            {instance.state ? instance.state.disk ? prettyBytes(instance.state.disk.root.usage) : "MB" : "0 MB"}
                         </Text>
                         <Text c="dimmed" fz="xs">
                             Disk
