@@ -171,8 +171,7 @@ export default function InstanceFileEditor({ file, instance, fileUrl, fileName, 
                     <IconDeviceFloppy />
                 </ActionIcon>
             </Group>
-            {/* file["content-length"] > 500000000 */}
-            {true ?
+            {file["content-length"] > 500000000 ?
                 <Stack>
                     <Center>
                         {isBinary ? "Binary files cannot be displayed in the editor, instead" : "Files bigger than 500MB are not supported by the built in editor, instead"}
