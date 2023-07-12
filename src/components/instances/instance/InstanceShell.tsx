@@ -4,10 +4,13 @@ import Link from 'next/link';
 import { IconBox, IconFolder, IconHistory, IconHome, IconNetwork, IconSettings, IconTerminal2, IconWifi } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import { getBadgeColor } from '@/lib/util';
+import { connectOIDC } from 'js-lxd';
+import { getCookie } from 'cookies-next';
 
 export default function InstanceShell({ instance }: { instance: any }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("dashboard")
+  const [allowKill, setAllowKill] = useState(false)
   useEffect(() => {
     if (router.pathname == "/instances/[node]/[instance]") setActiveTab("dashboard");
     if (router.pathname == "/instances/[node]/[instance]/console") setActiveTab("console");
@@ -25,9 +28,23 @@ export default function InstanceShell({ instance }: { instance: any }) {
           <Title order={1}>{instance.name}</Title>
           <Badge color={getBadgeColor(instance.status)} variant="dot">{instance.status}</Badge>
         </div>
-        <Button variant="filled" color="green" sx={{ marginLeft: "auto", marginRight: 10, marginTop: "auto", marginBottom: "auto" }} disabled={instance.status == "Running"}>Start</Button>
-        <Button variant="filled" sx={{ marginRight: 10, marginTop: "auto", marginBottom: "auto" }} color="red" disabled={instance.status == "Stopped"}>Stop</Button>
-        <Button variant="filled" sx={{ marginTop: "auto", marginBottom: "auto" }} color="yellow" disabled={instance.status == "Stopped"}>Restart</Button>
+        <Button onClick={async () => {
+          const client = connectOIDC(instance.node.url, getCookie("access_token"));
+          await client.put(`/instances/${instance.name}/state`, { action: "start" });
+          instance.status = "Running";
+        }} variant="filled" color="green" sx={{ marginLeft: "auto", marginRight: 10, marginTop: "auto", marginBottom: "auto" }} disabled={instance.status == "Running"}>Start</Button>
+        <Button onClick={async () => {
+          setAllowKill(true);
+          const client = connectOIDC(instance.node.url, getCookie("access_token"));
+          await client.put(`/instances/${instance.name}/state`, { action: "stop", force: allowKill });
+          instance.status = "Stopped";
+          setAllowKill(false);
+        }} variant="filled" sx={{ marginRight: 10, marginTop: "auto", marginBottom: "auto" }} color="red" disabled={instance.status == "Stopped"}>{allowKill ? "Kill" : "Stop"}</Button>
+        <Button onClick={async () => {
+          const client = connectOIDC(instance.node.url, getCookie("access_token"));
+          await client.put(`/instances/${instance.name}/state`, { action: "restart" });
+          instance.status = "Running"
+        }} variant="filled" sx={{ marginTop: "auto", marginBottom: "auto" }} color="yellow" disabled={instance.status == "Stopped"}>Restart</Button>
 
       </Flex>
       <Tabs value={activeTab} sx={{ marginTop: 10 }} >
