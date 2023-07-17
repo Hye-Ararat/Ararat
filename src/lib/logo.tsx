@@ -56,7 +56,7 @@ export function getVendorLogo(vendor: string, size?: number | string) {
     return <SiApple color="#000000" size={size} />;
    }
    if (vendor.toLowerCase().includes("microsoft")) {
-    return <SiMicrosoft color="#5E5E5E" size={size} />;
+    return <SiMicrosoft color="#0078D4" size={size} />;
    }
    if (vendor.toLowerCase().includes("supermicro")) {
     return <SiSupermicro color="#5E5E5E" size={size} />;
