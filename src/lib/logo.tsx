@@ -1,4 +1,4 @@
-import { SiAlpinelinux, SiAmazon, SiApple, SiArchlinux, SiCentos, SiDebian, SiDell, SiFedora, SiGentoo, SiHp, SiKalilinux, SiLenovo, SiLinux, SiLinuxmint, SiMicrosoft, SiOpensuse, SiOpenwrt, SiOracle, SiProxmox, SiRockylinux, SiSupermicro, SiUbuntu, SiVirtualbox, SiVmware } from "@icons-pack/react-simple-icons";
+import { SiAlpinelinux, SiAmazon, SiApple, SiArchlinux, SiCentos, SiDebian, SiDell, SiFedora, SiGentoo, SiHp, SiKalilinux, SiLenovo, SiLinux, SiLinuxmint, SiMicrosoft, SiOpensuse, SiOpenwrt, SiOracle, SiProxmox, SiQemu, SiRockylinux, SiSupermicro, SiUbuntu, SiVirtualbox, SiVmware } from "@icons-pack/react-simple-icons";
 import { IconServer2 } from "@tabler/icons-react";
 
 export function getOSLogo(os: string, size?: number) {
@@ -69,6 +69,9 @@ export function getVendorLogo(vendor: string, size?: number | string) {
    }
    if (vendor.toLowerCase().includes("proxmox")) {
     return <SiProxmox color="#E57000" size={size} />;
+   }
+   if (vendor.toLowerCase().includes("qemu")) {
+    return <SiQemu color="#FF6600" size={size} />;
    }
    return <IconServer2 color="#000000" size={size} />;
 

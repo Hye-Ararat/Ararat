@@ -114,13 +114,19 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
         if (eventData.metadata.action.includes("retrieved")) return;
         title = eventData.metadata.action.split("-").map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
       }
+      if (title.includes("Deleted")) {
+        const audio = new Audio('/audio/delete.wav');
+        color = "red"
+        audio.play();
+        } else {
+          const audio = new Audio('/audio/notification.wav');
+          audio.play();
+        }
       notifications.show({
         title: title,
         message: message,
         color: color
       })
-      const audio = new Audio('/audio/notification.wav');
-      audio.play();
     }
   }, [ws])
 
