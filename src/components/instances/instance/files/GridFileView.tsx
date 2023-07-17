@@ -34,24 +34,21 @@ function GridFileViewItem({ file }: { file: string }) {
     let path = router.query.path as string;
     if (path == "/") path = "";
     useEffect(() => {
-        if (metadata.type == "loading") {
-            fetch(`/api/instances/${instance.node.name}/${instance.name}/files?path=${path}/${file}`, {
-                method: "GET"
-            }).then(async (s) => {
-                var body = await s.json();
-                setMetadata({
-                    type: body["x-lxd-type"],
-                    mode: body["x-lxd-node"],
-                    gid: body["x-lxd-gid"],
-                    modified: body["x-lxd-modified"],
-                    uid: body["x-lxd-uid"],
-                    size: body["size"]
-                })
-                setLoading(false)
+        fetch(`/api/instances/${instance.node.name}/${instance.name}/files?path=${path}/${file}`, {
+            method: "GET"
+        }).then(async (s) => {
+            var body = await s.json();
+            setMetadata({
+                type: body["x-lxd-type"],
+                mode: body["x-lxd-node"],
+                gid: body["x-lxd-gid"],
+                modified: body["x-lxd-modified"],
+                uid: body["x-lxd-uid"],
+                size: body["size"]
             })
-        }
-
-    }, [])
+            setLoading(false)
+        })
+    }, [file])
 
     async function deleteFile() {
         const audio = new Audio("/audio/delete.wav");
@@ -74,7 +71,7 @@ function GridFileViewItem({ file }: { file: string }) {
                         setOpened(!opened)
                     }} onClick={() => {
                         console.log(path, file)
-                        router.push(`/instances/${router.query.node}/${router.query.instance}/files?path=${path}/${file}`)
+                        router.replace(`/instances/${router.query.node}/${router.query.instance}/files?path=${path}/${file}`)
                     }} ref={ref}>
                         <Paper radius={20}>
                             <Center py={20}>
@@ -99,7 +96,7 @@ function GridFileViewItem({ file }: { file: string }) {
             </Menu.Target>
             <Menu.Dropdown>
                 {(metadata.type == "directory" || metadata.type == "symlink") ? "" : <Menu.Item icon={<IconDownload />} onClick={() => {
-                     window.open(`/api/instances/${router.query.node}/${router.query.instance}/files/download?path=${path}/${file}`, "_blank")
+                    window.open(`/api/instances/${router.query.node}/${router.query.instance}/files/download?path=${path}/${file}`, "_blank")
                 }} color="blue">
                     Download
                 </Menu.Item>}
