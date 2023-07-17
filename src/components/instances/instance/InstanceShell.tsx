@@ -1,5 +1,5 @@
 import { use, useContext, useEffect, useState } from 'react';
-import { Badge, Button, Flex, Tabs, Title } from '@mantine/core';
+import { Badge, Button, Flex, Group, Tabs, Title, Text, Center } from '@mantine/core';
 import Link from 'next/link';
 import { IconBox, IconFolder, IconHistory, IconHome, IconNetwork, IconSettings, IconTerminal2, IconWifi } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
@@ -15,6 +15,7 @@ export default function InstanceShell({ instance }: { instance: any }) {
     if (router.pathname == "/instances/[node]/[instance]") setActiveTab("dashboard");
     if (router.pathname == "/instances/[node]/[instance]/console") setActiveTab("console");
     if (router.pathname == "/instances/[node]/[instance]/files") setActiveTab("files");
+    if (router.pathname == "/instances/[node]/[instance]/files/editor") setActiveTab("files");
     if (router.pathname == "/instances/[node]/[instance]/networks") setActiveTab("networks");
     if (router.pathname == "/instances/[node]/[instance]/volumes") setActiveTab("volumes");
     if (router.pathname == "/instances/[node]/[instance]/snapshots") setActiveTab("snapshots");
@@ -45,7 +46,6 @@ export default function InstanceShell({ instance }: { instance: any }) {
           await client.put(`/instances/${instance.name}/state`, { action: "restart" });
           instance.status = "Running"
         }} variant="filled" sx={{ marginTop: "auto", marginBottom: "auto" }} color="yellow" disabled={instance.status == "Stopped"}>Restart</Button>
-
       </Flex>
       <Tabs value={activeTab} sx={{ marginTop: 10 }} >
         <Tabs.List>
