@@ -136,23 +136,21 @@ function ListFileViewItem({ file, setSelectedFiles, selectedFiles }: { file: str
     let path = router.query.path as string;
     if (path == "/") path = "";
     useEffect(() => {
-        if (metadata.type == "loading") {
-            fetch(`/api/instances/${instance.node.name}/${instance.name}/files?path=${path}/${file}`, {
-                method: "GET"
-            }).then(async (s) => {
-                var body = await s.json();
-                setMetadata({
-                    type: body["x-lxd-type"],
-                    mode: body["x-lxd-mode"],
-                    gid: body["x-lxd-gid"],
-                    modified: body["x-lxd-modified"],
-                    uid: body["x-lxd-uid"],
-                    size: body.size
-                })
-                setLoading(false)
+        fetch(`/api/instances/${instance.node.name}/${instance.name}/files?path=${path}/${file}`, {
+            method: "GET"
+        }).then(async (s) => {
+            var body = await s.json();
+            console.log(body)
+            setMetadata({
+                type: body["x-lxd-type"],
+                mode: body["x-lxd-mode"],
+                gid: body["x-lxd-gid"],
+                modified: body["x-lxd-modified"],
+                uid: body["x-lxd-uid"],
+                size: body.size
             })
-        }
-
+            setLoading(false)
+        })
     }, [])
 
     async function deleteFile() {

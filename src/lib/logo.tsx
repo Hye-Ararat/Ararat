@@ -36,7 +36,7 @@ export function getOSLogo(os: string, size?: number) {
     }
 }
 
-export function getVendorLogo(vendor: string, size?: number) {
+export function getVendorLogo(vendor: string, size?: number | string) {
    if (vendor.toLowerCase().includes("dell")) {
     return <SiDell color="#007DB8"  size={size}/>;
    }
@@ -56,7 +56,7 @@ export function getVendorLogo(vendor: string, size?: number) {
     return <SiApple color="#fff" size={size} />;
    }
    if (vendor.toLowerCase().includes("microsoft")) {
-    return <SiMicrosoft color="#5E5E5E" size={size} />;
+    return <SiMicrosoft color="#0078D4" size={size} />;
    }
    if (vendor.toLowerCase().includes("supermicro")) {
     return <SiSupermicro color="#5E5E5E" size={size} />;

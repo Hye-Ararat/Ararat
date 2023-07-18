@@ -80,12 +80,12 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
   const [asideOpen, setAsideOpen] = useState(false)
   const [asideContent, setAsideContent] = useState("")
   const [notification, setNotification] = useState(null);
-  const [ws, setWS] = useState(null);
+  const [ws, setWS] = useState<WebSocket>();
   useEffect(() => {
     setWS(new WebSocket(`ws://192.168.66.4:3001/events?access_token=${getCookie("access_token")}`));
   }, [])
   useEffect(() => {
-    if (!ws) return
+    if (!ws) return;
     ws.onmessage = (event) => {
       let eventData = JSON.parse(event.data);
       let eventType = eventData.type;

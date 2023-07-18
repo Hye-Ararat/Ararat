@@ -7,11 +7,12 @@ import { Node } from "@/types/db"
 import { connectOIDC } from "js-lxd";
 import nookies from "nookies";
 import { openWebsocket } from "@/lib/lxdClient";
+import { LxdStoragePool } from "@/types/storage";
 
 export default function CreateInstance({nodes}: {nodes: Node[]}) {
     const [createInstance, setCreatingInstance] = useState(false);
-    const [audio, setAudio] = useState(null);
-    const [node, setNode] = useState<Node>(null);
+    const [audio, setAudio] = useState<HTMLAudioElement>();
+    const [node, setNode] = useState<Node>();
     const [images, setImages] = useState([]);
     const [nodesData, setNodesData] = useState([]);
     const [instanceConfig, setInstanceConfig] = useState({
@@ -23,7 +24,12 @@ export default function CreateInstance({nodes}: {nodes: Node[]}) {
         },
         config: {}
     });
-    const [storagePools, setStoragePools] = useState([]);
+    const [storagePools, setStoragePools] = useState<{
+        value: string,
+        label: string,
+        title: string,
+        description: string
+    }[]>([]);
     const theme = useMantineTheme();
     useEffect(() => {
         if (createInstance) {
@@ -83,8 +89,13 @@ export default function CreateInstance({nodes}: {nodes: Node[]}) {
 
         async function getStoragePools() {
             let pools = await lxdClient.get("/storage-pools?recursion=1");
-            let formattedPools = [];
-            pools.data.metadata.forEach((pool) => {
+            let formattedPools: {
+                value: string,
+                label: string,
+                title: string,
+                description: string
+            }[] = [];
+            (pools.data.metadata as LxdStoragePool[]).forEach((pool) => {
                 formattedPools.push({
                     value: pool.name,
                     label: pool.name,
@@ -106,8 +117,8 @@ export default function CreateInstance({nodes}: {nodes: Node[]}) {
     const [supportedTypes, setSupportedTypes] = useState([]);
     useEffect(() => {
         if (!instanceConfig.devices.root) return setIsReady(false);
-        if (!instanceConfig.devices.root["pool"]) return setIsReady(false);
-        if (!instanceConfig.source) return setIsReady(false);
+        if (!(instanceConfig.devices.root as any)["pool"]) return setIsReady(false);
+        if (!(instanceConfig as any).source) return setIsReady(false);
         setIsReady(true)
     }, [instanceConfig])
     return (
