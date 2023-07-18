@@ -372,7 +372,7 @@ const SelectNode = forwardRef<HTMLDivElement, NodeProps>(
     ({ value, name, vendor, description, ...others }: NodeProps, ref) => (
       <div ref={ref} {...others}>
         <Group noWrap>
-          {getVendorLogo("dell")}
+          {getVendorLogo(vendor)}
   
           <div>
             <Text size="sm">{name}</Text>

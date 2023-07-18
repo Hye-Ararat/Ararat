@@ -82,7 +82,7 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
   const [notification, setNotification] = useState(null);
   const [ws, setWS] = useState(null);
   useEffect(() => {
-    setWS(new WebSocket(`ws://192.168.10.96:3001/events?access_token=${getCookie("access_token")}`));
+    setWS(new WebSocket(`ws://192.168.66.4:3001/events?access_token=${getCookie("access_token")}`));
   }, [])
   useEffect(() => {
     if (!ws) return
