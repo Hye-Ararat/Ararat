@@ -3,9 +3,20 @@ import { fetchInstance } from "@/lib/lxd";
 import { redirect } from "@/lib/next";
 import { validateSession } from "@/lib/oidc";
 import { NodeLxdInstance } from "@/types/instance";
+import { Button, Center, Flex, Group, SegmentedControl } from "@mantine/core";
+import { IconAppWindow, IconPlug, IconTerminal } from "@tabler/icons-react";
 import { GetServerSidePropsContext } from "next";
+import dynamic from "next/dynamic";
 import { ParsedUrlQuery } from "querystring";
-
+import { useState } from "react";
+const InstanceTextConsole = dynamic(() => import('@/components/instances/instance/console/InstanceTextConsole'), {
+    loading: () => <p>Loading...</p>,
+    ssr: false
+})
+const InstanceVGAConsole = dynamic(() => import('@/components/instances/instance/console/InstanceVGAConsole'), {
+    loading: () => <p>Loading...</p>,
+    ssr: false
+})
 export async function getServerSideProps({ req, res, params, query }: GetServerSidePropsContext) {
     if (!params || !params.instance || !params.node) return redirect("/instances");
     var valid = await validateSession((req.cookies as any).access_token)
@@ -29,9 +40,23 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
 }
 
 export default function InstanceConsole({ instance }: { instance: NodeLxdInstance }) {
+    var [consoleType, setConsoleType] = useState<string>("serial")
     return (
         <>
             <InstanceShell instance={instance} />
+            <Flex mt={"xs"}>
+                <SegmentedControl value={consoleType} color="blue" onChange={setConsoleType} data={[
+                    { "label": (<Center><IconAppWindow /></Center>), value: "spice", disabled: instance.type == "container" },
+                    { "label": (<Center><IconTerminal /></Center>), value: "serial" }
+                ]} ml={"auto"} />
+            </Flex>
+            <div style={{display: (consoleType == "serial" ? null : "none" as any)}}>
+                <InstanceTextConsole instance={instance} />
+            </div>
+            {consoleType == "spice" ? <InstanceVGAConsole instance={instance} />:""}
+                
+
+
         </>
     )
 }
