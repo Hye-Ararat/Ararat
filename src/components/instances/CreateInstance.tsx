@@ -34,7 +34,6 @@ export default function CreateInstance({nodes}: {nodes: Node[]}) {
     useEffect(() => {
         if (createInstance) {
             let aud = new Audio("/audio/createInstance.m4a")
-            aud.volume = 0.60;
             aud.play()
             aud.loop = true;
             setAudio(aud);

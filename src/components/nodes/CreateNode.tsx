@@ -18,7 +18,6 @@ export default function CreateNode() {
     useEffect(() => {
         if (creatingNode) {
             let aud = new Audio("/audio/createNode.m4a")
-            aud.volume = 0.60;
             aud.play()
             aud.loop = true;
             setAudio(aud);

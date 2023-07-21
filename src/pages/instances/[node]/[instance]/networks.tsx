@@ -3,6 +3,7 @@ import { fetchInstance } from "@/lib/lxd";
 import { redirect } from "@/lib/next";
 import { validateSession } from "@/lib/oidc";
 import { NodeLxdInstance } from "@/types/instance";
+import { Title, Text } from "@mantine/core";
 import { GetServerSidePropsContext } from "next";
 import { ParsedUrlQuery } from "querystring";
 
@@ -32,6 +33,8 @@ export default function InstanceNetworks({ instance }: { instance: NodeLxdInstan
     return (
         <>
             <InstanceShell instance={instance} />
+            <Title order={4}>Networks</Title>
+            <Text>why is this not showing</Text>
         </>
     )
 }
