@@ -3,11 +3,10 @@ import { fetchInstance } from "@/lib/lxd";
 import { redirect } from "@/lib/next";
 import { validateSession } from "@/lib/oidc";
 import { NodeLxdInstance } from "@/types/instance";
-import { Button, Center, Flex, Group, SegmentedControl, Title } from "@mantine/core";
-import { IconAppWindow, IconPlug, IconTerminal } from "@tabler/icons-react";
+import {  Center, Flex, SegmentedControl, Title } from "@mantine/core";
+import { IconAppWindow, IconTerminal } from "@tabler/icons-react";
 import { GetServerSidePropsContext } from "next";
 import dynamic from "next/dynamic";
-import { ParsedUrlQuery } from "querystring";
 import { useState } from "react";
 const InstanceTextConsole = dynamic(() => import('@/components/instances/instance/console/InstanceTextConsole'), {
     loading: () => <p>Loading...</p>,
