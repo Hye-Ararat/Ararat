@@ -3,7 +3,7 @@ import { fetchInstance } from "@/lib/lxd";
 import { redirect } from "@/lib/next";
 import { validateSession } from "@/lib/oidc";
 import { NodeLxdInstance } from "@/types/instance";
-import { Button, Center, Flex, Group, SegmentedControl } from "@mantine/core";
+import { Button, Center, Flex, Group, SegmentedControl, Title } from "@mantine/core";
 import { IconAppWindow, IconPlug, IconTerminal } from "@tabler/icons-react";
 import { GetServerSidePropsContext } from "next";
 import dynamic from "next/dynamic";
@@ -45,6 +45,7 @@ export default function InstanceConsole({ instance }: { instance: NodeLxdInstanc
         <>
             <InstanceShell instance={instance} />
             <Flex mt={"xs"}>
+                <Title mt="auto" mb="auto" order={3}>Console</Title>
                 <SegmentedControl value={consoleType} color="blue" onChange={setConsoleType} data={[
                     { "label": (<Center><IconAppWindow /></Center>), value: "spice", disabled: instance.type == "container" },
                     { "label": (<Center><IconTerminal /></Center>), value: "serial" }
