@@ -4,7 +4,7 @@ import { redirect } from "@/lib/next";
 import { client, validateSession } from "@/lib/oidc";
 import { formatDate } from "@/lib/util";
 import { LxdInstance, LxdSnapshot, NodeLxdInstance } from "@/types/instance";
-import { Flex, Title, Button, TextInput, Text, Paper, SimpleGrid, Checkbox, Accordion, Divider, Loader } from "@mantine/core";
+import { Flex, Title, Button, TextInput, Text, Paper, SimpleGrid, Checkbox, Accordion, Divider, Loader, Modal, useMantineTheme, Autocomplete, Select } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { connectOIDC } from "js-lxd";
 import { GetServerSidePropsContext } from "next";
@@ -64,6 +64,14 @@ export default function InstanceNetworks({ instance, networks }: { instance: Nod
     var access_token = (getCookie("access_token") as string)
     const client = connectOIDC(instance.node.url, access_token)
     const [floatingIps, setFloatingIps] = useState(null);
+    const [openingPort, setOpeningPort] = useState(false);
+    const [selectedNic, setSelectedNic] = useState(null);
+    const [autocompleteIps, setAutocompleteIps] = useState([]);
+    const [supportedFloatingIps, setSupportedFloating] = useState([]);
+    const [selectedListen, setSelectedListen] = useState(null);
+    const [portConfig, setPortConfig] = useState({
+        protocol: "tcp"
+    })
     const router = useRouter();
     useEffect(() => {
         let forwards = [];
@@ -74,7 +82,9 @@ export default function InstanceNetworks({ instance, networks }: { instance: Nod
                     if (forwards.filter((forward) => forward.network == networks[network].network).length == 0) {
                         let dat = await client.get(`/networks/${networks[network].network}/forwards?recursion=1`);
                         dat = dat.data.metadata;
+                        if (dat[0]) {
                         dat[0].network = networks[network].network;
+                        }
                         console.log(dat)
                         forwards.push(dat);
                         setFloatingIps(forwards);
@@ -85,15 +95,87 @@ export default function InstanceNetworks({ instance, networks }: { instance: Nod
             }
         })
     }, [])
+    useEffect(() => {
+        if (selectedNic) {
+        let addresses = networks[selectedNic].addresses;
+        let formattedAddrs = [];
+       addresses.forEach((address) => {
+        formattedAddrs.push({label: address.address, value: address.address})
+       })
+       setAutocompleteIps(formattedAddrs);
+       let network = networks[selectedNic].network;
+       let supportedFloating = [];
+       floatingIps.forEach((floatingIp) => {
+        floatingIp.forEach((ip) => {
+            if (ip.network == network) {
+                supportedFloating.push({label: ip.listen_address, value: ip.listen_address});
+            }
+        })
+       })
+       setSupportedFloating(supportedFloating);
+        }
+    }, [selectedNic])
+    const theme = useMantineTheme();
     return (
         <>
             <InstanceShell instance={instance} />
+            <Modal centered overlayProps={{
+                color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
+                opacity: 0.55,
+                blur: 3,
+            }} onClose={() => setOpeningPort(false)} opened={openingPort} title={`${false ? "Edit" : "Open"} Port`}>
+                                <Select onChange={(e) => {
+                                    setSelectedListen(e)
+                                }} withAsterisk placeholder="Listen Address" label="Listen Address" data={supportedFloatingIps} />
+                                <TextInput onChange={(e) => {
+                    let newConf = {...portConfig};
+                    newConf.listen_port = e.target.value;
+                    setPortConfig(newConf)
+                }} withAsterisk placeholder="Listen Port(s) (Ex: 25565-25575, or 25565,25566, or 443)" label="Listen Port(s)" />
+                <Autocomplete onChange={(e) => {
+                    let newConf = {...portConfig};
+                    newConf.target_address = e;
+                    setPortConfig(newConf)
+                }} withAsterisk placeholder="Target Address" label="Target Address" data={autocompleteIps} />
+                      <TextInput onChange={(e) => {
+                    let newConf = {...portConfig};
+                    newConf.target_port = e.target.value;
+                    setPortConfig(newConf)
+                }} withAsterisk placeholder="Target Port(s) (Ex: 25565-25575, or 25565,25566, or 443)" label="Target Port(s)" />
+          
+               
+                
+            
+                 
+                      <Select withAsterisk value={portConfig.protocol} data={[{ label: "TCP", value: "tcp" }, { label: "UDP", value: "udp" }]} onChange={(e) => {
+                        let newConf = {...portConfig};
+                        newConf.protocol = e;
+                        setPortConfig(newConf)
+                      }} label="Protocol" />
+                              <TextInput onChange={(e) => {
+                    let newConf = {...portConfig};
+                    newConf.description = e.target.value;
+                    setPortConfig(newConf)
+                }} placeholder="Description" label="Description" />
+                <Flex>
+                    <Button variant="light" color="green" ml="auto" mt="xs" onClick={async () => {
+                        const client = connectOIDC(instance.node.url, access_token);
+                        const existingConfig = (await client.get(`/networks/${instance.devices[selectedNic].network}/forwards/${selectedListen}`)).data.metadata
+                        let ports = [...existingConfig.ports, portConfig]
+                       await client.put(`/networks/${instance.devices[selectedNic].network}/forwards/${selectedListen}`, {
+                            ports: ports
+                        })
+                        setOpeningPort(false);
+                        router.push(router.asPath)
+                    }}>Open Port</Button>
+                </Flex>
+                </Modal>
             <Flex mt="md" mb="md">
                 <Title order={4} my="auto">Networks</Title>
                 <Button ml="auto" my="auto" variant="light" color="green" onClick={() => {
                     const audio = new Audio("/audio/popup.mp3");
                     audio.play();
-                }}>Attack Network</Button>
+                }}>Attach Network</Button>
             </Flex>
             <Accordion variant="separated">
             {Object.keys(networks).map((nic, index) => {
@@ -166,13 +248,13 @@ Network
                          <Flex mb="md">
                                     <Title order={5} my="auto">Ports</Title>
                                     <Button my="auto" variant="light" color="green" ml="auto" size="xs" onClick={() => {
-                                       // setSelectedNetwork(network.name)
-                                        //setCreatingFloatingIp(true)
+                                        setSelectedNic(nic)
+                                        setOpeningPort(true)
                                         const audio = new Audio("/audio/popup.mp3");
                                         audio.play();
                                     }}>Open Port</Button>
                                 </Flex>
-                                <Flex>
+                                <Flex direction="column">
                                 {floatingIps ? floatingIps.map((ips) => {
                                     return (
                                     ips.map((ip) => {
@@ -181,7 +263,7 @@ Network
                                             networks[nic].addresses.map((address) => {
                                                 return (
                                                JSON.stringify(ips).includes(address.address) ? 
-                                               ip.ports.map((port) => {
+                                               ip.ports.map((port, index) => {
                                                 return (
                                                     <Paper withBorder style={{ padding: 10, width: "100%" }} mb={"xs"}>
                              <SimpleGrid cols={3}>
@@ -205,9 +287,11 @@ Network
                                                                         <Flex direction="column" my="auto">
                                                                             <Button variant="light" color="red" size="xs" my="auto" onClick={async () => {
                                                                                 const client = connectOIDC(instance.node.url, getCookie("access_token"));
+                                                                                console.log(ip)
                                                                                 let allPorts = ip.ports;
-                                                                                allPorts.splice(allPorts.indexOf(port), 1);
-                                                                                await client.put(`/networks/${address.network}/forwards/${ip.listen_address}`, {
+                                                                                allPorts.splice(index, 1);
+                                                                                console.log(allPorts)
+                                                                                await client.put(`/networks/${instance.devices[nic].network}/forwards/${ip.listen_address}`, {
                                                                                     ports: allPorts
                                                                                 });
                                                                                 router.push(router.asPath)
@@ -244,9 +328,17 @@ Network
                                     })}
                                     </div>
                                     </SimpleGrid>
+                                    {instance.devices[nic] ?
+                                    <>
+                                    <Divider my="md" />
+                                    <Flex>
+                                    <Button size="xs" ml="auto" variant="light" color="red">Detach Network</Button>
+                                    <Button size="xs" ml="sm" variant="light" color="blue">Edit nic</Button>
+                                    </Flex>
+                                    </>
+                                    : ""}
                         </Accordion.Panel>
                         </Accordion.Item>
-
                 )
             })}
             </Accordion>
