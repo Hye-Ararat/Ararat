@@ -6,7 +6,8 @@ import { getCookie } from "cookies-next";
 import { connectOIDC } from "js-lxd";
 import { useEffect, useState } from "react";
 import axios from "axios"
-export function AttachVolumeModal({ instance, url }: { instance: NodeLxdInstance, url: string }) {
+import { useRouter } from "next/router";
+export function AttachVolumeModal({ instance, url, setAttachOpen }: { instance: NodeLxdInstance, url: string }) {
     var [pathError, setPathError] = useState<string>()
     var [volumes, setVolumes] = useState<any[]>([])
     const [volume, setVolume] = useState<string>()
@@ -19,7 +20,7 @@ export function AttachVolumeModal({ instance, url }: { instance: NodeLxdInstance
             setVolumes(data)
         })
     }, [])
-
+    const router = useRouter();
     return (
         <>
             <TextInput my={10} defaultValue={""} label="Device Name" onChange={(e) => {
@@ -60,6 +61,8 @@ export function AttachVolumeModal({ instance, url }: { instance: NodeLxdInstance
                             instanceData.devices[name] = devConf;
                             client.put(`/instances/${instance.name}`, instanceData).then((d) => {
                                 console.log(d)
+                                router.push(window.location.pathname)
+                                setAttachOpen(false);
                             })
                         })
                     }
