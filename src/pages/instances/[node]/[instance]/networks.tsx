@@ -1,3 +1,4 @@
+import { Network } from "@/components/instances/CreateInstance";
 import InstanceShell from "@/components/instances/instance/InstanceShell";
 import { fetchInstance } from "@/lib/lxd";
 import { redirect } from "@/lib/next";
@@ -65,6 +66,7 @@ export default function InstanceNetworks({ instance, networks }: { instance: Nod
     const client = connectOIDC(instance.node.url, access_token)
     const [floatingIps, setFloatingIps] = useState(null);
     const [openingPort, setOpeningPort] = useState(false);
+    const [attachNetwork, setAttachNetwork] = useState(false);
     const [selectedNic, setSelectedNic] = useState(null);
     const [autocompleteIps, setAutocompleteIps] = useState([]);
     const [supportedFloatingIps, setSupportedFloating] = useState([]);
@@ -83,7 +85,7 @@ export default function InstanceNetworks({ instance, networks }: { instance: Nod
                         let dat = await client.get(`/networks/${networks[network].network}/forwards?recursion=1`);
                         dat = dat.data.metadata;
                         if (dat[0]) {
-                        dat[0].network = networks[network].network;
+                            dat[0].network = networks[network].network;
                         }
                         console.log(dat)
                         forwards.push(dat);
@@ -97,25 +99,34 @@ export default function InstanceNetworks({ instance, networks }: { instance: Nod
     }, [])
     useEffect(() => {
         if (selectedNic) {
-        let addresses = networks[selectedNic].addresses;
-        let formattedAddrs = [];
-       addresses.forEach((address) => {
-        formattedAddrs.push({label: address.address, value: address.address})
-       })
-       setAutocompleteIps(formattedAddrs);
-       let network = networks[selectedNic].network;
-       let supportedFloating = [];
-       floatingIps.forEach((floatingIp) => {
-        floatingIp.forEach((ip) => {
-            if (ip.network == network) {
-                supportedFloating.push({label: ip.listen_address, value: ip.listen_address});
-            }
-        })
-       })
-       setSupportedFloating(supportedFloating);
+            let addresses = networks[selectedNic].addresses;
+            let formattedAddrs = [];
+            addresses.forEach((address) => {
+                formattedAddrs.push({ label: address.address, value: address.address })
+            })
+            setAutocompleteIps(formattedAddrs);
+            let network = networks[selectedNic].network;
+            let supportedFloating = [];
+            floatingIps.forEach((floatingIp) => {
+                floatingIp.forEach((ip) => {
+                    if (ip.network == network) {
+                        supportedFloating.push({ label: ip.listen_address, value: ip.listen_address });
+                    }
+                })
+            })
+            setSupportedFloating(supportedFloating);
         }
     }, [selectedNic])
     const theme = useMantineTheme();
+    var [currentConfig, setCurrentConfig] = useState({
+        architecture: instance.architecture,
+        config: instance.config,
+        devices: instance.devices,
+        empheral: instance.ephemeral,
+        profiles: instance.profiles,
+        stateful: instance.stateful,
+        description: instance.description
+    })
     return (
         <>
             <InstanceShell instance={instance} />
@@ -123,37 +134,67 @@ export default function InstanceNetworks({ instance, networks }: { instance: Nod
                 color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
                 opacity: 0.55,
                 blur: 3,
+            }} onClose={() => setAttachNetwork(false)} opened={attachNetwork} title={`Attach network`}>
+                <Accordion variant="contained">
+                    {Object.keys(currentConfig.devices).map((device) => {
+                        return (
+                            currentConfig.devices[device].type == "nic" ?
+                                <Network node={instance.node} name={device} instanceConfig={currentConfig} setInstanceConfig={setCurrentConfig} />
+                                : ""
+                        )
+                    })}
+                </Accordion>
+                <Flex mt="xs">
+                    <Button variant="light" onClick={async () => {
+                        await client.put(`/instances/${instance.name}`, currentConfig)
+                        console.log(currentConfig)
+                    }}>
+                        Finished
+                    </Button>
+                    <Button onClick={() => {
+                        let newConfig = { ...currentConfig }
+                        newConfig.devices["newNic"] = {
+                            type: "nic"
+                        }
+                        setCurrentConfig(newConfig);
+                    }} ml="auto" color="green" variant="light">Add Network</Button>
+                </Flex>
+            </Modal>
+            <Modal centered overlayProps={{
+                color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
+                opacity: 0.55,
+                blur: 3,
             }} onClose={() => setOpeningPort(false)} opened={openingPort} title={`${false ? "Edit" : "Open"} Port`}>
-                                <Select onChange={(e) => {
-                                    setSelectedListen(e)
-                                }} withAsterisk placeholder="Listen Address" label="Listen Address" data={supportedFloatingIps} />
-                                <TextInput onChange={(e) => {
-                    let newConf = {...portConfig};
+                <Select onChange={(e) => {
+                    setSelectedListen(e)
+                }} withAsterisk placeholder="Listen Address" label="Listen Address" data={supportedFloatingIps} />
+                <TextInput onChange={(e) => {
+                    let newConf = { ...portConfig };
                     newConf.listen_port = e.target.value;
                     setPortConfig(newConf)
                 }} withAsterisk placeholder="Listen Port(s) (Ex: 25565-25575, or 25565,25566, or 443)" label="Listen Port(s)" />
                 <Autocomplete onChange={(e) => {
-                    let newConf = {...portConfig};
+                    let newConf = { ...portConfig };
                     newConf.target_address = e;
                     setPortConfig(newConf)
                 }} withAsterisk placeholder="Target Address" label="Target Address" data={autocompleteIps} />
-                      <TextInput onChange={(e) => {
-                    let newConf = {...portConfig};
+                <TextInput onChange={(e) => {
+                    let newConf = { ...portConfig };
                     newConf.target_port = e.target.value;
                     setPortConfig(newConf)
                 }} withAsterisk placeholder="Target Port(s) (Ex: 25565-25575, or 25565,25566, or 443)" label="Target Port(s)" />
-          
-               
-                
-            
-                 
-                      <Select withAsterisk value={portConfig.protocol} data={[{ label: "TCP", value: "tcp" }, { label: "UDP", value: "udp" }]} onChange={(e) => {
-                        let newConf = {...portConfig};
-                        newConf.protocol = e;
-                        setPortConfig(newConf)
-                      }} label="Protocol" />
-                              <TextInput onChange={(e) => {
-                    let newConf = {...portConfig};
+
+
+
+
+
+                <Select withAsterisk value={portConfig.protocol} data={[{ label: "TCP", value: "tcp" }, { label: "UDP", value: "udp" }]} onChange={(e) => {
+                    let newConf = { ...portConfig };
+                    newConf.protocol = e;
+                    setPortConfig(newConf)
+                }} label="Protocol" />
+                <TextInput onChange={(e) => {
+                    let newConf = { ...portConfig };
                     newConf.description = e.target.value;
                     setPortConfig(newConf)
                 }} placeholder="Description" label="Description" />
@@ -162,185 +203,186 @@ export default function InstanceNetworks({ instance, networks }: { instance: Nod
                         const client = connectOIDC(instance.node.url, access_token);
                         const existingConfig = (await client.get(`/networks/${instance.devices[selectedNic].network}/forwards/${selectedListen}`)).data.metadata
                         let ports = [...existingConfig.ports, portConfig]
-                       await client.put(`/networks/${instance.devices[selectedNic].network}/forwards/${selectedListen}`, {
+                        await client.put(`/networks/${instance.devices[selectedNic].network}/forwards/${selectedListen}`, {
                             ports: ports
                         })
                         setOpeningPort(false);
                         router.push(router.asPath)
                     }}>Open Port</Button>
                 </Flex>
-                </Modal>
+            </Modal>
             <Flex mt="md" mb="md">
                 <Title order={4} my="auto">Networks</Title>
                 <Button ml="auto" my="auto" variant="light" color="green" onClick={() => {
                     const audio = new Audio("/audio/popup.mp3");
                     audio.play();
+                    setAttachNetwork(true)
                 }}>Attach Network</Button>
             </Flex>
             <Accordion variant="separated">
-            {Object.keys(networks).map((nic, index) => {
-                return (
-                    <Accordion.Item value={nic} key={nic}>
-                        <Accordion.Control>
-                        <SimpleGrid cols={6}>
-                            <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-                                <Text fz="md" fw={550}>
-                                    {nic}
-                                </Text>
-                                <Text c="dimmed" fz="xs">
-                                    Name
-                                </Text>
-                            </div>
-                            <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-                                <Text fz="md" fw={550}>
-                                    <Flex direction="column">
-                              {networks[nic].network ? networks[nic].network : "N/A"}
-                                    </Flex>
-                                </Text>
-
-                                <Text c="dimmed" fz="xs">
-Network                             
-   </Text>
-                            </div>
-                            <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-                                <Text fz="md" fw={550}>
-
-                                <Flex direction="column">
-                                {networks[nic].state}
-                                    </Flex>                                </Text>
-                                <Text c="dimmed" fz="xs">
-                                    State
-                                </Text>
-                            </div>
-                            <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-                                <Text fz="md" fw={550}>
-
-                                <Flex direction="column">
-                                {networks[nic].type}
-                                    </Flex>                                </Text>
-                                <Text c="dimmed" fz="xs">
-                                    Type
-                                </Text>
-                            </div>
-                            <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-                                <Text fz="md" fw={550}>
-                                    {prettyBytes(networks[nic].counters.bytes_sent)}
-                                </Text>
-                                <Text c="dimmed" fz="xs">
-                                    Sent
-                                </Text>
-                            </div>
-                            <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-                                <Text fz="md" fw={550}>
-                                    {prettyBytes(networks[nic].counters.bytes_received)}
-                                </Text>
-                                <Text c="dimmed" fz="xs">
-                                    Recieved
-                                </Text>
-                            </div>
-                   
-                        </SimpleGrid>
-                        </Accordion.Control>
-                        <Accordion.Panel>
-                         {instance.devices[nic] ?
-                         <>
-                                                  <Divider mb="md" />
-                         <Flex mb="md">
-                                    <Title order={5} my="auto">Ports</Title>
-                                    <Button my="auto" variant="light" color="green" ml="auto" size="xs" onClick={() => {
-                                        setSelectedNic(nic)
-                                        setOpeningPort(true)
-                                        const audio = new Audio("/audio/popup.mp3");
-                                        audio.play();
-                                    }}>Open Port</Button>
-                                </Flex>
-                                <Flex direction="column">
-                                {floatingIps ? floatingIps.map((ips) => {
-                                    return (
-                                    ips.map((ip) => {
-                                        return (
-                                            
-                                            networks[nic].addresses.map((address) => {
-                                                return (
-                                               JSON.stringify(ips).includes(address.address) ? 
-                                               ip.ports.map((port, index) => {
-                                                return (
-                                                    <Paper withBorder style={{ padding: 10, width: "100%" }} mb={"xs"}>
-                             <SimpleGrid cols={3}>
-                                                                    <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-                                                                        <Text fz="md" fw={550}>
-                                                                            {port.target_address + ":" + port.target_port + " ➡ " + ip.listen_address + ":" + port.listen_port}
-                                                                        </Text>
-                                                                        <Text c="dimmed" fz="xs">
-                                                                            {port.description ? port.description : "No description"}
-                                                                        </Text>
-                                                                    </div>
-                                                                    <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-                                                                        <Text fz="md" fw={550}>
-                                                                            {port.protocol}
-                                                                        </Text>
-                                                                        <Text c="dimmed" fz="xs">
-                                                                            Protocol
-                                                                        </Text>
-                                                                    </div>
-                                                                    <div style={{ marginLeft: "auto", marginTop: "auto", marginBottom: "auto" }}>
-                                                                        <Flex direction="column" my="auto">
-                                                                            <Button variant="light" color="red" size="xs" my="auto" onClick={async () => {
-                                                                                const client = connectOIDC(instance.node.url, getCookie("access_token"));
-                                                                                console.log(ip)
-                                                                                let allPorts = ip.ports;
-                                                                                allPorts.splice(index, 1);
-                                                                                console.log(allPorts)
-                                                                                await client.put(`/networks/${instance.devices[nic].network}/forwards/${ip.listen_address}`, {
-                                                                                    ports: allPorts
-                                                                                });
-                                                                                router.push(router.asPath)
-                                                                            }}>Close Port</Button>
-                                                                        </Flex>
-                                                                    </div>
-                                                                </SimpleGrid>
-                                                    </Paper>
-                                                )
-                                               })
-                                               : ""
-                                                )
-                                            })
-                                        )
-                                    })
-                                    )
-                                }): <Loader mb="md" style={{marginRight: "auto", marginLeft: "auto"}} /> }
-                                </Flex>
-                                </>
-                                : ""}
-                                <Divider mb="md" mt={instance.devices[nic] ? "md" : 0} />
-                        <Title order={5}>IP Addresses</Title>
-                        <SimpleGrid cols={2}>
-                            <div>
-                        <Title order={6}>IPv4</Title>
-                        {networks[nic].addresses.filter((addr) => addr.family == "inet").map((addr) => {
-                                        return <Text truncate={true}>{addr.address}</Text>
-                                    })}
+                {Object.keys(networks).map((nic, index) => {
+                    return (
+                        <Accordion.Item value={nic} key={nic}>
+                            <Accordion.Control>
+                                <SimpleGrid cols={6}>
+                                    <div style={{ marginTop: "auto", marginBottom: "auto" }}>
+                                        <Text fz="md" fw={550}>
+                                            {nic}
+                                        </Text>
+                                        <Text c="dimmed" fz="xs">
+                                            Name
+                                        </Text>
                                     </div>
-                                    <div>
-                        <Title order={6}>IPv6</Title>
-                        {networks[nic].addresses.filter((addr) => addr.family == "inet6").map((addr) => {
-                                        return <Text truncate={true}>{addr.address}</Text>
-                                    })}
+                                    <div style={{ marginTop: "auto", marginBottom: "auto" }}>
+                                        <Text fz="md" fw={550}>
+                                            <Flex direction="column">
+                                                {networks[nic].network ? networks[nic].network : "N/A"}
+                                            </Flex>
+                                        </Text>
+
+                                        <Text c="dimmed" fz="xs">
+                                            Network
+                                        </Text>
                                     </div>
-                                    </SimpleGrid>
-                                    {instance.devices[nic] ?
+                                    <div style={{ marginTop: "auto", marginBottom: "auto" }}>
+                                        <Text fz="md" fw={550}>
+
+                                            <Flex direction="column">
+                                                {networks[nic].state}
+                                            </Flex>                                </Text>
+                                        <Text c="dimmed" fz="xs">
+                                            State
+                                        </Text>
+                                    </div>
+                                    <div style={{ marginTop: "auto", marginBottom: "auto" }}>
+                                        <Text fz="md" fw={550}>
+
+                                            <Flex direction="column">
+                                                {networks[nic].type}
+                                            </Flex>                                </Text>
+                                        <Text c="dimmed" fz="xs">
+                                            Type
+                                        </Text>
+                                    </div>
+                                    <div style={{ marginTop: "auto", marginBottom: "auto" }}>
+                                        <Text fz="md" fw={550}>
+                                            {prettyBytes(networks[nic].counters.bytes_sent)}
+                                        </Text>
+                                        <Text c="dimmed" fz="xs">
+                                            Sent
+                                        </Text>
+                                    </div>
+                                    <div style={{ marginTop: "auto", marginBottom: "auto" }}>
+                                        <Text fz="md" fw={550}>
+                                            {prettyBytes(networks[nic].counters.bytes_received)}
+                                        </Text>
+                                        <Text c="dimmed" fz="xs">
+                                            Recieved
+                                        </Text>
+                                    </div>
+
+                                </SimpleGrid>
+                            </Accordion.Control>
+                            <Accordion.Panel>
+                                {instance.devices[nic] ?
                                     <>
-                                    <Divider my="md" />
-                                    <Flex>
-                                    <Button size="xs" ml="auto" variant="light" color="red">Detach Network</Button>
-                                    <Button size="xs" ml="sm" variant="light" color="blue">Edit nic</Button>
-                                    </Flex>
+                                        <Divider mb="md" />
+                                        <Flex mb="md">
+                                            <Title order={5} my="auto">Ports</Title>
+                                            <Button my="auto" variant="light" color="green" ml="auto" size="xs" onClick={() => {
+                                                setSelectedNic(nic)
+                                                setOpeningPort(true)
+                                                const audio = new Audio("/audio/popup.mp3");
+                                                audio.play();
+                                            }}>Open Port</Button>
+                                        </Flex>
+                                        <Flex direction="column">
+                                            {floatingIps ? floatingIps.map((ips) => {
+                                                return (
+                                                    ips.map((ip) => {
+                                                        return (
+
+                                                            networks[nic].addresses.map((address) => {
+                                                                return (
+                                                                    JSON.stringify(ips).includes(address.address) ?
+                                                                        ip.ports.map((port, index) => {
+                                                                            return (
+                                                                                <Paper withBorder style={{ padding: 10, width: "100%" }} mb={"xs"}>
+                                                                                    <SimpleGrid cols={3}>
+                                                                                        <div style={{ marginTop: "auto", marginBottom: "auto" }}>
+                                                                                            <Text fz="md" fw={550}>
+                                                                                                {port.target_address + ":" + port.target_port + " ➡ " + ip.listen_address + ":" + port.listen_port}
+                                                                                            </Text>
+                                                                                            <Text c="dimmed" fz="xs">
+                                                                                                {port.description ? port.description : "No description"}
+                                                                                            </Text>
+                                                                                        </div>
+                                                                                        <div style={{ marginTop: "auto", marginBottom: "auto" }}>
+                                                                                            <Text fz="md" fw={550}>
+                                                                                                {port.protocol}
+                                                                                            </Text>
+                                                                                            <Text c="dimmed" fz="xs">
+                                                                                                Protocol
+                                                                                            </Text>
+                                                                                        </div>
+                                                                                        <div style={{ marginLeft: "auto", marginTop: "auto", marginBottom: "auto" }}>
+                                                                                            <Flex direction="column" my="auto">
+                                                                                                <Button variant="light" color="red" size="xs" my="auto" onClick={async () => {
+                                                                                                    const client = connectOIDC(instance.node.url, getCookie("access_token"));
+                                                                                                    console.log(ip)
+                                                                                                    let allPorts = ip.ports;
+                                                                                                    allPorts.splice(index, 1);
+                                                                                                    console.log(allPorts)
+                                                                                                    await client.put(`/networks/${instance.devices[nic].network}/forwards/${ip.listen_address}`, {
+                                                                                                        ports: allPorts
+                                                                                                    });
+                                                                                                    router.push(router.asPath)
+                                                                                                }}>Close Port</Button>
+                                                                                            </Flex>
+                                                                                        </div>
+                                                                                    </SimpleGrid>
+                                                                                </Paper>
+                                                                            )
+                                                                        })
+                                                                        : ""
+                                                                )
+                                                            })
+                                                        )
+                                                    })
+                                                )
+                                            }) : <Loader mb="md" style={{ marginRight: "auto", marginLeft: "auto" }} />}
+                                        </Flex>
                                     </>
                                     : ""}
-                        </Accordion.Panel>
+                                <Divider mb="md" mt={instance.devices[nic] ? "md" : 0} />
+                                <Title order={5}>IP Addresses</Title>
+                                <SimpleGrid cols={2}>
+                                    <div>
+                                        <Title order={6}>IPv4</Title>
+                                        {networks[nic].addresses.filter((addr) => addr.family == "inet").map((addr) => {
+                                            return <Text truncate={true}>{addr.address}</Text>
+                                        })}
+                                    </div>
+                                    <div>
+                                        <Title order={6}>IPv6</Title>
+                                        {networks[nic].addresses.filter((addr) => addr.family == "inet6").map((addr) => {
+                                            return <Text truncate={true}>{addr.address}</Text>
+                                        })}
+                                    </div>
+                                </SimpleGrid>
+                                {instance.devices[nic] ?
+                                    <>
+                                        <Divider my="md" />
+                                        <Flex>
+                                            <Button size="xs" ml="auto" variant="light" color="red">Detach Network</Button>
+                                            <Button size="xs" ml="sm" variant="light" color="blue">Edit nic</Button>
+                                        </Flex>
+                                    </>
+                                    : ""}
+                            </Accordion.Panel>
                         </Accordion.Item>
-                )
-            })}
+                    )
+                })}
             </Accordion>
         </>
     )

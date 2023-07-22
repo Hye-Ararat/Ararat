@@ -417,7 +417,7 @@ const StoragePool = forwardRef<HTMLDivElement, StoragePoolProps>(
     )
   );
 
-function Network({name, instanceConfig, setInstanceConfig, node}) {
+export function Network({name, instanceConfig, setInstanceConfig, node}) {
     const [networks, setNetworks] = useState([])
     useEffect(() => {
         if (node) {
