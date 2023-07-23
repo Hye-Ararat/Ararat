@@ -8,6 +8,7 @@ import { getWsErrorMsg } from "@/lib/util";
 import Xterm from "@/lib/Term";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit"
+import { useRouter } from "next/router";
 export default function InstanceTextConsole({ instance }: { instance: NodeLxdInstance }) {
     var access_token = (getCookie("access_token") as string)
     const client = connectOIDC(instance.node.url, access_token)
@@ -18,6 +19,7 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
     const textEncoder = new TextEncoder();
     var [done, setDone] = useState(false)
     var fitAddon = new FitAddon()
+    const router = useRouter();
     useEffect(() => {
         
         if (xtermRef.current && done == false) {
@@ -45,6 +47,9 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
                 xtermRef.current?.terminal.onData((d) => {
 
                     dataWS.send(textEncoder.encode(d))
+                })
+                router.events.on("routeChangeStart", () => {
+                    datWS?.close();
                 })
             })
             return () => {

@@ -25,6 +25,7 @@ app.prepare().then(() => {
     server.use(bodyParser.json())
     server.use(cookieParser())
     server.get("/oidc/.well-known/openid-configuration", async (req, res) => {
+        console.log("adsfasdf")
         let config = await fetch("http://localhost:3000/.well-known/openid-configuration").then(re => re.json());
         res.json(config);
     })

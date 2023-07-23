@@ -5,7 +5,7 @@ const { MongoClient } = require("mongodb");
 let mongo
 
 if (process.env.NODE_ENV === "production") {
-    mongo = new MongoClient();
+    mongo = new MongoClient(process.env.DATABASE_URL);
 } else {
     if (!global.mongo) {
         global.mongo = new MongoClient(process.env.DATABASE_URL);

@@ -15,6 +15,7 @@ import { connectOIDC } from "js-lxd";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { AttachVolumeModal } from "@/components/instances/instance/volumes/AttachVolumeModal";
+import { useRouter } from "next/router";
 
 var url = process.env.URL
 export async function getServerSideProps({ req, res, params, query }: GetServerSidePropsContext) {
@@ -51,6 +52,7 @@ export default function InstanceVolumes({ instance, volumes, panelURL }: { insta
     const [attachOpen, setAttachOpen] = useState(false)
     const client = connectOIDC(instance.node.url, access_token)
     console.log(volumes)
+    const router = useRouter();
     return (
         <>
             <InstanceShell instance={instance} />
@@ -60,7 +62,7 @@ export default function InstanceVolumes({ instance, volumes, panelURL }: { insta
                 blur: 3
             }} style={{ height: "30vh", overflowY: undefined }} centered size={"lg"} onClose={() => setAttachOpen(false)} title="Attach Volume">
 
-                <AttachVolumeModal instance={instance} url={panelURL} />
+                <AttachVolumeModal instance={instance} url={panelURL} setAttachOpen={setAttachOpen} />
 
 
             </Modal>
@@ -68,6 +70,8 @@ export default function InstanceVolumes({ instance, volumes, panelURL }: { insta
             <Flex mt="md" mb="md">
                 <Title order={4} my="auto">Volumes</Title>
                 <Button my="auto" variant="light" color="green" ml="auto" onClick={() => {
+                    const audio = new Audio("/audio/popup.mp3");
+                    audio.play();
                     setAttachOpen(true)
                 }}>Attach Volume</Button>
             </Flex>
@@ -128,6 +132,7 @@ export default function InstanceVolumes({ instance, volumes, panelURL }: { insta
                                         var inst: LxdInstance = (await client.get(`/instances/${instance.name}`)).data.metadata
                                         delete inst.devices[volume.key]
                                         await client.put(`/instances/${instance.name}`, inst)
+                                        router.push(window.location.pathname)
                                     }}>
                                         Detach Volume
                                     </Button>

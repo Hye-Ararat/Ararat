@@ -167,7 +167,7 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
                 <Breadcrumbs ml={10}>
                     {(router.query.path as string).split("/").map((d, i) => {
                         return (
-                            <Link href={`/instances/${(instance.node.name)}/${instance.name}/files?path=${path.resolve((router.query.path as string), relativeDirMove(((router.query.path as string).split("/").length - 1) - i))}`}>
+                            <Link style={{ textDecoration: "none", color: "lightblue"}} href={`/instances/${(instance.node.name)}/${instance.name}/files?path=${path.resolve((router.query.path as string), relativeDirMove(((router.query.path as string).split("/").length - 1) - i))}`}>
                                 {d}
                             </Link>
                         )

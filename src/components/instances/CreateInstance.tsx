@@ -34,7 +34,6 @@ export default function CreateInstance({nodes}: {nodes: Node[]}) {
     useEffect(() => {
         if (createInstance) {
             let aud = new Audio("/audio/createInstance.m4a")
-            aud.volume = 0.60;
             aud.play()
             aud.loop = true;
             setAudio(aud);
@@ -383,7 +382,7 @@ const SelectNode = forwardRef<HTMLDivElement, NodeProps>(
     ({ value, name, vendor, description, ...others }: NodeProps, ref) => (
       <div ref={ref} {...others}>
         <Group noWrap>
-          {getVendorLogo("dell")}
+          {getVendorLogo(vendor)}
   
           <div>
             <Text size="sm">{name}</Text>
@@ -418,7 +417,7 @@ const StoragePool = forwardRef<HTMLDivElement, StoragePoolProps>(
     )
   );
 
-function Network({name, instanceConfig, setInstanceConfig, node}) {
+export function Network({name, instanceConfig, setInstanceConfig, node}) {
     const [networks, setNetworks] = useState([])
     useEffect(() => {
         if (node) {

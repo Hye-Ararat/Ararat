@@ -85,9 +85,10 @@ export async function validateSession(access_token: string): Promise<boolean> {
 
 export async function client(): Promise<ClientInt> {
     if (process.env.NODE_ENV === 'production') {
-        if (!cachedClient) {
-            cachedClient = await getClient();
+        if (!global.oidcClient) {
+            global.oidcClient = await getClient();
         }
+        cachedClient = global.oidcClient
     } else {
         //@ts-expect-error
         if (!global.oidcClient) {
