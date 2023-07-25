@@ -10,3 +10,8 @@ export interface Node extends Document {
     name: string
     url: string
 }
+
+export interface ImageServer extends Document {
+    name: string
+    url: string
+}
