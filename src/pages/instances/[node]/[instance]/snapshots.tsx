@@ -116,13 +116,13 @@ export default function InstanceSnapshots({ instance, snapshots }: { instance: N
                                             restore: snapshot.name,
                                             stateful: false
                                         });
-                                        router.push(window.location.pathname);
+                                        router.push(router.asPath);
                                     }}>
                                         Restore Snapshot
                                     </Button>
                                     <Button size="xs" variant="light" color="red" onClick={async () => {
                                         await client.delete(`/instances/${instance.name}/snapshots/${snapshot.name}`);
-                                        router.push(window.location.pathname);
+                                        router.push(router.asPath);
                                     }}>
                                         Delete Snapshot
                                     </Button>
