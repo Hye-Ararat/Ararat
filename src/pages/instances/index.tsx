@@ -7,7 +7,7 @@ import prettyBytes from 'pretty-bytes';
 import { getOSLogo } from "@/lib/logo";
 import { LxdInstance, NodeLxdInstance } from "@/types/instance";
 import { getCookie } from "cookies-next";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { MainContext } from "@/components/AppShell";
 import { formatDate, getBadgeColor } from "@/lib/util";
 import Link from "next/link";
@@ -266,7 +266,38 @@ function InstanceAside({ instance, closeAside }: { instance: NodeLxdInstance, cl
 function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
     const { setAside, setAsideOpen } = useContext(MainContext)
     const { setActiveInstance, activeInstance, setSelectedInstances, selectedInstances } = useContext(InstanceContext)
-
+    const [instanceCpu, setInstanceCpu] = useState(null);
+    const [instanceMemory, setInstanceMemory] = useState(instance.state?.memory.usage);
+    const [instanceDisk, setInstanceDisk] = useState(instance.state?.disk?.root?.usage);
+    const [instanceStatus, setInstanceStatus] = useState(instance.status);
+    useEffect(() => {
+        let client = connectOIDC(instance.node.url, getCookie("access_token"));
+        async function getCpu() {
+            let resources = await (await client.get("/resources")).data.metadata
+            console.log(resources)
+           let stateStart =  await (await client.get("/instances/demo/state")).data.metadata
+            let startTime = Date.now()
+            let startCpuUsage = Math.ceil(stateStart.cpu.usage / 1000000)
+            await new Promise((resolve) => setTimeout(resolve, 500))
+            let stateEnd = await (await client.get("/instances/demo/state")).data.metadata
+            let endTime = Date.now()
+            let endCpuUsage = Math.ceil(stateEnd.cpu.usage / 1000000)
+            let cpuUsedMs = endCpuUsage - startCpuUsage
+            let totalMsPassed = endTime - startTime
+            let cpuUsageTotal = cpuUsedMs / ((instance.config["limits.cpu"] ? instance.config["limits.cpu"] : resources.cpu.total) * totalMsPassed)
+            console.log(cpuUsageTotal)
+            setInstanceCpu(Math.round(cpuUsageTotal * 100))
+            setInstanceMemory(stateEnd.memory.usage);
+            setInstanceDisk(stateEnd.disk.root.usage)
+            setInstanceStatus(stateEnd.status)
+        }
+        const resInt = setInterval(() => {
+            getCpu()
+        }, 1000)
+        return () => {
+            clearInterval(resInt)
+        }
+    }, [])
     function closeAside() {
         setAsideOpen(false);
         setAside("")
@@ -311,8 +342,8 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
             </DataTableColumn>
             <DataTableColumn>
                 <Group>
-                    <Badge color={getBadgeColor(instance.status)}>
-                        {instance.status}
+                    <Badge color={getBadgeColor(instanceStatus)}>
+                        {instanceStatus}
                     </Badge>
                     <Badge color={instance.type == "virtual-machine" ? "teal" : "indigo"}>
                         {instance.type == "virtual-machine" ? "Virtual Machine" : "Container"}
@@ -323,7 +354,7 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
                 <Text>
                     <div>
                         <Text fz="md" fw={550}>
-                            {instance.state ? instance.state.cpu.usage : "0%"}
+                            {instanceCpu != null ? instanceCpu +  "%": "..."}
                         </Text>
                         <Text c="dimmed" fz="xs">
                             CPU
@@ -335,7 +366,7 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
                 <Text>
                     <div>
                         <Text fz="md" fw={550}>
-                            {instance.state ? prettyBytes(instance.state.memory.usage) : "0 MB"}
+                            {instance.state ? prettyBytes(instanceMemory) : "0 MB"}
                         </Text>
                         <Text c="dimmed" fz="xs">
                             Memory
@@ -348,7 +379,7 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
                 <Text>
                     <div>
                         <Text fz="md" fw={550}>
-                            {instance.state ? instance.state.disk ? prettyBytes(instance.state.disk.root.usage) : "MB" : "0 MB"}
+                            {instance.state ? instance.state.disk ? prettyBytes(instanceDisk) : "MB" : "0 MB"}
                         </Text>
                         <Text c="dimmed" fz="xs">
                             Disk
