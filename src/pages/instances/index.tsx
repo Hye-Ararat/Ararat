@@ -275,11 +275,11 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
         async function getCpu() {
             let resources = await (await client.get("/resources")).data.metadata
             console.log(resources)
-           let stateStart =  await (await client.get("/instances/demo/state")).data.metadata
+           let stateStart =  await (await client.get(`/instances/${instance.name}/state`)).data.metadata
             let startTime = Date.now()
             let startCpuUsage = Math.ceil(stateStart.cpu.usage / 1000000)
             await new Promise((resolve) => setTimeout(resolve, 500))
-            let stateEnd = await (await client.get("/instances/demo/state")).data.metadata
+            let stateEnd = await (await client.get(`/instances/${instance.name}/state`)).data.metadata
             let endTime = Date.now()
             let endCpuUsage = Math.ceil(stateEnd.cpu.usage / 1000000)
             let cpuUsedMs = endCpuUsage - startCpuUsage
