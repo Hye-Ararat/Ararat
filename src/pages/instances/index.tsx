@@ -13,9 +13,9 @@ import { formatDate, getBadgeColor } from "@/lib/util";
 import Link from "next/link";
 import { client, client as oidcClient, validateSession } from "@/lib/oidc"
 import mongo from "@/lib/mongo";
-import { Node } from "@/types/db";
+import { ImageServer, Node } from "@/types/db";
 import { fetchAllInstances } from "@/lib/lxd";
-import { getNodes } from "@/lib/db";
+import { getImageServers, getNodes } from "@/lib/db";
 import nookies from "nookies";
 import { useRouter } from "next/router";
 
@@ -32,11 +32,13 @@ export async function getServerSideProps({ req, res }: any) {
     };
     const nodes = await getNodes();
     const instances = await fetchAllInstances(req.cookies.access_token)
+    const imageServers = await getImageServers();
 
     return {
         props: {
             instances,
-            nodes
+            nodes,
+            imageServers
         }
     }
 }
@@ -44,7 +46,7 @@ export async function getServerSideProps({ req, res }: any) {
 
 const InstanceContext = createContext({ setActiveInstance: (instance: string) => { }, activeInstance: "", selectedInstances: ([] as { id: string, checked: boolean }[]), setSelectedInstances: (instances: { id: string, checked: boolean }[]) => { } })
 
-export default function Instances({ instances, nodes }: { instances: NodeLxdInstance[], nodes: Node[] }) {
+export default function Instances({ instances, nodes, imageServers }: { instances: NodeLxdInstance[], nodes: Node[], imageServers: ImageServer[] }) {
     var access_token = getCookie("access_token")
     var [activeInstance, setActiveInstance] = useState<string>("")
     var initialCheckedInstances = ([] as { id: string, checked: boolean }[])
@@ -95,7 +97,7 @@ export default function Instances({ instances, nodes }: { instances: NodeLxdInst
 
                     </> : ""}
                     {selectedInstances.filter(s => s.checked == true).length == 0 ? <>
-                        <CreateInstance nodes={nodes} />
+                        <CreateInstance nodes={nodes} imageServers={imageServers} />
                     </> : ""}
 
                 </div>
