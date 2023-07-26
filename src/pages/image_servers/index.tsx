@@ -67,7 +67,7 @@ export default function ImageServers({imageServers}: {imageServers: ImageServer[
                 blur: 3,
             }} opened={addingImageServer} onClose={() => setAddingImageServer(false)} title="Add Image Server" centered>
                 <TextInput onChange={(e) => setImageServerName(e.target.value)} value={imageServerName} withAsterisk label="Image Server Name" placeholder="Image Server Name" />
-                <TextInput onChange={(e) => setImageServerUrl(e.target.value)} value={imageServerUrl} withAsterisk label="Image Server URL" placeholder="Image URL" />
+                <TextInput onChange={(e) => setImageServerUrl(e.target.value)} value={imageServerUrl} withAsterisk label="Image Server URL" placeholder="Image Server URL" />
                 <Flex>
                     <Button onClick={async () => {
                         await fetch("/api/image_servers", {
