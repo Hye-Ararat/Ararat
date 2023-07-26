@@ -238,7 +238,7 @@ export default function NodeStoragePools({ node, resources, pools }) {
                                     <Button onClick={async (e) => {
                                         let client = connectOIDC(node.url, getCookie("access_token"));
                                         await client.delete(`/storage-pools/${pool.name}`)
-                                        router.push(`/nodes/${node.name}/storage-pools`)
+                                        router.push(router.asPath)
                                     }} ml="auto" my="auto" variant="light" color="red" size="xs">Delete Storage Pool</Button>
                                     <Button onClick={() => {
                                         setEditingStoragePool(true);
