@@ -202,7 +202,7 @@ export default function NodeDashboard({ node, resources, networks }) {
                                         <Text fz="md" fw={550}>
                                             {network.name}
                                         </Text>
-                                        <Text c="dimmed" fz="xs">
+                                        <Text c="dimmed" fz="xs" truncate={true}>
                                             {network.description ? network.description : "No description"}
                                         </Text>
 
@@ -216,7 +216,7 @@ export default function NodeDashboard({ node, resources, networks }) {
                                         </Text>
                                     </div>
                                     <div>
-                                        <Text fz="md" fw={550}>
+                                        <Text fz="md" fw={550} truncate={true}>
                                             {network.config["ipv4.address"] ? network.config["ipv4.address"] : "No IPv4 Address"}
                                         </Text>
                                         <Text c="dimmed" fz="xs">
@@ -224,7 +224,7 @@ export default function NodeDashboard({ node, resources, networks }) {
                                         </Text>
                                     </div>
                                     <div>
-                                        <Text fz="md" fw={550}>
+                                        <Text fz="md" fw={550} truncate={true}>
                                             {network.config["ipv6.address"] ? network.config["ipv6.address"] : "No IPv6 Address"}
                                         </Text>
                                         <Text c="dimmed" fz="xs">
@@ -270,7 +270,7 @@ export default function NodeDashboard({ node, resources, networks }) {
                                                             <Text fz="md" fw={550}>
                                                                 {floatingIp.listen_address}
                                                             </Text>
-                                                            <Text c="dimmed" fz="xs">
+                                                            <Text c="dimmed" fz="xs" truncate={true}>
                                                                 {floatingIp.description ? floatingIp.description : "No description"}
                                                             </Text>
                                                         </div>

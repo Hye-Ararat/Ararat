@@ -8,6 +8,7 @@ import { getWsErrorMsg } from "@/lib/util";
 import Xterm from "@/lib/Term";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit"
+import { useRouter } from "next/router";
 export default function InstanceTextConsole({ instance }: { instance: NodeLxdInstance }) {
     var access_token = (getCookie("access_token") as string)
     const client = connectOIDC(instance.node.url, access_token)
@@ -18,6 +19,7 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
     const textEncoder = new TextEncoder();
     var [done, setDone] = useState(false)
     var fitAddon = new FitAddon()
+    const router = useRouter();
     useEffect(() => {
         
         if (xtermRef.current && done == false) {
@@ -39,22 +41,31 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
                 setdatWS(dataWS)
                 const controlWS = new WebSocket(controlUrl);
                 dataWS.onmessage = async (ev) => {
-                    console.log(ev)
-                    console.log(await ev.data.text())
                     xtermRef.current?.terminal.write(await ev.data.text())
                 }
                // xtermRef.current?.terminal.onBinary(console.log)
                 xtermRef.current?.terminal.onData((d) => {
-                    console.log(d)
+
                     dataWS.send(textEncoder.encode(d))
                 })
+                router.events.on("routeChangeStart", () => {
+                    datWS?.close();
+                })
             })
+            return () => {
+                datWS?.close()
+            }
         }
     }, [])
     return (
         <>
-
-            <Xterm ref={xtermRef} onData={console.log} onBinary={console.log} onKey={console.log} addons={[fitAddon]}/>
+        <div style={{borderRadius: "10px", padding: "13px", backgroundColor: "#1a1b1e", marginTop: "10px"}}>
+            <Xterm ref={xtermRef} onData={console.log} onBinary={console.log} onKey={console.log} addons={[fitAddon]} options={{
+                theme: {
+                    "background": "#1a1b1e"
+                }
+            }}/>
+            </div>
 
         </>
     )

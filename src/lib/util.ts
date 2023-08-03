@@ -66,3 +66,23 @@ export function getWsErrorMsg(code: number) {
         return "The connection was closed due to a failure to perform a TLS handshake (e.g., the server certificate can't be verified).";
     else return "Unknown reason";
 };
+export function isThisAFile(maybeFile: File) {
+    return new Promise(function (resolve, reject) {
+        if (maybeFile.type !== '') {
+            return resolve(maybeFile)
+        }
+        const reader = new FileReader()
+        reader.onloadend = () => {
+            if (
+                reader.error &&
+                (
+                    reader.error.name === 'NotFoundError' ||
+                    reader.error.name === 'NotReadableError'
+                )) {
+                return reject(reader.error.name)
+            }
+            resolve(maybeFile)
+        }
+        reader.readAsBinaryString(maybeFile)
+    })
+}

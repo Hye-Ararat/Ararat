@@ -53,7 +53,7 @@ export function getVendorLogo(vendor: string, size?: number | string) {
     return <SiVirtualbox color="#183A61" size={size} />;
    }
    if (vendor.toLowerCase().includes("apple")) {
-    return <SiApple color="#000000" size={size} />;
+    return <SiApple color="#fff" size={size} />;
    }
    if (vendor.toLowerCase().includes("microsoft")) {
     return <SiMicrosoft color="#0078D4" size={size} />;

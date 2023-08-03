@@ -18,7 +18,6 @@ export default function CreateNode() {
     useEffect(() => {
         if (creatingNode) {
             let aud = new Audio("/audio/createNode.m4a")
-            aud.volume = 0.60;
             aud.play()
             aud.loop = true;
             setAudio(aud);
@@ -76,28 +75,12 @@ export default function CreateNode() {
                             withAsterisk
                         />
                     </Stepper.Step>
-                    <Stepper.Step label="Install Dependencies">
+                    <Stepper.Step label="Install Lava">
                         <List type="ordered">
-                            <List.Item>Install snap using these <Link target="_blank" href="https://snapcraft.io/docs/installing-snapd">instructions</Link></List.Item>
-                            <List.Item>Install NGINX using these <Link target="_blank" href="https://www.nginx.com/resources/wiki/start/topics/tutorials/install/">instructions</Link></List.Item>
-                            <List.Item>Run the following automatic setup command <Code>snap install lxd</Code></List.Item>
+                            <List.Item>Follow the Hye Lava installation documentation below or <Link target="_blank" href="https://hyeararat.com"> found here</Link></List.Item>
+                            <iframe style={{width: "100%", minHeight: "60vh", borderRadius: "10px", border: "solid 1px gray", marginTop: 5}} src="https://ararat.hye.gg/docs/intro" />
                             <List.Item>Press next when prompted</List.Item>
                         </List>
-                    </Stepper.Step>
-                    <Stepper.Step label="Hye Lava Setup">
-                        <Center mt="lg">
-                            <img src={currentImage} width="75px" style={{ marginRight: "auto", marginLeft: "auto" }} />
-                        </Center>
-                        <Text ta="center" mt="xs">{currentStatus}</Text>
-                        {connected ?
-                            <Progress label={`${currentPercent}%`} size="xl" mr="auto" ml="auto" mt="xs" value={currentPercent} sx={{ maxWidth: "30%" }} />
-                            :
-                            <>
-                                <Center>
-                                    <Loader mr="auto" ml="auto" />
-                                </Center>
-                                <Text ta="center" mt={"xs"}>Connecting...</Text>
-                            </>}
                     </Stepper.Step>
                     <Stepper.Completed>
                         <Flex>
@@ -108,8 +91,8 @@ export default function CreateNode() {
                 </Stepper>
                 <Flex mt="md">
                     <Button disabled={activeStep == 0 || activeStep == 2 ||activeStep==3} color="red" mr="sm" ml="auto" onClick={() => setActiveStep(activeStep - 1)}>Back</Button>
-                    <Button color={activeStep == 3 ?"green": "blue"} disabled={activeStep == 2} onClick={() => {
-                        if (activeStep != 3){
+                    <Button color={activeStep == 1 ?"green": "blue"} disabled={activeStep == 2} onClick={() => {
+                        if (activeStep != 1){
                         setActiveStep(activeStep + 1)
                         } else {
                             fetch("/api/nodes", {
@@ -127,7 +110,7 @@ export default function CreateNode() {
                                 router.reload()
                             })
                         }
-                    }}>{activeStep == 3 ? "Add Node" : "Next"}</Button>
+                    }}>{activeStep == 1 ? "Add Node" : "Next"}</Button>
                 </Flex>
             </Modal>        </>
     )

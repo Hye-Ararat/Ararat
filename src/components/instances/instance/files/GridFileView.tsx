@@ -84,7 +84,7 @@ function GridFileViewItem({ file }: { file: string }) {
                                             </>}
                                     </Center>
                                     <Center>
-                                        <Text>
+                                        <Text align="center">
                                             {file}
                                         </Text>
                                     </Center>

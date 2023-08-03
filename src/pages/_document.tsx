@@ -9,7 +9,9 @@ export default class _Document extends Document {
   render() {
     return (
       <Html>
-        <Head />
+        <Head>
+        <meta name="theme-color" content="#1971c2" />
+        </Head>
         <body>
           <Main />
           <NextScript />

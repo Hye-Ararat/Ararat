@@ -14,6 +14,8 @@ import { DataTable, DataTableRow } from "@/components/DataTable";
 import { connectOIDC } from "js-lxd";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
+import { AttachVolumeModal } from "@/components/instances/instance/volumes/AttachVolumeModal";
+import { useRouter } from "next/router";
 
 var url = process.env.URL
 export async function getServerSideProps({ req, res, params, query }: GetServerSidePropsContext) {
@@ -34,7 +36,8 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
         return {
             props: {
                 instance: instance,
-                volumes: volumes
+                volumes: volumes,
+                panelURL: url
             }
         }
     } catch (error) {
@@ -43,24 +46,33 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
     }
 }
 
-export default function InstanceVolumes({ instance, volumes }: { instance: NodeLxdInstance, volumes: any }) {
+export default function InstanceVolumes({ instance, volumes, panelURL }: { instance: NodeLxdInstance, volumes: any, panelURL: string }) {
     var access_token = (getCookie("access_token") as string)
     const theme = useMantineTheme()
     const [attachOpen, setAttachOpen] = useState(false)
     const client = connectOIDC(instance.node.url, access_token)
+    console.log(volumes)
+    const router = useRouter();
     return (
         <>
             <InstanceShell instance={instance} />
-            <Modal opened={attachOpen} overlayProps={{color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
+            <Modal opened={attachOpen} overlayProps={{
+                color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
                 opacity: 0.55,
-                blur: 3}} centered onClose={() => setAttachOpen(false)} title="Attach Volume">
-                Testtt
+                blur: 3
+            }} style={{ height: "30vh", overflowY: undefined }} centered size={"lg"} onClose={() => setAttachOpen(false)} title="Attach Volume">
+
+                <AttachVolumeModal instance={instance} url={panelURL} setAttachOpen={setAttachOpen} />
+
+
             </Modal>
 
             <Flex mt="md" mb="md">
                 <Title order={4} my="auto">Volumes</Title>
                 <Button my="auto" variant="light" color="green" ml="auto" onClick={() => {
-      setAttachOpen(true)
+                    const audio = new Audio("/audio/popup.mp3");
+                    audio.play();
+                    setAttachOpen(true)
                 }}>Attach Volume</Button>
             </Flex>
 
@@ -77,9 +89,12 @@ export default function InstanceVolumes({ instance, volumes }: { instance: NodeL
                                 </Text>
                             </div>
                             <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-                                <Link style={{ fontWeight: 550, textDecoration: "none", color: "rgb(193, 194, 197)" }} href={`/instances/${instance.node.name}/${instance.name}/files?path=${volume.device.path}`}>
+                                {volume.device ? <Link style={{ fontWeight: 550, textDecoration: "none", color: "rgb(193, 194, 197)" }} href={`/instances/${instance.node.name}/${instance.name}/files?path=${volume.device.path}`}>
                                     {volume.device.path}
-                                </Link>
+                                </Link> : <Text>
+                                    ?
+                                </Text>}
+
                                 <Text c="dimmed" fz="xs">
                                     Mountpoint
                                 </Text>
@@ -117,6 +132,7 @@ export default function InstanceVolumes({ instance, volumes }: { instance: NodeL
                                         var inst: LxdInstance = (await client.get(`/instances/${instance.name}`)).data.metadata
                                         delete inst.devices[volume.key]
                                         await client.put(`/instances/${instance.name}`, inst)
+                                        router.push(window.location.pathname)
                                     }}>
                                         Detach Volume
                                     </Button>

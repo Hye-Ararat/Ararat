@@ -3,13 +3,13 @@ import { IconCheck, IconCube, IconForbid2, IconHistory, IconListDetails, IconNet
 import { forwardRef, useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { getOSLogo, getVendorLogo } from "@/lib/logo";
-import { Node } from "@/types/db"
+import { ImageServer, Node } from "@/types/db"
 import { connectOIDC } from "js-lxd";
 import nookies from "nookies";
 import { openWebsocket } from "@/lib/lxdClient";
 import { LxdStoragePool } from "@/types/storage";
 
-export default function CreateInstance({nodes}: {nodes: Node[]}) {
+export default function CreateInstance({nodes, imageServers}: {nodes: Node[], imageServers: ImageServer[]}) {
     const [createInstance, setCreatingInstance] = useState(false);
     const [audio, setAudio] = useState<HTMLAudioElement>();
     const [node, setNode] = useState<Node>();
@@ -34,7 +34,6 @@ export default function CreateInstance({nodes}: {nodes: Node[]}) {
     useEffect(() => {
         if (createInstance) {
             let aud = new Audio("/audio/createInstance.m4a")
-            aud.volume = 0.60;
             aud.play()
             aud.loop = true;
             setAudio(aud);
@@ -64,27 +63,40 @@ export default function CreateInstance({nodes}: {nodes: Node[]}) {
             let info = await lxdClient.get("/resources")
             let nodeData = info.data.metadata;
             console.log(nodeData)
-            let res = await fetch("https://images.linuxcontainers.org/streams/v1/images.json", {
-                method: "GET",
-                cache: "no-cache",
-            });
-            let data = await res.json();
             let formattedImages = [];
-            Object.keys(data.products).forEach((image) => {
-                let supportedArch = "";
-                if (nodeData.cpu.architecture == "x86_64") supportedArch = "amd64";
-                if (nodeData.cpu.architecture == "aarch64") supportedArch = "arm64";
-                if (data.products[image].arch !== supportedArch) return;
-                formattedImages.push({
-                    value: data.products[image],
-                    label: data.products[image].aliases.split(",")[0],
-                    title: data.products[image].os + " " + data.products[image].release_title,
-                    description: data.products[image].variant + " variant",
-                    os: data.products[image].os.toLowerCase(),
-                    group: "Linux Containers"
-                })
+            imageServers.forEach(async (imageServer) => {
+                let res1 = await fetch(`/api/image_servers/${imageServer["_id"]}`, {
+                    method: "GET",
+                    cache: "no-cache",
+                });
+                let dat1 = await res1.json();    
+                Object.keys(dat1.index).forEach(async (imageType) => {
+                    let res1 = await fetch(`/api/image_servers/${imageServer["_id"]}?path=${dat1.index[imageType].path}`, {
+                        method: "GET",
+                        cache: "no-cache",
+                    });
+                    let data = await res1.json();
+                    Object.keys(data.products).forEach((image) => {
+                        if (!data.products[image].aliases) return;
+                        let supportedArch = "";
+                        if (nodeData.cpu.architecture == "x86_64") supportedArch = "amd64";
+                        if (nodeData.cpu.architecture == "aarch64") supportedArch = "arm64";
+                        if (data.products[image].arch !== supportedArch) return;
+                        formattedImages.push({
+                            value: data.products[image],
+                            label: data.products[image].aliases.split(",")[0],
+                            title: data.products[image].os + " " + data.products[image].release_title,
+                            description: data.products[image].variant ? data.products[image].variant + " variant" : "No variant",
+                            os: data.products[image].os.toLowerCase(),
+                            group: imageServer.name
+                        })
+                    })
+                    setImages(formattedImages); 
+                })            
+             
+          
             })
-            setImages(formattedImages);   
+ 
         }
 
         async function getStoragePools() {
@@ -383,7 +395,7 @@ const SelectNode = forwardRef<HTMLDivElement, NodeProps>(
     ({ value, name, vendor, description, ...others }: NodeProps, ref) => (
       <div ref={ref} {...others}>
         <Group noWrap>
-          {getVendorLogo("dell")}
+          {getVendorLogo(vendor)}
   
           <div>
             <Text size="sm">{name}</Text>
@@ -418,7 +430,7 @@ const StoragePool = forwardRef<HTMLDivElement, StoragePoolProps>(
     )
   );
 
-function Network({name, instanceConfig, setInstanceConfig, node}) {
+export function Network({name, instanceConfig, setInstanceConfig, node}) {
     const [networks, setNetworks] = useState([])
     useEffect(() => {
         if (node) {
