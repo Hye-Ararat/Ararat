@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import { SpotlightProvider } from '@mantine/spotlight';
 import { IconSearch } from '@tabler/icons-react';
 import { Notifications } from '@mantine/notifications';
-
+import "@/lib/xterm.css"
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
