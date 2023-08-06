@@ -6,6 +6,7 @@ import mongo from "@/lib/mongo";
 import { User } from "@/types/db";
 import { ActionIcon, Badge, Button, Checkbox, Flex, Group, Table, Text, Title } from "@mantine/core";
 import { IconServer2, IconTrash, IconUser, IconX } from "@tabler/icons-react";
+import { useRouter } from "next/router";
 import prettyBytes from "pretty-bytes";
 import { createContext, use, useContext, useState } from "react";
 
@@ -90,12 +91,12 @@ function UserTableRow({ user }: { user: User }) {
 
     function setSelect(checked: boolean) {
         if (checked == false) {
-            var i = selectedUsers.findIndex(s => s.id == user.email)
+            var i = selectedUsers.findIndex(s => s.id == user._id)
             var tmp = [...selectedUsers]
             tmp[i].checked = false
             setSelectedUsers(tmp)
         } else {
-            var i = selectedUsers.findIndex(s => s.id == user.email)
+            var i = selectedUsers.findIndex(s => s.id == user._id)
             var tmp = [...selectedUsers]
             tmp[i].checked = true
             setSelectedUsers(tmp)
@@ -106,16 +107,16 @@ function UserTableRow({ user }: { user: User }) {
         setAside("")
         setActiveUser("")
     }
-
+    const router = useRouter();
     return (
-        <DataTableRow active={activeUser == user.email} onClick={() => {
+        <DataTableRow active={activeUser == user._id} onClick={() => {
             setAsideOpen(true)
-            setActiveUser(user.email)
+            setActiveUser(user._id)
             setAside(<UserAside user={user} closeAside={closeAside} />)
         }}>
             <DataTableColumn>
                 <Group>
-                    <Checkbox checked={selectedUsers.find(s => s.id == user.email)?.checked} onChange={(event) => {
+                    <Checkbox checked={selectedUsers.find(s => s.id == user._id)?.checked} onChange={(event) => {
                         setSelect(event.currentTarget.checked)
                     }} />
                     <IconUser size={40} />
@@ -173,18 +174,26 @@ export default function Users({ users }: { users: User[] }) {
     var [activeUser, setActiveUser] = useState<string>("")
     var initialCheckedUsers = ([] as { id: string, checked: boolean }[])
     users.forEach(user => {
-        initialCheckedUsers.push({ id: user.email, checked: false })
+        initialCheckedUsers.push({ id: user._id, checked: false })
     })
     var [selectedUsers, setSelectedUsers] = useState<{ id: string, checked: boolean }[]>(initialCheckedUsers)
+    const router = useRouter();
     return (
         <>
             <Flex>
-                <Title order={1}>Users</Title>
+                <Title order={1} my="auto">Users</Title>
                 <div style={{ marginLeft: "auto" }}>
                     {selectedUsers.filter(s => s.checked == true).length > 0 ? <>
                         <Group>
                             <ActionIcon color="red" variant="light" size={"lg"}>
-                                <IconTrash size={"1.2rem"} />
+                                <IconTrash size={"1.2rem"} onClick={() => {
+                                    selectedUsers.forEach(async (selectedUser) => {
+                                        await fetch(`/api/users/${selectedUser.id}`, {
+                                            method: "DELETE"
+                                        })
+                                        router.push(router.asPath);
+                                    })
+                                }} />
                             </ActionIcon>
                             <Button variant="light" onClick={() => {
                                 setSelectedUsers(initialCheckedUsers)
