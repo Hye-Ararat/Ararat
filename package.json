@@ -65,6 +65,7 @@
     "xterm-for-react": "^1.0.4"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/cookie": "^0.5.1",
     "@types/istextorbinary": "^2.3.1",
     "@types/jsonwebtoken": "^9.0.2",
