@@ -35,7 +35,6 @@ const client = new MongoClient(process.env.DATABASE_URL);
     const bcrypt = require("bcrypt")
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
-    await client.connect()
     await client.db().collection("User").insertOne({
         email: username,
         password: hash,
