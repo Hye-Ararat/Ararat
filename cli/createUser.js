@@ -29,16 +29,18 @@ const client = new MongoClient(process.env.DATABASE_URL);
         message: 'Confirm your password'
     });
     if (password != password2) return process.exit(1);
+    await client.connect()
+    const user = await client.db().collection("User").findOne({ email: username })
+    if (user) return console.log("That email is already in use")
     const bcrypt = require("bcrypt")
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
-    await client.connect()
     await client.db().collection("User").insertOne({
         email: username,
         password: hash,
         firstName: firstname,
         lastName: lastname
     })
-    console.log("Done")
+    console.log(`User ${username} has been created`)
     process.exit(0)
 })();
