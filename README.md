@@ -8,4 +8,4 @@ Ararat is **built on top of the incredible Incus platform**, making it **compati
 
 Ararat also includes an incredibly powerful but simple REST API.
 
-If you want to check out out Hye Ararat yourself, check out the **[getting started guide](https://ararat.hye.gg/docs/category/getting-started)**.
+If you want to check out out Hye Ararat yourself, check out the **[getting started guide](https://hyeararat.com/docs/category/getting-started)**.
