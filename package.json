@@ -55,6 +55,7 @@
     "openid-client": "^5.4.2",
     "path-browserify": "^1.0.1",
     "pretty-bytes": "^6.1.0",
+    "prompts": "^2.4.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "request": "^2.88.2",
@@ -64,6 +65,7 @@
     "xterm-for-react": "^1.0.4"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/cookie": "^0.5.1",
     "@types/istextorbinary": "^2.3.1",
     "@types/jsonwebtoken": "^9.0.2",
