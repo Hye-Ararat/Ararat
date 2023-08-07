@@ -8,7 +8,7 @@ import { ActionIcon, Badge, Button, Checkbox, Flex, Group, Table, Text, Title } 
 import { IconServer2, IconTrash, IconUser, IconX } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import prettyBytes from "pretty-bytes";
-import { createContext, use, useContext, useState } from "react";
+import { createContext, use, useContext, useEffect, useState } from "react";
 
 const UsersContext = createContext({ setActiveUser: (user: string) => { }, activeUser: "", selectedUsers: ([] as { id: string, checked: boolean }[]), setSelectedUsers: (users: { id: string, checked: boolean }[]) => { } })
 
@@ -85,7 +85,7 @@ function UserAside({ user, closeAside }: { user: User, closeAside: () => void })
     )
 }
 
-function UserTableRow({ user }: { user: User }) {
+function UserTableRow({ user, setUserData, setEditingUser }: { user: User, setUserData: (data: {}) => void, setEditingUser: (editing: boolean) => void }) {
     const { setActiveUser, activeUser, selectedUsers, setSelectedUsers } = useContext(UsersContext)
     const { setAside, setAsideOpen, asideOpen } = useContext(MainContext)
 
@@ -163,7 +163,10 @@ function UserTableRow({ user }: { user: User }) {
             </DataTableColumn>
             <DataTableColumn>
                 <Group spacing={2} position="right">
-                    <Button sx={{ mr: 40 }}>Edit</Button>
+                    <Button sx={{ mr: 40 }} onClick={() => {
+                        setUserData(user)
+                        setEditingUser(true);
+                    }}>Edit</Button>
                 </Group>
             </DataTableColumn>
         </DataTableRow>
@@ -177,6 +180,8 @@ export default function Users({ users }: { users: User[] }) {
         initialCheckedUsers.push({ id: user._id, checked: false })
     })
     var [selectedUsers, setSelectedUsers] = useState<{ id: string, checked: boolean }[]>(initialCheckedUsers)
+    const [editingUser, setEditingUser] = useState(false);
+    const [userData, setUserData] = useState({});
     const router = useRouter();
     return (
         <>
@@ -201,7 +206,7 @@ export default function Users({ users }: { users: User[] }) {
                         </Group>
                     </> : ""}
                     {selectedUsers.filter(s => s.checked == true).length == 0 ? <>
-                        <CreateUser />
+                        <CreateUser setEditingUser={setEditingUser} editingUser={editingUser} userData={userData}  />
                     </> : ""}
                 </div>
             </Flex>
@@ -209,7 +214,7 @@ export default function Users({ users }: { users: User[] }) {
                 <UsersContext.Provider value={{ activeUser, setActiveUser, selectedUsers, setSelectedUsers }}>
                     {users.map(user => {
                         return (
-                            <UserTableRow user={user} />
+                            <UserTableRow user={user} setUserData={setUserData} setEditingUser={setEditingUser} />
                         )
                     })}
                 </UsersContext.Provider>
