@@ -78,7 +78,7 @@ export default function InstanceSettings({ instance, images }: { instance: NodeL
             <SimpleGrid mt="md" cols={2}>
             <Paper p={10} mt="md">
             <Title order={4}>General Information</Title>
-            <TextInput onChange={(e) => setInstanceState({...instanceState, name: e.target.value})} mt="xs" label="Name" value={instanceState.name} />
+            <TextInput disabled={true} description="Changing instance name is not currently supported" onChange={(e) => setInstanceState({...instanceState, name: e.target.value})} mt="xs" label="Name" value={instanceState.name} />
             <Textarea onChange={(e) => setInstanceState({...instanceState, description: e.currentTarget.value})} mt="xs" label="Description" value={instanceState.description} />
             </Paper>
             <Paper p={10} mt="md">
@@ -126,27 +126,11 @@ export default function InstanceSettings({ instance, images }: { instance: NodeL
                 router.push("/instances");
             }}>Delete Instance</Button>
             <Button onClick={async () => {
-                let newConfig = {
-                    name: instanceState.name,
-                    config: instanceState.config,
-                    description: instanceState.description,
-                }
-                delete newConfig.config["image.architecture"]
-                delete newConfig.config["image.description"]
-                delete newConfig.config["image.os"];
-                delete newConfig.config["image.release"];
-                delete newConfig.config["image.serial"]
-                delete newConfig.config["image.type"];
-                delete newConfig.config["image.variant"];
-                delete newConfig.name;
-                Object.keys(newConfig.config).forEach((key) => {
-                    if (key.includes("volatile")) {
-                        delete newConfig.config[key]
-                    }
-                })
+                
+          
                 const client = connectOIDC(instance.node.url, getCookie("access_token"));
-                await client.patch(`/instances/${instance.name}`, newConfig);
-                router.reload();
+                await client.put(`/instances/${instance.name}`, instanceState);
+                router.push(router.asPath)
             }} ml="sm" color="blue">Save Changes</Button>
             </Flex>
         </>

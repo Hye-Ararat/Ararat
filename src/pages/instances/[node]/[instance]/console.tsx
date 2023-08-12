@@ -3,7 +3,7 @@ import { fetchInstance } from "@/lib/lxd";
 import { redirect } from "@/lib/next";
 import { validateSession } from "@/lib/oidc";
 import { NodeLxdInstance } from "@/types/instance";
-import {  Center, Flex, SegmentedControl, Title } from "@mantine/core";
+import { Center, Flex, SegmentedControl, Title } from "@mantine/core";
 import { IconAppWindow, IconTerminal } from "@tabler/icons-react";
 import { GetServerSidePropsContext } from "next";
 import dynamic from "next/dynamic";
@@ -40,6 +40,7 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
 
 export default function InstanceConsole({ instance }: { instance: NodeLxdInstance }) {
     var [consoleType, setConsoleType] = useState<string>("serial")
+    
     return (
         <>
             <InstanceShell instance={instance} />
@@ -50,11 +51,11 @@ export default function InstanceConsole({ instance }: { instance: NodeLxdInstanc
                     { "label": (<Center><IconTerminal /></Center>), value: "serial" }
                 ]} ml={"auto"} />
             </Flex>
-            <div style={{display: (consoleType == "serial" ? null : "none" as any)}}>
+            <div style={{ display: (consoleType == "serial" ? null : "none" as any) }}>
                 <InstanceTextConsole instance={instance} />
             </div>
-            {consoleType == "spice" ? <InstanceVGAConsole instance={instance} />:""}
-                
+            {consoleType == "spice" ? <InstanceVGAConsole instance={instance} /> : ""}
+
 
 
         </>

@@ -28,6 +28,7 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
         const client = connectOIDC(instance?.node.url, (req.cookies as any).access_token)
         const instanceState = await client.get(`/instances/${instance.name}/state`)
         let networks = instanceState.data.metadata.network
+        const allNetworks = (await client.get(`/networks?recursion=1`)).data.metadata;
         console.log(networks)
         if (!networks) networks = {};
         Object.keys((instance.devices)).forEach((device) => {
@@ -52,7 +53,8 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
         return {
             props: {
                 instance: instance,
-                networks
+                networks,
+                allNetworks
             }
         }
     } catch (error) {
@@ -61,7 +63,7 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
     }
 }
 
-export default function InstanceNetworks({ instance, networks }: { instance: NodeLxdInstance, networks: any[] }) {
+export default function InstanceNetworks({ instance, networks, allNetworks }: { instance: NodeLxdInstance, networks: any[], allNetworks: any[] }) {
     var access_token = (getCookie("access_token") as string)
     const client = connectOIDC(instance.node.url, access_token)
     const [floatingIps, setFloatingIps] = useState(null);
@@ -127,6 +129,20 @@ export default function InstanceNetworks({ instance, networks }: { instance: Nod
         stateful: instance.stateful,
         description: instance.description
     })
+    const [newDeviceConfig, setNewDeviceConfig] = useState({
+        type: "nic"
+    })
+    const [newDeviceName, setNewDeviceName] = useState(null);
+    const [formattedNetworks, setFormattedNetworks] = useState()
+    useEffect(() => {
+        let formatted = [];
+        allNetworks.forEach((network) => {
+            if (network.managed) {
+            formatted.push({label: network.name, value: network.name})
+            }
+        })
+        setFormattedNetworks(formatted);
+    }, [])
     return (
         <>
             <InstanceShell instance={instance} />
@@ -135,30 +151,46 @@ export default function InstanceNetworks({ instance, networks }: { instance: Nod
                 opacity: 0.55,
                 blur: 3,
             }} onClose={() => setAttachNetwork(false)} opened={attachNetwork} title={`Attach network`}>
-                <Accordion variant="contained">
-                    {Object.keys(currentConfig.devices).map((device) => {
-                        return (
-                            currentConfig.devices[device].type == "nic" ?
-                                <Network node={instance.node} name={device} instanceConfig={currentConfig} setInstanceConfig={setCurrentConfig} />
-                                : ""
-                        )
-                    })}
-                </Accordion>
-                <Flex mt="xs">
-                    <Button variant="light" onClick={async () => {
-                        await client.put(`/instances/${instance.name}`, currentConfig)
-                        console.log(currentConfig)
-                    }}>
-                        Finished
-                    </Button>
-                    <Button onClick={() => {
-                        let newConfig = { ...currentConfig }
-                        newConfig.devices["newNic"] = {
-                            type: "nic"
-                        }
-                        setCurrentConfig(newConfig);
-                    }} ml="auto" color="green" variant="light">Add Network</Button>
+                <>
+                <TextInput value={newDeviceName} onChange={(e) => setNewDeviceName(e.target.value)} label="Interface Name" placeholder="eth0" />
+                <Select onChange={(e) => {
+                    let newConf = {...newDeviceConfig};
+                    newConf.network = e;
+                    setNewDeviceConfig(newConf);
+                }} value={newDeviceConfig.network} label="Network" placeholder="Network" data={formattedNetworks} />
+                <TextInput onChange={(e) => {
+                    let newConf = {...newDeviceConfig};
+                    newConf["address.ipv4"] = e.target.value;
+                    setNewDeviceConfig(newConf)
+                }} value={newDeviceConfig["address.ipv4"]} label="IPv4 Address" placeholder="Leave blank for DHCP" />
+                <TextInput onChange={(e) => {
+                        let newConf = {...newDeviceConfig};
+                        newConf["address.ipv6"] = e.target.value;
+                        setNewDeviceConfig(newConf)
+                }} value={newDeviceConfig["address.ipv6"]} label="IPv6 Address" placeholder="Leave blank for DHCP" />
+                <TextInput onChange={(e) => {
+                        let newConf = {...newDeviceConfig};
+                        newConf["limits.egress"] = e.target.value;
+                        setNewDeviceConfig(newConf)
+                }} value={newDeviceConfig["limits.egress"]} label="Egress Limit" placeholder="Leave blank for unmetered, measured in bit/s" />
+                <TextInput onChange={(e) => {
+                        let newConf = {...newDeviceConfig};
+                        newConf["limits.ingress"] = e.target.value;
+                        setNewDeviceConfig(newConf)
+                }} value={newDeviceConfig["limits.ingress"]} label="Ingress Limit" placeholder="Leave blank for unmetered, measured in bit/s" />
+                <Flex>
+                    <Button onClick={async (e) => {
+                        const client = connectOIDC(instance.node.url, access_token);
+                        let newDevs = {...instance.devices}
+                        newDevs[newDeviceName] = newDeviceConfig;
+                        let conf = {...instance};
+                        conf.devices = newDevs
+                        await client.put(`/instances/${instance.name}`, conf)
+                        setAttachNetwork(false);
+                        router.push(router.asPath)
+                    }} variant="light" color="green" ml="auto" mt="sm">Attach Network</Button>
                 </Flex>
+                </>
             </Modal>
             <Modal centered overlayProps={{
                 color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
