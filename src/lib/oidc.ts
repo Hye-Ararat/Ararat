@@ -59,27 +59,16 @@ interface ClientInt {
 
 
 export async function validateSession(access_token: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-        var jws = jwsClient({
-            jwksUri: `http://${url}/oidc/jwks`
-        })
-
-        jwt.verify(access_token, function getKey(header, callback) {
-            jws.getSigningKey(header.kid, function (err, key) {
-                if (!key) {
-                    resolve(false)
-                } else {
-                    var signingKey = key.getPublicKey()
-                    callback(null, signingKey);
-                }
-            });
-        }, { algorithms: ["RS256"] }, (err, decoded) => {
-            if (err) {
-                resolve(false)
-            } else {
-                resolve(true)
-            }
-        })
+    return new Promise(async (resolve, reject) => {
+        try {
+            await axios.post(`http://127.0.0.1:3002/isValid`, {
+                access_token: access_token
+            })
+        } catch (error) {
+            return resolve(false)
+        }
+        return resolve(true)
+     
     })
 }
 
