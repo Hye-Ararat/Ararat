@@ -4,16 +4,13 @@ import { AppShell, Burger, Flex, Paper, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconFileImport,
-  IconServer,
   IconServer2,
-  IconTerminal,
   IconTerminal2,
   IconUsers,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
 
 export default function AraratShell({ children }) {
   const [opened, { toggle }] = useDisclosure();
