@@ -32,6 +32,7 @@ export default function AddNode() {
         }}
         size="xl"
         title="Add Node"
+        playSound={false}
       >
         <Text>To be added</Text>
       </Modal>
