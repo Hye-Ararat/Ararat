@@ -1,6 +1,6 @@
 "use client";
 
-import { Modal as MantineModal } from "@mantine/core";
+import { Modal as MantineModal, Text, Title } from "@mantine/core";
 import { useEffect } from "react";
 
 export default function Modal({ opened, title, onClose, size, children }) {
@@ -14,7 +14,7 @@ export default function Modal({ opened, title, onClose, size, children }) {
   return (
     <MantineModal
       opened={opened}
-      title={title}
+      title={<Title order={3}>{title}</Title>}
       onClose={onClose}
       centered
       size={size}
