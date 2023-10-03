@@ -1,4 +1,5 @@
-import { Button, Flex, Title } from "@mantine/core";
+import { Flex, Title } from "@mantine/core";
+import AddNode from "./addNode";
 
 export default async function Nodes() {
   return (
@@ -6,9 +7,7 @@ export default async function Nodes() {
       <Title order={1} my="auto">
         Nodes
       </Title>
-      <Button ml="auto" my="auto">
-        Add Node
-      </Button>
+      <AddNode />
     </Flex>
   );
 }
