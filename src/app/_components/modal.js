@@ -1,7 +1,8 @@
 "use client";
 
-import { Modal as MantineModal, Text, Title } from "@mantine/core";
+import { Modal as MantineModal, Text, Title, em } from "@mantine/core";
 import { useEffect } from "react";
+import {useMediaQuery} from "@mantine/hooks"
 
 export default function Modal({
   opened,
@@ -11,6 +12,7 @@ export default function Modal({
   children,
   playSound,
 }) {
+  const isMobile = useMediaQuery(`(max-width: ${em(875)})`);
   if (playSound == undefined) playSound = true;
   useEffect(() => {
     if (opened && playSound) {
@@ -25,6 +27,7 @@ export default function Modal({
         transition: "slide-up",
         duration: 400,
       }}
+      fullScreen={isMobile}
       opened={opened}
       title={<Title order={3}>{title}</Title>}
       onClose={onClose}

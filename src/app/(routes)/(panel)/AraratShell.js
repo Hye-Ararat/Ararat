@@ -95,7 +95,7 @@ function NavigationItem({ name, icon, route }) {
   const pathname = usePathname();
   let selected = pathname === route;
   return (
-    <Link href={route} style={{ color: "inherit", textDecoration: "none" }}>
+    <Link href={route} style={{ color: "inherit", textDecoration: "none", marginBottom: 5 }}>
       <Paper
         bg={selected ? "var(--mantine-color-blue-light)" : ""}
         style={{ cursor: "pointer" }}

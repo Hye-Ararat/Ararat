@@ -10,7 +10,7 @@ import {
 } from "@tabler/icons-react";
 
 export default function InstanceShell() {
-  const iconStyle = { width: rem(12), height: rem(12) };
+  const iconStyle = { width: rem(17), height: rem(17) };
   return (
     <>
       <Title order={1}>Instance Name</Title>
