@@ -11,8 +11,10 @@
   "dependencies": {
     "@mantine/core": "^7.1.2",
     "@mantine/hooks": "^7.1.2",
+    "@prisma/client": "5.4.1",
     "@tabler/icons-react": "^2.38.0",
     "axios": "^1.5.1",
+    "debug": "^4.3.4",
     "next": "latest",
     "next-auth": "^4.23.2",
     "postcss": "^8.4.31",
@@ -20,6 +22,13 @@
     "postcss-simple-vars": "^7.0.1",
     "react": "latest",
     "react-dom": "latest",
-    "react-icons": "^4.11.0"
+    "react-icons": "^4.11.0",
+    "supports-color": "^8.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.3",
+    "prisma": "^5.4.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
   }
 }
