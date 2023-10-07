@@ -12,11 +12,14 @@
     "@mantine/core": "^7.1.2",
     "@mantine/hooks": "^7.1.2",
     "@tabler/icons-react": "^2.38.0",
+    "axios": "^1.5.1",
     "next": "latest",
+    "next-auth": "^4.23.2",
     "postcss": "^8.4.31",
     "postcss-preset-mantine": "^1.8.0",
     "postcss-simple-vars": "^7.0.1",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "react-icons": "^4.11.0"
   }
 }
