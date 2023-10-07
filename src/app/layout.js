@@ -1,6 +1,7 @@
 import '@mantine/core/styles.css';
 
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
+import Provider from './_components/SessionProvider';
 
 export const metadata = {
   title: 'Hye Ararat',
@@ -15,7 +16,11 @@ export default function RootLayout({ children }) {
         <ColorSchemeScript defaultColorScheme='dark' />
       </head>
       <body>
-        <MantineProvider defaultColorScheme="dark">{children}</MantineProvider>
+        <Provider>
+          <MantineProvider defaultColorScheme="dark">
+            {children}
+          </MantineProvider>
+        </Provider>
       </body>
     </html>
   );
