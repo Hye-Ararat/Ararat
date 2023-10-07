@@ -51,7 +51,6 @@ function getLoginError(err) {
     }
 }
 export default function LoginForm({ providers }) {
-    console.log(providers)
     const query = useSearchParams()
     return (
         <Center style={{ width: "100%", height: "100%" }}>
@@ -71,7 +70,7 @@ export default function LoginForm({ providers }) {
                     const branding = getProviderBranding(provider.id)
                     const [loading, setLoading] = useState(false);
                     return (
-                        <Button loading={loading} mb="xs" onClick={() => {
+                        <Button loading={loading} mb="xs" key={provider.id} onClick={() => {
                             setLoading(true)
                             signIn(provider.id)
                         }} leftSection={branding.icon} bg={branding.color} w={"100%"}>

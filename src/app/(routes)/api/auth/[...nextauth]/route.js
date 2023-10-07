@@ -1,3 +1,4 @@
+import { usePrisma } from "@/app/_lib/prisma"
 import axios from "axios"
 import NextAuth from "next-auth"
 import GithubProvider from "next-auth/providers/github"
@@ -7,12 +8,48 @@ import GithubProvider from "next-auth/providers/github"
 export const authOptions = {
     secret: process.env.APP_SECRET,
     pages: {
-        "signIn": "/auth/login"
+        "signIn": "/auth/login",
+        error: "/auth/error"
+    },
+    callbacks: {
+        async signIn({ user, account, profile }) {
+            const prisma = usePrisma()
+           
+            let dbUser = await prisma.user.findUnique({
+                where: {
+                    email: profile.email ?? user.email
+                }
+            })
+            if (!dbUser) {
+                dbUser = await prisma.user.findUnique({
+                    where: {
+                        id: account.providerAccountId.toString(),
+                        authProvider: account.provider
+                    }
+                })
+            }
+            if (!dbUser) {
+                dbUser = await prisma.user.create({
+                    data: {
+                        id: account.providerAccountId.toString(),
+                        email: user.email ?? user.email,
+                        name: user.name,
+                        authProvider: account.provider
+                    }
+                })
+            }
+            return true
+        }
     },
     providers: [
         GithubProvider({
             clientId: process.env.GITHUB_ID,
-            clientSecret: process.env.GITHUB_SECRET
+            clientSecret: process.env.GITHUB_SECRET,
+            authorization: {
+                params: {
+                    scope: "read:user,user:email"
+                }
+            }
         }),
         {
             id: "whmcs",
@@ -25,13 +62,6 @@ export const authOptions = {
             },
             token: {
                 async request(ctx) {
-                    console.log({
-                        code: ctx.params.code,
-                        client_id: process.env.WHMCS_ID,
-                        client_secret: process.env.WHMCS_SECRET,
-                        redirect_uri: "http://localhost:3000/api/auth/callback/whmcs",
-                        grant_type: "authorization_code"
-                    })
                     const s = await axios.postForm("https://billing.xentain.com/oauth/token.php", {
                         code: ctx.params.code,
                         client_id: process.env.WHMCS_ID,
@@ -39,11 +69,7 @@ export const authOptions = {
                         redirect_uri: "http://localhost:3000/api/auth/callback/whmcs",
                         grant_type: "authorization_code"
                     })
-                    console.log({
-                        data: s.data,
-                        head: s.headers
-                    })
-                    return { "tokens": s.data}
+                    return { "tokens": s.data }
                 }
             },
             idToken: true,
@@ -51,9 +77,8 @@ export const authOptions = {
             clientSecret: process.env.WHMCS_SECRET,
             wellKnown: "https://billing.xentain.com/oauth/openid-configuration.php",
             async profile(profile, tokens) {
-                
                 const s = await axios.get("https://billing.xentain.com/oauth/userinfo.php?access_token=" + tokens.access_token)
-                return {...s.data, id: s.data.sub};
+                return { ...s.data, id: s.data.sub };
             }
         }
     ]
