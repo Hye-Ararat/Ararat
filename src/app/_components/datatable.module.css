@@ -1,5 +1,5 @@
 .row {
-    background-color: var(--mantine-color-dark-8);
+    background-color: var(--mantine-color-dark-7);
     width: 100%;
     border-radius: 10px;
     padding: 20px;
@@ -7,8 +7,8 @@
     
 }
 .row:hover {
-    background-color: var(--mantine-color-dark-9);
-    transition: 0.4s;
+    background-color: var(--mantine-color-dark-6);
+    transition: 0.1s;
 }
 .icon {
     border-radius: 50%;

@@ -3,6 +3,11 @@ import { Avatar, Center, Grid, Group, Paper, Text, Stack, Button } from "@mantin
 import classes from "./datatable.module.css"
 import { IconHeadset } from "@tabler/icons-react";
 import React from "react";
+
+const genRand = (len) => {
+    return Math.random().toString(36).substring(2,len+2);
+  }
+
 /**
  * @param {React.PropsWithChildren<{}>} props 
  */
@@ -25,7 +30,7 @@ export function DataTable(props) {
  */
 export function DataTableRow(props) {
     return (
-        <Paper className={classes.row}>
+        <Paper className={classes.row} key={genRand(10)}>
             <Group>
                 <Avatar>
                         {props.icon}
