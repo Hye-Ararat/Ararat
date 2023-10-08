@@ -36,7 +36,6 @@ export async function GET(req, params) {
       name: role.role,
       resource: role.resource,
       nodeId: role.nodeId,
-      type: role.type,
     });
   });
   return NextResponse.json({
