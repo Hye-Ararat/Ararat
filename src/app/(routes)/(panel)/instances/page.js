@@ -78,11 +78,11 @@ export default async function Instances() {
             />
           </DataTable>
         ) : (
-          <Flex direction="column" mx="auto">
+          <Flex direction="column" mx="auto" mt="lg">
             <Avatar size="80px" mx="auto">
               <IconQuestionMark size={50} mx="auto" my="auto" />
             </Avatar>
-            <Title mx="auto" order={2}>
+            <Title mt="xs" mx="auto" order={2}>
               No Instances Found
             </Title>
             <Text mx="auto" fw={600}>
