@@ -8,9 +8,11 @@ import Link from "next/link";
 export default function AddNode() {
   const [addingNode, setAddingNode] = useState(false);
   const [audio, setAudio] = useState();
+  const [step1Audio, setStep1Audio] = useState();
   const [step, setStep] = useState(0);
   useEffect(() => {
     setAudio(new Audio("/audio/createNode.m4a"));
+    setStep1Audio(new Audio("/audio/step1Node.m4a"));
   }, []);
   return (
     <>
@@ -19,6 +21,9 @@ export default function AddNode() {
           audio.play();
           audio.loop = true;
           setAddingNode(true);
+          setTimeout(() => {
+            step1Audio.play();
+          }, 500);
         }}
         ml="auto"
         my="auto"
@@ -31,6 +36,7 @@ export default function AddNode() {
           setAddingNode(false);
           audio.pause();
           audio.currentTime = 0;
+          step1Audio.pause();
         }}
         size="xl"
         title="Add Node"
@@ -94,7 +100,9 @@ export default function AddNode() {
               continue.
             </Text>
           </Stepper.Step>
-          <Stepper.Step label="Install Hye Lava"></Stepper.Step>
+          <Stepper.Step label="Install Hye Lava">
+            <Text>Now we are ready to Install Hye Lava.</Text>
+          </Stepper.Step>
           <Stepper.Step label="Final step" description="Get full access">
             Step 3 content: Get full access
           </Stepper.Step>
@@ -113,6 +121,8 @@ export default function AddNode() {
                 setAddingNode(false);
                 audio.pause();
                 audio.currentTime = 0;
+                step1Audio.pause();
+                step1Audio.currentTime = 0;
                 return;
               }
               setStep(step - 1);
