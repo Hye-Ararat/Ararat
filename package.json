@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mantine/code-highlight": "^7.1.2",
     "@mantine/core": "^7.1.2",
     "@mantine/hooks": "^7.1.2",
     "@prisma/client": "5.4.1",
