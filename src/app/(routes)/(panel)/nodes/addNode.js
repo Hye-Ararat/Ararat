@@ -1,15 +1,17 @@
 "use client";
 
 import Modal from "@/app/_components/modal";
-import { Button, Text, Stepper, Divider, Flex, List } from "@mantine/core";
+import { Button, Text, Stepper, Divider, Flex, List, Group, Input, TextInput } from "@mantine/core";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { CodeHighlight } from "@mantine/code-highlight";
 
 export default function AddNode() {
   const [addingNode, setAddingNode] = useState(false);
   const [audio, setAudio] = useState();
   const [step1Audio, setStep1Audio] = useState();
   const [step, setStep] = useState(0);
+
   useEffect(() => {
     setAudio(new Audio("/audio/createNode.m4a"));
     setStep1Audio(new Audio("/audio/step1Node.m4a"));
@@ -101,7 +103,30 @@ export default function AddNode() {
             </Text>
           </Stepper.Step>
           <Stepper.Step label="Install Hye Lava">
-            <Text>Now we are ready to Install Hye Lava.</Text>
+            <Text fw={"bold"} my="xs">Now we are ready to Install Hye Lava.</Text>
+            <Text>Start out by cloning our repository. This will download Hye Lava</Text>
+            <CodeHighlight code={"git clone \"https://github.com/Hye-Dev/Lava.git\""} withCopyButton={false} my={5} lang="sh" />
+            <Text>Now navigate to the folder and install the modules</Text>
+            <CodeHighlight code={"cd Lava\nnpm install"} withCopyButton={false} my={5} lang="sh" />
+            <Text>Now create a .env file in this directory, in here you will put the config following our example</Text>
+            <CodeHighlight code={"ARARAT_URL=\"https://ararat.example.com\""} withCopyButton={false} my={5} lang="env" />
+            <Text>You can now try out running Hye Lava by running</Text>
+            <CodeHighlight code={"npm start"} withCopyButton={false} my={5} lang="sh" />
+            <Group gap={3}><Text fw={"bold"} my="xs">Optional:</Text><Text> Create a systemd file to run Lava in the background. Make sure to replace the placeholders with the appropriate values for your environment</Text></Group>
+
+            <CodeHighlight code={`[Unit]
+Description=Hye Lava
+Documentation=https://github.com/Hye-Dev/Lava/tree/yergu
+After=network-online.target
+
+[Service]
+User={lavaUser}
+Restart=on-failure
+WorkingDirectory={lavaDir}
+ExecStart=/usr/bin/npm start
+
+[Install]
+WantedBy=multi-user.target`} withCopyButton={false} my={5} lang="ini" />
           </Stepper.Step>
           <Stepper.Step label="Final step" description="Get full access">
             Step 3 content: Get full access

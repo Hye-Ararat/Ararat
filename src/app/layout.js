@@ -1,5 +1,5 @@
 import '@mantine/core/styles.css';
-
+import '@mantine/code-highlight/styles.css';
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
 import Provider from './_components/SessionProvider';
 
