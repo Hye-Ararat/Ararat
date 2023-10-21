@@ -1,24 +1,5 @@
-.row {
-    background-color: var(--mantine-color-dark-7);
-    width: 100%;
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 10px;
-    
-}
+
 .row:hover {
     background-color: var(--mantine-color-dark-6);
     transition: 0.1s;
-}
-.icon {
-    border-radius: 50%;
-    background-color: var(--mantine-color-dark-6);
-    height: 40px;
-    width: 40px;
-    padding: 5px;
-    margin-top: "auto";
-    margin-bottom: "auto";
-}
-.col {
-    display: flex;
 }
