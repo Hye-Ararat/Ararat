@@ -11,16 +11,16 @@ datasource db {
 }
 
 model User {
-  id           String        @id
-  email        String        @unique
+  id           String       @id
+  email        String       @unique
   name         String?
-  globalRoles  GlobalRoles[]
-  nodeRoles    NodeRoles[]
-  objectRoles  ObjectRoles[]
+  globalRoles  GlobalRole[]
+  nodeRoles    NodeRole[]
+  objectRoles  ObjectRole[]
   authProvider String
 }
 
-model GlobalRoles {
+model GlobalRole {
   id     Int    @id @default(autoincrement())
   user   User   @relation(fields: [userId], references: [id])
   userId String
@@ -28,16 +28,41 @@ model GlobalRoles {
 }
 
 model Node {
-  id          Int           @id @default(autoincrement())
-  name        String
-  description String
-  lavaUrl     String
-  nodeRoles   NodeRoles[]
-  instances   Instance[]
-  objectRoles ObjectRoles[]
+  id              Int           @id @default(autoincrement())
+  name            String
+  description     String?
+  lavaUrl         String?
+  ipmiIp          String?
+  ipmiUsername    String?
+  ipmiPassword    String?
+  ipmiVersion     String?
+  snmpCommunity   String?
+  snmpPort        Int?
+  brand           String?
+  software        String?
+  nodeRoles       NodeRole[]
+  instances       Instance[]
+  objectRoles     ObjectRole[]
+  locationGroup   LocationGroup @relation(fields: [locationGroupId], references: [id])
+  locationGroupId Int
 }
 
-model NodeRoles {
+model Location {
+  id             Int             @id @default(autoincrement())
+  name           String
+  countryCode    String
+  locationGroups LocationGroup[]
+}
+
+model LocationGroup {
+  id         Int      @id @default(autoincrement())
+  name       String
+  location   Location @relation(fields: [locationId], references: [id])
+  locationId Int
+  Node       Node[]
+}
+
+model NodeRole {
   id     Int    @id @default(autoincrement())
   user   User   @relation(fields: [userId], references: [id])
   node   Node   @relation(fields: [nodeId], references: [id])
@@ -53,7 +78,7 @@ model Instance {
   nodeId Int
 }
 
-model ObjectRoles {
+model ObjectRole {
   id       Int    @id @default(autoincrement())
   user     User   @relation(fields: [userId], references: [id])
   resource String
