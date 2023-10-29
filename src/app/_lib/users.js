@@ -1,10 +1,9 @@
 "use server";
 
 import { getPermissions } from "./permissions";
-import { usePrisma } from "./prisma";
+import  prisma from "./prisma";
 import { validateSession } from "./session";
 
-const prisma = usePrisma();
 
 export async function createUser(name, email, organizationId) {
   let session = await validateSession();

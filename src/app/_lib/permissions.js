@@ -1,11 +1,10 @@
 "use server";
 
-import { usePrisma } from "./prisma";
+import prisma from "./prisma";
 import { validateSession } from "./session";
 
 export async function getPermissions(scope, resourceId) {
   let session = await validateSession();
-  const prisma = usePrisma();
   const user = await prisma.user.findUnique({
     where: {
       id: session.user.id,
