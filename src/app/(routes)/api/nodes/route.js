@@ -1,5 +1,5 @@
 import { usePrisma } from "@/app/_lib/prisma";
-import { getRoles } from "@/app/_lib/roles";
+import { getRoles } from "@/app/_lib/permissions";
 import { validateSession } from "@/app/_lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
