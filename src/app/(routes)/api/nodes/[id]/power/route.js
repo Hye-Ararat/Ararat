@@ -1,5 +1,5 @@
 import Server from "@/app/_lib/hardwareManagement";
-import { usePrisma } from "@/app/_lib/prisma";
+import prisma from "@/app/_lib/prisma";
 import { getRoles } from "@/app/_lib/permissions";
 import { validateSession } from "@/app/_lib/session";
 import { NextResponse } from "next/server";
@@ -11,7 +11,6 @@ export async function POST(req, { params }) {
     return NextResponse.error(
       "You do not have permission to adjust the power state of this node."
     );
-  let prisma = usePrisma();
   let node = await prisma.node.findUnique({
     where: {
       id: parseInt(params.id),

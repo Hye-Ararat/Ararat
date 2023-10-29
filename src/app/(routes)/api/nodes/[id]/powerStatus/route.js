@@ -1,5 +1,5 @@
 import Server from "@/app/_lib/hardwareManagement/index.js";
-import { usePrisma } from "@/app/_lib/prisma";
+import  prisma  from "@/app/_lib/prisma";
 import { getRoles } from "@/app/_lib/permissions";
 import { validateSession } from "@/app/_lib/session";
 import { NextResponse } from "next/server";
@@ -19,7 +19,6 @@ export async function GET(req, { params }) {
     )
   )
     return NextResponse.error("You do not have permission to view this node");
-  let prisma = usePrisma();
   let node = await prisma.node.findUnique({
     where: {
       id: parseInt(params.id),

@@ -1,7 +1,9 @@
-import { usePrisma } from "@/app/_lib/prisma";
+import prisma from "@/app/_lib/prisma";
 import axios from "axios";
 import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
+import bcrypt from "bcrypt"
 /**
  * @type {import("next-auth").AuthOptions}
  */
@@ -13,11 +15,10 @@ export const authOptions = {
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      const prisma = usePrisma();
-
+      console.log({ user, profile, account })
       let dbUser = await prisma.user.findUnique({
         where: {
-          email: profile.email ?? user.email,
+          email: profile?.email ? profile.email : user.email,
         },
       });
       if (!dbUser) {
@@ -37,7 +38,7 @@ export const authOptions = {
         dbUser = await prisma.user.create({
           data: {
             id: account.providerAccountId.toString(),
-            email: user.email ?? user.email,
+            email: profile?.email ? profile.email : user.email,
             name: user.name,
             authProvider: account.provider,
             organization: {
@@ -67,7 +68,7 @@ export const authOptions = {
     }),
     {
       id: "whmcs",
-      name: "Xentain",
+      name: "WHMCS",
       type: "oauth",
       authorization: {
         params: {
@@ -96,11 +97,42 @@ export const authOptions = {
       async profile(profile, tokens) {
         const s = await axios.get(
           "https://billing.xentain.com/oauth/userinfo.php?access_token=" +
-            tokens.access_token
+          tokens.access_token
         );
         return { ...s.data, id: s.data.sub };
       },
     },
+    Credentials({
+      // The name to display on the sign in form (e.g. "Sign in with...")
+      name: "User/Pass",
+      // `credentials` is used to generate a form on the sign in page.
+      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
+      // e.g. domain, username, password, 2FA token, etc.
+      // You can pass any HTML attribute to the <input> tag through the object.
+      credentials: {
+        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials, req) {
+        console.log(credentials)
+        if (!credentials.email || !credentials.password) return null;
+        console.log(credentials)
+        var prismuser = await prisma.user.findFirst({
+          where: {
+            email: credentials.email,
+            authProvider: "basic"
+          }
+        })
+        console.log(prismuser)
+        if (!prismuser) return null;
+        var authorized = await bcrypt.compare(credentials.password, prismuser.password)
+        console.log(authorized)
+        if (!authorized) {
+          return null;
+        }
+        return prismuser;
+      }
+    })
   ],
 };
 

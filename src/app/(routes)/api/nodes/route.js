@@ -1,4 +1,4 @@
-import { usePrisma } from "@/app/_lib/prisma";
+import prisma from "@/app/_lib/prisma";
 import { getRoles } from "@/app/_lib/permissions";
 import { validateSession } from "@/app/_lib/session";
 import { NextRequest, NextResponse } from "next/server";
@@ -15,7 +15,6 @@ export async function POST(req) {
     return NextResponse.error("You do not have permission to add nodes");
   }
   let body = await req.json();
-  const prisma = usePrisma();
   let node = await prisma.node.create({
     data: {
       name: body.name,
