@@ -30,6 +30,7 @@ import {
   IconUsers,
   IconBuilding,
 } from "@tabler/icons-react";
+import { url } from "gravatar";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -214,14 +215,15 @@ function UserNavigationItem({ session }) {
           onClick={() => {
             setOpen(!open);
           }}
-          on
           p="xs"
         >
           <Flex>
             <Avatar
               size={"40px"}
               style={{ marginTop: "auto", marginBottom: "auto" }}
-              src={session.data ? session.data.user.image : undefined}
+              src={session.data ? (session.data.user.image ? session.data.user.image : url(session.data.user.email, {
+                default: "https://www.hyeararat.com/img/araratLogo.png"
+              })) : undefined}
             />
             {session.data ? (
               <Flex direction={"column"}>
