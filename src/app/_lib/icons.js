@@ -1,4 +1,4 @@
-import { SiDell, SiHp, SiUbuntu } from "@icons-pack/react-simple-icons";
+import { SiDell, SiHp } from "@icons-pack/react-simple-icons";
 
 export function getBrandIcon(brand, size, style) {
   switch (brand) {
