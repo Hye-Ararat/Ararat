@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Center, Paper, Text, Flex, Divider } from "@mantine/core";
+import { Button, Center, Paper, Text, Flex, Divider, TextInput } from "@mantine/core";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
@@ -11,6 +11,7 @@ import {
 import { FaWhmcs } from "react-icons/fa";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 function getProviderBranding(id) {
   switch (id) {
     case "github":
@@ -54,8 +55,13 @@ function getLoginError(err) {
       return err;
   }
 }
+
 export default function LoginForm({ providers }) {
+  const router = useRouter();
   const query = useSearchParams();
+  const [username, setUsername] = useState(null)
+  const [password, setPassword] = useState(null)
+  const [error, setError] = useState(null)
   return (
     <Center style={{ width: "100%", height: "100%" }}>
       <Paper radius={10} p={15} bg={"var(--mantine-color-dark-8)"} my={"auto"}>
@@ -76,30 +82,60 @@ export default function LoginForm({ providers }) {
             : ""}
         </Text>
         <Divider
-          mb="xl"
+          mb="sm"
           label="Please login to continue"
           labelPosition="center"
           my="lg"
         />
+        <TextInput placeholder="Email" onChange={(e) => setUsername(e.currentTarget.value)} error={error} />
+        <TextInput placeholder="Password" type="password" mt="xs" onChange={(e) => setPassword(e.currentTarget.value)} />
+        <Button
+          color="blue"
+          mt="sm"
+          fullWidth
+          onClick={async () => {
+            console.log(username, password)
+            if (username && password) {
+              const res = await signIn('credentials', {
+                redirect: false,
+                email: username,
+                password: password,
+                callbackUrl: `${window.location.origin}`,
+              });
+              console.log(res)
+              if (res.error) {
+                return setError(res.error)
+              }
+              if (res.ok == true) {
+                router.push("/")
+              }
+            }
+          }}
+        >
+          Login
+        </Button>
+        <Divider my="md" />
 
         {Object.values(providers ?? []).map((provider) => {
           const branding = getProviderBranding(provider.id);
           const [loading, setLoading] = useState(false);
           return (
-            <Button
-              loading={loading}
-              mb="xs"
-              key={provider.id}
-              onClick={() => {
-                setLoading(true);
-                signIn(provider.id);
-              }}
-              leftSection={branding.icon}
-              bg={branding.color}
-              w={"100%"}
-            >
-              Sign in with {provider.name}
-            </Button>
+            provider.name != "Credentials" ?
+              <Button
+                loading={loading}
+                mb="xs"
+                key={provider.id}
+                onClick={() => {
+                  setLoading(true);
+                  signIn(provider.id);
+                }}
+                leftSection={branding.icon}
+                bg={branding.color}
+                w={"100%"}
+              >
+                Sign in with {provider.name}
+              </Button>
+              : ""
           );
         })}
       </Paper>
