@@ -1,12 +1,14 @@
 import { getOrganization } from "@/app/_lib/organizations";
 import { Flex, Text, Title } from "@mantine/core";
 import OrganizationTabs from "./organizationTabs";
+import { getPermissions } from "@/app/_lib/permissions";
 
 export default async function OrganizationLayout({
   children,
   params: { organizationId },
 }) {
   let organization = await getOrganization(organizationId);
+  let permissions = await getPermissions();
   return (
     <>
       <Flex>
@@ -28,7 +30,7 @@ export default async function OrganizationLayout({
           </Text>
         </Flex>
       </Flex>
-      <OrganizationTabs />
+      <OrganizationTabs organization={organization} permissions={permissions} />
       {children}
     </>
   );

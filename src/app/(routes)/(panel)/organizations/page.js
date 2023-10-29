@@ -1,14 +1,11 @@
 import { getPermissions } from "@/app/_lib/permissions";
 import { Flex, Title } from "@mantine/core";
-
-import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 import { useMemo } from "react";
 import Org from "./organization";
-import { usePrisma } from "@/app/_lib/prisma.js";
+import prisma from "@/app/_lib/prisma.js";
 import CreateOrganization from "./createOrganization.js";
 import { getOrganizations } from "@/app/_lib/organizations";
 export default async function Organizations() {
-  const prisma = usePrisma();
   let permissions = await getPermissions();
   let organizations = await getOrganizations();
 

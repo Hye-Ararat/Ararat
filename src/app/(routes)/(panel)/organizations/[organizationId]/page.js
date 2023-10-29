@@ -1,9 +1,10 @@
-import { Avatar, Flex, Title } from "@mantine/core";
+import { Avatar, Flex, Grid, TextInput, Title } from "@mantine/core";
 import CreateUser from "./createUser";
 import { getOrganization, getUsers } from "@/app/_lib/organizations";
 import AccordionTable from "@/app/_components/accordionTable";
 import { getPermissions } from "@/app/_lib/permissions";
 import { IconQuestionMark } from "@tabler/icons-react";
+import User from "./user";
 
 export default async function Users({ params: { organizationId } }) {
   let permissions = await getPermissions("organization", organizationId);
@@ -18,7 +19,7 @@ export default async function Users({ params: { organizationId } }) {
           secondary: user.email,
         },
       ],
-      panel: <>This is {user.name}'s panel</>,
+      panel: <User user={user} permissions={permissions} />,
     };
   });
   return (
