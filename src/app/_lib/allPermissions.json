@@ -1,0 +1,26 @@
+{
+  "Organizations": {
+    "create:organization": {
+      "title": "Create Organization",
+      "description": "Create new organizations"
+    },
+    "assign:organization": {
+      "title": "Assign Organization",
+      "description": "Assign organizations to users"
+    }
+  },
+  "Users": {
+    "create:user": {
+      "title": "Create User",
+      "description": "Create new users"
+    },
+    "update:user": {
+      "title": "Update User",
+      "description": "Update existing users"
+    },
+    "delete:user": {
+      "title": "Delete User",
+      "description": "Delete existing users"
+    }
+  }
+}
