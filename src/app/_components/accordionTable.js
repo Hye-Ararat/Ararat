@@ -1,6 +1,6 @@
 "use client";
 
-import { Accordion, Flex, SimpleGrid, Text } from "@mantine/core";
+import { Accordion, Flex, SimpleGrid, Text, Divider } from "@mantine/core";
 
 export default function AccordionTable({ rows }) {
   return (
@@ -14,7 +14,7 @@ export default function AccordionTable({ rows }) {
 
 function Row({ row }) {
   return (
-    <Accordion.Item value={row.id}>
+    <Accordion.Item value={row.id} key={row.id}>
       <Accordion.Control>
         <SimpleGrid columns={row.columns.length} w={"100%"}>
           {row.columns.map((column) => {
@@ -31,7 +31,10 @@ function Row({ row }) {
           })}
         </SimpleGrid>
       </Accordion.Control>
-      <Accordion.Panel>{row.panel}</Accordion.Panel>
+      <Accordion.Panel>
+        <Divider mb="sm" />
+        {row.panel}
+        </Accordion.Panel>
     </Accordion.Item>
   );
 }

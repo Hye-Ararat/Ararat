@@ -11,6 +11,7 @@ import {
   Flex,
   Box,
   SimpleGrid,
+  TextInput,
 } from "@mantine/core";
 import classes from "./datatable.module.css";
 import { IconHeadset } from "@tabler/icons-react";
@@ -33,8 +34,8 @@ export function DataTable(props) {
 /**
  * @param {React.PropsWithChildren<{
  *   columns: {
- *    name: string,
- *    value: string
+ *    primary: string,
+ *    secondary: string
  *   }[],
  *   icon: React.ReactNode
  * }>} props
