@@ -45,17 +45,9 @@ export function DataTableRow({ columns, icon, button }) {
       <Paper className={classes.row} p="md" radius="lg" mb="xs">
         <Flex>
           {icon}
-          <Flex direction="column" my="auto" ml="sm" style={{ width: "20vw" }}>
-            <Text fz="md" fw={550}>
-              {columns[0].primary}
-            </Text>
-            <Text c="dimmed" fz="xs">
-              {columns[0].secondary}
-            </Text>
-          </Flex>
-          <SimpleGrid ml="xl" cols={columns.length - 1}>
+
+          <SimpleGrid cols={columns.length} w={"100%"}>
             {columns.map((column, i) => {
-              if (i == 0) return "";
               return (
                 <Flex direction="column" my="auto" ml="sm">
                   <Text fz="md" fw={550}>
