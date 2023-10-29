@@ -29,12 +29,22 @@ export const authOptions = {
         });
       }
       if (!dbUser) {
+        var org = await prisma.organization.findFirst({
+          where: {
+            name: "default",
+          },
+        });
         dbUser = await prisma.user.create({
           data: {
             id: account.providerAccountId.toString(),
             email: user.email ?? user.email,
             name: user.name,
             authProvider: account.provider,
+            organization: {
+              connect: {
+                id: org.id,
+              },
+            },
           },
         });
       }
