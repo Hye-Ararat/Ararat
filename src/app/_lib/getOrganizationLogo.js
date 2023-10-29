@@ -1,10 +1,9 @@
 "use server";
 
-import { usePrisma } from "./prisma";
+import prisma from "./prisma";
 import { validateSession } from "./session";
 
 export default async function getOrganizationLogoUrl() {
-  const prisma = usePrisma();
   let session = await validateSession();
   const user = await prisma.user.findUnique({
     where: {
