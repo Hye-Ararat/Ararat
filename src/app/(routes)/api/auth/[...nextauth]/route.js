@@ -3,7 +3,7 @@ import axios from "axios";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs";
 /**
  * @type {import("next-auth").AuthOptions}
  */
@@ -15,7 +15,7 @@ export const authOptions = {
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      console.log({ user, profile, account })
+      console.log({ user, profile, account });
       let dbUser = await prisma.user.findUnique({
         where: {
           email: profile?.email ? profile.email : user.email,
@@ -97,7 +97,7 @@ export const authOptions = {
       async profile(profile, tokens) {
         const s = await axios.get(
           "https://billing.xentain.com/oauth/userinfo.php?access_token=" +
-          tokens.access_token
+            tokens.access_token
         );
         return { ...s.data, id: s.data.sub };
       },
@@ -111,28 +111,31 @@ export const authOptions = {
       // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
         username: { label: "Username", type: "text", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        console.log(credentials)
+        console.log(credentials);
         if (!credentials.email || !credentials.password) return null;
-        console.log(credentials)
+        console.log(credentials);
         var prismuser = await prisma.user.findFirst({
           where: {
             email: credentials.email,
-            authProvider: "basic"
-          }
-        })
-        console.log(prismuser)
+            authProvider: "basic",
+          },
+        });
+        console.log(prismuser);
         if (!prismuser) return null;
-        var authorized = await bcrypt.compare(credentials.password, prismuser.password)
-        console.log(authorized)
+        var authorized = await bcrypt.compare(
+          credentials.password,
+          prismuser.password
+        );
+        console.log(authorized);
         if (!authorized) {
           return null;
         }
         return prismuser;
-      }
-    })
+      },
+    }),
   ],
 };
 
