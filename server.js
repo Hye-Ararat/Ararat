@@ -23,7 +23,7 @@ app.prepare().then(() => {
     server.all('*', async (req, res) => {
         if (req.url.startsWith("/.well-known") || req.url.startsWith("/oidc")) {
             // do same request on :3002
-            return proxy(`http://${process.env.URL}:3002`, {
+            return proxy(`http://${process.env.URL.split(":")[0]}:3002`, {
                 proxyReqPathResolver: (req) => {
                     return req.url;
                 },
@@ -44,7 +44,11 @@ app.prepare().then(() => {
         console.log(`> Hye Ararat is running on http://${process.env.URL}`)
     })
     exec(`node ./authentication.js`, (err, stdout, stderr) => {
-       stdout.pipe(process.stdout);
-         stderr.pipe(process.stderr);
+        if (err) {
+            console.log(err);
+            return;
+        }
+        console.log(stdout);
+        console.log(stderr);
     })
 })
