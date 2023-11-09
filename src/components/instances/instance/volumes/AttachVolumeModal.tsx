@@ -3,7 +3,7 @@ import { LxdInstance, NodeLxdInstance } from "@/types/instance";
 
 import { Button, Flex, Select, TextInput } from "@mantine/core";
 import { getCookie } from "cookies-next";
-import { connectOIDC } from "js-lxd";
+import { connectOIDC } from "incus";
 import { useEffect, useState } from "react";
 import axios from "axios"
 import { useRouter } from "next/router";
@@ -12,7 +12,7 @@ export function AttachVolumeModal({ instance, url, setAttachOpen }: { instance: 
     var [volumes, setVolumes] = useState<any[]>([])
     const [volume, setVolume] = useState<string>()
     const [mount, setMount] = useState<string>()
-    const [name,setName] = useState<string>()
+    const [name, setName] = useState<string>()
     var access_token = (getCookie("access_token") as string)
     const client = connectOIDC(instance.node.url, access_token)
     useEffect(() => {

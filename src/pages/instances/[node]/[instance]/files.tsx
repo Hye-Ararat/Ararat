@@ -19,7 +19,7 @@ import { IconArrowLeft, IconArrowRight, IconFile, IconFolder, IconLayoutGrid, Ic
 import { useContext, useEffect, useRef, useState } from "react";
 import { GridFileView } from "@/components/instances/instance/files/GridFileView";
 import { ListFileView } from "@/components/instances/instance/files/ListFileView";
-import { connectOIDC } from "js-lxd";
+import { connectOIDC } from "incus";
 import { GetServerSidePropsContext } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { useTheme } from "@emotion/react";
@@ -52,10 +52,10 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
         if (!instance) return { redirect: { permanent: true, destination: `/instances` } };
         let nodeClient = await getNodeClient((params.node as string), (req.cookies.access_token as string))
         let rawFiles = (await nodeClient.get(`/instances/${(params as ParsedUrlQuery).instance}/files?path=${query.path}`))
-        if (rawFiles.headers["x-lxd-type"] == "symlink") {
+        if (rawFiles.headers["x-incus-type"] == "symlink") {
             var redirFile: string = rawFiles.data
             return redirect(`/instances/${params.node}/${params.instance}/files?path=${redirFile}`);
-        } else if (rawFiles.headers["x-lxd-type"] == "directory") {
+        } else if (rawFiles.headers["x-incus-type"] == "directory") {
             let files = rawFiles.data.metadata
             return {
                 props: {
@@ -65,13 +65,14 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
                     isFile: false
                 }
             }
-        } else if (rawFiles.headers["x-lxd-type"] == "file") {
+        } else if (rawFiles.headers["x-incus-type"] == "file") {
             return redirect(`/instances/${params.node}/${params.instance}/files/editor?path=${query.path}`)
         }
     } catch (error) {
         console.log(error)
         return redirect(`/instances`);
     }
+    return redirect(`/instances`);
 }
 
 
@@ -167,7 +168,7 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
                 <Breadcrumbs ml={10}>
                     {(router.query.path as string).split("/").map((d, i) => {
                         return (
-                            <Link style={{ textDecoration: "none", color: "lightblue"}} href={`/instances/${(instance.node.name)}/${instance.name}/files?path=${path.resolve((router.query.path as string), relativeDirMove(((router.query.path as string).split("/").length - 1) - i))}`}>
+                            <Link style={{ textDecoration: "none", color: "lightblue" }} href={`/instances/${(instance.node.name)}/${instance.name}/files?path=${path.resolve((router.query.path as string), relativeDirMove(((router.query.path as string).split("/").length - 1) - i))}`}>
                                 {d}
                             </Link>
                         )

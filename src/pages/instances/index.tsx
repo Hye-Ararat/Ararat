@@ -2,7 +2,7 @@ import { DataTable, DataTableColumn, DataTableRow } from "@/components/DataTable
 import CreateInstance from "@/components/instances/CreateInstance";
 import { Flex, Title, Text, Group, ActionIcon, Badge, Button, Table, List, Checkbox } from "@mantine/core";
 import { IconPlayerPlay, IconPlayerSkipForward, IconPlayerStop, IconTrash, IconX } from "@tabler/icons-react";
-import { connectOIDC } from "js-lxd"
+import { connectOIDC } from "incus"
 import prettyBytes from 'pretty-bytes';
 import { getOSLogo } from "@/lib/logo";
 import { LxdInstance, NodeLxdInstance } from "@/types/instance";
@@ -275,7 +275,7 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
         async function getCpu() {
             let resources = await (await client.get("/resources")).data.metadata
             console.log(resources)
-           let stateStart =  await (await client.get(`/instances/${instance.name}/state`)).data.metadata
+            let stateStart = await (await client.get(`/instances/${instance.name}/state`)).data.metadata
             let startTime = Date.now()
             let startCpuUsage = Math.ceil(stateStart.cpu.usage / 1000000)
             await new Promise((resolve) => setTimeout(resolve, 500))
@@ -354,7 +354,7 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
                 <Text>
                     <div>
                         <Text fz="md" fw={550}>
-                            {instanceCpu != null ? instanceCpu +  "%": "..."}
+                            {instanceCpu != null ? instanceCpu + "%" : "..."}
                         </Text>
                         <Text c="dimmed" fz="xs">
                             CPU

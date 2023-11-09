@@ -6,7 +6,7 @@ import { Anchor, Button, Center, Grid, Group, Menu, Paper, Popover, Stack, Text,
 import { useClickOutside } from "@mantine/hooks";
 import { IconBorderHorizontal, IconDotsVertical, IconDownload, IconFile, IconFileFilled, IconFolder, IconFolderFilled, IconLink, IconPencil, IconTrash } from "@tabler/icons-react";
 import { getCookie } from "cookies-next";
-import { connectOIDC } from "js-lxd";
+import { connectOIDC } from "incus";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { tmpdir } from "os";
@@ -142,11 +142,11 @@ function ListFileViewItem({ file, setSelectedFiles, selectedFiles }: { file: str
             var body = await s.json();
             console.log(body)
             setMetadata({
-                type: body["x-lxd-type"],
-                mode: body["x-lxd-mode"],
-                gid: body["x-lxd-gid"],
-                modified: body["x-lxd-modified"],
-                uid: body["x-lxd-uid"],
+                type: body["x-incus-type"],
+                mode: body["x-incus-mode"],
+                gid: body["x-incus-gid"],
+                modified: body["x-incus-modified"],
+                uid: body["x-incus-uid"],
                 size: body.size
             })
             setLoading(false)

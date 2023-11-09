@@ -1,10 +1,10 @@
 import NodeShell from "@/components/nodes/node/NodeShell"
 import mongo from "@/lib/mongo"
 import { sanitizeOne } from "@/lib/db"
-import { connectOIDC } from "js-lxd"
+import { connectOIDC } from "incus"
 
-export async function getServerSideProps({params, req}) {
-    let nodeData = await mongo.db().collection("Node").findOne({name: params.node})
+export async function getServerSideProps({ params, req }) {
+    let nodeData = await mongo.db().collection("Node").findOne({ name: params.node })
     let client = connectOIDC(nodeData.url, req.cookies.access_token)
     let resources = (await client.get("/resources")).data.metadata
     console.log(resources)
@@ -17,11 +17,11 @@ export async function getServerSideProps({params, req}) {
     }
 }
 
-export default function NodeDashboard({node, resources}) {
+export default function NodeDashboard({ node, resources }) {
     return (
         <>
-        <NodeShell node={node} resources={resources} />
-        <p>Node</p>
+            <NodeShell node={node} resources={resources} />
+            <p>Node</p>
         </>
     )
 }

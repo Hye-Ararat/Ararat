@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         var r = request(`${node?.url}/1.0/instances/${req.query.instance}/files?path=${path}`, {
             headers: {
                 Authorization: `Bearer ${req.cookies.access_token}`,
-                "X-LXD-oidc": "true",
+                "X-Incus-oidc": "true",
             },
             rejectUnauthorized: false
         });
@@ -31,6 +31,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 })
             }).on("error", err => { });
         })
-        res.json({...headers, size: headers["x-lxd-type"] == "file" ? parseInt(headers["content-length"]) : 0})
+        res.json({ ...headers, size: headers["x-incus-type"] == "file" ? parseInt(headers["content-length"]) : 0 })
     }
 } 

@@ -7,7 +7,7 @@ import { formatDate } from "@/lib/util";
 import { LxdInstance, LxdSnapshot, NodeLxdInstance } from "@/types/instance";
 import { Flex, Title, Button, TextInput, Text, Paper, SimpleGrid, Checkbox, Accordion, Divider, Loader, Modal, useMantineTheme, Autocomplete, Select } from "@mantine/core";
 import { getCookie } from "cookies-next";
-import { connectOIDC } from "js-lxd";
+import { connectOIDC } from "incus";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import prettyBytes from "pretty-bytes";
@@ -138,7 +138,7 @@ export default function InstanceNetworks({ instance, networks, allNetworks }: { 
         let formatted = [];
         allNetworks.forEach((network) => {
             if (network.managed) {
-            formatted.push({label: network.name, value: network.name})
+                formatted.push({ label: network.name, value: network.name })
             }
         })
         setFormattedNetworks(formatted);
@@ -152,44 +152,44 @@ export default function InstanceNetworks({ instance, networks, allNetworks }: { 
                 blur: 3,
             }} onClose={() => setAttachNetwork(false)} opened={attachNetwork} title={`Attach network`}>
                 <>
-                <TextInput value={newDeviceName} onChange={(e) => setNewDeviceName(e.target.value)} label="Interface Name" placeholder="eth0" />
-                <Select onChange={(e) => {
-                    let newConf = {...newDeviceConfig};
-                    newConf.network = e;
-                    setNewDeviceConfig(newConf);
-                }} value={newDeviceConfig.network} label="Network" placeholder="Network" data={formattedNetworks} />
-                <TextInput onChange={(e) => {
-                    let newConf = {...newDeviceConfig};
-                    newConf["address.ipv4"] = e.target.value;
-                    setNewDeviceConfig(newConf)
-                }} value={newDeviceConfig["address.ipv4"]} label="IPv4 Address" placeholder="Leave blank for DHCP" />
-                <TextInput onChange={(e) => {
-                        let newConf = {...newDeviceConfig};
+                    <TextInput value={newDeviceName} onChange={(e) => setNewDeviceName(e.target.value)} label="Interface Name" placeholder="eth0" />
+                    <Select onChange={(e) => {
+                        let newConf = { ...newDeviceConfig };
+                        newConf.network = e;
+                        setNewDeviceConfig(newConf);
+                    }} value={newDeviceConfig.network} label="Network" placeholder="Network" data={formattedNetworks} />
+                    <TextInput onChange={(e) => {
+                        let newConf = { ...newDeviceConfig };
+                        newConf["address.ipv4"] = e.target.value;
+                        setNewDeviceConfig(newConf)
+                    }} value={newDeviceConfig["address.ipv4"]} label="IPv4 Address" placeholder="Leave blank for DHCP" />
+                    <TextInput onChange={(e) => {
+                        let newConf = { ...newDeviceConfig };
                         newConf["address.ipv6"] = e.target.value;
                         setNewDeviceConfig(newConf)
-                }} value={newDeviceConfig["address.ipv6"]} label="IPv6 Address" placeholder="Leave blank for DHCP" />
-                <TextInput onChange={(e) => {
-                        let newConf = {...newDeviceConfig};
+                    }} value={newDeviceConfig["address.ipv6"]} label="IPv6 Address" placeholder="Leave blank for DHCP" />
+                    <TextInput onChange={(e) => {
+                        let newConf = { ...newDeviceConfig };
                         newConf["limits.egress"] = e.target.value;
                         setNewDeviceConfig(newConf)
-                }} value={newDeviceConfig["limits.egress"]} label="Egress Limit" placeholder="Leave blank for unmetered, measured in bit/s" />
-                <TextInput onChange={(e) => {
-                        let newConf = {...newDeviceConfig};
+                    }} value={newDeviceConfig["limits.egress"]} label="Egress Limit" placeholder="Leave blank for unmetered, measured in bit/s" />
+                    <TextInput onChange={(e) => {
+                        let newConf = { ...newDeviceConfig };
                         newConf["limits.ingress"] = e.target.value;
                         setNewDeviceConfig(newConf)
-                }} value={newDeviceConfig["limits.ingress"]} label="Ingress Limit" placeholder="Leave blank for unmetered, measured in bit/s" />
-                <Flex>
-                    <Button onClick={async (e) => {
-                        const client = connectOIDC(instance.node.url, access_token);
-                        let newDevs = {...instance.devices}
-                        newDevs[newDeviceName] = newDeviceConfig;
-                        let conf = {...instance};
-                        conf.devices = newDevs
-                        await client.put(`/instances/${instance.name}`, conf)
-                        setAttachNetwork(false);
-                        router.push(router.asPath)
-                    }} variant="light" color="green" ml="auto" mt="sm">Attach Network</Button>
-                </Flex>
+                    }} value={newDeviceConfig["limits.ingress"]} label="Ingress Limit" placeholder="Leave blank for unmetered, measured in bit/s" />
+                    <Flex>
+                        <Button onClick={async (e) => {
+                            const client = connectOIDC(instance.node.url, access_token);
+                            let newDevs = { ...instance.devices }
+                            newDevs[newDeviceName] = newDeviceConfig;
+                            let conf = { ...instance };
+                            conf.devices = newDevs
+                            await client.put(`/instances/${instance.name}`, conf)
+                            setAttachNetwork(false);
+                            router.push(router.asPath)
+                        }} variant="light" color="green" ml="auto" mt="sm">Attach Network</Button>
+                    </Flex>
                 </>
             </Modal>
             <Modal centered overlayProps={{

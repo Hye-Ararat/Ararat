@@ -1,6 +1,6 @@
 import { getNodes } from "@/lib/db";
 import mongo from "@/lib/mongo";
-import { connectOIDC } from "js-lxd";
+import { connectOIDC } from "incus";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         var volumes = await Promise.all(storagePools.map(async (pool) => {
             var poolURL = pool.replace("/1.0", "")
             var poolVolumes = await client.get(`${poolURL}/volumes?recursion=1`)
-            return poolVolumes.data.metadata.map((s: any) => {return {...s, pool: poolURL.replace("/storage-pools/", "")}})
+            return poolVolumes.data.metadata.map((s: any) => { return { ...s, pool: poolURL.replace("/storage-pools/", "") } })
         }))
         res.json(volumes.flat(1))
     }

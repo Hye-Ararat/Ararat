@@ -6,7 +6,7 @@ import { formatDate } from "@/lib/util";
 import { LxdInstance, LxdSnapshot, NodeLxdInstance } from "@/types/instance";
 import { Flex, Title, Button, TextInput, Text, Paper, SimpleGrid, Checkbox } from "@mantine/core";
 import { getCookie } from "cookies-next";
-import { connectOIDC } from "js-lxd";
+import { connectOIDC } from "incus";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import prettyBytes from "pretty-bytes";

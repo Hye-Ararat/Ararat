@@ -5,7 +5,7 @@ import { validateSession } from "@/lib/oidc";
 import { NodeLxdInstance } from "@/types/instance";
 import { Paper, SimpleGrid, TextInput, Textarea, Title, Text, Button, Select, Switch, Flex } from "@mantine/core";
 import { getCookie } from "cookies-next";
-import { connectOIDC } from "js-lxd";
+import { connectOIDC } from "incus";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
@@ -44,7 +44,7 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
                     os: data.products[image].os.toLowerCase(),
                     group: "Linux Containers"
                 })
-                 })
+            })
         } catch (error) {
             console.log(instance);
             return {
@@ -76,62 +76,62 @@ export default function InstanceSettings({ instance, images }: { instance: NodeL
         <>
             <InstanceShell instance={instance} />
             <SimpleGrid mt="md" cols={2}>
-            <Paper p={10} mt="md">
-            <Title order={4}>General Information</Title>
-            <TextInput disabled={true} description="Changing instance name is not currently supported" onChange={(e) => setInstanceState({...instanceState, name: e.target.value})} mt="xs" label="Name" value={instanceState.name} />
-            <Textarea onChange={(e) => setInstanceState({...instanceState, description: e.currentTarget.value})} mt="xs" label="Description" value={instanceState.description} />
-            </Paper>
-            <Paper p={10} mt="md">
-            <Title order={4}>Image</Title>
-            <Select disabled={true} mt="xs" label="Image" data={images} description="Changing instance image is not currently supported" />
-            <Text size="sm" fw={500} mt="md">Actions</Text>
-            <Button mt="xs" variant="light" color="red">Rebuild</Button>
-            </Paper>
-            <Paper p={10}>
-            <Title order={4}>Limits</Title>
-            <TextInput onChange={(e) => {
-                let tempConfig = {...instanceState};
-                tempConfig.config["limits.cpu"] = e.target.value;
-                setInstanceState(tempConfig)
-            }} mt="xs" label="Exposed CPUs" value={instanceState.config["limits.cpu"]} />
-            <TextInput onChange={(e) => {
-                let tempConfig = {...instanceState};
-                tempConfig.config["limits.memory"] = e.target.value;
-                setInstanceState(tempConfig)
-            }} mt="xs" label="Memory Limit" value={instanceState.config["limits.memory"]} />
-            </Paper>
-            <Paper p={10}>
-            <Title order={4}>Snapshots</Title>
-            <Select onChange={(e) => {
-                let newConfig = {...instanceState};
-                newConfig.config["snapshots.schedule"] = e;
-                setInstanceState(newConfig)
-            }} value={instanceState.config["snapshots.schedule"]} mt="xs" label="Snapshot Schedule" data={[{value: "@hourly", label: "Hourly"}, {value: "@daily", label: "Daily"}, {value: "@weekly", label: "Weekly"}, {value: "@monthly", label: "Monthly"},{value: "@yearly", label: "Yearly"}]} />
-            <TextInput onChange={(e) => {
-                let newConfig = {...instanceState};
-                newConfig.config["snapshots.expiry"] = e.target.value;
-                setInstanceState(newConfig);
-            }} mt="xs" label="Snapshot Expiry" value={instanceState.config["snapshots.expiry"]} />
-            <Switch onChange={(e) => {
-                let newConfig = {...instanceState};
-                newConfig.config["snapshots.stopped"] = e.target.checked ? "true" : "false";
-                setInstanceState(newConfig);
-            }} checked={instanceState.config["snapshots.stopped"] == "true"} mt="xs" label="Take Snapshots While Stopped" />
-            </Paper>
+                <Paper p={10} mt="md">
+                    <Title order={4}>General Information</Title>
+                    <TextInput disabled={true} description="Changing instance name is not currently supported" onChange={(e) => setInstanceState({ ...instanceState, name: e.target.value })} mt="xs" label="Name" value={instanceState.name} />
+                    <Textarea onChange={(e) => setInstanceState({ ...instanceState, description: e.currentTarget.value })} mt="xs" label="Description" value={instanceState.description} />
+                </Paper>
+                <Paper p={10} mt="md">
+                    <Title order={4}>Image</Title>
+                    <Select disabled={true} mt="xs" label="Image" data={images} description="Changing instance image is not currently supported" />
+                    <Text size="sm" fw={500} mt="md">Actions</Text>
+                    <Button mt="xs" variant="light" color="red">Rebuild</Button>
+                </Paper>
+                <Paper p={10}>
+                    <Title order={4}>Limits</Title>
+                    <TextInput onChange={(e) => {
+                        let tempConfig = { ...instanceState };
+                        tempConfig.config["limits.cpu"] = e.target.value;
+                        setInstanceState(tempConfig)
+                    }} mt="xs" label="Exposed CPUs" value={instanceState.config["limits.cpu"]} />
+                    <TextInput onChange={(e) => {
+                        let tempConfig = { ...instanceState };
+                        tempConfig.config["limits.memory"] = e.target.value;
+                        setInstanceState(tempConfig)
+                    }} mt="xs" label="Memory Limit" value={instanceState.config["limits.memory"]} />
+                </Paper>
+                <Paper p={10}>
+                    <Title order={4}>Snapshots</Title>
+                    <Select onChange={(e) => {
+                        let newConfig = { ...instanceState };
+                        newConfig.config["snapshots.schedule"] = e;
+                        setInstanceState(newConfig)
+                    }} value={instanceState.config["snapshots.schedule"]} mt="xs" label="Snapshot Schedule" data={[{ value: "@hourly", label: "Hourly" }, { value: "@daily", label: "Daily" }, { value: "@weekly", label: "Weekly" }, { value: "@monthly", label: "Monthly" }, { value: "@yearly", label: "Yearly" }]} />
+                    <TextInput onChange={(e) => {
+                        let newConfig = { ...instanceState };
+                        newConfig.config["snapshots.expiry"] = e.target.value;
+                        setInstanceState(newConfig);
+                    }} mt="xs" label="Snapshot Expiry" value={instanceState.config["snapshots.expiry"]} />
+                    <Switch onChange={(e) => {
+                        let newConfig = { ...instanceState };
+                        newConfig.config["snapshots.stopped"] = e.target.checked ? "true" : "false";
+                        setInstanceState(newConfig);
+                    }} checked={instanceState.config["snapshots.stopped"] == "true"} mt="xs" label="Take Snapshots While Stopped" />
+                </Paper>
             </SimpleGrid>
             <Flex mt="md">
-            <Button ml="auto" variant="light" color="red" onClick={async (e) => {
-                const client = connectOIDC(instance.node.url, getCookie("access_token"));
-                await client.delete(`/instances/${instance.name}`);
-                router.push("/instances");
-            }}>Delete Instance</Button>
-            <Button onClick={async () => {
-                
-          
-                const client = connectOIDC(instance.node.url, getCookie("access_token"));
-                await client.put(`/instances/${instance.name}`, instanceState);
-                router.push(router.asPath)
-            }} ml="sm" color="blue">Save Changes</Button>
+                <Button ml="auto" variant="light" color="red" onClick={async (e) => {
+                    const client = connectOIDC(instance.node.url, getCookie("access_token"));
+                    await client.delete(`/instances/${instance.name}`);
+                    router.push("/instances");
+                }}>Delete Instance</Button>
+                <Button onClick={async () => {
+
+
+                    const client = connectOIDC(instance.node.url, getCookie("access_token"));
+                    await client.put(`/instances/${instance.name}`, instanceState);
+                    router.push(router.asPath)
+                }} ml="sm" color="blue">Save Changes</Button>
             </Flex>
         </>
     )

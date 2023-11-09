@@ -30,7 +30,7 @@ async function getClient() {
     }
     if (!oidClient) {
         oidClient = new issuer.Client({
-            client_id: "lxd",
+            client_id: "incus",
             redirect_uris: [`http://${url}/api/authentication/callback`],
             response_types: ["code"]
         })
@@ -68,7 +68,7 @@ export async function validateSession(access_token: string): Promise<boolean> {
             return resolve(false)
         }
         return resolve(true)
-     
+
     })
 }
 

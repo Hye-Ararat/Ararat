@@ -7,7 +7,7 @@ import { GetServerSidePropsContext } from "next";
 import { ParsedUrlQuery } from "querystring";
 import Editor, { Monaco } from '@monaco-editor/react';
 import type monaco from 'monaco-editor';
-import { connectOIDC } from "js-lxd";
+import { connectOIDC } from "incus";
 import { getCookie } from "cookies-next";
 import { monacoTheme } from "@/lib/theme";
 import { relativeDirMove } from "@/lib/util";
@@ -45,7 +45,7 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
         var r = request(`${node?.url}/1.0/instances/${(params as ParsedUrlQuery).instance}/files?path=${query.path}`, {
             headers: {
                 Authorization: `Bearer ${req.cookies.access_token}`,
-                "X-LXD-oidc": "true",
+                "X-Incus-oidc": "true",
             },
             rejectUnauthorized: false
         });
@@ -61,7 +61,7 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
 
 
         var fileData: any = headers
-        if (fileData["x-lxd-type"] == "file") {
+        if (fileData["x-incus-type"] == "file") {
             return {
                 props: {
                     instance,

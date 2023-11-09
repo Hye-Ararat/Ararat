@@ -11,7 +11,7 @@ import prettyBytes from "pretty-bytes";
 import { capitalizeFirstLetter } from "@/lib/util";
 import Link from "next/link";
 import { DataTable, DataTableRow } from "@/components/DataTable";
-import { connectOIDC } from "js-lxd";
+import { connectOIDC } from "incus";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { AttachVolumeModal } from "@/components/instances/instance/volumes/AttachVolumeModal";

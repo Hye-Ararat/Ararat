@@ -27,9 +27,9 @@ const configuration = {
     scopes: ['openid', 'profile', 'email', 'offline_access'],
     clients: [
         {
-            client_id: 'lxd',
+            client_id: 'incus',
             client_secret: 'test',
-            redirect_uris: ["http://localhost:5556/auth/lxd/callback", `http://${url}/api/authentication/callback`],
+            redirect_uris: ["http://localhost:5556/auth/incus/callback", `http://${url}/api/authentication/callback`],
             client_name: "Hye Ararat",
             logo_uri: `http://${url}/images/Hye_Ararat_2.png`,
             scope: "openid profile email offline_access",
@@ -82,7 +82,7 @@ const configuration = {
             getResourceServerInfo(ctx, resourceIndicator, client) {
                 return ({
                     scope: 'openid profile email offline_access',
-                    audience: 'lxd',
+                    audience: 'incus',
                     accessTokenTTL: 1 * 60 * 60, // 2 hours
                     accessTokenFormat: 'jwt'
                 });

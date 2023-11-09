@@ -1,7 +1,7 @@
 import { NodeLxdInstance } from "@/types/instance";
 import * as SpiceHtml5 from "@/lib/spice/src/main";
 import { useEffect, useRef, useState } from "react";
-import { connectOIDC } from "js-lxd";
+import { connectOIDC } from "incus";
 import { getCookie } from "cookies-next";
 import { ActionIcon, Button, Center, Group, Progress, TextInput } from "@mantine/core";
 import { useWindowScroll } from "@mantine/hooks";
@@ -74,7 +74,7 @@ export default function InstanceVGAConsole({ instance }: { instance: NodeLxdInst
             return () => {
                 console.log("close")
                 controlWS?.close()
-                window.removeEventListener("resize",handleResize)
+                window.removeEventListener("resize", handleResize)
             }
         }
 

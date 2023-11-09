@@ -4,7 +4,7 @@ import { validateSession } from "@/lib/oidc";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Node } from "@/types/db";
 import request from "request";
-import { connectOIDC } from "js-lxd";
+import { connectOIDC } from "incus";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { searchParams } = new URL((req.url as string), "http://test/")
@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method == "GET") {
         var instanceDevices = (await client.get(`/instances/${req.query.instance}?recursion=1`)).data.metadata.expanded_devices;
-        var storageDevices = Object.keys(instanceDevices).filter((s) => instanceDevices[s].type == "disk").map(f => {return{...instanceDevices[f], key: f}})
+        var storageDevices = Object.keys(instanceDevices).filter((s) => instanceDevices[s].type == "disk").map(f => { return { ...instanceDevices[f], key: f } })
         var usedPools = storageDevices.map((f) => f.pool).filter((element, index) => {
             return storageDevices.map((f) => f.pool).indexOf(element) === index;
         })
@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             var poolVolumes = (await client.get(`/storage-pools/${poolName}/volumes?recursion=1`)).data.metadata;
             poolVolumes = poolVolumes.filter((f: any) => f.used_by.includes(`/1.0/instances/${req.query.instance}`))
             var result = await Promise.all(poolVolumes.map(async (vol: any) => {
-                var status = (await client.get(`/storage-pools/${poolName}/volumes/${vol.type}/${vol.name}/state`)).data.metadata; 
+                var status = (await client.get(`/storage-pools/${poolName}/volumes/${vol.type}/${vol.name}/state`)).data.metadata;
                 return {
                     ...vol,
                     status,

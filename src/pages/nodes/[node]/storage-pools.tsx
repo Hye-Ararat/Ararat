@@ -1,7 +1,7 @@
 import NodeShell from "@/components/nodes/node/NodeShell"
 import mongo from "@/lib/mongo"
 import { sanitizeOne } from "@/lib/db"
-import { connectOIDC } from "js-lxd"
+import { connectOIDC } from "incus"
 import { Accordion, Button, Divider, Flex, Grid, Modal, Paper, Select, SimpleGrid, Tabs, Text, TextInput, Title, useMantineTheme } from "@mantine/core"
 import { DataTableColumn, DataTableRow } from "@/components/DataTable"
 import { use, useState } from "react"
@@ -56,25 +56,27 @@ export default function NodeStoragePools({ node, resources, pools }) {
     return (
         <>
             <NodeShell node={node} resources={resources} />
-            <Modal title={editingStoragePool ? "Edit Storage Pool" : "Create Storage Pool"} overlayProps={{color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
+            <Modal title={editingStoragePool ? "Edit Storage Pool" : "Create Storage Pool"} overlayProps={{
+                color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
                 opacity: 0.55,
-                blur: 3,}} opened={creatingStoragePool} centered onClose={() => setCreatingStoragePool(false)} size="md" padding="md">
-                    <TextInput value={poolConfig.name} onChange={(e) => {
-                        const newPoolConfig = {...poolConfig};
-                        newPoolConfig.name = e.currentTarget.value;
-                        setPoolConfig(newPoolConfig);
-                    }} label="Name" placeholder="Name" withAsterisk />
-                    <TextInput value={poolConfig.description} onChange={(e) => {
-                        const newPoolConfig = {...poolConfig};
-                        newPoolConfig.description = e.currentTarget.value;
-                        setPoolConfig(newPoolConfig);
-                    }} label="Description" placeholder="Description" />
-                    <TextInput value={poolConfig.config["size"]} onChange={(e) => {
-                        const newPoolConfig = {...poolConfig};
-                        newPoolConfig.config["size"] = e.currentTarget.value;
-                        setPoolConfig(newPoolConfig);
-                    }} label="Size" placeholder="Leave blank for automatic. Ex: 4GB" />
-                    <Flex mt="md">
+                blur: 3,
+            }} opened={creatingStoragePool} centered onClose={() => setCreatingStoragePool(false)} size="md" padding="md">
+                <TextInput value={poolConfig.name} onChange={(e) => {
+                    const newPoolConfig = { ...poolConfig };
+                    newPoolConfig.name = e.currentTarget.value;
+                    setPoolConfig(newPoolConfig);
+                }} label="Name" placeholder="Name" withAsterisk />
+                <TextInput value={poolConfig.description} onChange={(e) => {
+                    const newPoolConfig = { ...poolConfig };
+                    newPoolConfig.description = e.currentTarget.value;
+                    setPoolConfig(newPoolConfig);
+                }} label="Description" placeholder="Description" />
+                <TextInput value={poolConfig.config["size"]} onChange={(e) => {
+                    const newPoolConfig = { ...poolConfig };
+                    newPoolConfig.config["size"] = e.currentTarget.value;
+                    setPoolConfig(newPoolConfig);
+                }} label="Size" placeholder="Leave blank for automatic. Ex: 4GB" />
+                <Flex mt="md">
                     <Button onClick={async (e) => {
                         const client = connectOIDC(node.url, getCookie("access_token"));
                         if (editingStoragePool) {
@@ -85,51 +87,53 @@ export default function NodeStoragePools({ node, resources, pools }) {
                         setCreatingStoragePool(false);
                         router.push(`/nodes/${node.name}/storage-pools`)
                     }} disabled={poolConfig.name == ""} variant="light" color={editingStoragePool ? "blue" : "green"} ml="auto" my="auto">{editingStoragePool ? "Edit" : "Create"}</Button>
-                    </Flex>
+                </Flex>
             </Modal>
-            <Modal title={editingVolume ? "Edit Volume" : "Create Volume"} overlayProps={{color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
+            <Modal title={editingVolume ? "Edit Volume" : "Create Volume"} overlayProps={{
+                color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
                 opacity: 0.55,
-                blur: 3,}} centered onClose={() => setCreatingVolume(false)}  size="md" padding="md" opened={creatingVolume}>
+                blur: 3,
+            }} centered onClose={() => setCreatingVolume(false)} size="md" padding="md" opened={creatingVolume}>
                 <TextInput label="Name" withAsterisk placeholder="Name" value={volume.name} onChange={(e) => {
-                    const newVolume = {...volume};
+                    const newVolume = { ...volume };
                     newVolume.name = e.currentTarget.value;
                     setVolume(newVolume);
                 }} />
-                    <TextInput label="Size" placeholder="Size" onChange={(e) => {
-                    const newVolume = {...volume};
+                <TextInput label="Size" placeholder="Size" onChange={(e) => {
+                    const newVolume = { ...volume };
                     newVolume.config["size"] = e.currentTarget.value;
                     setVolume(newVolume);
                 }} value={volume.config["size"]} />
                 <TextInput value={volume.description} label="Description" placeholder="Description" onChange={(e) => {
-                    const newVolume = {...volume};
+                    const newVolume = { ...volume };
                     newVolume.description = e.currentTarget.value;
                     setVolume(newVolume);
                 }} />
                 <Select value={volume.config["snapshots.schedule"]} onChange={(e) => {
-                            let newConfig = {...volume}
-        
-                            newConfig.config["snapshots.schedule"] = e;
-                            setVolume(newConfig);
-                        }} label="Snapshot Schedule" placeholder="Snapshot Schedule" data={[{value: "@hourly", label: "Hourly"}, {value: "@daily", label: "Daily"}, {value: "@weekly", label: "Weekly"}, {value: "@monthly", label: "Monthly"},{value: "@yearly", label: "Yearly"}]} />
-                               <TextInput value={volume.config["snapshots.expiry"]} onChange={(e) => {
-                            let newConfig = {...volume}
-                       
-                            newConfig.config["snapshots.expiry"] = e.currentTarget.value;
-                            setVolume(newConfig);
-                        }} label="Snapshot Expiry" placeholder="3d" />
-                        <Flex mt="md">
-                            <Button onClick={async (e) => {
-                                const client = connectOIDC(node.url, getCookie("access_token"));
-                                if (editingVolume) {
-                                    await client.put(`/storage-pools/${selectedPool}/volumes/custom/${volume.name}`, volume);
-                                } else {
-                                await client.post(`/storage-pools/${selectedPool}/volumes`, volume);
-                                }
-                                setCreatingVolume(false);
-                                router.push(`/nodes/${node.name}/storage-pools`)
-                            }} disabled={volume.name == ""} variant="light" color={editingVolume ? "blue" : "green"} ml="auto" my="auto">{editingVolume ? "Edit" : "Create"}</Button>
-                        </Flex>
-                </Modal>
+                    let newConfig = { ...volume }
+
+                    newConfig.config["snapshots.schedule"] = e;
+                    setVolume(newConfig);
+                }} label="Snapshot Schedule" placeholder="Snapshot Schedule" data={[{ value: "@hourly", label: "Hourly" }, { value: "@daily", label: "Daily" }, { value: "@weekly", label: "Weekly" }, { value: "@monthly", label: "Monthly" }, { value: "@yearly", label: "Yearly" }]} />
+                <TextInput value={volume.config["snapshots.expiry"]} onChange={(e) => {
+                    let newConfig = { ...volume }
+
+                    newConfig.config["snapshots.expiry"] = e.currentTarget.value;
+                    setVolume(newConfig);
+                }} label="Snapshot Expiry" placeholder="3d" />
+                <Flex mt="md">
+                    <Button onClick={async (e) => {
+                        const client = connectOIDC(node.url, getCookie("access_token"));
+                        if (editingVolume) {
+                            await client.put(`/storage-pools/${selectedPool}/volumes/custom/${volume.name}`, volume);
+                        } else {
+                            await client.post(`/storage-pools/${selectedPool}/volumes`, volume);
+                        }
+                        setCreatingVolume(false);
+                        router.push(`/nodes/${node.name}/storage-pools`)
+                    }} disabled={volume.name == ""} variant="light" color={editingVolume ? "blue" : "green"} ml="auto" my="auto">{editingVolume ? "Edit" : "Create"}</Button>
+                </Flex>
+            </Modal>
             <Flex mt="md" mb="md">
                 <Title order={4} my="auto">Storage Pools</Title>
                 <Button my="auto" variant="light" color="green" ml="auto" onClick={() => {
@@ -243,7 +247,7 @@ export default function NodeStoragePools({ node, resources, pools }) {
                                     <Button onClick={() => {
                                         setEditingStoragePool(true);
                                         setSelectedPool(pool.name);
-                                        let tempPool = {...pool};
+                                        let tempPool = { ...pool };
                                         delete tempPool.volumes;
                                         setPoolConfig(tempPool)
                                         const audio = new Audio("/audio/popup.mp3")

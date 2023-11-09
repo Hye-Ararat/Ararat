@@ -1,7 +1,7 @@
 import CreateNode from '@/components/nodes/CreateNode'
 import mongo from '@/lib/mongo'
 import { Button, Flex, Title, Text, Group, Badge, ActionIcon, Table, Checkbox } from '@mantine/core';
-import { connectOIDC } from 'js-lxd'
+import { connectOIDC } from 'incus'
 import { DataTable, DataTableColumn, DataTableRow } from '@/components/DataTable'
 import { LxdResources } from '@/types/resources'
 import { IconServer2, IconTrash, IconX } from '@tabler/icons-react';
@@ -22,10 +22,12 @@ export async function getServerSideProps({ req, res }: any) {
       var nodeData = (await client.get("/resources")).data.metadata
       var nodeInstances = (await client.get("/instances")).data.metadata
     } catch (error) {
+      console.log(error)
       return { name: node.name, status: "offline" }
     }
     return { ...nodeData, name: node.name, status: "online", instances: nodeInstances.length }
   }))
+  console.log(nodes)
   return {
     props: {
       nodes: nodes
@@ -162,7 +164,7 @@ function NodeTableRow({ node }: { node: LxdResources & { name: string, status: s
           <Checkbox checked={selectedNodes.find(s => s.id == node.name)?.checked} onChange={(event) => {
             setSelect(event.currentTarget.checked)
           }} />
-          {getVendorLogo(node.system.vendor, 40)}
+          {getVendorLogo(node.system.vendor ?? "", 40)}
 
           <div>
             <Text fz="md" fw={550}>
@@ -235,7 +237,7 @@ function NodeTableRow({ node }: { node: LxdResources & { name: string, status: s
       <DataTableColumn>
         <Group spacing={2} position="right">
           <Link href={`/nodes/${node.name}`}>
-          <Button sx={{ mr: 40 }}>Manage</Button>
+            <Button sx={{ mr: 40 }}>Manage</Button>
           </Link>
         </Group>
       </DataTableColumn>

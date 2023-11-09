@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     formBody.append("grant_type", "authorization_code");
     formBody.append("code", (req.query.code as string));
     formBody.append("redirect_uri", `http://${url}/api/authentication/callback`);
-    formBody.append("client_id", "lxd");
+    formBody.append("client_id", "incus");
     formBody.append("scope", "openid profile");
     formBody.append("code_verifier", (await oidcClient()).codeVerifier);
     console.log("asdfasdf2")
@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         body: formBody.toString(),
         cache: "no-cache"
     })
-    
+
     let data = await tokenResponse.json();
     console.log("asdfasdf3")
     console.log(data)

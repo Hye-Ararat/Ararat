@@ -1,7 +1,7 @@
 import NodeShell from "@/components/nodes/node/NodeShell"
 import mongo from "@/lib/mongo"
 import { sanitizeOne } from "@/lib/db"
-import { connectOIDC } from "js-lxd"
+import { connectOIDC } from "incus"
 import { Accordion, Button, Flex, SimpleGrid, Title, Text, Divider, Paper, Modal, useMantineTheme, TextInput, Switch, Select, Autocomplete } from "@mantine/core"
 import prettyBytes from "pretty-bytes"
 import { useState } from "react"
@@ -172,18 +172,18 @@ export default function NodeDashboard({ node, resources, networks }) {
                     setForwardConfig(newConfig);
                 }} label="Protocol" />
                 <Flex mt="xs">
-                <Button onClick={() => {
-                    let existingPorts = networks.filter(network => network.name == selectedNetwork)[0].floatingIps.filter(floatingIp => floatingIp.listen_address == selectedFloatingIp)[0].ports;
-                    existingPorts.push(forwardConfig);
-                    let client = connectOIDC(node.url, getCookie("access_token"));
-                    client.put(`/networks/${selectedNetwork}/forwards/${selectedFloatingIp}`, {
-                        ports: existingPorts
-                    });
-                    setCreatingForward(false);
-                    router.push(router.asPath);
-                }} variant="light" color="green" ml="auto">Create</Button>
+                    <Button onClick={() => {
+                        let existingPorts = networks.filter(network => network.name == selectedNetwork)[0].floatingIps.filter(floatingIp => floatingIp.listen_address == selectedFloatingIp)[0].ports;
+                        existingPorts.push(forwardConfig);
+                        let client = connectOIDC(node.url, getCookie("access_token"));
+                        client.put(`/networks/${selectedNetwork}/forwards/${selectedFloatingIp}`, {
+                            ports: existingPorts
+                        });
+                        setCreatingForward(false);
+                        router.push(router.asPath);
+                    }} variant="light" color="green" ml="auto">Create</Button>
                 </Flex>
-                </Modal>
+            </Modal>
             <Flex my="md">
                 <Title order={4} my="auto">Networks</Title>
                 <Button onClick={() => {

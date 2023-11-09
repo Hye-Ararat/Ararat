@@ -1,6 +1,6 @@
 import { NodeLxdInstance } from "@/types/instance";
 import { useEffect, useRef, useState } from "react";
-import { connectOIDC } from "js-lxd";
+import { connectOIDC } from "incus";
 
 import { getCookie } from "cookies-next";
 import { Button, Center, Loader, LoadingOverlay } from "@mantine/core";
@@ -21,7 +21,7 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
     var fitAddon = new FitAddon()
     const router = useRouter();
     useEffect(() => {
-        
+
         if (xtermRef.current && done == false) {
             fitAddon.fit()
             window.addEventListener('resize', (e) => {
@@ -29,11 +29,11 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
             });
             console.log()
             setDone(true)
-            
+
             client.post(`/instances/${instance.name}/console`, {
                 "type": "console",
                 "wait-for-websocket": true,
-              }).then(({ data }) => {
+            }).then(({ data }) => {
                 const operationUrl = data.operation.split("?")[0];
                 const dataUrl = `wss://${instance.node.url.replace("https://", "")}${operationUrl}/websocket?secret=${data.metadata.metadata.fds["0"]}`;
                 const controlUrl = `wss://${instance.node.url.replace("https://", "")}${operationUrl}/websocket?secret=${data.metadata.metadata.fds.control}`;
@@ -43,7 +43,7 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
                 dataWS.onmessage = async (ev) => {
                     xtermRef.current?.terminal.write(await ev.data.text())
                 }
-               // xtermRef.current?.terminal.onBinary(console.log)
+                // xtermRef.current?.terminal.onBinary(console.log)
                 xtermRef.current?.terminal.onData((d) => {
 
                     dataWS.send(textEncoder.encode(d))
@@ -59,12 +59,12 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
     }, [])
     return (
         <>
-        <div style={{borderRadius: "10px", padding: "13px", backgroundColor: "#1a1b1e", marginTop: "10px"}}>
-            <Xterm ref={xtermRef} onData={console.log} onBinary={console.log} onKey={console.log} addons={[fitAddon]} options={{
-                theme: {
-                    "background": "#1a1b1e"
-                }
-            }}/>
+            <div style={{ borderRadius: "10px", padding: "13px", backgroundColor: "#1a1b1e", marginTop: "10px" }}>
+                <Xterm ref={xtermRef} onData={console.log} onBinary={console.log} onKey={console.log} addons={[fitAddon]} options={{
+                    theme: {
+                        "background": "#1a1b1e"
+                    }
+                }} />
             </div>
 
         </>

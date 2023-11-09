@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { IconBox, IconFolder, IconHistory, IconHome, IconNetwork, IconSettings, IconTerminal2, IconWifi } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import { getBadgeColor } from '@/lib/util';
-import { connectOIDC } from 'js-lxd';
+import { connectOIDC } from 'incus';
 import { getCookie } from 'cookies-next';
 
 export default function InstanceShell({ instance }: { instance: any }) {
