@@ -3,7 +3,7 @@ import { generateKeyPair, exportJWK } from "jose";
 import fs from "fs";
 import { PrismaAdapter } from "./prismaAdapter.js";
 import express from "express";
-import { PrismaClient } from "../core/node_modules/.prisma/client/index.js";
+import { PrismaClient } from "../node_modules/.prisma/client/index.js";
 import { compare } from "bcrypt";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -11,8 +11,8 @@ import cookieParser from "cookie-parser";
 const caddyConfig = JSON.parse(fs.readFileSync("../caddyConfig.json", "utf8"));
 const prisma = new PrismaClient();
 import dotenv from "dotenv";
-dotenv.config({path: "../core/.env.local"});
-dotenv.config({path: "../core/.env"});
+dotenv.config({path: "../.env.local"});
+dotenv.config({path: "../.env"});
 
 async function setupKey() {
     console.log("Checking for key...");

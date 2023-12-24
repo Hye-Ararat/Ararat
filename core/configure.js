@@ -390,7 +390,7 @@ const nodeName = await prompts({
   name: "value",
   message: "Give this node a name"
   })
-  execSync(`node cluster.js ${publicIp.value} ${nodeName.value}`)
+  execSync(`node core/cluster.js ${publicIp.value} ${nodeName.value}`)
 let node = await prisma.node.create({
   data: {
     url: `https://${address.value}:${port.value}`,
