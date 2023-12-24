@@ -283,7 +283,7 @@ console.log("Installing More Modules...");
 execSync("npm install", {cwd: "./api"});
 console.log("✅ Installed Additional Modules")
 console.log("Adjusting Permissions...")
-execSync("chmod +x start.sh");
+execSync("chmod +x start.sh", {cwd: "./core"});
 console.log("✅ Permissions Adjusted")
 console.log("Creating System Service...")
 try {
