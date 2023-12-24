@@ -235,7 +235,7 @@ console.log("✅ Installed dependency snapd")
 console.log("Installing dependency: LXD...")
 execSync("snap install lxd");
 console.log("✅ Installed dependency LXD")
-console.log("Patching LXD...");
+/*console.log("Patching LXD...");
 try {
 execSync("rm lib/lxd_amd64.snap")
 } catch {
@@ -245,6 +245,7 @@ execSync("wget https://github.com/Hye-Ararat/lxd-pkg-snap/releases/download/5.9_
 execSync("snap install lib/lxd_amd64.snap --dangerous");
 execSync("rm lib/lxd_amd64.snap");
 console.log("✅ Patched LXD")
+*/
 if (!joinNode){
 console.log("Generating Encryption Key...");
 const randomString = () => {
