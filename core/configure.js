@@ -348,7 +348,7 @@ name: "value",
 message: "What is your last name"
 })
 console.log("Creating user...");
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require("../node_modules/@prisma/client");
 const prisma = new PrismaClient();
 let salt = await genSalt(10);
 let hashedPassword = await hash(password.value, salt);
