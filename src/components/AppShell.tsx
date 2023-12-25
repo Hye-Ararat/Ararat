@@ -44,6 +44,8 @@ interface MainLinkProps {
 export const MainContext = createContext<{ setAsideOpen: Dispatch<SetStateAction<boolean>>, setAside: (content: any) => void, asideOpen: boolean }>({ setAsideOpen: (...args: any[]) => { }, setAside: () => { }, asideOpen: false })
 
 function MainLink({ icon, color, label, path, setOpen, setAsideOpen }: MainLinkProps) {
+  const pathname = useRouter().pathname;
+  let active = pathname.includes(path) && path !== '/';
   return (
     <Link onClick={() => {
       setAsideOpen(false)
@@ -60,6 +62,8 @@ function MainLink({ icon, color, label, path, setOpen, setAsideOpen }: MainLinkP
             backgroundColor:
               theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
           },
+          backgroundColor: active ? theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0] : "",
+
         })}
       >
         <Group>
@@ -118,10 +122,10 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
         const audio = new Audio('/audio/delete.wav');
         color = "red"
         audio.play();
-        } else {
-          const audio = new Audio('/audio/notification.wav');
-          audio.play();
-        }
+      } else {
+        const audio = new Audio('/audio/notification.wav');
+        audio.play();
+      }
       notifications.show({
         title: title,
         message: message,

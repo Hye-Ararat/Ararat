@@ -9,6 +9,12 @@ import { SpotlightProvider } from '@mantine/spotlight';
 import { IconSearch } from '@tabler/icons-react';
 import { Notifications } from '@mantine/notifications';
 import "@/lib/xterm.css"
+import { Inter, Poppins } from 'next/font/google'
+const inter = Inter({ subsets: ['latin'] })
+const poppins = Poppins({
+  weight: ["400", "500", "600", "700", "800", "900"],
+  subsets: ['latin']
+})
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -26,8 +32,23 @@ export default function App(props: AppProps) {
         withGlobalStyles
         withNormalizeCSS
         theme={{
-          /** Put your mantine theme override here */
           colorScheme: colorScheme,
+          fontFamily: inter.style.fontFamily,
+
+          defaultRadius: "md",
+          colors: {
+            dark: [
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              "rgb(38, 44, 52)",
+              "rgb(34, 40, 48)",
+              "rgb(26, 32, 40)",
+              "#0d141d",
+              "#080f18",
+            ],
+          },
         }}
       >
         <Notifications position="top-right" />

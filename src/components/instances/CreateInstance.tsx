@@ -140,7 +140,7 @@ export default function CreateInstance({ nodes, imageServers }: { nodes: Node[],
                 color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
                 opacity: 0.55,
                 blur: 3,
-            }} opened={createInstance} onClose={() => setCreatingInstance(false)} title="Create Instance" centered>
+            }} opened={createInstance} onClose={() => setCreatingInstance(false)} title={<Title order={3}>Create Instance</Title>} centered>
                 <Tabs defaultValue="details">
                     <Tabs.List>
                         <Tabs.Tab icon={<IconListDetails size="0.8rem" />} value="details">Details</Tabs.Tab>
