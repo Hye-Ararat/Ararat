@@ -155,14 +155,9 @@ const sleep = (ms) => {
         });
        }
        await log("Generating Environment Variables...")
-       let mongoURI = `mongodb://${mongoUsername}:${mongoPassword}@${mongoHost}:${mongoPort}/${mongoDBName}`;
+       let mongoURI = `mongodb://${mongoUsername.value}:${mongoPassword.value}@${mongoHost.value}:${mongoPort.value}/${mongoDBName.value}`;
        let env = `DATABASE_URL=${mongoURI}\n`
-       let key = '';
-       let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-       
-       while (key.length < 32) {
-         key += characters.charAt(Math.floor(Math.random() * characters.length));
-       }
+       let key = [...Array(32)].map(i=>(~~(Math.random()*36)).toString(36)).join('')
     env+=`ENC_KEY=${key}\n`
     env+=`URL=${address.value}:${port.value}\n`
     fs.writeFileSync("./.env.local", env);
