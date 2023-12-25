@@ -2,6 +2,7 @@ const { execSync } = require("child_process");
 const { writeFileSync } = require("fs");
 const prompts = require("prompts");
 const axios = require("axios");
+const fs = require("fs")
 const sleep = (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   };
@@ -167,7 +168,6 @@ const sleep = (ms) => {
     fs.writeFileSync("./.env.local", env);
     await log("✅ Environment variables successfully generated");
     await log("Generating encryption keys...");
-    const fs = require("fs");
 const generateKeyPair = require("jose").generateKeyPair;
 const exportJWK = require("jose").exportJWK;
 
