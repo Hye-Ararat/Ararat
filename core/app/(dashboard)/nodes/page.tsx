@@ -1,4 +1,4 @@
-import prisma from "../../../lib/prisma.js";
+import prisma from "../../../lib/prisma.js/index.js";
 
 import {Typography, Grid} from "../../../components/base";
 import CreateNode from "./CreateNode";
