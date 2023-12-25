@@ -92,13 +92,10 @@ const sleep = (ms) => {
         });
         let mongoUsername;
         let mongoPassword;
-        let mongoHost;
-        let mongoPort;
-        let mongoDBName;
+        let mongoHost = {value: "localhost"};
+        let mongoPort = {value: 27017};
+        let mongoDBName = {value: "ararat"};
         if (!alreadyHasDB.value) {
-            mongoHost = "localhost";
-            mongoPort = 27017;
-            mongoDBName = "ararat";
             await log("Installing MongoDB...");
             execSync("apt-get install gnupg");
             execSync("curl -fsSL https://pgp.mongodb.com/server-7.0.asc | \
@@ -132,7 +129,7 @@ const sleep = (ms) => {
             type: "text",
             name: "value",
             message: "Enter the hostname of the MongoDB server"
-        });
+        })
         mongoPort = await prompts({
             type: "number",
             name: "value",
@@ -149,11 +146,11 @@ const sleep = (ms) => {
             message: "Enter the username to the MongoDB datbase"
         });
         mongoPassword = await prompts({
-            type: "password",
+            type: "text",
             name: "value",
             message: "Enter the password to the MongoDB database"
         });
-       }
+      }
        await log("Generating Environment Variables...")
        let mongoURI = `mongodb://${mongoUsername.value}:${mongoPassword.value}@${mongoHost.value}:${mongoPort.value}/${mongoDBName.value}`;
        let env = `DATABASE_URL=${mongoURI}\n`

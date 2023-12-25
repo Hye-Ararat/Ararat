@@ -28,7 +28,7 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
     try {
         let instance: NodeLxdInstance | undefined = await fetchInstance((params.instance as string), (params.node as string), (req.cookies.access_token as string))
         if (!instance) return redirect('/instances');
-        var volumes = (await axios.get(`http://${url}/api/instances/${(params.node as string)}/${(params.instance as string)}/volumes`, {
+        var volumes = (await axios.get(`https://${url}/api/instances/${(params.node as string)}/${(params.instance as string)}/volumes`, {
             headers: {
                 Cookie: `access_token=${req.cookies.access_token}`
             }

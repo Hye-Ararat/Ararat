@@ -21,14 +21,14 @@ export async function getServerSideProps({ query }: { query: { [key: string]: st
     let url = oidc.authorizationUrl("login openid email");
     return {
       redirect: {
-        destination: url,
+        destination: url.replace("http://", "https://"),
         permanent: false,
       }
     }
   }
-  const interactionDetails = await fetch(`http://${process.env.URL}/oidc/interaction/${query["interaction"]}`);
+  const interactionDetails = await fetch(`https://${process.env.URL}/oidc/interaction/${query["interaction"]}`);
   const interactionJson = await interactionDetails.json();
-  const clientDetails = await fetch(`http://${process.env.URL}/oidc/client/${interactionJson.params.client_id}`);
+  const clientDetails = await fetch(`https://${process.env.URL}/oidc/client/${interactionJson.params.client_id}`);
   const clientJson = await clientDetails.json();
   return {
     props: {

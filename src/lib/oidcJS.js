@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken")
 async function validateSession(access_token, url) {
     return new Promise((resolve, reject) => {
         var jws = jwsClient({
-            jwksUri: `http://${url}/oidc/jwks`
+            jwksUri: `https://${url}/oidc/jwks`
         })
 
         jwt.verify(access_token, function getKey(header, callback) {

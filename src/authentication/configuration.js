@@ -29,9 +29,9 @@ const configuration = {
         {
             client_id: 'incus',
             client_secret: 'test',
-            redirect_uris: ["http://localhost:5556/auth/incus/callback", `http://${url}/api/authentication/callback`],
+            redirect_uris: ["http://localhost:5556/auth/incus/callback", `https://${url}/api/authentication/callback`],
             client_name: "Hye Ararat",
-            logo_uri: `http://${url}/images/Hye_Ararat_2.png`,
+            logo_uri: `https://${url}/images/Hye_Ararat_2.png`,
             scope: "openid profile email offline_access",
             token_endpoint_auth_method: "none",
             grant_types: ["authorization_code", "urn:ietf:params:oauth:grant-type:device_code", "refresh_token", "client_credentials"]
@@ -77,7 +77,7 @@ const configuration = {
         resourceIndicators: {
             enabled: true,
             defaultResource() {
-                return `http://${url}`;
+                return `https://${url}`;
             },
             getResourceServerInfo(ctx, resourceIndicator, client) {
                 return ({
@@ -97,10 +97,10 @@ const configuration = {
             try {
                 let interactionId = interaction.returnTo.split("/").pop();
                 if (interaction.prompt.name == "login") {
-                    return `http://${url}/authentication/login?interaction=${interactionId}`;
+                    return `https://${url}/authentication/login?interaction=${interactionId}`;
                 }
                 if (interaction.prompt.name == "consent") {
-                    return `http://${url}/authentication/authorize?interaction=${interactionId}`;
+                    return `https://${url}/authentication/authorize?interaction=${interactionId}`;
                 }
             } catch (err) {
                 console.log("ERROR", err)

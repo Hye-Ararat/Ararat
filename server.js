@@ -41,7 +41,7 @@ app.prepare().then(() => {
     })
     server.listen(port, (err) => {
         if (err) throw err
-        console.log(`> Hye Ararat is running on http://${process.env.URL}`)
+        console.log(`> Hye Ararat is running on https://${process.env.URL}`)
     })
     exec(`node ./authentication.js`, (err, stdout, stderr) => {
         if (err) {

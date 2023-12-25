@@ -26,12 +26,12 @@ let cachedClient: {
 };
 async function getClient() {
     if (!issuer) {
-        issuer = await Issuer.discover(`http://${url}`);
+        issuer = await Issuer.discover(`https://${url}`);
     }
     if (!oidClient) {
         oidClient = new issuer.Client({
             client_id: "incus",
-            redirect_uris: [`http://${url}/api/authentication/callback`],
+            redirect_uris: [`https://${url}/api/authentication/callback`],
             response_types: ["code"]
         })
     }
@@ -41,6 +41,7 @@ async function getClient() {
     if (!codeChallenge) {
         codeChallenge = generators.codeChallenge(codeVerifier);
     }
+    console.log(authorizationUrl);
     return {
         authorizationUrl: authorizationUrl,
         codeVerifier: codeVerifier,

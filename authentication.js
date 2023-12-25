@@ -14,12 +14,12 @@ const {compare} = require("bcrypt");
 const jwsClient = require("jwks-rsa")
 const jwt = require("jsonwebtoken")
 const usersCollection = mongo.db().collection("User")
-const oidcProvider = new provider(`http://${process.env.URL}/oidc`, { ...configuration });
+const oidcProvider = new provider(`https://${process.env.URL}/oidc`, { ...configuration });
 app.use(bodyParser.json())
 app.use(cookieParser())
 app.get("/oidc/.well-known/openid-configuration", async (req, res) => {
     console.log("adsfasdf")
-    let config = await fetch("http://localhost:3000/.well-known/openid-configuration").then(re => re.json());
+    let config = await fetch(`https://${process.env.URL}/.well-known/openid-configuration`).then(re => re.json());
     res.json(config);
 })
 app.get("/oidc/interaction/:uid", async (req, res) => {
@@ -59,7 +59,7 @@ app.post("/oidc/interaction/:uid/login", async (req, res, next) => {
     await inter.save(inter.exp - epoch());
     console.log("return of /oidc/interaction/:uid/login")
     console.log(`redirects to ${inter.returnTo}`)
-    return res.redirect(inter.returnTo);
+    return res.redirect(inter.returnTo.replace("http://", "https://"));
 
 })
 
@@ -126,7 +126,7 @@ app.post("/oidc/interaction/:uid/confirm", async (req, res, next) => {
         await inter?.save(inter.exp - epoch())
         console.log("return of /oidc/interaction/:uid/confirm")
         console.log(`redirects to ${inter.returnTo}`)
-        res.setHeader("Location", inter.returnTo);
+        res.setHeader("Location", inter.returnTo.replace("http://", "https://"));
         res.setHeader("Content-Length", "0");
         res.status(303);
         res.end();
@@ -151,5 +151,5 @@ app.get("/oidc/client/:id", async (req, res) => {
 app.use(oidcProvider.callback());
 app.listen(port, (err) => {
     if (err) throw err
-    console.log(`> Hye Ararat is running on http://${process.env.URL}`)
+    console.log(`> Hye Ararat is running on https://${process.env.URL}`)
 })

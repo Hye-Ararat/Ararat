@@ -1062,6 +1062,15 @@ axios@^1.4.0:
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
+axios@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.2.tgz#de67d42c755b571d3e698df1b6504cde9b0ee9f2"
+  integrity sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==
+  dependencies:
+    follow-redirects "^1.15.0"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
 babel-plugin-macros@^3.1.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/babel-plugin-macros/-/babel-plugin-macros-3.1.0.tgz"
@@ -2064,6 +2073,16 @@ import-fresh@^3.2.1:
   dependencies:
     parent-module "^1.0.0"
     resolve-from "^4.0.0"
+
+incus@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/incus/-/incus-1.0.8.tgz#3bf910615bdb411d5db970f48eb7aeda8c79f5f8"
+  integrity sha512-O/YdqYhFypspzGMjAXwcivV9OyJOFPWujWjO1Nzk0LPxbve95xBGHqBTBKihZpygE7Xo4oQ0dbIQziXAvjvkyg==
+  dependencies:
+    axios "^1.4.0"
+    isomorphic-ws "^5.0.0"
+    openid-client "^5.4.2"
+    ws "^8.13.0"
 
 inflight@^1.0.4:
   version "1.0.6"

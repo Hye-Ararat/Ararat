@@ -19,9 +19,10 @@ export async function getServerSideProps({ query }: { query: { [key: string]: st
   if (!query["interaction"]) {
     let oidc = await client();
     let url = oidc.authorizationUrl("login openid email");
+    console.log(url)
     return {
       redirect: {
-        destination: url,
+        destination: url.replace("http://", "https://"),
         permanent: false,
       }
     }
@@ -61,13 +62,13 @@ export default function Authentication({ interaction }: { interaction: string })
             display: "flex",
             justifyContent: "center",
           }}>
-        <Image
+          <Image
             src="/images/Hye_Ararat_2.png"
             width={50}
             height={50}
             alt="hye hosting"
-            />
-          </div>
+          />
+        </div>
         <Text ta="center" size="lg" weight={500}>
           Welcome to Hye Ararat!
         </Text>
