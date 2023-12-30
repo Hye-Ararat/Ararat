@@ -15,6 +15,7 @@ export default function CreateInstance({ nodes, imageServers }: { nodes: Node[],
     const [node, setNode] = useState<Node>();
     const [images, setImages] = useState([]);
     const [nodesData, setNodesData] = useState([]);
+    const [stateless, setStateless] = useState(false);
     const [instanceConfig, setInstanceConfig] = useState({
         devices: {
             root: {
@@ -81,9 +82,12 @@ export default function CreateInstance({ nodes, imageServers }: { nodes: Node[],
                         let supportedArch = "";
                         if (nodeData.cpu.architecture == "x86_64") supportedArch = "amd64";
                         if (nodeData.cpu.architecture == "aarch64") supportedArch = "arm64";
-                        if (data.products[image].arch !== supportedArch) return;
+                        if (data.products[image].arch !== supportedArch && data.products[image].arch !== nodeData.cpu.architecture) return;
                         formattedImages.push({
-                            value: data.products[image],
+                            value: {
+                                server: imageServer.url,
+                                ...data.products[image]
+                            },
                             label: data.products[image].aliases.split(",")[0],
                             title: data.products[image].os + " " + data.products[image].release_title,
                             description: data.products[image].variant ? data.products[image].variant + " variant" : "No variant",
@@ -178,16 +182,19 @@ export default function CreateInstance({ nodes, imageServers }: { nodes: Node[],
                         }} placeholder="Instance Description" label="Instance Description" />
                         <Select itemComponent={SelectNode} withAsterisk onChange={(e) => setNode(nodes.filter((node) => node.name == e)[0])} label="Node" placeholder="Node" data={nodes.map(node => ({ name: node.name, vendor: nodesData.length == nodes.length ? nodesData.filter((dat) => node.name == dat.name)[0].system.vendor : "", value: node.name, label: node.name, description: nodesData.length == nodes.length ? nodesData.filter((dat) => node.name == dat.name)[0].system.product : "" }))} />
                         <Select onChange={(e) => {
+                            //figure out what image server this image is on
                             let newInstanceConfig = { ...instanceConfig }
                             newInstanceConfig.source = {
                                 type: "image",
                                 alias: e.aliases.split(",")[0],
                                 protocol: "simplestreams",
-                                server: "https://images.linuxcontainers.org"
+                                server: e.server
                             }
                             console.log(e)
+                            console.log(JSON.stringify(e))
                             let types = [];
                             if (!JSON.stringify(e).includes("stateless")) {
+                                setStateless(false)
                                 if (JSON.stringify(e).includes("disk-kvm") || JSON.stringify(e).includes("qcow2")) {
                                     types.push({ value: "virtual-machine", label: "Virtual Machine" });
                                 }
@@ -196,7 +203,15 @@ export default function CreateInstance({ nodes, imageServers }: { nodes: Node[],
                                 }
 
                             } else {
+                                types.push({ value: "container", label: "Stateless N-VPS" });
+                                setStateless(true)
                                 newInstanceConfig.type = "container";
+                                e.properties.environment.forEach((env) => {
+                                    newInstanceConfig.config[`environment.${env.key}`] = env.value;
+                                })
+                                newInstanceConfig.config["user.stateless-startup"] = e.properties.startup;
+                                newInstanceConfig.config["user.stateless-directory"] = e.properties.directory;
+                                newInstanceConfig.config["user.stateless-user"] = e.properties.user.toString();
                             }
                             if (types.length == 1) {
                                 newInstanceConfig.type = types[0].value;
@@ -209,6 +224,16 @@ export default function CreateInstance({ nodes, imageServers }: { nodes: Node[],
                             newInstanceConfig.type = e;
                             setInstanceConfig(newInstanceConfig);
                         }} value={instanceConfig.type} disabled={!instanceConfig.source} data={supportedTypes} label="Instance Type" placeholder="Instance Type" withAsterisk />
+                        {stateless ? <>
+                            <TextInput value={instanceConfig.config["user.stateless-startup"]} onChange={(e) => {
+
+                            }} label="Startup Command" />
+                            <Title order={5} mt="sm">Environment Variables</Title>
+                            {Object.keys(instanceConfig.config).map((key) => {
+                                return key.startsWith("environment.") ? <TextInput value={instanceConfig.config[key]} label={key.split("environment.")[1]} /> : ""
+                            })
+                            }
+                        </> : ""}
                     </Tabs.Panel>
 
                     <Tabs.Panel value="storage">
