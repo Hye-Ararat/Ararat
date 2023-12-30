@@ -4,7 +4,7 @@ import { Children, MouseEventHandler, ReactNode } from "react";
 export function DataTable({ children, headings }: { children: ReactNode, headings?: string[] }) {
     return (
         <ScrollArea>
-            <Table sx={{ minWidth: 800, borderSpacing: "0 15px", borderCollapse: "separate" }} verticalSpacing="lg">
+            <Table sx={{ minWidth: 100, borderSpacing: "0 15px", borderCollapse: "separate" }} verticalSpacing="lg">
                 {headings ? <thead>
                     <tr key={"head"}>
                         {headings.map(heading => <th style={{ border: 0 }}>{heading}</th>)}

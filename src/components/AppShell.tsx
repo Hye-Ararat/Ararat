@@ -164,7 +164,7 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
       }
       footer={
         <Footer height={60} p="md">
-          <Text>© 2023 Hye Hosting LLC.</Text>
+          <Text>© {(new Date().getFullYear())} Hye Hosting LLC.</Text>
         </Footer>
       }
       header={
