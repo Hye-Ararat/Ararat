@@ -273,27 +273,39 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
     useEffect(() => {
         let client = connectOIDC(instance.node.url, getCookie("access_token"));
         async function getCpu() {
-            let resources = await (await client.get("/resources")).data.metadata
-            console.log(resources)
-            let stateStart = await (await client.get(`/instances/${instance.name}/state`)).data.metadata
-            let startTime = Date.now()
-            let startCpuUsage = Math.ceil(stateStart.cpu.usage / 1000000)
-            await new Promise((resolve) => setTimeout(resolve, 500))
-            let stateEnd = await (await client.get(`/instances/${instance.name}/state`)).data.metadata
-            let endTime = Date.now()
-            let endCpuUsage = Math.ceil(stateEnd.cpu.usage / 1000000)
-            let cpuUsedMs = endCpuUsage - startCpuUsage
-            let totalMsPassed = endTime - startTime
-            let cpuUsageTotal = cpuUsedMs / ((instance.config["limits.cpu"] ? instance.config["limits.cpu"] : resources.cpu.total) * totalMsPassed)
-            console.log(cpuUsageTotal)
-            setInstanceCpu(Math.round(cpuUsageTotal * 100))
-            setInstanceMemory(stateEnd.memory.usage);
-            setInstanceDisk(stateEnd.disk.root.usage)
-            setInstanceStatus(stateEnd.status)
+            try {
+                let resources = await (await client.get("/resources")).data.metadata
+                let stateStart = await (await client.get(`/instances/${instance.name}/state`)).data.metadata
+                let startTime = Date.now()
+                let startCpuUsage = Math.ceil(stateStart.cpu.usage / 1000000)
+                await new Promise((resolve) => setTimeout(resolve, 500))
+                let stateEnd = await (await client.get(`/instances/${instance.name}/state`)).data.metadata
+                let endTime = Date.now()
+                let endCpuUsage = Math.ceil(stateEnd.cpu.usage / 1000000)
+                let cpuUsedMs = endCpuUsage - startCpuUsage
+                let totalMsPassed = endTime - startTime
+                let cpuUsageTotal = cpuUsedMs / ((instance.config["limits.cpu"] ? instance.config["limits.cpu"] : resources.cpu.total) * totalMsPassed)
+                setInstanceCpu(Math.round(cpuUsageTotal * 100))
+                setInstanceMemory(stateEnd.memory.usage);
+                setInstanceDisk(stateEnd.disk.root.usage)
+                setInstanceStatus(stateEnd.status)
+            } catch (error) {
+
+            }
+
         }
+        setTimeout(() => {
+            try {
+                getCpu()
+
+            } catch (error) {
+
+            }
+
+        }, 1000)
         const resInt = setInterval(() => {
             getCpu()
-        }, 1000)
+        }, 15000)
         return () => {
             clearInterval(resInt)
         }
