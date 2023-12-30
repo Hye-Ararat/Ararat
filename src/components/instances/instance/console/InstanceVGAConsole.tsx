@@ -3,7 +3,7 @@ import * as SpiceHtml5 from "@/lib/spice/src/main";
 import { useEffect, useRef, useState } from "react";
 import { connectOIDC } from "incus";
 import { getCookie } from "cookies-next";
-import { ActionIcon, Button, Center, Group, Progress, TextInput, useMantineColorScheme, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Progress, TextInput, useMantineTheme } from "@mantine/core";
 import { useWindowScroll } from "@mantine/hooks";
 import { SpiceFileXferTask } from "@/lib/spice/src/filexfer";
 import { SpiceMsgcKeyDown } from "@/lib/spice/src/spicemsg";
