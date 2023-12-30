@@ -1,5 +1,5 @@
 import { use, useContext, useEffect, useState } from 'react';
-import { Badge, Button, Flex, Group, Tabs, Title, Text, Center } from '@mantine/core';
+import { Badge, Button, Flex, Group, Tabs, Title, Text, Center, useMantineTheme } from '@mantine/core';
 import Link from 'next/link';
 import { IconBox, IconFolder, IconHistory, IconHome, IconNetwork, IconSettings, IconTerminal2, IconWifi } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
@@ -9,6 +9,7 @@ import { getCookie } from 'cookies-next';
 
 export default function InstanceShell({ instance }: { instance: any }) {
   const router = useRouter();
+  const theme = useMantineTheme();
   const [activeTab, setActiveTab] = useState("dashboard")
   const [allowKill, setAllowKill] = useState(false)
   useEffect(() => {
@@ -22,30 +23,37 @@ export default function InstanceShell({ instance }: { instance: any }) {
     if (router.pathname == "/instances/[node]/[instance]/settings") setActiveTab("settings");
 
   }, [router.asPath])
+  const [instanceStatus, setInstanceStatus] = useState(instance.status);
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const client = connectOIDC(instance.node.url, getCookie("access_token"));
+      const { data } = await client.get(`/instances/${instance.name}`);
+      setInstanceStatus(data.metadata.status);
+    }
+      , 1000);
+    return () => clearInterval(interval);
+  }, [])
   return (
     <>
       <Flex>
         <div>
           <Title order={1}>{instance.name}</Title>
-          <Badge color={getBadgeColor(instance.status)} variant="dot">{instance.status}</Badge>
+          <Badge bg={theme.colors.dark[6]} color={getBadgeColor(instanceStatus)} variant="dot">{instanceStatus}</Badge>
         </div>
         <Button onClick={async () => {
           const client = connectOIDC(instance.node.url, getCookie("access_token"));
           await client.put(`/instances/${instance.name}/state`, { action: "start" });
-          instance.status = "Running";
-        }} variant="filled" color="green" sx={{ marginLeft: "auto", marginRight: 10, marginTop: "auto", marginBottom: "auto" }} disabled={instance.status == "Running"}>Start</Button>
+        }} variant="filled" color="green" sx={{ marginLeft: "auto", marginRight: 10, marginTop: "auto", marginBottom: "auto" }} disabled={instanceStatus == "Running"}>Start</Button>
         <Button onClick={async () => {
           setAllowKill(true);
           const client = connectOIDC(instance.node.url, getCookie("access_token"));
           await client.put(`/instances/${instance.name}/state`, { action: "stop", force: allowKill });
-          instance.status = "Stopped";
           setAllowKill(false);
-        }} variant="filled" sx={{ marginRight: 10, marginTop: "auto", marginBottom: "auto" }} color="red" disabled={instance.status == "Stopped"}>{allowKill ? "Kill" : "Stop"}</Button>
+        }} variant="filled" sx={{ marginRight: 10, marginTop: "auto", marginBottom: "auto" }} color="red" disabled={instanceStatus == "Stopped"}>{allowKill ? "Kill" : "Stop"}</Button>
         <Button onClick={async () => {
           const client = connectOIDC(instance.node.url, getCookie("access_token"));
           await client.put(`/instances/${instance.name}/state`, { action: "restart" });
-          instance.status = "Running"
-        }} variant="filled" sx={{ marginTop: "auto", marginBottom: "auto" }} color="yellow" disabled={instance.status == "Stopped"}>Restart</Button>
+        }} variant="filled" sx={{ marginTop: "auto", marginBottom: "auto" }} color="yellow" disabled={instanceStatus == "Stopped"}>Restart</Button>
       </Flex>
       <Tabs value={activeTab} sx={{ marginTop: 10 }} >
         <Tabs.List>

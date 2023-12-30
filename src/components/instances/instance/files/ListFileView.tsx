@@ -20,6 +20,10 @@ export function ListFileView({ files, path }: { files: string[], path: string })
     var initialCheckedFiles = ([] as { id: string, checked: boolean }[])
     files.forEach(file => initialCheckedFiles.push({ id: file, checked: false }))
     var [selectedFiles, setSelectedFiles] = useState<{ id: string, checked: boolean }[]>(initialCheckedFiles)
+    const [leftValue, setLeftValue] = useState(0);
+    useEffect(() => {
+        setLeftValue((window.innerWidth / 2) - (111 / 2))
+    }, [])
     return (
         <>
             <Table striped highlightOnHover>
@@ -71,7 +75,7 @@ export function ListFileView({ files, path }: { files: string[], path: string })
                 </tbody>
             </Table>
             <Flex>
-                <Dialog opened={selectedFiles.filter(s => s.checked == true).length > 0} sx={{ width: 111 }} radius="md" position={{ bottom: 80, left: (window.innerWidth / 2) - (111 / 2) }}>
+                <Dialog transition={"pop"} opened={selectedFiles.filter(s => s.checked == true).length > 0} sx={{ width: 111 }} radius="md" position={{ bottom: 80, left: leftValue }}>
                     <Button onClick={() => {
                         async function deleteFiles() {
                             var files = selectedFiles;

@@ -40,12 +40,12 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
 
 export default function InstanceConsole({ instance }: { instance: NodeLxdInstance }) {
     var [consoleType, setConsoleType] = useState<string>("serial")
-    
+
     return (
         <>
             <InstanceShell instance={instance} />
             <Flex mt={"xs"}>
-                <Title mt="auto" mb="auto" order={3}>Console</Title>
+                <Title order={4} my="auto">Console</Title>
                 <SegmentedControl value={consoleType} color="blue" onChange={setConsoleType} data={[
                     { "label": (<Center><IconAppWindow /></Center>), value: "spice", disabled: instance.type == "container" },
                     { "label": (<Center><IconTerminal /></Center>), value: "serial" }

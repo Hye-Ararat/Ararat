@@ -90,7 +90,7 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
     const [uploadDataDone, setUploadDataDone] = useState(0)
     const inputFile = useRef<HTMLInputElement | null>(null)
     const router = useRouter()
-    let [fileView, setFileView] = useState<string>("grid")
+    let [fileView, setFileView] = useState<string>("list")
     const [filesState, setFilesState] = useState(files)
     useEffect(() => {
         setFilesState(files)
@@ -181,8 +181,8 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
                     })}
                 </Breadcrumbs>
                 <SegmentedControl sx={{ marginLeft: "auto" }} color="blue" data={[
-                    { label: (<Center><IconLayoutGrid /></Center>), value: "grid" },
-                    { label: (<Center><IconLayoutList /></Center>), value: "list" }
+                    { label: (<Center><IconLayoutList /></Center>), value: "list" },
+                    { label: (<Center><IconLayoutGrid /></Center>), value: "grid" }
                 ]} onChange={setFileView} value={fileView} />
                 <ActionIcon size={34} variant="light" onClick={rerender} color="blue">
                     <IconReload />
