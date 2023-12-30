@@ -210,7 +210,7 @@ export default function CreateInstance({ nodes, imageServers }: { nodes: Node[],
                                     newInstanceConfig.config[`environment.${env.key}`] = env.value;
                                 })
                                 newInstanceConfig.config["user.stateless-startup"] = e.properties.startup;
-                                newInstanceConfig.config["user.stateless-directory"] = e.properties.directory;
+                                newInstanceConfig.config["user.stateless-directory"] = e.properties.working_dir;
                                 newInstanceConfig.config["user.stateless-user"] = e.properties.user.toString();
                             }
                             if (types.length == 1) {
