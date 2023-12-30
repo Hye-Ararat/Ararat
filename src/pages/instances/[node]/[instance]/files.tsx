@@ -50,6 +50,12 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
     try {
         let instance: NodeLxdInstance | undefined = await fetchInstance((params.instance as string), (params.node as string), (req.cookies.access_token as string))
         if (!instance) return { redirect: { permanent: true, destination: `/instances` } };
+        if (instance.expanded_config["user.stateless-directory"]) {
+            if (query.path == "/") {
+                return redirect(`/instances/${params.node}/${params.instance}/files?path=${instance.expanded_config["user.stateless-directory"]}`)
+
+            }
+        }
         let nodeClient = await getNodeClient((params.node as string), (req.cookies.access_token as string))
         let rawFiles = (await nodeClient.get(`/instances/${(params as ParsedUrlQuery).instance}/files?path=${query.path}`))
         if (rawFiles.headers["x-incus-type"] == "symlink") {
