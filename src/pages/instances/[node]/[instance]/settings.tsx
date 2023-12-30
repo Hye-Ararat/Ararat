@@ -125,17 +125,21 @@ export default function InstanceSettings({ instance, images }: { instance: NodeL
                         newConfig.config["security.nesting"] = e.target.checked ? "true" : "false";
                         setInstanceState(newConfig);
                     }} checked={instanceState.config["security.nesting"] == "true"} mt="xs" label="Nesting" />
-                    <Switch onChange={(e) => {
-                        let newConfig = { ...instanceState };
-                        newConfig.config["security.privileged"] = e.target.checked ? "true" : "false";
-                        setInstanceState(newConfig);
-                    }} checked={instanceState.config["security.privileged"] == "true"} mt="xs" label="Privileged" />
-                    <Switch onChange={(e) => {
-                        let newConfig = { ...instanceState };
-                        newConfig.config["security.secureboot"] = e.target.checked ? "true" : "false";
-                        setInstanceState(newConfig);
-                    }} checked={instanceState.config["security.secureboot"] == "true"} mt="xs" label="Secure Boot" />
-                    </Paper>
+                    {instanceState.type == "container" ?
+                        <Switch onChange={(e) => {
+                            let newConfig = { ...instanceState };
+                            newConfig.config["security.privileged"] = e.target.checked ? "true" : "false";
+                            setInstanceState(newConfig);
+                        }} checked={instanceState.config["security.privileged"] == "true"} mt="xs" label="Privileged" />
+                        : null}
+                    {instanceState.type == "virtual-machine" ?
+                        <Switch onChange={(e) => {
+                            let newConfig = { ...instanceState };
+                            newConfig.config["security.secureboot"] = e.target.checked ? "true" : "false";
+                            setInstanceState(newConfig);
+                        }} checked={instanceState.config["security.secureboot"] == "true"} mt="xs" label="Secure Boot" />
+                        : null}
+                </Paper>
             </SimpleGrid>
             <Flex mt="md">
                 <Button ml="auto" variant="light" color="red" onClick={async (e) => {
