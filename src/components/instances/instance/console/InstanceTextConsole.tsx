@@ -21,6 +21,7 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
     var [done, setDone] = useState(false)
     var fitAddon = new FitAddon()
     const router = useRouter();
+    const [rerun, setReRun] = useState(0);
     useEffect(() => {
 
         if (xtermRef.current && done == false) {
@@ -31,7 +32,7 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
             console.log()
             setDone(true)
 
-            client.post(`/instances/${instance.name}/console`, {
+            /*client.post(`/instances/${instance.name}/console`, {
                 "type": "console",
                 "wait-for-websocket": true,
             }).then(({ data }) => {
@@ -53,11 +54,45 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
                     datWS?.close();
                 })
             })
+            */
+            const operations = client.get("/operations?recursion=1").then(({ data }) => {
+                let operations = data.metadata["running"];
+                console.log(operations)
+                let operation = operations.find((o: any) => o.resources.instances.includes(`/1.0/instances/${instance.name}`))
+                if (operation) {
+                    if ((operation.description == "Executing command") || (operation.description == "Showing console")) {
+                        let dataWS = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/operations/${operation.id}/websocket?secret=${operation.metadata.fds["0"]}`)
+                        let controlWs = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/operations/${operation.id}/websocket?secret=${operation.metadata.fds["control"]}`)
+                        setdatWS(dataWS)
+                        dataWS.onmessage = async (ev) => {
+                            xtermRef.current?.terminal.write(await ev.data.text())
+                        }
+                        // xtermRef.current?.terminal.onBinary(console.log)
+                        xtermRef.current?.terminal.onData((d) => {
+
+                            dataWS.send(textEncoder.encode(d))
+                        })
+                        router.events.on("routeChangeStart", () => {
+                            datWS?.close();
+                        })
+                    }
+                } else {
+                    let console = client.post(`/instances/${instance.name}/console`, {
+                        "type": "console",
+                        "wait-for-websocket": true,
+                    }).catch((e) => {
+                        setError(getWsErrorMsg(e))
+                    }).then(() => {
+                        setReRun(rerun + 1)
+                    })
+                }
+            })
+
             return () => {
                 datWS?.close()
             }
         }
-    }, [])
+    }, [rerun])
     return (
         <>
             <div style={{ borderRadius: "10px", padding: "13px", backgroundColor: theme.colors.dark[7], marginTop: "10px" }}>
