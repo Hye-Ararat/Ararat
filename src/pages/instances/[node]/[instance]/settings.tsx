@@ -118,6 +118,28 @@ export default function InstanceSettings({ instance, images }: { instance: NodeL
                         setInstanceState(newConfig);
                     }} checked={instanceState.config["snapshots.stopped"] == "true"} mt="xs" label="Take Snapshots While Stopped" />
                 </Paper>
+                <Paper p={10}>
+                    <Title order={4}>Security</Title>
+                    <Switch onChange={(e) => {
+                        let newConfig = { ...instanceState };
+                        newConfig.config["security.nesting"] = e.target.checked ? "true" : "false";
+                        setInstanceState(newConfig);
+                    }} checked={instanceState.config["security.nesting"] == "true"} mt="xs" label="Nesting" />
+                    {instanceState.type == "container" ?
+                        <Switch onChange={(e) => {
+                            let newConfig = { ...instanceState };
+                            newConfig.config["security.privileged"] = e.target.checked ? "true" : "false";
+                            setInstanceState(newConfig);
+                        }} checked={instanceState.config["security.privileged"] == "true"} mt="xs" label="Privileged" />
+                        : null}
+                    {instanceState.type == "virtual-machine" ?
+                        <Switch onChange={(e) => {
+                            let newConfig = { ...instanceState };
+                            newConfig.config["security.secureboot"] = e.target.checked ? "true" : "false";
+                            setInstanceState(newConfig);
+                        }} checked={instanceState.config["security.secureboot"] == "true"} mt="xs" label="Secure Boot" />
+                        : null}
+                </Paper>
             </SimpleGrid>
             <Flex mt="md">
                 <Button ml="auto" variant="light" color="red" onClick={async (e) => {

@@ -115,7 +115,7 @@ export default function Authentication({ interaction }: { interaction: string })
             <TextInput
               required
               label="Email"
-              placeholder="hello@hye.gg"
+              placeholder="hello@hyeararat.com"
               value={form.values.email}
               onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
               error={(form.errors.email && 'Invalid email') || error}

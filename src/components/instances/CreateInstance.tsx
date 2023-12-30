@@ -272,7 +272,7 @@ export default function CreateInstance({ nodes, imageServers }: { nodes: Node[],
                         <Flex mt="xs">
                             <Button onClick={() => {
                                 let newConfig = { ...instanceConfig }
-                                newConfig.devices["newNic"] = {
+                                newConfig.devices["eth0"] = {
                                     type: "nic"
                                 }
                                 setInstanceConfig(newConfig);
