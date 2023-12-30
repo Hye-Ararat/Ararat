@@ -3,7 +3,7 @@ import * as SpiceHtml5 from "@/lib/spice/src/main";
 import { useEffect, useRef, useState } from "react";
 import { connectOIDC } from "incus";
 import { getCookie } from "cookies-next";
-import { ActionIcon, Button, Center, Group, Progress, TextInput } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Progress, TextInput, useMantineColorScheme, useMantineTheme } from "@mantine/core";
 import { useWindowScroll } from "@mantine/hooks";
 import { SpiceFileXferTask } from "@/lib/spice/src/filexfer";
 import { SpiceMsgcKeyDown } from "@/lib/spice/src/spicemsg";
@@ -16,6 +16,7 @@ declare global {
 }
 
 export default function InstanceVGAConsole({ instance }: { instance: NodeLxdInstance }) {
+    const theme = useMantineTheme()
     const [spiceconn, setSpiceconn] = useState<SpiceHtml5.SpiceMainConn>()
     const spiceRef = useRef<HTMLDivElement>(null);
     var access_token = (getCookie("access_token") as string)
@@ -96,7 +97,7 @@ export default function InstanceVGAConsole({ instance }: { instance: NodeLxdInst
     return (
         <>
 
-            <div style={{ borderRadius: "10px", padding: "13px", backgroundColor: "#1a1b1e", marginTop: "10px" }}>
+            <div style={{ borderRadius: "10px", padding: "13px", backgroundColor: theme.colors.dark[7], marginTop: "10px" }}>
                 <Group mb="10px">
                     <ActionIcon onClick={handleFullScreen} variant="light" color="blue"><IconMaximize /></ActionIcon>
                     <Button size="xs" variant="light" color="teal" onClick={() => SpiceHtml5.sendCtrlAltDel(window.spice_connection)}>CTRL + ALT + DEL</Button>

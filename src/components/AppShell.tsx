@@ -188,7 +188,7 @@ export default function ApplicationShell({ children }: { children: ReactNode }) 
           </div>
         </Header>
       }
-      aside={asideOpen ? <Aside p="md" width={{ sm: 200, lg: 300 }} sx={{ backgroundColor: "#111214" }}>
+      aside={asideOpen ? <Aside p="md" width={{ sm: 200, lg: 300 }} sx={{ backgroundColor: theme.colors.dark[8] }}>
         {asideContent}
       </Aside> : undefined}
     >

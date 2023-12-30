@@ -3,13 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import { connectOIDC } from "incus";
 
 import { getCookie } from "cookies-next";
-import { Button, Center, Loader, LoadingOverlay } from "@mantine/core";
+import { Button, Center, Loader, LoadingOverlay, useMantineTheme } from "@mantine/core";
 import { getWsErrorMsg } from "@/lib/util";
 import Xterm from "@/lib/Term";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit"
 import { useRouter } from "next/router";
 export default function InstanceTextConsole({ instance }: { instance: NodeLxdInstance }) {
+    const theme = useMantineTheme()
     var access_token = (getCookie("access_token") as string)
     const client = connectOIDC(instance.node.url, access_token)
     const xtermRef = useRef<Xterm>(null)
@@ -59,10 +60,10 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
     }, [])
     return (
         <>
-            <div style={{ borderRadius: "10px", padding: "13px", backgroundColor: "#1a1b1e", marginTop: "10px" }}>
+            <div style={{ borderRadius: "10px", padding: "13px", backgroundColor: theme.colors.dark[7], marginTop: "10px" }}>
                 <Xterm ref={xtermRef} onData={console.log} onBinary={console.log} onKey={console.log} addons={[fitAddon]} options={{
                     theme: {
-                        "background": "#1a1b1e"
+                        "background": theme.colors.dark[7]
                     }
                 }} />
             </div>

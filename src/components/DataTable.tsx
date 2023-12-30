@@ -1,4 +1,4 @@
-import { ScrollArea, Table } from "@mantine/core";
+import { ScrollArea, Table, useMantineTheme } from "@mantine/core";
 import { Children, MouseEventHandler, ReactNode } from "react";
 
 export function DataTable({ children, headings }: { children: ReactNode, headings?: string[] }) {
@@ -17,10 +17,12 @@ export function DataTable({ children, headings }: { children: ReactNode, heading
 }
 
 export function DataTableRow({ children, active,onClick }: { children: ReactNode, active?: boolean, onClick?: MouseEventHandler<HTMLTableDataCellElement> }) {
+    const theme = useMantineTheme();
+
     if (!active) active = false;
-    var firstStyle = { borderTopLeftRadius: "10px", borderBottomLeftRadius: "10px", backgroundColor: active ? "#28292e" : "#1a1b1e", marginTop: 30, border: 0 }
-    var lastStyle = { borderTopRightRadius: "10px", borderBottomRightRadius: "10px", backgroundColor: active ? "#28292e" : "#1a1b1e", marginTop: 30, border: 0 }
-    var normalStyle = { backgroundColor: active ? "#28292e" : "#1a1b1e", marginTop: 30, border: 0 }
+    var firstStyle = { borderTopLeftRadius: "10px", borderBottomLeftRadius: "10px", backgroundColor: active ? theme.colors.dark[6] : theme.colors.dark[7], marginTop: 30, border: 0 }
+    var lastStyle = { borderTopRightRadius: "10px", borderBottomRightRadius: "10px", backgroundColor: active ? theme.colors.dark[6] : theme.colors.dark[7], marginTop: 30, border: 0 }
+    var normalStyle = { backgroundColor: active ? theme.colors.dark[6] : theme.colors.dark[7], marginTop: 30, border: 0 }
     var mappedChildren = Children.map(children, (child, i) => {
         return (
             <td key={i.toString()} style={i == 0 ? firstStyle : (i == (children as any).length - 1 ? lastStyle : normalStyle)} onClick={onClick}>
