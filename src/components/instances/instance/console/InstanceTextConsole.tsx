@@ -57,10 +57,25 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
             */
             const operations = client.get("/operations?recursion=1").then(({ data }) => {
                 let operations = data.metadata["running"];
-                console.log(operations)
-                let operation = operations.find((o: any) => o.resources.instances.includes(`/1.0/instances/${instance.name}`))
+                let ops = operations.filter((o: any) => o.resources.instances.includes(`/1.0/instances/${instance.name}`))
+                console.log(ops)
+                let operation;
+                if (instance.expanded_config["user.stateless-startup"]) {
+                    operation = ops.find((o: any) => o.description == "Executing command")
+                } else {
+                    operation = ops.find((o: any) => o.description == "Showing console")
+                }
+                console.log(operation)
                 if (operation) {
                     if ((operation.description == "Executing command") || (operation.description == "Showing console")) {
+                        if (operation.description == "Showing console") {
+                            if (instance.type == "container") {
+                                let logs = client.get(`/instances/${instance.name}/console`).then(({ data }) => {
+                                    xtermRef.current?.terminal.write(data)
+                                    setLoading(false)
+                                })
+                            }
+                        }
                         let dataWS = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/operations/${operation.id}/websocket?secret=${operation.metadata.fds["0"]}`)
                         let controlWs = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/operations/${operation.id}/websocket?secret=${operation.metadata.fds["control"]}`)
                         setdatWS(dataWS)
