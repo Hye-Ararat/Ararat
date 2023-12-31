@@ -57,15 +57,21 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
             */
             const operations = client.get("/operations?recursion=1").then(({ data }) => {
                 let operations = data.metadata["running"];
-                let ops = operations.filter((o: any) => o.resources.instances.includes(`/1.0/instances/${instance.name}`))
-                console.log(ops)
                 let operation;
-                if (instance.expanded_config["user.stateless-startup"]) {
-                    operation = ops.find((o: any) => o.description == "Executing command")
-                } else {
-                    operation = ops.find((o: any) => o.description == "Showing console")
+
+                try {
+                    let ops = operations.filter((o: any) => o.resources.instances.includes(`/1.0/instances/${instance.name}`))
+                    console.log(ops)
+                    if (instance.expanded_config["user.stateless-startup"]) {
+                        operation = ops.find((o: any) => o.description == "Executing command")
+                    } else {
+                        operation = ops.find((o: any) => o.description == "Showing console")
+                    }
+                    console.log(operation)
+                } catch (error) {
+                    operation = undefined
                 }
-                console.log(operation)
+
                 if (operation) {
                     if ((operation.description == "Executing command") || (operation.description == "Showing console")) {
                         if (operation.description == "Showing console") {
