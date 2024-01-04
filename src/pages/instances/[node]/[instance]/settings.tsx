@@ -3,13 +3,13 @@ import { fetchInstance } from "@/lib/lxd";
 import { redirect } from "@/lib/next";
 import { validateSession } from "@/lib/oidc";
 import { NodeLxdInstance } from "@/types/instance";
-import { Paper, SimpleGrid, TextInput, Textarea, Title, Text, Button, Select, Switch, Flex } from "@mantine/core";
+import { Paper, SimpleGrid, TextInput, Textarea, Title, Text, Button, Select, Switch, Flex, Dialog, Modal, useMantineTheme } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { connectOIDC } from "incus";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export async function getServerSideProps({ req, res, params, query }: GetServerSidePropsContext) {
     if (!params || !params.instance || !params.node) return redirect("/instances");
@@ -72,8 +72,49 @@ export async function getServerSideProps({ req, res, params, query }: GetServerS
 export default function InstanceSettings({ instance, images }: { instance: NodeLxdInstance }) {
     const [instanceState, setInstanceState] = useState<NodeLxdInstance>(instance)
     const router = useRouter();
+    const [sftpPopup, setSftpPopup] = useState(false)
+    const theme = useMantineTheme()
+    const [sftpConnection, setSftpConnection] = useState({})
+    useEffect(() => {
+        if (sftpPopup) {
+            let audio = new Audio("/audio/popup.mp3");
+            audio.play();
+            async function run() {
+                let sftpDat = await fetch(`${instance.node.url.replace("8443", "3001")}/instances/${instance.name}/sftp`)
+                let data = await sftpDat.json();
+                setSftpConnection(data)
+                console.log(data)
+            }
+            run()
+        }
+    }, [sftpPopup])
     return (
         <>
+            <Modal overlayProps={{
+                color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
+                opacity: 0.55,
+                blur: 3,
+            }} opened={sftpPopup} onClose={() => setSftpPopup(false)} size="sm" centered title={<Title order={3}>SFTP Connection</Title>}>
+                <Text>Use the following information to connect to your instance via SFTP:</Text>
+                <Flex mt="sm">
+                    <Title order={4} my="auto">Host:</Title>
+                    <Text ml="auto" my="auto">{sftpConnection.connString}</Text>
+                </Flex>
+                <Flex mt="sm">
+                    <Title order={4} my="auto">Username:</Title>
+                    <Text ml="auto" my="auto">{sftpConnection.login}</Text>
+                </Flex>
+                <Flex mt="sm">
+                    <Title order={4} my="auto">Password:</Title>
+                    <Text ml="auto" my="auto">{sftpConnection.password}</Text>
+                </Flex>
+                <Flex mt="xs">
+                    <Button onClick={() => {
+                        //open sftp:// in new window
+                        window.open(`sftp://${sftpConnection.connString}`, "_blank")
+                    }} variant="light" ml="auto">Open SFTP Client</Button>
+                </Flex>
+            </Modal>
             <InstanceShell instance={instance} />
             <SimpleGrid mt="md" cols={2}>
                 <Paper p={10} mt="md">
@@ -139,6 +180,10 @@ export default function InstanceSettings({ instance, images }: { instance: NodeL
                             setInstanceState(newConfig);
                         }} checked={instanceState.config["security.secureboot"] == "true"} mt="xs" label="Secure Boot" />
                         : null}
+                </Paper>
+                <Paper p={10}>
+                    <Title order={4}>SFTP</Title>
+                    <Button mt="xs" variant="light" color="blue" onClick={() => setSftpPopup(true)}>SFTP Information</Button>
                 </Paper>
             </SimpleGrid>
             <Flex mt="md">
