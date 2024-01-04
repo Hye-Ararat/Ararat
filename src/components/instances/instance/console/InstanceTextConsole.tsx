@@ -57,10 +57,11 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
             */
             const operations = client.get("/operations?recursion=1").then(({ data }) => {
                 let operations = data.metadata["running"];
+                console.log(operations)
                 let operation;
 
                 try {
-                    let ops = operations.filter((o: any) => o.resources.instances.includes(`/1.0/instances/${instance.name}`))
+                    let ops = operations.filter((o: any) => o.resources.instances ? o.resources.instances.includes(`/1.0/instances/${instance.name}`) : false)
                     console.log(ops)
                     if (instance.expanded_config["user.stateless-startup"]) {
                         operation = ops.find((o: any) => o.description == "Executing command")
@@ -106,7 +107,11 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
                     }).then(() => {
                         const operations = client.get("/operations?recursion=1").then(({ data }) => {
                             let operations = data.metadata["running"];
-                            let ops = operations.filter((o: any) => o.resources.instances.includes(`/1.0/instances/${instance.name}`))
+
+                            if (operations == undefined) {
+                                return
+                            }
+                            let ops = operations.filter((o: any) => o.resources.instances ? o.resources.instances.includes(`/1.0/instances/${instance.name}`) : false)
                             let operation;
                             if (instance.expanded_config["user.stateless-startup"]) {
                                 operation = ops.find((o: any) => o.description == "Executing command")
