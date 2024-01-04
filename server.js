@@ -43,12 +43,13 @@ app.prepare().then(() => {
         if (err) throw err
         console.log(`> Hye Ararat is running on https://${process.env.URL}`)
     })
-    exec(`node ./authentication.js`, (err, stdout, stderr) => {
+    exec(`pm2 start "node authentication.js"`, (err, stdout, stderr) => {
         if (err) {
             console.log(err);
             return;
         }
         console.log(stdout);
         console.log(stderr);
+        //if it exists it needs to relaunch
     })
 })
