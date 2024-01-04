@@ -2,9 +2,10 @@ import { getNodeClient } from "@/lib/lxd";
 import { client } from "@/lib/oidc";
 import { InstanceFileContext } from "@/pages/instances/[node]/[instance]/files";
 import { NodeLxdInstance } from "@/types/instance";
-import { Anchor, Button, Center, Grid, Group, Menu, Paper, Popover, Stack, Text, Tooltip, UnstyledButton, Loader, Table, ActionIcon, Checkbox, Flex, Dialog } from "@mantine/core";
+import { Anchor, Button, Center, Grid, Group, Menu, Paper, Popover, Stack, Text, Tooltip, UnstyledButton, Loader, Table, ActionIcon, Checkbox, Flex, Dialog, Title } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
-import { IconBorderHorizontal, IconDotsVertical, IconDownload, IconFile, IconFileFilled, IconFolder, IconFolderFilled, IconLink, IconPencil, IconTrash } from "@tabler/icons-react";
+import { IconFileUpload, IconFileZip } from "@tabler/icons-react";
+import { IconBorderHorizontal, IconDotsVertical, IconDownload, IconFile, IconFileFilled, IconFolder, IconFolderFilled, IconLink, IconPencil, IconTrash, IconZip } from "@tabler/icons-react";
 import { getCookie } from "cookies-next";
 import { connectOIDC } from "incus";
 import Link from "next/link";
@@ -12,6 +13,7 @@ import { useRouter } from "next/router";
 import { tmpdir } from "os";
 import prettyBytes from "pretty-bytes";
 import { useContext, useEffect, useState } from "react";
+import { Dropzone } from "@mantine/dropzone"
 
 
 export function ListFileView({ files, path }: { files: string[], path: string }) {
@@ -21,11 +23,19 @@ export function ListFileView({ files, path }: { files: string[], path: string })
     files.forEach(file => initialCheckedFiles.push({ id: file, checked: false }))
     var [selectedFiles, setSelectedFiles] = useState<{ id: string, checked: boolean }[]>(initialCheckedFiles)
     const [leftValue, setLeftValue] = useState(0);
+    const [unzipStatus, setUnzipStatus] = useState("")
     useEffect(() => {
         setLeftValue((window.innerWidth / 2) - (111 / 2))
     }, [])
     return (
         <>
+            {unzipStatus}
+            <Dropzone.FullScreen style={{ height: "100%" }} onDrop={(files) => console.log(files)} >
+                <Flex direction="column" style={{ width: "100%", height: "100%" }} my="auto" mx="auto">
+                    <IconFileUpload size={128} style={{ color: "rgb(90, 200, 250)", marginLeft: "auto", marginRight: "auto", marginTop: "30vh" }} />
+                    <Title order={2} mx="auto" mt="sm">Drop Files Here</Title>
+                </Flex>
+            </Dropzone.FullScreen >
             <Table striped highlightOnHover>
                 <thead >
                     <tr>
@@ -69,11 +79,13 @@ export function ListFileView({ files, path }: { files: string[], path: string })
                     </tr>
                 </thead>
                 <tbody>
+
                     {files.map((file) => {
-                        return <ListFileViewItem file={file} setSelectedFiles={setSelectedFiles} selectedFiles={selectedFiles} />
+                        return <ListFileViewItem setUnzipStatus={setUnzipStatus} file={file} setSelectedFiles={setSelectedFiles} selectedFiles={selectedFiles} />
                     })}
+
                 </tbody>
-            </Table>
+            </Table >
             <Flex>
                 <Dialog transition={"pop"} opened={selectedFiles.filter(s => s.checked == true).length > 0} sx={{ width: 111 }} radius="md" position={{ bottom: 80, left: leftValue }}>
                     <Button onClick={() => {
@@ -129,7 +141,7 @@ export function ListFileView({ files, path }: { files: string[], path: string })
 
     )
 }
-function ListFileViewItem({ file, setSelectedFiles, selectedFiles }: { file: string, selectedFiles: { id: string, checked: boolean }[], setSelectedFiles: (files: { id: string, checked: boolean }[]) => void }) {
+function ListFileViewItem({ file, setSelectedFiles, selectedFiles, setUnzipStatus }: { file: string, selectedFiles: { id: string, checked: boolean }[], setSelectedFiles: (files: { id: string, checked: boolean }[]) => void }) {
     const { instance, rerender }: { instance: NodeLxdInstance, rerender: () => void } = (useContext(InstanceFileContext) as any)
     const router = useRouter();
     var access_token = (getCookie("access_token") as string)
@@ -165,6 +177,12 @@ function ListFileViewItem({ file, setSelectedFiles, selectedFiles }: { file: str
             }, 50)
         }).catch(() => {
         })
+    }
+    async function unzipFile() {
+        const ws = new WebSocket(`${instance.node.url.replace("8443", "3001").replace("https", "wss")}/instances/${instance.name}/files/unzip?path=${path}/${file}`)
+        ws.onmessage = (ev) => {
+            setUnzipStatus(ev.data)
+        }
     }
 
     function setSelect(checked: boolean) {
@@ -254,6 +272,11 @@ function ListFileViewItem({ file, setSelectedFiles, selectedFiles }: { file: str
                 {(metadata.type == "directory" || metadata.type == "symlink") ? "" : <Menu.Item icon={<IconDownload />} color="blue">
                     Download
                 </Menu.Item>}
+                {file.endsWith(".zip") ?
+                    <Menu.Item icon={<IconFileZip />} color="yellow" onClick={() => unzipFile()}>
+                        Unzip
+                    </Menu.Item>
+                    : ""}
                 <Menu.Item icon={<IconPencil />} color="teal" onClick={() => rerender()}>
                     Rename
                 </Menu.Item>
