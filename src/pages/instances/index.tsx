@@ -158,7 +158,7 @@ function InstanceAside({ instance, closeAside }: { instance: NodeLxdInstance, cl
                             </Text>
                         </td>
                         <td>
-                            {instance.name}
+                            {instance.expanded_config["user.name"] ?? instance.name}
                         </td>
                     </tr>
                     <tr>
@@ -343,7 +343,7 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
                     <Text>
                         <div>
                             <Text fz="md" fw={550}>
-                                {instance.name}
+                                {instance.expanded_config["user.name"] ?? instance.name}
                             </Text>
                             <Text c="dimmed" fz="xs">
                                 {instance.description ? instance.description : instance.config["image.os"] && instance.config["image.release"] ? instance.config["image.os"] + " " + instance.config["image.release"] : "Unknown OS"}

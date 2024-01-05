@@ -37,7 +37,7 @@ export default function InstanceShell({ instance }: { instance: any }) {
     <>
       <Flex>
         <div>
-          <Title order={1}>{instance.name}</Title>
+          <Title order={1}>{instance.expanded_config["user.name"] ?? instance.name}</Title>
           <Badge bg={theme.colors.dark[6]} color={getBadgeColor(instanceStatus)} variant="dot">{instanceStatus}</Badge>
         </div>
         <Button onClick={async () => {
