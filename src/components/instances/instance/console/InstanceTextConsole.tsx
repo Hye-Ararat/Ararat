@@ -22,6 +22,21 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
     var fitAddon = new FitAddon()
     const router = useRouter();
     const [rerun, setReRun] = useState(0);
+    const [state, setState] = useState(instance.status)
+    useEffect(() => {
+        if (instance.status != state) {
+            if (state == "Running") {
+                router.reload();
+            }
+        }
+    }, [state])
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            let status = (await client.get(`/instances/${instance.name}?recursion=1`)).data.metadata.status;
+            console.log(status)
+            setState(status)
+        }, 5000)
+    }, [])
     useEffect(() => {
 
         if (xtermRef.current && done == false) {
@@ -55,99 +70,115 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
                 })
             })
             */
-            const operations = client.get("/operations?recursion=1").then(({ data }) => {
-                let operations = data.metadata["running"];
-                console.log(operations)
-                let operation;
+            if (!instance.expanded_config["user.stateless-startup"]) {
+                const operations = client.get("/operations?recursion=1").then(({ data }) => {
+                    let operations = data.metadata["running"];
+                    console.log(operations)
+                    let operation;
 
-                try {
-                    let ops = operations.filter((o: any) => o.resources.instances ? o.resources.instances.includes(`/1.0/instances/${instance.name}`) : false)
-                    console.log(ops)
-                    if (instance.expanded_config["user.stateless-startup"]) {
-                        operation = ops.find((o: any) => o.description == "Executing command")
-                    } else {
-                        operation = ops.find((o: any) => o.description == "Showing console")
-                    }
-                    console.log(operation)
-                } catch (error) {
-                    operation = undefined
-                }
-
-                if (operation) {
-                    if ((operation.description == "Executing command") || (operation.description == "Showing console")) {
-                        if (operation.description == "Showing console") {
-                            if (instance.type == "container") {
-                                let logs = client.get(`/instances/${instance.name}/console`).then(({ data }) => {
-                                    xtermRef.current?.terminal.write(data)
-                                    setLoading(false)
-                                })
-                            }
+                    try {
+                        let ops = operations.filter((o: any) => o.resources.instances ? o.resources.instances.includes(`/1.0/instances/${instance.name}`) : false)
+                        console.log(ops)
+                        if (instance.expanded_config["user.stateless-startup"]) {
+                            operation = ops.find((o: any) => o.description == "Executing command")
+                        } else {
+                            operation = ops.find((o: any) => o.description == "Showing console")
                         }
-                        let dataWS = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/operations/${operation.id}/websocket?secret=${operation.metadata.fds["0"]}`)
-                        let controlWs = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/operations/${operation.id}/websocket?secret=${operation.metadata.fds["control"]}`)
-                        setdatWS(dataWS)
-                        dataWS.onmessage = async (ev) => {
-                            xtermRef.current?.terminal.write(await ev.data.text())
-                        }
-                        // xtermRef.current?.terminal.onBinary(console.log)
-                        xtermRef.current?.terminal.onData((d) => {
-
-                            dataWS.send(textEncoder.encode(d))
-                        })
-                        router.events.on("routeChangeStart", () => {
-                            datWS?.close();
-                        })
+                        console.log(operation)
+                    } catch (error) {
+                        operation = undefined
                     }
-                } else {
-                    let console = client.post(`/instances/${instance.name}/console`, {
-                        "type": "console",
-                        "wait-for-websocket": true,
-                    }).catch((e) => {
-                        setError(getWsErrorMsg(e))
-                    }).then(() => {
-                        const operations = client.get("/operations?recursion=1").then(({ data }) => {
-                            let operations = data.metadata["running"];
 
-                            if (operations == undefined) {
-                                return
-                            }
-                            let ops = operations.filter((o: any) => o.resources.instances ? o.resources.instances.includes(`/1.0/instances/${instance.name}`) : false)
-                            let operation;
-                            if (instance.expanded_config["user.stateless-startup"]) {
-                                operation = ops.find((o: any) => o.description == "Executing command")
-                            } else {
-                                operation = ops.find((o: any) => o.description == "Showing console")
-                            }
-                            if (operation) {
-                                if ((operation.description == "Executing command") || (operation.description == "Showing console")) {
-                                    if (operation.description == "Showing console") {
-                                        if (instance.type == "container") {
-                                            let logs = client.get(`/instances/${instance.name}/console`).then(({ data }) => {
-                                                xtermRef.current?.terminal.write(data)
-                                                setLoading(false)
-                                            })
-                                        }
-                                    }
-                                    let dataWS = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/operations/${operation.id}/websocket?secret=${operation.metadata.fds["0"]}`)
-                                    let controlWs = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/operations/${operation.id}/websocket?secret=${operation.metadata.fds["control"]}`)
-                                    setdatWS(dataWS)
-                                    dataWS.onmessage = async (ev) => {
-                                        xtermRef.current?.terminal.write(await ev.data.text())
-                                    }
-                                    // xtermRef.current?.terminal.onBinary(console.log)
-                                    xtermRef.current?.terminal.onData((d) => {
-
-                                        dataWS.send(textEncoder.encode(d))
-                                    })
-                                    router.events.on("routeChangeStart", () => {
-                                        datWS?.close();
+                    if (operation) {
+                        if ((operation.description == "Executing command") || (operation.description == "Showing console")) {
+                            if (operation.description == "Showing console") {
+                                if (instance.type == "container") {
+                                    let logs = client.get(`/instances/${instance.name}/console`).then(({ data }) => {
+                                        xtermRef.current?.terminal.write(data)
+                                        setLoading(false)
                                     })
                                 }
                             }
+                            let dataWS = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/operations/${operation.id}/websocket?secret=${operation.metadata.fds["0"]}`)
+                            let controlWs = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/operations/${operation.id}/websocket?secret=${operation.metadata.fds["control"]}`)
+                            setdatWS(dataWS)
+                            dataWS.onmessage = async (ev) => {
+                                xtermRef.current?.terminal.write(await ev.data.text())
+                            }
+                            // xtermRef.current?.terminal.onBinary(console.log)
+                            xtermRef.current?.terminal.onData((d) => {
+
+                                dataWS.send(textEncoder.encode(d))
+                            })
+                            router.events.on("routeChangeStart", () => {
+                                datWS?.close();
+                            })
+                        }
+                    } else {
+                        let console = client.post(`/instances/${instance.name}/console`, {
+                            "type": "console",
+                            "wait-for-websocket": true,
+                        }).catch((e) => {
+                            setError(getWsErrorMsg(e))
+                        }).then(() => {
+                            const operations = client.get("/operations?recursion=1").then(({ data }) => {
+                                let operations = data.metadata["running"];
+
+                                if (operations == undefined) {
+                                    return
+                                }
+                                let ops = operations.filter((o: any) => o.resources.instances ? o.resources.instances.includes(`/1.0/instances/${instance.name}`) : false)
+                                let operation;
+                                if (instance.expanded_config["user.stateless-startup"]) {
+                                    operation = ops.find((o: any) => o.description == "Executing command")
+                                } else {
+                                    operation = ops.find((o: any) => o.description == "Showing console")
+                                }
+                                if (operation) {
+                                    if ((operation.description == "Executing command") || (operation.description == "Showing console")) {
+                                        if (operation.description == "Showing console") {
+                                            if (instance.type == "container") {
+                                                let logs = client.get(`/instances/${instance.name}/console`).then(({ data }) => {
+                                                    xtermRef.current?.terminal.write(data)
+                                                    setLoading(false)
+                                                })
+                                            }
+                                        }
+                                        let dataWS = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/operations/${operation.id}/websocket?secret=${operation.metadata.fds["0"]}`)
+                                        let controlWs = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/operations/${operation.id}/websocket?secret=${operation.metadata.fds["control"]}`)
+                                        setdatWS(dataWS)
+                                        dataWS.onmessage = async (ev) => {
+                                            xtermRef.current?.terminal.write(await ev.data.text())
+                                        }
+                                        // xtermRef.current?.terminal.onBinary(console.log)
+                                        xtermRef.current?.terminal.onData((d) => {
+
+                                            dataWS.send(textEncoder.encode(d))
+                                        })
+                                        router.events.on("routeChangeStart", () => {
+                                            datWS?.close();
+                                        })
+                                    }
+                                }
+                            })
                         })
-                    })
+                    }
+                })
+            } else {
+                let dataWS = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/instance/${instance.name}/console`)
+                setdatWS(dataWS)
+                dataWS.onmessage = async (ev) => {
+                    xtermRef.current?.terminal.write(await ev.data.text())
                 }
-            })
+                // xtermRef.current?.terminal.onBinary(console.log)
+                xtermRef.current?.terminal.onData((d) => {
+
+                    dataWS.send(textEncoder.encode(d))
+                })
+                router.events.on("routeChangeStart", () => {
+                    datWS?.close();
+                })
+            }
 
             return () => {
                 datWS?.close()
