@@ -3,6 +3,10 @@ import bcrypt from "bcrypt";
 import mongo from "@/lib/mongo";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.headers.authorization != process.env.ENC_KEY) {
+        res.status(401).send("Unauthorized");
+        return;
+    }
     if (req.method == "POST") {
         console.log(req.body)
         const salt = await bcrypt.genSalt(10);

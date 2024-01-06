@@ -9,22 +9,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         let imageServer = imageServers.filter((imageServer) => imageServer["_id"] == req.query.id)[0];
         console.log(imageServer, "asdf")
         if (!req.query.path) {
-        let res1 = await fetch(`${imageServer.url}/streams/v1/index.json`, {
-            method: "GET",
-            cache: "no-cache"
-        })
-        let json = await res1.json();
-        return res.status(200).json(json);
-    } else {
-        let res1 = await fetch(`${imageServer.url}/${req.query.path}`, {
-            method: "GET",
-            cache: "no-cache"
-        })
-        let json = await res1.json();
-        return res.status(200).json(json);
-    }
+            let res1 = await fetch(`${imageServer.url}/streams/v1/index.json`, {
+                method: "GET",
+                cache: "no-cache"
+            })
+            let json = await res1.json();
+            return res.status(200).json(json);
+        } else {
+            let res1 = await fetch(`${imageServer.url}/${req.query.path}`, {
+                method: "GET",
+                cache: "no-cache"
+            })
+            let json = await res1.json();
+            return res.status(200).json(json);
+        }
     }
     if (req.method == "DELETE") {
+        if (req.headers.authorization != process.env.ENC_KEY) {
+            res.status(401).send("Unauthorized");
+            return;
+        }
         const imageServerCollection = await mongo.db().collection("ImageServer")
         imageServerCollection.deleteOne({
             _id: new ObjectId(req.query.id)

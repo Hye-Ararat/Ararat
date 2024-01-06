@@ -15,6 +15,7 @@ const UsersContext = createContext({ setActiveUser: (user: string) => { }, activ
 export async function getServerSideProps() {
     var usersCollection = await mongo.db().collection("User")
     let users = await ((await usersCollection.find({})).toArray())
+    users = [];
     return {
         props: {
             users: sanitizeMany(users)
@@ -206,7 +207,7 @@ export default function Users({ users }: { users: User[] }) {
                         </Group>
                     </> : ""}
                     {selectedUsers.filter(s => s.checked == true).length == 0 ? <>
-                        <CreateUser setEditingUser={setEditingUser} editingUser={editingUser} userData={userData}  />
+                        <CreateUser setEditingUser={setEditingUser} editingUser={editingUser} userData={userData} />
                     </> : ""}
                 </div>
             </Flex>
