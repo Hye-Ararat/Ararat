@@ -179,7 +179,7 @@ function ListFileViewItem({ file, setSelectedFiles, selectedFiles, setUnzipStatu
         })
     }
     async function unzipFile() {
-        const ws = new WebSocket(`${instance.node.url.replace("8443", "3001").replace("https", "wss")}/instances/${instance.name}/files/unzip?path=${path}/${file}`)
+        const ws = new WebSocket(`${instance.node.url.replace("8443", "3001").replace("https", "wss")}/instances/${instance.name}/files/unzip?path=${path}/${file}&access_token=${access_token}`)
         ws.onmessage = (ev) => {
             setUnzipStatus(ev.data)
         }

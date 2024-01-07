@@ -80,7 +80,7 @@ export default function InstanceSettings({ instance, images }: { instance: NodeL
             let audio = new Audio("/audio/popup.mp3");
             audio.play();
             async function run() {
-                let sftpDat = await fetch(`${instance.node.url.replace("8443", "3001")}/instances/${instance.name}/sftp`)
+                let sftpDat = await fetch(`${instance.node.url.replace("8443", "3001")}/instances/${instance.name}/sftp?access_token=${getCookie("access_token")}`)
                 let data = await sftpDat.json();
                 setSftpConnection(data)
                 console.log(data)

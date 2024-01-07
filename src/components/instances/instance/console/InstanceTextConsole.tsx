@@ -165,7 +165,7 @@ export default function InstanceTextConsole({ instance }: { instance: NodeLxdIns
                     }
                 })
             } else {
-                let dataWS = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/instance/${instance.name}/console`)
+                let dataWS = new WebSocket(`wss://${instance.node.url.replace("https://", "").replace("8443", "3001")}/instance/${instance.name}/console?access_token=${access_token}`)
                 setdatWS(dataWS)
                 dataWS.onmessage = async (ev) => {
                     xtermRef.current?.terminal.write(await ev.data.text())
