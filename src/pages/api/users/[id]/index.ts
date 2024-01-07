@@ -10,7 +10,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     if (req.method == "DELETE") {
         const id = req.query.id?.toString()
-        await mongo.db().collection("User").deleteOne({ _id: new ObjectId(id) })
+        let useEmail = req.query.id?.includes("@");
+        if (useEmail) {
+            await mongo.db().collection("User").deleteOne({ email: id })
+
+        } else {
+            await mongo.db().collection("User").deleteOne({ _id: new ObjectId(id) })
+
+        }
         res.status(200).send("Success");
     }
     if (req.method == "PATCH") {
