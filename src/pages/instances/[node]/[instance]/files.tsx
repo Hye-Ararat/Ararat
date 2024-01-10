@@ -13,9 +13,10 @@ import {
     Flex,
     Progress,
     Stack,
-    Text
+    Text,
+    Title
 } from "@mantine/core";
-import { IconArrowLeft, IconArrowRight, IconFile, IconFolder, IconLayoutGrid, IconLayoutList, IconPlus, IconReload, IconUpload } from "@tabler/icons-react";
+import { IconArrowLeft, IconArrowRight, IconCloudDataConnection, IconFile, IconFolder, IconLayoutGrid, IconLayoutList, IconPlus, IconReload, IconUpload } from "@tabler/icons-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { GridFileView } from "@/components/instances/instance/files/GridFileView";
 import { ListFileView } from "@/components/instances/instance/files/ListFileView";
@@ -97,6 +98,21 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
     }, [folderPath])
     const [creatingFile, setCreatingFile] = useState(false);
     const [fileCreateErr, setFileCreateErr] = useState<string | undefined>(undefined);
+    const [sftpConnection, setSftpConnection] = useState({})
+    const [sftpPopup, setSftpPopup] = useState(false)
+    useEffect(() => {
+        if (sftpPopup) {
+            let audio = new Audio("/audio/popup.mp3");
+            audio.play();
+            async function run() {
+                let sftpDat = await fetch(`${instance.node.url.replace("8443", "3001")}/instances/${instance.name}/sftp?access_token=${getCookie("access_token")}`)
+                let data = await sftpDat.json();
+                setSftpConnection(data)
+                console.log(data)
+            }
+            run()
+        }
+    }, [sftpPopup])
     useEffect(() => {
         if (creatingFile) {
             let audio = new Audio("/audio/popup.mp3");
@@ -148,6 +164,31 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
         <>
             <input type='file' id='file' ref={inputFile} style={{ display: 'none' }} onChange={(f) => { if (!f.currentTarget.files) return; doUpload(f.currentTarget.files) }} />
             <InstanceShell instance={instance} />
+            <Modal overlayProps={{
+                color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
+                opacity: 0.55,
+                blur: 3,
+            }} opened={sftpPopup} onClose={() => setSftpPopup(false)} size="sm" centered title={<Title order={3}>SFTP Connection</Title>}>
+                <Text>Use the following information to connect to your instance via SFTP:</Text>
+                <Flex mt="sm">
+                    <Title order={4} my="auto">Host:</Title>
+                    <Text ml="auto" my="auto">{sftpConnection.connString ? sftpConnection.connString.replace("[::]", instance.node.url.replace("https://", "").replace(":8443", "")) : ""}</Text>
+                </Flex>
+                <Flex mt="sm">
+                    <Title order={4} my="auto">Username:</Title>
+                    <Text ml="auto" my="auto">{sftpConnection.login}</Text>
+                </Flex>
+                <Flex mt="sm">
+                    <Title order={4} my="auto">Password:</Title>
+                    <Text ml="auto" my="auto">{sftpConnection.password}</Text>
+                </Flex>
+                <Flex mt="xs">
+                    <Button onClick={() => {
+                        //open sftp:// in new window
+                        window.open(`sftp://${sftpConnection.connString}`, "_blank")
+                    }} variant="light" ml="auto">Open SFTP Client</Button>
+                </Flex>
+            </Modal>
             <Modal centered overlayProps={{
                 color: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
                 opacity: 0.55,
@@ -187,6 +228,7 @@ export default function InstanceFiles({ instance, files, path: folderPath }: { i
                 <ActionIcon size={34} variant="light" onClick={rerender} color="blue">
                     <IconReload />
                 </ActionIcon>
+                <Button onClick={() => setSftpPopup(true)} color="blue" variant="light" leftIcon={<IconCloudDataConnection />}>SFTP</Button>
                 <Menu>
                     <Menu.Target>
                         <Button leftIcon={<IconPlus />} color="green" variant="light">
