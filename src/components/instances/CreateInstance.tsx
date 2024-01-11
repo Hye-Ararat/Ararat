@@ -49,7 +49,12 @@ export default function CreateInstance({ nodes, imageServers }: { nodes: Node[],
         let nodesArr = [];
         nodes.forEach(async (node) => {
             const lxdClient = connectOIDC(node.url, nookies.get(null).access_token);
-            let info = await lxdClient.get("/resources")
+            let info;
+            try {
+                info = await lxdClient.get("/resources")
+            } catch (error) {
+                return;
+            }
             let nodeData = info.data.metadata;
             nodeData.name = node.name;
             console.log(nodeData)

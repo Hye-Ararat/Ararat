@@ -274,7 +274,12 @@ function InstanceTableRow({ instance }: { instance: NodeLxdInstance }) {
         let client = connectOIDC(instance.node.url, getCookie("access_token"));
         async function getCpu() {
             try {
-                let resources = await (await client.get("/resources")).data.metadata
+                let resources;
+                try {
+                    resources = await (await client.get("/resources")).data.metadata
+                } catch (error) {
+
+                }
                 let stateStart = await (await client.get(`/instances/${instance.name}/state`)).data.metadata
                 let startTime = Date.now()
                 let startCpuUsage = Math.ceil(stateStart.cpu.usage / 1000000)
