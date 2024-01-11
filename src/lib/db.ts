@@ -28,6 +28,13 @@ export async function getImageServers(): Promise<ImageServer[]> {
 }
 
 export async function getNode(id: string): Promise<Node> {
-    const node = (await (mongo.db().collection("Node").findOne({ _id: new ObjectId(id) })) as any);
+    let node;
+    try {
+        node = (await (mongo.db().collection("Node").findOne({ _id: new ObjectId(id) })) as any);
+
+    } catch (error) {
+        node = (await (mongo.db().collection("Node").findOne({ name: id })) as any);
+
+    }
     return (sanitizeOne((node as any)) as any);
 }
