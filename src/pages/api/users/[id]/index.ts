@@ -4,6 +4,8 @@ import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    console.log("adsfasdf")
+    console.log(req.method)
     if (req.headers.authorization != process.env.ENC_KEY) {
         res.status(401).send("Unauthorized");
         return;
@@ -21,6 +23,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).send("Success");
     }
     if (req.method == "PATCH") {
+        console.log("asldkfja;lskdfj;alsdkfj")
+        if (typeof req.body == "string") {
+            req.body = JSON.parse(req.body)
+        }
         const id = req.query.id?.toString()
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(req.body.password, salt);
@@ -64,14 +70,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         if (foundUser) {
-            res.status(200).json({
+            console.log("returned mmm");
+            return res.status(200).json({
                 email: foundUser.email,
                 firstName: foundUser.firstName,
                 lastName: foundUser.lastName,
                 id: foundUser._id
             })
         } else {
-            res.status(404).send("Not found")
+            return res.status(404).send("Not found")
         }
     }
 }
