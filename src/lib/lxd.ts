@@ -8,7 +8,7 @@ export function fetchInstance(name: string, node_name: string, access_token: str
     return new Promise(async (resolve, reject) => {
         try {
             var nodes: Node[] = (await (await mongo.db().collection("Node").find({})).toArray() as any)
-            var node = nodes.find(n => n.name == node_name)
+            var node = nodes.find(n => n.name == node_name || n._id == node_name)
             if (!node) return reject(new Error("No such node found: " + node));
             let client = connectOIDC(node.url, access_token)
             var instance = (await client.get(`/instances/${name}?recursion=1`)).data.metadata
