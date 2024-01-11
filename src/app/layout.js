@@ -7,20 +7,23 @@ import {
   Container,
 } from "@mantine/core-app";
 import ApplicationShell from "./AppShell";
+import "../globals.css"
 
-const inter = Inter({
+/*const inter = Inter({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
-});
+});*/
+
 
 export const metadata = {
   title: "Hye Enzonet",
   description: "Hye Enzonet | Server Hosting For Everyone",
 };
+
 
 export default function RootLayout({ children, session }) {
   return (
@@ -33,7 +36,7 @@ export default function RootLayout({ children, session }) {
           defaultColorScheme="dark"
           theme={{
             colorScheme: "dark",
-            fontFamily: inter.style.fontFamily,
+            fontFamily: "Inter, sans-serif",
             defaultRadius: "md",
             colors: {
               dark: [

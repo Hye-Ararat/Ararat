@@ -20,8 +20,8 @@ export default function InstanceTabs({ instance, node, accessToken }) {
                 <Link href={`/instances/${node.name}/${instance.name}/console`} style={{ textDecoration: "none", color: "inherit" }} >
                     <Tabs.Tab leftSection={<IconTerminal2 size="0.8rem" />} value={`/instances/${node.name}/${instance.name}/console`}>Console</Tabs.Tab>
                 </Link>
-                <Link href={`/instances/${node._id}/${instance.name}/files`} style={{ textDecoration: "none", color: "inherit" }} >
-                    <Tabs.Tab leftSection={<IconFolder size="0.8rem" />} value={`/instances/${node._id}/${instance.name}/filesNew`}>Files</Tabs.Tab>
+                <Link href={`/instance/${node._id}/${instance.name}/files`} style={{ textDecoration: "none", color: "inherit" }} >
+                    <Tabs.Tab leftSection={<IconFolder size="0.8rem" />} value={`/instance/${node._id}/${instance.name}/files`}>Files</Tabs.Tab>
                 </Link>
                 <Link href={`/instances/${node.name}/${instance.name}/networks`} style={{ textDecoration: "none", color: "inherit" }} >
                     <Tabs.Tab leftSection={<IconNetwork size="0.8rem" />} value={`/instances/${node.name}/${instance.name}/networks`}>Networks</Tabs.Tab>

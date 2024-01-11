@@ -19,7 +19,14 @@ export default async function Layout({ children, params }) {
         return redirect("/authentication/login");
     }
     const { node, instance } = params;
-    let nodeData = await getNode(node);
+    let nodeData
+    try {
+        nodeData = await getNode(node);
+    } catch (error) {
+        let nodes = await getNodes();
+        nodeData = nodes.find(nodeDat => nodeDat.name == node);
+    }
+
     const client = connectOIDC(nodeData.url, accessToken);
     let { data } = await client.get(`/instances/${instance}`);
     let instanceData = data;
