@@ -11,7 +11,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!valid) return res.status(403).send("Unauthorized");
     var path = searchParams.get("path")
     if (!path) return res.status(400).send("Bad Request");
+    if (req.method == "PATCH") {
+        var nodes: Node[] = (await (await mongo.db().collection("Node").find({})).toArray() as any)
+        var node = nodes.find(n => n.name == req.query.node)
+        var r = request(`${node?.url}/1.0/instances/${req.query.instance}/files?path=${path}`, {
+            headers: {
+                Authorization: `Bearer ${req.cookies.access_token}`,
+                "X-Incus-oidc": "true",
+            },
+            method: "HEAD",
+            rejectUnauthorized: false
+        });
 
+        var { headers }: any = await new Promise((resolve, reject) => {
+            r.on('response', response => {
+                resolve({ headers: response.headers })
+                r.abort()
+            }).on("error", err => { });
+        })
+        res.json({ headers })
+    }
     if (req.method == "GET") {
         var nodes: Node[] = (await (await mongo.db().collection("Node").find({})).toArray() as any)
         var node = nodes.find(n => n.name == req.query.node)
