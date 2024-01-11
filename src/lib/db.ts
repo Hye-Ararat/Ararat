@@ -1,5 +1,5 @@
 import { ImageServer, Node } from "@/types/db";
-import { WithId, Document } from "mongodb";
+import { WithId, Document, ObjectId } from "mongodb";
 import mongo from "./mongo";
 
 export function sanitizeMany(documents: WithId<Document>[]) {
@@ -25,4 +25,9 @@ export async function getNodes(): Promise<Node[]> {
 export async function getImageServers(): Promise<ImageServer[]> {
     const imageServers = (await (mongo.db().collection("ImageServer").find({})).toArray() as any);
     return (sanitizeMany((imageServers as any)) as any);
+}
+
+export async function getNode(id: string): Promise<Node> {
+    const node = (await (mongo.db().collection("Node").findOne({ _id: new ObjectId(id) })) as any);
+    return (sanitizeOne((node as any)) as any);
 }
