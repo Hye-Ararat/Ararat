@@ -10,11 +10,12 @@ import { IconSearch } from '@tabler/icons-react';
 import { Notifications } from '@mantine/notifications';
 import "@/lib/xterm.css"
 import { Inter, Poppins } from 'next/font/google'
-const inter = Inter({ subsets: ['latin'] })
+import "../globals.css";
+/* const inter = Inter({ subsets: ['latin'] })
 const poppins = Poppins({
   weight: ["400", "500", "600", "700", "800", "900"],
   subsets: ['latin']
-})
+}) */
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -33,7 +34,7 @@ export default function App(props: AppProps) {
         withNormalizeCSS
         theme={{
           colorScheme: colorScheme,
-          fontFamily: inter.style.fontFamily,
+          fontFamily: "Inter, sans-serif",
 
           defaultRadius: "md",
           colors: {
